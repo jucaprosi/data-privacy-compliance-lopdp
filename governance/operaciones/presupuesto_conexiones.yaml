@@ -1,0 +1,14 @@
+# GCP-05 · Presupuesto de conexiones del backend a PostgreSQL.
+# Regla: maxScale × (pool_size + max_overflow) + reservadas <= max_connections.
+# Lo comprueba tests/test_gcp05_escalado.py. El pool real sale de DB_POOL_SIZE y DB_MAX_OVERFLOW
+# del manifiesto del backend (app_core/db/session.py los lee y exige en Cloud Run).
+max_connections: 100
+# PROVISIONAL: 100 no es un dato medido. El propietario lo confirma con solo lectura:
+#   gcloud sql instances describe <instancia> --format="value(settings.databaseFlags)"
+#   SHOW max_connections;
+provisional: true
+reservadas: 10   # 2 de ellas para migración manual
+consumidores:
+  backend: evydentia-backend
+  purga_demo: otra base de datos; límite pendiente (DEMO-05)
+  migracion: 0   # sin Job de migración todavía

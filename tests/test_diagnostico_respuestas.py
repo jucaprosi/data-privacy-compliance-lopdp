@@ -3,7 +3,7 @@
 
 Desde DIAG-03 solo el DPO responde; implementador, coordinador y administrador consultan.
 
-Recorrido real contra PostgreSQL (rama Neon de revisión): guardar, leer desde otro usuario de
+Recorrido real contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI: guardar, leer desde otro usuario de
 la misma organización, aislamiento entre organizaciones por la API y por RLS, permisos y
 catálogo. Sin TEST_DATABASE_URL las pruebas se omiten.
 """
@@ -16,9 +16,12 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from conftest import exigir_base_de_pruebas
+
 _TEST_URL = os.environ.get("TEST_DATABASE_URL")
 if not _TEST_URL:
     pytest.skip("TEST_DATABASE_URL no configurada", allow_module_level=True)
+exigir_base_de_pruebas()
 os.environ["DATABASE_URL"] = _TEST_URL
 
 from app_core.db.session import fijar_contexto_rls, get_session  # noqa: E402
@@ -54,6 +57,7 @@ async def ctx(monkeypatch):
     usuarios = {
         "impl": (f"diag-impl-{sufijo}", a, "implementador"),
         "dpo": (f"diag-dpo-{sufijo}", a, "dpo"),
+        "admin": (f"diag-admin-{sufijo}", a, "admin_organizacion"),
         "resp": (f"diag-resp-{sufijo}", a, "responsable_area"),
         "impl_b": (f"diag-implb-{sufijo}", b, "implementador"),
     }
@@ -103,7 +107,7 @@ def _como(ctx, clave):
 
 async def test_lo_que_responde_el_dpo_lo_lee_el_implementador(ctx):
     c = ctx["client"]
-    r = await c.put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_respuesta(1), _respuesta(2, control="Plan de capacitación", dimension="D10")]})
+    r = await c.put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": [_respuesta(1), _respuesta(2, control="Plan de capacitación", dimension="D10")]})
     assert r.status_code == 200, r.text
 
     leidas = (await c.get(RUTA, headers=_como(ctx, "impl"))).json()["respuestas"]
@@ -111,13 +115,13 @@ async def test_lo_que_responde_el_dpo_lo_lee_el_implementador(ctx):
         (1, "Política de protección de datos personales", "D01"), (2, "Plan de capacitación", "D10")]
     primera = leidas[0]
     assert (primera["estado"], primera["nivel_evidencia"], primera["criticidad"], primera["es_critica"], primera["riesgo_base"]) == ("Parcial", 2, 4, True, 7)
-    assert primera["respondido_por"] == ctx["u"]["dpo"][0]
+    assert primera["respondido_por"] == ctx["u"]["admin"][0]
 
 
 async def test_volver_a_responder_reemplaza_la_respuesta_y_deja_un_evento(ctx):
     c = ctx["client"]
-    await c.put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_respuesta(5)]})
-    await c.put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_respuesta(5, nivel_asignado=4, nivel_evidencia=3)]})
+    await c.put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": [_respuesta(5)]})
+    await c.put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": [_respuesta(5, nivel_asignado=4, nivel_evidencia=3)]})
 
     leidas = (await c.get(RUTA, headers=_como(ctx, "impl"))).json()["respuestas"]
     assert len(leidas) == 1 and leidas[0]["estado"] == "Conforme" and leidas[0]["nivel_evidencia"] == 3
@@ -130,12 +134,12 @@ async def test_volver_a_responder_reemplaza_la_respuesta_y_deja_un_evento(ctx):
 
 async def test_otra_organizacion_no_ve_las_respuestas(ctx):
     c = ctx["client"]
-    await c.put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_respuesta(1)]})
+    await c.put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": [_respuesta(1)]})
     assert (await c.get(RUTA, headers=_como(ctx, "impl_b"))).json()["respuestas"] == []
 
 
 async def test_rls_oculta_las_filas_aunque_la_consulta_no_filtre(ctx):
-    await ctx["client"].put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_respuesta(1)]})
+    await ctx["client"].put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": [_respuesta(1)]})
     async with ctx["factory"]() as s:
         await s.execute(text("SET LOCAL ROLE lopdp_app"))
         await fijar_contexto_rls(s, ctx["b"])
@@ -169,6 +173,6 @@ async def test_roles_sin_permiso_reciben_403(ctx, clave, metodo):
 ])
 async def test_fuera_de_catalogo_es_422_y_no_guarda_nada(ctx, cambio):
     c = ctx["client"]
-    r = await c.put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_respuesta(1), _respuesta(2, **cambio)]})
+    r = await c.put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": [_respuesta(1), _respuesta(2, **cambio)]})
     assert r.status_code == 422
     assert (await c.get(RUTA, headers=_como(ctx, "dpo"))).json()["respuestas"] == []

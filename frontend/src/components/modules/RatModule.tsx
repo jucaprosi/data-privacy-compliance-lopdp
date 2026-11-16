@@ -9,6 +9,9 @@ import { getActividadesRAT, crearActividadRAT } from "@/lib/api";
 import ExportarRat from "@/components/modules/rat/ExportarRat";
 import PlantillaSectorial from "@/components/modules/rat/PlantillaSectorial";
 import ValidacionesFicha from "@/components/modules/rat/ValidacionesFicha";
+// === RAT-07 ===
+import Consentimientos from "@/components/modules/rat/Consentimientos";
+// === fin RAT-07 ===
 import { CONDICIONES_HABILITANTES } from "@/lib/rat/validaciones";
 
 export default function RatModule() {
@@ -17,6 +20,9 @@ export default function RatModule() {
   const [errorCarga, setErrorCarga] = useState<string | null>(null);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [fichaAbierta, setFichaAbierta] = useState<ActividadRAT | null>(null);
+  // === RAT-07 ===
+  const [titularesAbiertos, setTitularesAbiertos] = useState<ActividadRAT | null>(null);
+  // === fin RAT-07 ===
   const [nueva, setNueva] = useState<ActividadRAT & { condicion_habilitante?: string | null }>({
     codigo: "RAT-OPER-001",
     nombre: "Facturación Electrónica y Pagos",
@@ -159,6 +165,18 @@ export default function RatModule() {
                         Ver
                       </button>
                     )}
+                    {/* === RAT-07 === */}
+                    {act.id && (
+                      <button
+                        type="button"
+                        onClick={() => setTitularesAbiertos(act)}
+                        aria-label={`Ver titulares de ${act.nombre}`}
+                        className="ml-2 underline text-[11px]"
+                      >
+                        Titulares
+                      </button>
+                    )}
+                    {/* === fin RAT-07 === */}
                   </td>
                 </tr>
               ))
@@ -166,6 +184,20 @@ export default function RatModule() {
           </tbody>
         </table>
       </div>
+
+      {/* === RAT-07 === */}
+      {titularesAbiertos?.id && (
+        <div className="rounded-xl border border-zinc-700 p-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold">Titulares de {titularesAbiertos.nombre}</h3>
+            <button type="button" onClick={() => setTitularesAbiertos(null)} className="underline text-[11px]">
+              Cerrar titulares
+            </button>
+          </div>
+          <Consentimientos key={titularesAbiertos.id} ratId={titularesAbiertos.id} nombre={titularesAbiertos.nombre} />
+        </div>
+      )}
+      {/* === fin RAT-07 === */}
 
       {fichaAbierta?.id && (
         <ValidacionesFicha

@@ -1,7 +1,7 @@
 # ¤adpa ¤rbac-tenant ¤arbitro
 # ¤¤qa-engineer
-"""Árbitro BIB-305: indicadores verificables. La persistencia/RLS se acredita solo con el arnés local
-(ARNES_BASE=postgresql_local) o una rama propia (BIB305_RAMA_PROPIA=1); sin ellas se omite.
+"""Árbitro BIB-305: indicadores verificables. La persistencia/RLS se acredita contra PostgreSQL 16 local
+o el servicio PostgreSQL 16 del CI; sin TEST_DATABASE_URL se omite.
 
 Mutación decisiva: en ``features/biblioteca/services/indicadores.py``, ``clasificar_accion``, añadir al
 inicio ``if documento_aprobado: return "verificada"`` (contar una aprobación documental como acción
@@ -32,7 +32,6 @@ from features.biblioteca import biblioteca_service as bib
 from features.biblioteca.services import indicadores as ind
 
 ROOT = Path(__file__).resolve().parents[1]
-PRODUCCION, COMPARTIDA = "ep-late-hall-b50bpbk5", "ep-soft-darkness-b5z454vp"
 HASH = "c" * 64
 HASH_DOC = hashlib.sha256("# x".encode("utf-8")).hexdigest()
 CORTE = datetime(2026, 11, 4, tzinfo=timezone.utc)
@@ -123,13 +122,12 @@ async def test_tres_indicadores_separados_y_drilldown_coherente(monkeypatch):
 # --------------------------------------------------------------------------- persistencia (arnés local)
 
 def _url_de_pruebas() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or os.environ.get("BIB305_RAMA_PROPIA") == "1"):
-        pytest.skip("Persistencia/RLS no acreditadas: falta el arnés local o rama propia (BIB305_RAMA_PROPIA=1)")
-    if COMPARTIDA in url.lower():
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 

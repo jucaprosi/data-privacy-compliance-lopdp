@@ -2,8 +2,8 @@
 """DIAG-08: escala SMARTCIDI en el servidor (nivel asignado 1 a 5, evidencia 0 a 4, nivel por dimensión).
 
 Las pruebas puras (motor, esquema, sellado anterior) corren sin base. Las que recorren PostgreSQL
-(API, migración, RLS con lopdp_app) exigen TEST_DATABASE_URL de una rama Neon de revisión propia,
-nunca producción ni la rama compartida `test`; sin ella se omiten.
+(API, migración, RLS con lopdp_app) exigen TEST_DATABASE_URL (PostgreSQL 16 local o servicio PostgreSQL 16 del CI);
+sin ella se omiten.
 
 Prueba de mutación documentada (DIAG-08): volver a la tabla de tres estados en
 features/diagnostico/services/dimensiones_sgpdp.py, es decir, hacer que calcular_nivel_efectivo
@@ -20,6 +20,8 @@ from pathlib import Path
 import pytest
 import pytest_asyncio
 from pydantic import ValidationError
+
+from conftest import exigir_base_de_pruebas
 
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
@@ -152,7 +154,7 @@ def test_resultado_anterior_legible():
     assert resultado.indicadores == anterior, "se lee con su escala anterior, sin reescribir"
 
 
-# --- Recorrido contra PostgreSQL (rama Neon de revisión propia) ---------------------------------
+# --- Recorrido contra PostgreSQL 16 local o servicio PostgreSQL 16 del CI --------------------------
 
 
 def _h(user: str, tenant: str, role: str) -> dict[str, str]:
@@ -169,7 +171,7 @@ def _cuerpo(pregunta_id: int = 1, **cambios) -> dict:
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere la rama Neon de revisión propia (nunca producción)"
+    exigir_base_de_pruebas()
     from httpx import ASGITransport, AsyncClient
     from sqlalchemy import text
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -182,7 +184,7 @@ async def ctx(monkeypatch):
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     sufijo = uuid.uuid4().hex[:10]
     a, b = f"diag8-a-{sufijo}", f"diag8-b-{sufijo}"
-    usuarios = {"dpo": (f"diag8-dpo-{sufijo}", a, "dpo"), "dpo_b": (f"diag8-dpob-{sufijo}", b, "dpo")}
+    usuarios = {"dpo": (f"diag8-dpo-{sufijo}", a, "dpo"), "admin": (f"diag8-admin-{sufijo}", a, "admin_organizacion"), "dpo_b": (f"diag8-dpob-{sufijo}", b, "dpo")}
     async with factory() as s:
         for t in (a, b):
             await s.execute(text(
@@ -233,7 +235,7 @@ def _como(ctx, clave):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("cambio", [{"estado": "Conforme"}, {"nivel_asignado": 6}, {"nivel_evidencia": 5}])
 async def test_escala_validada_en_la_api(ctx, cambio):
-    r = await ctx["client"].put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_cuerpo(1, **cambio)]})
+    r = await ctx["client"].put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": [_cuerpo(1, **cambio)]})
     assert r.status_code == 422
     assert (await ctx["client"].get(RUTA, headers=_como(ctx, "dpo"))).json()["respuestas"] == []
 
@@ -241,7 +243,7 @@ async def test_escala_validada_en_la_api(ctx, cambio):
 @pytest.mark.asyncio
 async def test_el_servidor_deriva_el_estado(ctx):
     cuerpos = [_cuerpo(i + 1, nivel_asignado=n) for i, n in enumerate((1, 2, 3, 4, 5))]
-    r = await ctx["client"].put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": cuerpos})
+    r = await ctx["client"].put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": cuerpos})
     assert r.status_code == 200, r.text
     assert [x["estado"] for x in r.json()["respuestas"]] == ["No Conforme", "Parcial", "Parcial", "Conforme", "Conforme"]
     assert [x["nivel_asignado"] for x in r.json()["respuestas"]] == [1, 2, 3, 4, 5]
@@ -253,7 +255,7 @@ async def test_rls_respuestas_escala(ctx):
 
     from app_core.db.session import fijar_contexto_rls
 
-    await ctx["client"].put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_cuerpo(1)]})
+    await ctx["client"].put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": [_cuerpo(1)]})
     async with ctx["factory"]() as s:
         await s.execute(text("SET LOCAL ROLE lopdp_app"))
         await fijar_contexto_rls(s, ctx["b"])

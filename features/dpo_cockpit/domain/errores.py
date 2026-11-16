@@ -19,4 +19,14 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin ADPA-05 ===
 
 # === DPO-03 ===
+# ¤dpo-cockpit
+CONSULTA_CERRADA = CodigoErrorNegocio(
+    "CONSULTA_CERRADA", 409, "Esta consulta ya está cerrada. Para otra pregunta, crea una nueva consulta."
+)
+CONSULTA_NO_ENCONTRADA = CodigoErrorNegocio("CONSULTA_NO_ENCONTRADA", 404, "No se encontró la consulta.")
+CONSULTA_INVALIDA = CodigoErrorNegocio("CONSULTA_INVALIDA", 422, "La consulta no es válida.")
+CONSULTA_SOLO_DPO_RESPONDE = CodigoErrorNegocio(
+    "CONSULTA_SOLO_DPO_RESPONDE", 403, "Solo el DPO puede responder y cerrar consultas."
+)
+registrar(CONSULTA_CERRADA, CONSULTA_NO_ENCONTRADA, CONSULTA_INVALIDA, CONSULTA_SOLO_DPO_RESPONDE)
 # === fin DPO-03 ===

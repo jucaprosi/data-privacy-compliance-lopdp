@@ -1,5 +1,5 @@
 # ¤¤backend-developer
-"""Punto de entrada principal y Pasarela REST Gateway de JUBYS Plataforma LOPDP 360.
+"""Punto de entrada principal y Pasarela REST Gateway de EVYDENTIA.
 Conecta de forma desacoplada las 7 salas ADPA con el Frontend e interfaces externas.
 Invariantes: Aislamiento ADPA estricto, multi-inquilino hermético, UTF-8 sin BOM.
 """
@@ -54,7 +54,7 @@ handler.setFormatter(JSONFormatter())
 logger.addHandler(handler)
 
 app = FastAPI(
-    title="JUBYS Plataforma LOPDP 360 · API REST Gateway",
+    title="EVYDENTIA · API REST Gateway",
     version="1.0.0",
     description="Pasarela unificada de microservicios estancos ADPA para gobernanza de privacidad y cumplimiento LOPDP Ecuador.",
 )
@@ -132,11 +132,19 @@ ROUTERS_MAP = [
     ("api.routers.niif18", "niif18"),
     ("api.routers.preanalisis", "preanalisis"),
     ("api.routers.implementation_assistant", "implementation_assistant"),
+    # === DLP-01 ===
+    # Sala Descubrimiento DLP Muestreado: el router vive en api/routers y llama a la sala por su compuerta.
+    ("api.routers.dlp_discovery", "dlp_discovery"),
+    # === fin DLP-01 ===
     # === RM-21 ===
     # Va antes de roadmaps: GET /roadmaps/{roadmap_id} capturaría GET /roadmaps/hallazgos (Starlette
     # resuelve por orden de registro). Al estar aquí, AUTO_ROUTERS_MAP lo excluye y no se registra dos veces.
     ("api.routers.roadmaps_hallazgos", "roadmaps_hallazgos"),
     # === fin RM-21 ===
+    # === RM-25a ===
+    # Sección reservada para RM-25a (router de la primera validación de evidencia).
+    ("api.routers.roadmaps_validacion", "roadmaps_validacion"),
+    # === fin RM-25a ===
     ("api.routers.roadmaps", "roadmaps"),
     ("api.routers.roadmaps_informe", "roadmaps_informe"),  # RM-20
     ("api.routers.organizacion", "organizacion"),
@@ -146,6 +154,15 @@ ROUTERS_MAP = [
     # === MTGE-02 ===
     ("api.routers.riesgos_mtge_obligaciones", "riesgos_mtge_obligaciones"),
     # === fin MTGE-02 ===
+    # === BOV-01 ===
+    ("features.boveda_cloud.boveda_cloud_service", "boveda_cloud"),
+    # === fin BOV-01 ===
+    # === CCTV-01 ===
+    ("features.videovigilancia.videovigilancia_service", "videovigilancia"),
+    # === fin CCTV-01 ===
+    # === CON-01 ===
+    ("features.conservacion.conservacion_service", "conservacion"),
+    # === fin CON-01 ===
 ]
 
 
@@ -218,7 +235,7 @@ def health_check():
     """
     cuerpo = {
         "status": "OPERATIONAL" if not ROUTERS_FALLIDOS else "DEGRADED",
-        "platform": "JUBYS Plataforma LOPDP 360",
+        "platform": "EVYDENTIA",
         "version": "1.0.0",
         "routers": {
             "total": get_total_routers(),
@@ -241,3 +258,10 @@ def health_check():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)
+
+# === SEC-25 ===
+# Cache-Control: no-store por defecto en /api/v1 (no pisa la cabecera que fije la ruta).
+from app_core.seguridad.no_store import NoStoreMiddleware  # noqa: E402
+
+app.add_middleware(NoStoreMiddleware)
+# === fin SEC-25 ===

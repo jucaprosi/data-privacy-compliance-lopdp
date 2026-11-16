@@ -21,6 +21,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -345,7 +346,7 @@ def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
     guion = ScriptDirectory.from_config(configuracion)
 
     # Una sola cabeza en Alembic
-    cabezas = guion.get_heads()
+    cabezas = [cabeza_de_sala("biblioteca", guion)]
     assert len(cabezas) == 1
     assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
     assert guion.get_revision(migracion.down_revision) is not None
@@ -465,17 +466,17 @@ def test_router_auto_registro_y_endpoints(cliente, monkeypatch):
     assert r4.json()["resultado_modificado"] == "No aplica"
 
 
-# ----------------------------------------------------------------------------- 6. Persistencia (Base Propia)
+# ----------------------------------------------------------------------------- 6. Persistencia (Base de Pruebas)
 
 @pytest_asyncio.fixture
 async def db_bib():
-    """Conexión real para persistencia; solo corre con TEST_DATABASE_URL propia."""
+    """Conexión real para persistencia; solo corre con TEST_DATABASE_URL."""
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall-b50bpbk5" in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    local = "@127.0.0.1" in url or "@localhost" in url
-    if not url or not (local or os.environ.get("BIB204_RAMA_PROPIA") == "1"):
-        pytest.skip("Persistencia pendiente: falta base propia (arnés local o BIB204_RAMA_PROPIA=1)")
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)

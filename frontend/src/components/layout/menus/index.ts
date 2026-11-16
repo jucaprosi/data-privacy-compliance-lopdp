@@ -52,6 +52,11 @@ import { SUBMENUS_DIAG_06 } from "./DIAG-06";
 registrar(SUBMENUS_DIAG_06);
 // === fin DIAG-06 ===
 
+// === DIAG-12 ===
+import { SUBMENUS_DIAG_12 } from "./DIAG-12";
+registrar(SUBMENUS_DIAG_12);
+// === fin DIAG-12 ===
+
 // === BIB-101 ===
 import { SUBMENUS_BIB_101 } from "./BIB-101";
 registrar(SUBMENUS_BIB_101);
@@ -69,22 +74,63 @@ registrar(SUBMENUS_FIRMA_02);
 // --- INICIO CAPA-04 ---
 // --- FIN CAPA-04 ---
 // --- INICIO DIAG-07 ---
+// Diagnóstico › Revisión del DPO: revisa lo declarado, objeta y sella.
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    diagnostico_revision: true;
+  }
+}
+registrar([
+  {
+    vista: "diagnostico_revision",
+    menu: "dpo",
+    nombre: "Revisión del diagnóstico",
+    subtitulo: "Revisa las respuestas, objeta y sella",
+    orden: 4,
+  },
+]);
 // --- FIN DIAG-07 ---
 // --- INICIO DPO-03 ---
+import { SUBMENUS_DPO_03 } from "./DPO-03";
+registrar(SUBMENUS_DPO_03);
 // --- FIN DPO-03 ---
 // --- INICIO FIRMA-02 ---
 // --- FIN FIRMA-02 ---
+// --- INICIO API-02 ---
+// --- FIN API-02 ---
 // --- INICIO FOR-01 ---
 // --- FIN FOR-01 ---
 // --- INICIO INC-02 ---
+import { SUBMENUS_INC_02 } from "./INC-02";
+registrar(SUBMENUS_INC_02);
 // --- FIN INC-02 ---
 // --- INICIO MTGE-03 ---
+import { SUBMENUS_MTGE_03 } from "./MTGE-03";
+registrar(SUBMENUS_MTGE_03);
 // --- FIN MTGE-03 ---
 // --- INICIO ORG-18 ---
+import { SUBMENUS_ORG_18 } from "./ORG-18";
+registrar(SUBMENUS_ORG_18);
 // --- FIN ORG-18 ---
 // --- INICIO ORG-20 ---
+import { SUBMENUS_ORG_20 } from "./ORG-20";
+registrar(SUBMENUS_ORG_20);
 // --- FIN ORG-20 ---
 // --- INICIO CON-01 ---
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    conservacion_datos: true;
+  }
+}
+registrar([
+  {
+    vista: "conservacion_datos",
+    menu: "inventario",
+    nombre: "Conservación de datos",
+    subtitulo: "Plazos de conservación por tratamiento",
+    orden: 7,
+  },
+]);
 // --- FIN CON-01 ---
 
 /**
@@ -114,3 +160,34 @@ export type { ContextoVisibilidad } from "./base";
 export { CONTEXTO_VACIO } from "./base";
 SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMENUS_BIB_118]));
 // === fin BIB-118 ===
+
+// === ORG-20 ===
+// Sección reservada para ORG-20.
+// === fin ORG-20 ===
+
+// === DLP-01 ===
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    descubrimiento_datos: true;
+  }
+}
+const SUBMENUS_DLP_01: Submenu[] = [
+  {
+    vista: "descubrimiento_datos",
+    menu: "inventario",
+    nombre: "Descubrimiento de datos",
+    subtitulo: "Detecta tipos de datos personales en una muestra",
+    orden: 6,
+  },
+];
+SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMENUS_DLP_01]));
+// === fin DLP-01 ===
+
+// === NORM-02 ===
+// Sección reservada para NORM-02.
+// === fin NORM-02 ===
+
+// === BOV-01 ===
+import { SUBMENUS_BOV_01 } from "./BOV-01";
+SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMENUS_BOV_01]));
+// === fin BOV-01 ===

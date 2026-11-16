@@ -42,8 +42,21 @@ def test_lo_ajeno_queda_fuera_y_lo_propio_dentro():
 
 
 def test_los_archivos_de_cierre_no_cuentan_pero_la_ficha_ajena_si():
-    archivos = ["governance/tareas/ADPA-03.md", "governance/artefactos/TASKS.md", "governance/tareas/ADPA-04.md"]
+    archivos = ["governance/tareas/ADPA-03.md", "governance/apoyo/briefs/ADPA-03.md", "governance/tareas/ADPA-04.md"]
     assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == ["governance/tareas/ADPA-04.md"]
+
+
+def test_alcance_un_brief_por_ficha_y_tasks_ya_no_es_de_cierre():
+    archivos = ["governance/artefactos/TASKS.md", "governance/apoyo/BRIEFS_POR_BLOQUE.md", "governance/apoyo/briefs/ADPA-04.md"]
+    assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == archivos
+
+
+def test_la_portada_solo_entra_en_el_alcance_de_su_dueña():
+    # CI-31 R6. Mutación m3: admitir la portada para cualquier ficha vaciaría la lista de la ficha ajena.
+    portada = "governance/apoyo/BRIEFS_POR_BLOQUE.md"
+    assert vap.fuera_de_alcance([portada], "ADPA-03", ("features/rat/**",), indice) == [portada]
+    assert vap.fuera_de_alcance([portada], "ADPA-03", ("governance/apoyo/**",), indice) == [portada]  # un comodín no basta
+    assert vap.fuera_de_alcance([portada], "CI-31", (portada, "scripts/x.py"), indice) == []
 
 
 def test_solo_las_tareas_adpa_son_estrictas():
@@ -73,6 +86,38 @@ def test_retira_solo_exenciones_propias(cuerpo, tarea, esperado):
     assert vap.retira_solo_exenciones_propias(_CAB + cuerpo, tarea) is esperado
 
 
+_SIEMBRA = ("features/formacion/formacion_service.py#FOR-01",)
+
+
+def test_ci25_m1_borrar_una_exencion_ajena_no_sembrada_queda_rojo():
+    diff = _CAB + "-FOR-01|features/otra/x.py#FOR-01|motivo\n"
+    assert not vap.retira_solo_exenciones_propias(diff, "ADPA-09", _SIEMBRA)
+    assert not vap.retira_solo_exenciones_propias(diff, "ADPA-09")
+
+
+def test_ci25_m2_borrar_una_ajena_sembrada_queda_verde():
+    diff = _CAB + "-FOR-01|features/formacion/formacion_service.py#FOR-01|sección sin marca\n"
+    assert vap.retira_solo_exenciones_propias(diff, "ADPA-09", _SIEMBRA)
+    assert not vap.retira_solo_exenciones_propias(diff, "ADPA-09")
+
+
+def test_ci25_m3_anadir_una_linea_queda_rojo_aunque_este_sembrada():
+    diff = _CAB + "+FOR-01|features/formacion/formacion_service.py#FOR-01|nueva\n"
+    assert not vap.retira_solo_exenciones_propias(diff, "ADPA-09", _SIEMBRA)
+    mixto = _CAB + ("-FOR-01|features/formacion/formacion_service.py#FOR-01|m\n"
+                    "+ADPA-09|b.py#ADPA-09|m\n")
+    assert not vap.retira_solo_exenciones_propias(mixto, "ADPA-09", _SIEMBRA)
+
+
+def test_ci25_caso_real_adpa09_retira_la_exencion_de_for01(monkeypatch):
+    _simular(monkeypatch, ("ADPA-09", ("a.py",)), ["a.py", vap.EXENCIONES])
+    tarea = vap._cargar_indice().cargar_tareas()[0][0]
+    tarea.siembra = _SIEMBRA
+    monkeypatch.setattr(vap, "_diff_de_exenciones", lambda b, c: _CAB
+                        + "-FOR-01|features/formacion/formacion_service.py#FOR-01|sección sin marca\n")
+    assert vap.main(["--rama", "tarea/juan-carlos/adpa-09", "--base", "b", "--cabeza", "c"]) == 0
+
+
 @pytest.mark.parametrize("cabecera", ["deleted file mode 100644\n", "rename from x\nrename to y\n"])
 def test_borrar_o_renombrar_las_exenciones_queda_fuera(cabecera):
     diff = "diff --git a/x b/x\n" + cabecera + "--- a/x\n+++ /dev/null\n-ADPA-06|a|m\n"
@@ -80,7 +125,8 @@ def test_borrar_o_renombrar_las_exenciones_queda_fuera(cabecera):
 
 
 def _simular(monkeypatch, propiedad, archivos):
-    tarea = type("Tarea", (), {"id": propiedad[0], "propiedad": propiedad[1]})
+    tarea = type("Tarea", (), {"id": propiedad[0], "propiedad": propiedad[1],
+                               "estado": propiedad[2] if len(propiedad) > 2 else "en_curso"})
     falso = type("Indice", (), {
         "cargar_tareas": staticmethod(lambda: ([tarea], [])),
         "rutas_se_solapan": staticmethod(indice.rutas_se_solapan),
@@ -130,3 +176,81 @@ def test_el_ci_ejecuta_el_arbitro_en_cada_pr_con_historial_completo():
     assert "scripts/verificar_alcance_pr.py" in flujo
     assert "fetch-depth: 0" in flujo
     assert "github.event_name == 'pull_request'" in flujo
+
+
+# CI-23 · rama sin ficha: advertir de lo que no tiene dueña viva y opción estricta.
+# Mutaciones: ignorar la rama sin id (quita la advertencia y el código 1); quitar la exclusión pmv/.
+def _sin_ficha(monkeypatch, rama, opciones=()):
+    _simular(monkeypatch, ("FIRMA-03", ("a.py",)), ["a.py", "huerfano.py"])
+    return vap.main(["--rama", rama, "--base", "b", "--cabeza", "c", *opciones])
+
+
+def test_rama_sin_ficha_advierte_del_archivo_sin_duena_y_sale_con_0(monkeypatch, capsys):
+    assert _sin_ficha(monkeypatch, "fix/preanalisis") == 0
+    salida = capsys.readouterr().out
+    assert "::warning::" in salida and "huerfano.py" in salida
+    assert "a.py»" not in salida
+
+
+def test_rama_sin_ficha_con_estricto_sale_con_1(monkeypatch):
+    assert _sin_ficha(monkeypatch, "fix/preanalisis", ("--estricto-sin-ficha",)) == 1
+
+
+def test_rama_sin_ficha_con_todo_en_propiedad_viva_sale_con_0_aun_estricto(monkeypatch, capsys):
+    _simular(monkeypatch, ("FIRMA-03", ("a.py",)), ["a.py"])
+    assert vap.main(["--rama", "fix/x", "--base", "b", "--cabeza", "c", "--estricto-sin-ficha"]) == 0
+    assert "::warning::" not in capsys.readouterr().out
+
+
+def test_una_ficha_hecha_no_es_duena_viva(monkeypatch, capsys):
+    _simular(monkeypatch, ("FIRMA-03", ("a.py",), "hecha"), ["a.py"])
+    assert vap.main(["--rama", "fix/x", "--base", "b", "--cabeza", "c", "--estricto-sin-ficha"]) == 1
+    assert "a.py" in capsys.readouterr().out
+
+
+def test_pmv_hacia_pmv_consolidacion_no_se_marca_ni_con_estricto(monkeypatch, capsys):
+    assert _sin_ficha(monkeypatch, "pmv/aleczandra/tema",
+                      ("--estricto-sin-ficha", "--destino", "pmv/consolidacion")) == 0
+    assert "::warning::" not in capsys.readouterr().out
+
+
+def test_pmv_hacia_main_con_estricto_sale_con_1(monkeypatch, capsys):
+    assert _sin_ficha(monkeypatch, "pmv/x", ("--estricto-sin-ficha", "--destino", "main")) == 1
+    assert "huerfano.py" in capsys.readouterr().out
+
+
+def test_pmv_sin_destino_advierte_y_con_estricto_sale_con_1(monkeypatch, capsys):
+    assert _sin_ficha(monkeypatch, "pmv/x") == 0
+    assert "::warning::" in capsys.readouterr().out
+    assert _sin_ficha(monkeypatch, "pmv/x", ("--estricto-sin-ficha",)) == 1
+
+
+def test_salida_sin_ficha_para_el_workflow(monkeypatch, tmp_path):
+    salida = tmp_path / "salida.txt"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(salida))
+    _sin_ficha(monkeypatch, "fix/preanalisis")
+    assert "sin_ficha=true" in salida.read_text(encoding="utf-8")
+
+
+def test_una_rama_con_ficha_sigue_igual_con_la_opcion(monkeypatch):
+    _simular(monkeypatch, ("FIRMA-03", ("a.py",)), ["ajeno.py"])
+    assert vap.main(["--rama", "tarea/jose/firma-03", "--base", "b", "--cabeza", "c",
+                     "--estricto-sin-ficha"]) == 0
+
+
+# Regla del CTO (2026-11-13): cualquier ficha, estricta o no, solo puede BORRAR sus propias líneas.
+@pytest.mark.parametrize("cuerpo, esperado", [
+    ("-DPO-03|a.py#DPO-03|m\n", 0),                     # borrar la propia → verde
+    ("+DPO-03|b.py#DPO-03|m\n", 1),                     # mutación: añadir línea → rojo
+    ("-ORG-20|c.py#ORG-20|m\n", 1),                     # mutación: borrar la de otra ficha → rojo
+])
+def test_exenciones_no_estricta_solo_borra_las_propias(monkeypatch, cuerpo, esperado):
+    _simular(monkeypatch, ("DPO-03", ("a.py",)), ["a.py", vap.EXENCIONES])
+    monkeypatch.setattr(vap, "_diff_de_exenciones", lambda b, c: _CAB + cuerpo)
+    assert vap.main(["--rama", "tarea/juan-carlos/dpo-03", "--base", "b", "--cabeza", "c"]) == esperado
+
+
+def test_el_brief_propio_es_de_cierre_pero_el_ajeno_no():
+    # CI-29: el brief de la ficha vive en governance/apoyo/briefs/<ID>.md
+    archivos = ["governance/apoyo/briefs/ADPA-03.md", "governance/apoyo/briefs/ADPA-04.md"]
+    assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == ["governance/apoyo/briefs/ADPA-04.md"]

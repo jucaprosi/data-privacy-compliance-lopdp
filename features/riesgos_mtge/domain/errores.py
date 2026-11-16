@@ -19,4 +19,25 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin ADPA-05 ===
 
 # === MTGE-03 ===
+# ¤riesgos-eipd
+EIPD_OBLIGATORIA = CodigoErrorNegocio(
+    "EIPD_OBLIGATORIA", 409, "Este tratamiento exige la evaluación de impacto; no puede marcarse como no obligatoria.")
+EIPD_SIN_DECISION = CodigoErrorNegocio(
+    "EIPD_SIN_DECISION", 409, "Con riesgo residual alto, elige una decisión antes de cerrar.")
+EIPD_PASO_INCOMPLETO = CodigoErrorNegocio(
+    "EIPD_PASO_INCOMPLETO", 409, "Completa los pasos 1 a 7 antes de cerrar la evaluación.")
+EIPD_CERRADA = CodigoErrorNegocio(
+    "EIPD_CERRADA", 409, "La evaluación está cerrada y ya no se puede modificar.")
+EIPD_NO_ENCONTRADA = CodigoErrorNegocio(
+    "EIPD_NO_ENCONTRADA", 404, "No se encontró la evaluación de impacto.")
+EIPD_TRATAMIENTO_NO_ENCONTRADO = CodigoErrorNegocio(
+    "EIPD_TRATAMIENTO_NO_ENCONTRADO", 404, "No se encontró el tratamiento en el registro de actividades.")
+EIPD_PASO_INVALIDO = CodigoErrorNegocio(
+    "EIPD_PASO_INVALIDO", 422, "El paso indicado no existe o su contenido no es válido.")
+
+EIPD_CUSTODIA_NO_DISPONIBLE = CodigoErrorNegocio(
+    "EIPD_CUSTODIA_NO_DISPONIBLE", 503, "Aún no se puede custodiar el informe; la evaluación sigue abierta.")
+
+registrar(EIPD_CUSTODIA_NO_DISPONIBLE, EIPD_OBLIGATORIA, EIPD_SIN_DECISION, EIPD_PASO_INCOMPLETO, EIPD_CERRADA, EIPD_NO_ENCONTRADA,
+          EIPD_TRATAMIENTO_NO_ENCONTRADO, EIPD_PASO_INVALIDO)
 # === fin MTGE-03 ===

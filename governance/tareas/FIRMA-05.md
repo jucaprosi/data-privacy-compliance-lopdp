@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "firma_electronica"
 depende_de = ["FIRMA-03", "FIRMA-04"]
 propiedad = ["tests/matriz/FIRMA-03.py", "tests/matriz/FIRMA-04.py"]
-arbitro = "pytest tests/matriz/FIRMA-03.py tests/matriz/FIRMA-04.py contra la rama Neon de la persona (incluido RLS con lopdp_app) + suite completa + scripts/generar_indice_tareas.py --verificar"
+arbitro = "pytest tests/matriz/FIRMA-03.py tests/matriz/FIRMA-04.py contra PostgreSQL 16 local (incluido RLS con lopdp_app) + suite completa + scripts/generar_indice_tareas.py --verificar"
 rastros = ["¤firma-electronica", "¤arbitro"]
 +++
 

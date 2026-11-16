@@ -2,10 +2,10 @@
 id = "TER-01"
 titulo = "Hallazgos automáticos de terceros: encargado sin contrato vigente y transferencia internacional sin garantía"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "terceros, transferencias"
-depende_de = ["RM-21", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-08", "FE-28"]
-propiedad = ["alembic/versions/20261106_terceros_garantias.py", "features/terceros/services/garantias_engine.py", "features/terceros/terceros_service.py#TER-01", "features/transferencias/transferencias_service.py#TER-01", "api/routers/terceros_garantias.py", "tests/test_terceros_garantias.py", "tests/matriz/TER-01.py", "frontend/src/components/modules/TercerosModule.tsx", "frontend/src/lib/terceros/garantias.ts", "frontend/tests/terceros/garantias.spec.ts", "features/terceros/domain/errores.py#TER-01", "app_core/pasillo/terceros.py#TER-01", "app_core/pasillo/rat.py#TER-01", "frontend/tests/textos/excepciones/TER-01.txt"]
+depende_de = ["RM-21", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-08", "FE-28", "CI-11", "DEMO-00", "FE-08", "FE-26", "ORG-00"]
+propiedad = ["alembic/versions/ter01_terceros_garantias.py", "features/terceros/services/garantias_engine.py", "features/terceros/terceros_service.py#TER-01", "features/transferencias/transferencias_service.py#TER-01", "api/routers/terceros_garantias.py", "tests/test_terceros_garantias.py", "tests/matriz/TER-01.py", "frontend/src/components/modules/TercerosModule.tsx", "frontend/src/lib/terceros/garantias.ts", "frontend/tests/terceros/garantias.spec.ts", "features/terceros/domain/errores.py#TER-01", "app_core/pasillo/terceros.py#TER-01", "frontend/tests/textos/excepciones/TER-01.txt", "tests/matriz/roles/auditor.py#TER-01", "app_core/pasillo/roadmap.py#TER-01", "app_core/pasillo/transferencias.py#TER-01", "features/transferencias/models.py", "frontend/tests/auth/identidad.spec.ts"]
 arbitro = "pytest tests/test_terceros_garantias.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/terceros/garantias.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤hallazgos", "¤evidencias"]
 +++
@@ -21,7 +21,7 @@ rastros = ["¤hallazgos", "¤evidencias"]
 - Un encargado sin contrato vigente ⇒ hallazgo `tercero` de severidad `alta`; una transferencia internacional sin garantía ⇒ hallazgo `critica`; al corregir, se cierran.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor validado con `exigir_base_de_pruebas()`.
 
 - **Texto de carga** (FE-28, Arquitecto 2026-11-08): `TercerosModule.tsx:79` deja de decir «… desde FastAPI...» y dice «Cargando terceros…». Si existe `frontend/tests/textos/excepciones/TER-01.txt` (lo crea FE-28), TER-01 lo borra.
 
@@ -37,3 +37,11 @@ rastros = ["¤hallazgos", "¤evidencias"]
 
 - **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#TER-01` (ADR 0001).
 - **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#TER-01` sin modificar `app_core/errors.py`.
+
+## Deudas con dueño (Tech Lead, 2026-11-13, pedido del CTO sobre el #766)
+| # | Deuda | Dueño | Cuándo |
+|---|---|---|---|
+| 1 | `GET /terceros/garantias` no está en `governance/especificaciones/TER-01.md`. | Arquitecto ADPA: o lo añade a la especificación o se retira del #766. | Antes de fusionar el #766 (toca la API pública). |
+| 2 | R2 marca todo país ≠ EC aunque tenga nivel adecuado (art. 56): es ESTIMADO. La cita del contrato del encargado está pendiente de verificar. | Propietario con su abogado; el Tech Lead anota el resultado en CITAS_LEGALES_VERIFICADAS y en esta ficha (regla «la ley primero»). | No bloquea el #766 mientras el texto diga «garantía no registrada». Cierra con el contraste jurídico. |
+| 3 | `pasillo/evidencias.huella_registrada` y `/evidencias/documentos` deben coincidir, o habrá 422 falsos. | Sesión de TER-01, dentro del #766: una prueba que compare ambas fuentes. | Antes de fusionar el #766. |
+| 4 | `pais` y `pais_destino` duplicados; CORRESPONSABLE en transferencias; enmienda de la especificación sobre `rol`. | Una ficha de limpieza de terceros, que el Tech Lead escribe tras la decisión 1 con el Arquitecto. | Después de TER-01. |

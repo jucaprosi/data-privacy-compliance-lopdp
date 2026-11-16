@@ -6,11 +6,11 @@ propietario del 2026-11-05. La política se lee de EVIDENCIA_DIAGNOSTICO en un s
 (`resultados_engine.politica_evidencia`): «declarada» por omisión, «verificada» para EVYDENTIA.
 
 Las pruebas puras corren sin base. Las que recorren PostgreSQL (sello por la API, cadena de
-huellas y RLS con lopdp_app) exigen TEST_DATABASE_URL de una rama Neon de revisión propia, nunca
-producción; sin ella se omiten.
+huellas y RLS con lopdp_app) exigen TEST_DATABASE_URL (PostgreSQL 16 local o servicio PostgreSQL 16 del CI);
+sin ella se omiten.
 
-Prueba de mutación documentada (DIAG-13), ejecutada el 2026-11-05 en la rama Neon
-test-juan-carlos-diag13: en features/diagnostico/services/resultados_engine.py,
+Prueba de mutación documentada (DIAG-13), ejecutada el 2026-11-05 en PostgreSQL de pruebas:
+en features/diagnostico/services/resultados_engine.py,
 dentro de calcular_indicadores, se cambió
 `sellado, verificada = nivel_sellado_y_verificacion(declarado, con_documento, politica)` por
 `sellado, verificada = (declarado if con_documento else 0), False` (la regla de DIAG-03 sin
@@ -31,6 +31,8 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from conftest import exigir_base_de_pruebas
 
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
@@ -196,7 +198,7 @@ def test_con_verificada_el_reporte_no_lleva_la_marca(monkeypatch):
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una rama de desarrollo o test (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     monkeypatch.delenv("EVIDENCIA_DIAGNOSTICO", raising=False)
     from app_core.db.session import fijar_contexto_rls, get_session
@@ -207,7 +209,7 @@ async def ctx(monkeypatch):
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     sufijo = uuid.uuid4().hex[:10]
     a, b = f"diag13-a-{sufijo}", f"diag13-b-{sufijo}"
-    usuarios = {"dpo": (f"diag13-dpo-{sufijo}", a, "dpo"), "dpo_b": (f"diag13-dpob-{sufijo}", b, "dpo")}
+    usuarios = {"dpo": (f"diag13-dpo-{sufijo}", a, "dpo"), "admin": (f"diag13-admin-{sufijo}", a, "admin_organizacion"), "dpo_b": (f"diag13-dpob-{sufijo}", b, "dpo")}
     async with factory() as s:
         for tenant in (a, b):
             await s.execute(text(
@@ -264,7 +266,7 @@ def _como(ctx, clave):
 async def _responder_y_sellar(ctx):
     respuesta = {"pregunta_id": 1, "control": "Control del banco", "dimension": "D01", "nivel_asignado": 4,
                  "nivel_evidencia": 3, "criticidad": 3, "es_critica": False, "riesgo_base": 5}
-    r = await ctx["client"].put(RESPUESTAS, headers=_como(ctx, "dpo"), json={"respuestas": [respuesta]})
+    r = await ctx["client"].put(RESPUESTAS, headers=_como(ctx, "admin"), json={"respuestas": [respuesta]})
     assert r.status_code == 200, r.text
     r = await ctx["client"].post(RESULTADOS, headers=_como(ctx, "dpo"), json={})
     assert r.status_code == 201, r.text

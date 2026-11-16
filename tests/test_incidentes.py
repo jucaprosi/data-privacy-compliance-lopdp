@@ -1,10 +1,10 @@
 # ¤incidentes ¤rbac-tenant ¤arbitro
 """INC-01: la bitácora de incidentes se guarda en la base por organización y no se edita ni borra.
 
-Recorrido real contra PostgreSQL (rama Neon de desarrollo o la rama test del CI, nunca producción);
+Recorrido real contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI;
 sin TEST_DATABASE_URL las pruebas se omiten.
 
-Prueba de mutación ejecutada en la rama Neon rama-inc-01:
+Prueba de mutación ejecutada contra base de pruebas:
 - En features/incidentes/domain/models.py se añadió "dpo" a ROLES_REGISTRO.
 - pytest tests/test_incidentes.py::test_el_dpo_consulta_pero_no_registra devolvió 1
   (FAILED: assert 201 == 403).
@@ -21,9 +21,12 @@ from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from conftest import exigir_base_de_pruebas
+
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if not _TEST_URL:
     pytest.skip("TEST_DATABASE_URL no configurada", allow_module_level=True)
+exigir_base_de_pruebas()
 os.environ["DATABASE_URL"] = _TEST_URL
 
 from app_core.db.session import fijar_contexto_rls, get_session  # noqa: E402
@@ -52,8 +55,7 @@ def _incidente(**cambios) -> dict:
 
 @pytest_asyncio.fixture
 async def ctx(monkeypatch):
-    # Rama de desarrollo o la rama test del CI, nunca producción.
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una rama de desarrollo o test (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     engine = create_async_engine(_TEST_URL.replace("postgresql://", "postgresql+psycopg://", 1), pool_pre_ping=True)
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)

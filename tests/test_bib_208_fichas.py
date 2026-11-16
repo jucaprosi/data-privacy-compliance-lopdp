@@ -4,8 +4,8 @@
 
 Cada ficha pasa caso normal, información incompleta, condición especial y regeneración. PLA-01 se exporta
 del plan existente y RAT-01 se ancla en el RAT: ninguna crea registros. La lectura real de las compuertas
-de Roadmap y RAT con el rol `lopdp_app` se acredita solo con el arnés local (ARNES_BASE=postgresql_local)
-o una rama propia (BIB208_RAMA_PROPIA=1); sin ellas se omite.
+de Roadmap y RAT con el rol `lopdp_app` se acredita contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI;
+sin TEST_DATABASE_URL se omite.
 
 Mutación decisiva (ejecutada): en ``features/biblioteca/plantillas/exportaciones.py``, ``exportar_plan``,
 antes de ``origen = [...]``, añadir ``filas = filas + [{**filas[0], "accion_id": str(uuid4())}]`` (crear
@@ -35,7 +35,6 @@ from features.biblioteca.plantillas.captura import ContextoServidor, EntradaFich
 from features.biblioteca.plantillas.mapas import CODIGOS, POR_SECCIONES, TABULARES, mapa
 from features.biblioteca.plantillas.secciones import evaluar_secciones
 
-PRODUCCION, COMPARTIDA = "ep-late-hall-b50bpbk5", "ep-soft-darkness-b5z454vp"
 CTX = ContextoServidor(organizacion_id="org-a", actor_id="u-1", fecha=date(2026, 11, 4))
 T1, T2 = str(uuid4()), str(uuid4())
 TRATAMIENTOS = frozenset({T1, T2})
@@ -400,13 +399,12 @@ async def test_api_mapas_evaluacion_e_instantanea_por_tenant(api):
 # ---------------------------------------------------------- compuertas reales con lopdp_app (arnés local)
 
 def _url_de_pruebas() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or os.environ.get("BIB208_RAMA_PROPIA") == "1"):
-        pytest.skip("Lectura real de compuertas no acreditada: falta el arnés local o rama propia (BIB208_RAMA_PROPIA=1)")
-    if COMPARTIDA in url.lower():
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 
@@ -436,7 +434,7 @@ async def test_db_instantanea_lee_solo_el_plan_del_tenant_sin_escribir():
                     await _x(conexion, "INSERT INTO roadmap_tasks(id, wave_id, tenant_id, control_ref, dimension, title, "
                              "priority, status, end_date) VALUES (:k,:w,:t,'P7','D01','Acción',:p,:s,:f)",
                              k=k, w=ola, t=tid, p=prioridad, s=estado, f=date(2026, 12, 1))
-                await _x(conexion, "INSERT INTO task_evidence(id, task_id, tenant_id, r2_key, validation_status) "
+                await _x(conexion, "INSERT INTO task_evidence(id, task_id, tenant_id, clave_objeto, validation_status) "
                          "VALUES (:id,:k,:t,'sintetico/acta.pdf','approved')", id=str(uuid4()), k=tareas[tid][2], t=tid)
                 planes[tid] = hoja
             ta, tb = list(planes)

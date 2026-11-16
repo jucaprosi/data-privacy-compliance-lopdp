@@ -17,7 +17,6 @@ import type {
   OrganizacionRole,
   PlanningVariables,
   RoadmapAuditLogResponse,
-  RoadmapJobStatus,
   RoadmapKpis,
   RoadmapResponse,
   RoleGrant,
@@ -93,6 +92,18 @@ export function getCurrentSession(): SessionIdentity {
 // 2. Ejecutor de peticiones con parseo resiliente de errores
 // ============================================================================
 
+// === RM-25c ===
+/** La evidencia con los campos de la doble validación (RM-25a); nulos hasta que alguien valida. */
+export type EvidenciaConDobleValidacion = TaskEvidence & {
+  primera_validacion_por?: string | null;
+  primera_validacion_en?: string | null;
+  primera_validacion_rol?: string | null;
+  validado_rol?: string | null;
+  /** El servidor lo marcará cuando una evidencia ya validada deba volver a revisarse. */
+  requiere_revalidacion?: boolean;
+};
+// === fin RM-25c ===
+
 export interface RequestOptions extends Omit<RequestInit, "headers"> {
   headers?: Record<string, string>;
   baseUrl?: string;
@@ -164,8 +175,12 @@ export async function requestJson<T>(endpoint: string, options: RequestOptions =
 // ============================================================================
 
 export const roadmapApi = {
-  // Generación y consulta
-  async generate(variables: PlanningVariables, assessment: Record<string, unknown> = {}, options?: RequestOptions): Promise<{ job_id: string }> {
+  // Generación síncrona y consulta
+  async generate(
+    variables: PlanningVariables,
+    assessment: Record<string, unknown> = {},
+    options?: RequestOptions
+  ): Promise<{ job_id: string; status: string; roadmap_id: string; error?: string }> {
     const session = getCurrentSession();
     const payload: GenerateRoadmapRequest = {
       tenant_id: session.tenantId,
@@ -173,16 +188,9 @@ export const roadmapApi = {
       variables,
       assessment,
     };
-    return requestJson<{ job_id: string }>("/roadmaps/generate", {
+    return requestJson<{ job_id: string; status: string; roadmap_id: string; error?: string }>("/roadmaps/generate", {
       method: "POST",
       body: JSON.stringify(payload),
-      ...options,
-    });
-  },
-
-  async getJob(jobId: string, options?: RequestOptions): Promise<RoadmapJobStatus> {
-    return requestJson<RoadmapJobStatus>(`/roadmaps/jobs/${encodeURIComponent(jobId)}`, {
-      method: "GET",
       ...options,
     });
   },
@@ -247,7 +255,7 @@ export const roadmapApi = {
     });
   },
 
-  // Evidencias (R2)
+  // Evidencias (Cloud Storage)
   async getEvidenceUploadUrl(taskId: string, uploadReq: TaskEvidenceUploadRequest, options?: RequestOptions): Promise<TaskEvidenceUploadResponse> {
     return requestJson<TaskEvidenceUploadResponse>(`/roadmaps/tasks/${encodeURIComponent(taskId)}/evidence/upload-url`, {
       method: "POST",
@@ -258,11 +266,11 @@ export const roadmapApi = {
 
   async registerEvidence(
     taskId: string,
-    params: { r2_key: string; mime_type: string; file_size: number; file_hash?: string | null },
+    params: { clave_objeto: string; mime_type: string; file_size: number; file_hash?: string | null },
     options?: RequestOptions
   ): Promise<TaskEvidence> {
     const query = new URLSearchParams({
-      r2_key: params.r2_key,
+      clave_objeto: params.clave_objeto,
       mime_type: params.mime_type,
       file_size: params.file_size.toString(),
     });
@@ -297,6 +305,20 @@ export const roadmapApi = {
       }
     );
   },
+
+  // === RM-25c ===
+  /** Primera validación de la evidencia por el coordinador (RM-25a). La validación final sigue siendo `validateEvidence`. */
+  async registrarPrimeraValidacion(
+    taskId: string,
+    evidenceId: string,
+    options?: RequestOptions
+  ): Promise<EvidenciaConDobleValidacion> {
+    return requestJson<EvidenciaConDobleValidacion>(
+      `/roadmaps/tasks/${encodeURIComponent(taskId)}/evidence/${encodeURIComponent(evidenceId)}/primera-validacion`,
+      { method: "POST", ...options }
+    );
+  },
+  // === fin RM-25c ===
 
   // Auditoría
   async getAuditLog(

@@ -243,7 +243,7 @@ def test_dos_altas_activas_simultaneas_del_mismo_vendedor_solo_una_prospera():
 
 def test_ningun_router_ni_otra_sala_importa_el_repositorio_de_demo():
     """«No se expone en ninguna ruta»: solo la sala demo llega a `features.demo.repo`."""
-    excluidas = {".git", "node_modules", "frontend", ".venv", "venv", "alembic", "tests"}
+    excluidas = {".git", "node_modules", "frontend", ".venv", "venv", "alembic", "tests", ".worktrees", ".claude"}
     ajenos = []
     for archivo in RAIZ.rglob("*.py"):
         relativo = archivo.relative_to(RAIZ)

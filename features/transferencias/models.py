@@ -7,7 +7,7 @@ Las enumeraciones `RolTercero` y `NivelProteccion` siguen en services/encargados
 este módulo: aquí las columnas usan sus valores como texto para no crear un import circular. Al ser
 enumeraciones de `str`, `NivelProteccion.ADECUADO == "ADECUADO"`.
 """
-from sqlalchemy import Boolean, Column, Enum, String, text
+from sqlalchemy import Boolean, Column, Date, Enum, String, text
 from sqlalchemy.dialects.postgresql import UUID
 
 from app_core.db.base import Base
@@ -28,6 +28,14 @@ class TerceroEncargado(Base):
     nivel_proteccion = Column(Enum(*NIVELES, name="nivel_proteccion", native_enum=False, length=20), nullable=False)
     # Garantías adecuadas (cláusulas contractuales tipo u otro mecanismo legal)
     clausulas_firmadas = Column(Boolean, nullable=False, default=False)
+    # TER-01 (migración ter01_terceros_garantias): contrato, garantía y revisión; todas admiten NULL.
+    pais = Column(String(2), nullable=True)
+    contrato_sha256 = Column(String(64), nullable=True)
+    contrato_vigente_hasta = Column(Date, nullable=True)
+    garantia_tipo = Column(String(24), nullable=True)
+    garantia_sha256 = Column(String(64), nullable=True)
+    criticidad = Column(String(8), nullable=True)
+    proxima_revision = Column(Date, nullable=True)
 
     def es_transferencia_legal(self) -> bool:
         """Poka-Yoke: un país sin nivel adecuado exige garantías firmadas."""

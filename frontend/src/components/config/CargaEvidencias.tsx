@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   UploadCloud,
@@ -91,7 +91,14 @@ export default function CargaEvidencias() {
   const vincularEvidencia = useAuditStore((s) => s.vincularEvidencia);
   const desvincularEvidencia = useAuditStore((s) => s.desvincularEvidencia);
   const eliminarEvidencia = useAuditStore((s) => s.eliminarEvidencia);
+  // EVI-01b: con la subida firmada encendida, el servidor decide quién sube y quién vincula.
+  const permisos = useAuditStore((s) => s.permisosEvidencia);
+  const servidor = permisos?.subidaFirmada === true;
+  const puedeSubir = !servidor || permisos?.rolQueSube != null;
+  const puedeVincular = !servidor || permisos?.puedeVincular === true;
 
+  // Una subida en curso ocupa la carga: soltar otro archivo mientras tanto se ignora (EVI-01b).
+  const subiendo = useRef(false);
   const [enProceso, setEnProceso] = useState<ArchivoEnProceso[]>([]);
   const [avisos, setAvisos] = useState<Aviso[]>([]);
   const [confirmandoEliminar, setConfirmandoEliminar] = useState<string | null>(null);
@@ -120,6 +127,16 @@ export default function CargaEvidencias() {
   };
 
   const procesarArchivos = async (files: File[]) => {
+    if (servidor && subiendo.current) return;
+    subiendo.current = true;
+    try {
+      await procesarLote(files);
+    } finally {
+      subiendo.current = false;
+    }
+  };
+
+  const procesarLote = async (files: File[]) => {
     const validos = files.filter((f) => extensionPermitida(normativaSeleccionada, f.name));
     const rechazados = files.filter((f) => !validos.includes(f)).map((f) => f.name);
 
@@ -151,7 +168,9 @@ export default function CargaEvidencias() {
         } else {
           agregarAviso(
             "exito",
-            `"${file.name}" registrado como ${resultado.evidencia.codigo}. Vincúlalo a los controles que respalda.`
+            servidor
+              ? `Documento registrado y comprobado. "${file.name}" quedó como ${resultado.evidencia.codigo}.`
+              : `"${file.name}" registrado como ${resultado.evidencia.codigo}. Vincúlalo a los controles que respalda.`
           );
         }
       } finally {
@@ -185,7 +204,10 @@ export default function CargaEvidencias() {
   const pendientes = evidencias.filter((e) => e.controlesVinculados.length === 0).length;
 
   return (
-    <div className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl p-5 shadow-sm space-y-4">
+    <div
+      data-testid="carga-evidencias"
+      className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl p-5 shadow-sm space-y-4"
+    >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-200 dark:border-[var(--ui-borde)] pb-2.5 gap-2">
         <div>
           <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center">
@@ -208,16 +230,31 @@ export default function CargaEvidencias() {
         )}
       </div>
 
-      <div className="flex items-start gap-2 p-2.5 rounded-lg bg-[#3892f3]/5 border border-[#3892f3]/25 text-[11px] text-zinc-600 dark:text-zinc-300 leading-relaxed">
+      <div role="note" className="flex items-start gap-2 p-2.5 rounded-lg bg-[#3892f3]/5 border border-[#3892f3]/25 text-[11px] text-zinc-600 dark:text-zinc-300 leading-relaxed">
         <ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[#3892f3]" />
         <span>
-          El documento no sale de tu equipo: la huella SHA-256 se calcula en el navegador y solo se registran la huella,
-          el nombre, el tamaño y los controles que respalda. Conserva el original para poder verificarlo más tarde.
+          {servidor
+            ? "El documento se guarda en el almacén de tu organización. Al subirlo, el servidor comprueba que el archivo llegó completo (huella de integridad SHA-256); solo se registra si coincide con el que elegiste."
+            : "El documento no sale de tu equipo: la huella SHA-256 se calcula en el navegador y solo se registran la huella, el nombre, el tamaño y los controles que respalda. Conserva el original para poder verificarlo más tarde."}
         </span>
       </div>
 
+      {!puedeSubir && (
+        <div
+          role="note"
+          data-testid="sin-permiso-subir"
+          className="p-2.5 rounded-lg border border-zinc-200 dark:border-[var(--ui-borde)] text-[11px] text-[var(--ui-texto-suave)]"
+        >
+          {permisos?.real
+            ? "Con el diagnóstico real sellado, los documentos nuevos los suben el responsable de área o el coordinador; el DPO los valida."
+            : "Hasta que se selle el diagnóstico real, los documentos los sube el DPO. Pídeselo si necesitas registrar uno."}
+        </div>
+      )}
+
+      {puedeSubir && (
       <div
         {...getRootProps()}
+        aria-busy={enProceso.length > 0}
         className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center space-y-2.5 ${
           isDragActive
             ? "border-[#9a3bf1] bg-[#9a3bf1]/10"
@@ -238,6 +275,7 @@ export default function CargaEvidencias() {
           </p>
         </div>
       </div>
+      )}
 
       {enProceso.length > 0 && (
         <div className="space-y-1.5">
@@ -248,7 +286,9 @@ export default function CargaEvidencias() {
             >
               <Loader2 className="w-3.5 h-3.5 animate-spin text-[#9a3bf1]" />
               <span className="truncate">{p.nombre}</span>
-              <span className="text-[10px] text-[var(--ui-texto-suave)] shrink-0">calculando huella…</span>
+              <span role="status" className="text-[10px] text-[var(--ui-texto-suave)] shrink-0">
+                {servidor ? "Subiendo y comprobando…" : "calculando huella…"}
+              </span>
             </div>
           ))}
         </div>
@@ -259,6 +299,7 @@ export default function CargaEvidencias() {
           {avisos.map((aviso) => (
             <div
               key={aviso.id}
+              role={aviso.tipo === "error" ? "alert" : undefined}
               className={`flex items-start gap-2.5 p-2.5 rounded-lg border text-xs ${ESTILO_AVISO[aviso.tipo]}`}
             >
               <IconoAviso tipo={aviso.tipo} />
@@ -316,7 +357,16 @@ export default function CargaEvidencias() {
                       {hashCopiado === evidencia.id ? "Huella copiada" : abreviarHash(evidencia.sha256)}
                     </button>
                     <span className="font-mono">{formatearFechaRegistro(evidencia.registradaEn)}</span>
-                    {!confirmando && (
+                    {servidor && evidencia.enServidor && (
+                      <span
+                        data-testid="evidencia-en-servidor"
+                        className="inline-flex items-center gap-1 text-[#00c853] font-semibold"
+                      >
+                        <ShieldCheck className="w-3 h-3" />
+                        Registrado y comprobado en el servidor
+                      </span>
+                    )}
+                    {!confirmando && !evidencia.enServidor && (
                       <button
                         type="button"
                         onClick={() => setConfirmandoEliminar(evidencia.id)}
@@ -380,6 +430,7 @@ export default function CargaEvidencias() {
                           title={exigible ? undefined : "Control no exigible para el tamaño de organización actual"}
                         >
                           {etiquetaControl(id)}
+                          {puedeVincular && (
                           <button
                             type="button"
                             onClick={() => desvincularEvidencia(evidencia.id, id)}
@@ -389,12 +440,19 @@ export default function CargaEvidencias() {
                           >
                             <X className="w-2.5 h-2.5" />
                           </button>
+                          )}
                         </span>
                       );
                     })
                   )}
 
-                  {admiteVinculacion ? (
+                  {admiteVinculacion && !puedeVincular ? (
+                    <span className="ml-auto text-[10px] text-[var(--ui-texto-suave)] italic">
+                      {permisos?.real
+                        ? "El diagnóstico real está sellado: los vínculos ya no cambian."
+                        : "Solo el DPO vincula documentos a controles."}
+                    </span>
+                  ) : admiteVinculacion ? (
                     <label className="inline-flex items-center gap-1 ml-auto">
                       <Link2 className="w-3 h-3 text-[#3892f3]" />
                       <span className="sr-only">Vincular {evidencia.codigo} a un control</span>

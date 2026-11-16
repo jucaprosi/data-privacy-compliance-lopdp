@@ -16,6 +16,27 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin CAPA-03 ===
 
 # === CON-01 ===
+from dataclasses import dataclass
+from datetime import date
+
+
+@dataclass(frozen=True)
+class AlertaRetencion:
+    """Alerta de vencimiento de retención que muestra el DPO Cockpit; no lleva datos personales."""
+
+    politica_id: str
+    actividad_rat_id: str
+    accion_vencimiento: str
+    fecha_proxima_revision: date
+
+
+def alerta_retencion_vencida(politica) -> AlertaRetencion:
+    return AlertaRetencion(
+        politica_id=politica.id,
+        actividad_rat_id=politica.actividad_rat_id,
+        accion_vencimiento=politica.accion_vencimiento,
+        fecha_proxima_revision=politica.fecha_proxima_revision,
+    )
 # === fin CON-01 ===
 
 # === DER-01 ===

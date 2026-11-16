@@ -2,12 +2,13 @@
 # ¤¤developer-architect
 """Árbitro BIB-108: manifiesto reproducible, verificación sin escritura e importación idempotente.
 
-Las pruebas DB son opt-in en la rama Neon propia (TEST_DATABASE_URL y BIB108_RAMA_PROPIA=1);
+Las pruebas DB corren contra una base local (contenedor PostgreSQL 16 del arnés en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no la habilita;
 los skips no acreditan persistencia ni RLS. Datos sintéticos con rollback.
 """
 import importlib.util
 import json
 import os
+from urllib.parse import urlparse
 import re
 import shutil
 import subprocess
@@ -19,6 +20,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -73,7 +75,7 @@ def test_rutas_heredadas_resueltas_sin_tocar_originales():
 # ¤adpa
 def test_manifiesto_sin_secretos_ni_datos_de_clientes():
     contenido = (ROOT / "data/biblioteca/manifiesto_inicial.json").read_text()
-    assert not re.search(r"postgres(ql)?://|@[a-z0-9-]+\.[a-z]{2,}|neon\.tech|api[_-]?key|secret", contenido, re.I)
+    assert not re.search(r"postgres(ql)?://|@[a-z0-9-]+\.[a-z]{2,}|api[_-]?key|secret", contenido, re.I)
     assert "tenant_id" not in contenido and "organization_id\":" not in contenido
 
 
@@ -182,9 +184,10 @@ def _script():
 # ¤adpa
 @pytest.mark.parametrize("url, args", [
     ("", ["--importar", "--actor", "u", "--confirmar-rama-desarrollo"]),
-    ("postgresql://x@rama-dev/db", ["--importar", "--actor", "u"]),
-    ("postgresql://x@rama-dev/db", ["--importar", "--confirmar-rama-desarrollo"]),
-    ("postgresql://x@ep-late-hall-b50bpbk5.neon/db", ["--importar", "--actor", "u", "--confirmar-rama-desarrollo"]),
+    ("postgresql://x@127.0.0.1:5432/db", ["--importar", "--actor", "u"]),
+    ("postgresql://x@127.0.0.1:5432/db", ["--importar", "--confirmar-rama-desarrollo"]),
+    ("postgresql://x@db.remota.invalid/db", ["--importar", "--actor", "u", "--confirmar-rama-desarrollo"]),
+    ("postgresql://x@/lopdp?host=/cloudsql/proyecto:region:instancia", ["--importar", "--actor", "u", "--confirmar-rama-desarrollo"]),
 ])
 def test_script_importar_exige_rama_de_desarrollo_explicita(monkeypatch, capsys, url, args):
     monkeypatch.setenv("BIB108_DATABASE_URL", url)
@@ -205,7 +208,7 @@ def test_migracion_catalogo_encadenada_y_minima():
     configuracion = Config(str(ROOT / "alembic.ini"))
     configuracion.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(configuracion)
-    cabezas = guion.get_heads()
+    cabezas = [cabeza_de_sala("biblioteca", guion)]
     assert len(cabezas) == 1, "Debe existir una sola cabeza"
     assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
     assert isinstance(migracion.down_revision, str)
@@ -223,11 +226,13 @@ def test_migracion_catalogo_encadenada_y_minima():
 # ¤adpa
 @pytest_asyncio.fixture
 async def db_bib():
+    from app_core.huellas_produccion import es_base_local
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall-b50bpbk5" in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or os.environ.get("BIB108_RAMA_PROPIA") != "1":
-        pytest.skip("Persistencia pendiente: falta rama Neon propia (TEST_DATABASE_URL y BIB108_RAMA_PROPIA=1)")
+    if url and not es_base_local(url):
+        pytest.fail("Host no local prohibido; no se abrió conexión", pytrace=False)
+    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)

@@ -312,7 +312,16 @@ __all__ += [
 # === fin ORG-16 ===
 
 # === DEMO-03a ===
-# Reservada para DEMO-03a: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+# ¤demo Copia de la sala al tenant de una demo y siembra de la plantilla (PRD EVYDENTIA §5.6.8).
+from features.organizacion.services.clon_plantilla_engine import (  # noqa: E402
+    clonar_desde_plantilla,
+    sembrar_en_plantilla,
+)
+
+__all__ += [
+    "clonar_desde_plantilla",
+    "sembrar_en_plantilla",
+]
 # === fin DEMO-03a ===
 
 
@@ -320,3 +329,117 @@ __all__ += [
 # ¤adpa Los códigos de error de esta sala viven en features/organizacion/domain/errores.py y se registran al importarlo.
 from features.organizacion.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+# === ORG-17 ===
+# ¤inventario Activos, soportes y personas mínimas de la organización (ORG-17).
+from features.organizacion.services.inventario_engine import (  # noqa: E402
+    ActivoCrear,
+    ActivoEditar,
+    PersonaCrear,
+    PersonaEditar,
+    VinculosTratamientos,
+    crear_activo,
+    crear_persona,
+    editar_activo,
+    editar_persona,
+    listar_activos,
+    listar_personas,
+    reemplazar_vinculos_tratamientos,
+    tratamientos_disponibles,
+)
+
+__all__ += [
+    "ActivoCrear",
+    "ActivoEditar",
+    "PersonaCrear",
+    "PersonaEditar",
+    "VinculosTratamientos",
+    "crear_activo",
+    "crear_persona",
+    "editar_activo",
+    "editar_persona",
+    "listar_activos",
+    "listar_personas",
+    "reemplazar_vinculos_tratamientos",
+    "tratamientos_disponibles",
+]
+# === fin ORG-17 ===
+
+# === ORG-18 ===
+# ¤inventario Sedes y clientes por encargo de la organización (ORG-18).
+from features.organizacion.services.sedes_engine import (  # noqa: E402
+    ClienteEntrada,
+    SedeEntrada,
+    crear_cliente,
+    crear_sede,
+    editar_cliente,
+    editar_sede,
+    listar_clientes,
+    listar_sedes,
+    retirar_cliente,
+    retirar_sede,
+)
+
+__all__ += [
+    "ClienteEntrada",
+    "SedeEntrada",
+    "crear_cliente",
+    "crear_sede",
+    "editar_cliente",
+    "editar_sede",
+    "listar_clientes",
+    "listar_sedes",
+    "retirar_cliente",
+    "retirar_sede",
+]
+# === fin ORG-18 ===
+
+# === ORG-15 ===
+from features.organizacion.services.cartera_engine import armar_cartera  # noqa: E402
+
+__all__ += ["armar_cartera"]
+# === fin ORG-15 ===
+
+# === ORG-24 ===
+from features.organizacion.services.ficha_engine import armar_ficha  # noqa: E402
+
+__all__ += ["armar_ficha"]
+# === fin ORG-24 ===
+
+
+# === FOR-01 ===
+# Sección reservada para FOR-01.
+# === fin FOR-01 ===
+
+# === ORG-20 ===
+from features.organizacion.services.exportacion_engine import (  # noqa: E402
+    AlmacenExportaciones,
+    AlmacenNoDisponible,
+    consultar as consultar_exportacion,
+    descargar as descargar_exportacion,
+    exigir_exportacion_para_cierre,
+    generar as generar_exportacion,
+    solicitar as solicitar_exportacion,
+)
+from features.organizacion.services.papelera_engine import (  # noqa: E402
+    listar_papelera,
+    restaurar as restaurar_de_papelera,
+)
+
+__all__ += [
+    "AlmacenExportaciones", "AlmacenNoDisponible", "consultar_exportacion", "descargar_exportacion",
+    "exigir_exportacion_para_cierre", "generar_exportacion", "solicitar_exportacion", "listar_papelera",
+    "restaurar_de_papelera",
+]
+
+
+async def generar_exportacion_en_segundo_plano(factory, almacen, tenant_id: str, user_id: str, export_id: str) -> None:
+    """Tarea de fondo: abre su propia sesión (la de la petición ya cerró) y deja lista la exportación."""
+    async with factory() as session:
+        try:
+            await generar_exportacion(session, tenant_id, user_id, export_id, almacen)
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+# === fin ORG-20 ===

@@ -1,14 +1,50 @@
 # Entorno de pruebas de EVYDENTIA en Google Cloud
 `¤entorno-pruebas` `¤cloud-run-perf`
 
-> Procedimiento operativo del entorno de pruebas. El contrato (qué es, qué lo aísla de producción y qué interfaz comparten las tareas) está en `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md`, §5.5, y sus invariantes en `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, apartado 7. Este documento no lleva identificadores de proyecto, URL de conexión, contraseñas, claves ni correos reales: los valores viven en Secret Manager del proyecto de pruebas y en los archivos locales de `herramientas`.
+> Procedimiento operativo del entorno de pruebas. El contrato (qué es, qué lo aísla de producción y qué interfaz comparten las tareas) está en `governance/artefactos/PRD.md`, §5.5, y sus invariantes en `INVARIANTS.md`, apartado 7. Este documento no lleva identificadores de proyecto, URL de conexión, contraseñas, claves ni correos reales: los valores viven en Secret Manager del proyecto de pruebas y en los archivos locales de `herramientas`.
 
 Cada apartado es la sección reservada de una tarea (`governance/tareas/EP-0x.md`), y cada tarea escribe solo dentro de la suya. Los manifiestos están en `governance/operaciones/entornos/pruebas/`.
 
 <!-- === EP-04 === -->
 ## 1. Proyecto, servicios de Cloud Run, acceso y presupuesto (EP-04)
 
-Pendiente de EP-04.
+Los manifiestos están en `governance/operaciones/entornos/pruebas/`. Los aplica el propietario con Antigravity; ninguna sesión de IA crea proyectos, servicios ni presupuestos. `tests/test_ep04_computo_pruebas.py` los compara con los de producción y no toca Google Cloud.
+
+| Archivo | Qué declara |
+| :--- | :--- |
+| `proyecto.yaml` | El proyecto propio (`PROYECTO_PRUEBAS`, marcador), la región de producción, las API y una cuenta de servicio por servicio, sin permisos en producción. |
+| `cloudrun_backend.yaml` | `evydentia-backend`: ingress `all`, `APP_ENV=pruebas`, `AUTH_MODE=oidc`, `HUELLA_PROYECTO_PRODUCCION`, `ENTORNO_CORREOS_PERMITIDOS` vacío, `GOOGLE_CLIENT_ID` y la base por referencia a Secret Manager. Su política IAM deja invocar solo a la cuenta del frontend. |
+| `cloudrun_frontend.yaml` | `evydentia-web`: IAP, `PROXY_AUTH_CLOUD_RUN=token_servicio` y `BACKEND_URL` de `run.app`. |
+| `cloudrun_vault_worker.yaml` | `evydentia-vault-worker`, sin IAP, invocable solo por la cuenta del disparador de Eventarc; producción aún no tiene manifiesto (GOVW-01), así que es una excepción cerrada de la prueba de paridad. |
+| `acceso_iap.yaml` | Opción A del §5.5 (propietario, 2026-11-08): IAP en el frontend, sin balanceador; quién accede y quién invoca cada servicio. |
+| `presupuesto.yaml` | Tres presupuestos al mes (total 30 USD, Vertex AI 15 USD y Cloud Storage 5 USD; decisión del CTO, que se revisa a los 30 días con el gasto real) con avisos al 50, 90 y 100 %. Solo avisan: el tope real es el máximo de instancias y la cuota de IA (SEC-13). |
+
+Los tres servicios llevan la imagen por digest (marcador `IMAGEN_POR_DIGEST`, que sustituye `desplegar_entorno_pruebas.ps1`), mínimo 0 instancias y máximo 2. `HUELLA_DEL_PROYECTO_DE_PRODUCCION` es otro marcador: el propietario pone el identificador de producción al aplicar, nunca en el repositorio.
+
+### Brief para el propietario (EP-04)
+Orden sugerido, todo en el proyecto de pruebas. Lo de la nube lo ejecuta quien tenga el acceso; las comprobaciones son de solo lectura.
+
+> **Antes de aplicar nada.** La anotación `run.googleapis.com/iap-enabled` de `cloudrun_frontend.yaml` **no está documentada** por Google: su página sobre IAP en Cloud Run solo describe el indicador `--iap`. La fuente de verdad es el comando del paso 5. Tras activar IAP con `--iap`, mira con `gcloud run services describe` (solo lectura, abajo) si aparece esa anotación: si aparece, se queda; si no aparece, o si `gcloud run services replace` la rechaza, se quita de `cloudrun_frontend.yaml` y rige solo el comando. Mientras `describe` no muestre `Iap Enabled: true`, el frontend no está protegido por IAP: no lo uses ni des acceso a quienes prueban. **Es una compuerta humana: EP-04 no pasa a `hecha` sin la salida de ese comando.**
+
+```powershell
+$PROYECTO = "<id-del-proyecto-de-pruebas>"
+gcloud run services describe evydentia-web --project=$PROYECTO --region=us-central1 --format="yaml(metadata.annotations)"
+```
+
+1. Crear el proyecto, vincular su facturación y habilitar las API de `proyecto.yaml`.
+2. Crear las cuentas de servicio de `proyecto.yaml` con sus roles. Ninguna recibe permisos en producción.
+3. Crear los secretos de EP-05 (`secretos.yaml`) y el conector de acceso a VPC; sustituir `CONECTOR_VPC_PRUEBAS`.
+4. Aplicar los tres servicios con `gcloud run services replace`, tras sustituir `NUMERO_PROYECTO_PRUEBAS`, `HUELLA_DEL_PROYECTO_DE_PRODUCCION` (el identificador de producción, solo en la copia local) y la imagen por digest (lo hace `scripts/desplegar_entorno_pruebas.ps1`). El segundo documento de `cloudrun_backend.yaml` y de `cloudrun_frontend.yaml` es la política IAM: se aplica con `gcloud run services set-iam-policy`.
+5. Activar IAP en `evydentia-web` con `gcloud run services update evydentia-web --iap` y conceder `roles/iap.httpsResourceAccessor` a quienes prueban.
+6. Crear los tres presupuestos de `presupuesto.yaml`.
+7. Comprobar, solo lectura: `gcloud run services describe evydentia-web` debe mostrar `Iap Enabled: true`, y `gcloud run services get-iam-policy evydentia-backend` solo la cuenta del frontend.
+8. Correr el verificador del entorno (EP-07).
+
+**Decisiones y dudas abiertas**
+- **Anotación de IAP:** ver el aviso del inicio del brief; es una compuerta humana.
+- **Worker:** no llama al backend (GOVW-01 recibe eventos de Eventarc y escribe en la base). Su único invocador es `sa-eventarc-pruebas`; si la entrega fuera por Pub/Sub, sería el agente de servicio de Pub/Sub. Producción no tiene manifiesto del worker: mientras no exista, la prueba lo compara con el backend en lo común, y si aparece falla hasta compararlo.
+- **Cliente OAuth:** el backend verifica el token con `GOOGLE_CLIENT_ID`, un identificador público que va como valor (`CLIENT_ID_OAUTH_DE_PRUEBAS`, el del proyecto de pruebas). No hay `GOOGLE_CLIENT_SECRET` (`CONFIGURACION_LOGIN_GOOGLE.md`) y el cliente de IAP lo gestiona Google.
+- **Imagen entre proyectos:** el Artifact Registry es el de pruebas y la imagen se copia por digest; ninguna cuenta de pruebas lee el registro de producción.
 <!-- === fin EP-04 === -->
 
 <!-- === EP-05 === -->
@@ -56,7 +92,7 @@ $env:HUELLA_PROYECTO_PRODUCCION = "<huella-del-proyecto-de-produccion>"
 
 Sin `-SoloMostrar` el script ejecuta los pasos en este orden:
 
-1. Comprueba que `origin/main` tiene una sola cabeza de Alembic.
+1. Comprueba que `origin/main` tiene una cabeza de Alembic por sala.
 2. Aplica la guardia de la huella.
 3. Migra por `cloud-sql-proxy`.
 4. Despliega el mismo digest en los tres servicios con `gcloud run deploy --image ...@sha256:...`.
@@ -159,5 +195,64 @@ Con cualquier `FALLA`, el código es 1 y ese digest queda rechazado para la prom
 <!-- === EP-09 === -->
 ## 6. Puesta en marcha (EP-09)
 
-Pendiente de EP-09.
+**Estado: documentada, pendiente de ejecución del propietario.** Esta sección fija el orden y las comprobaciones; no copia los comandos, que viven en los apartados 1 a 5. EP-09 no pasa a `hecha` hasta que `python scripts/verificar_entorno_pruebas.py` dé 0 contra el entorno desplegado y el flujo `entorno-pruebas.yml` termine en verde en GitHub: eso solo existe cuando una persona (Juan Carlos, Aleczandra o José) lo ejecuta. Ninguna sesión de IA crea, despliega ni carga secretos; de su lado, solo `gcloud` de lectura. Todo va contra el proyecto de pruebas, nunca contra producción.
+
+### Orden y precondiciones
+| # | Paso | Dónde está el procedimiento | Comprobar antes de seguir |
+| :--- | :--- | :--- | :--- |
+| 0 | Variables y huella | esta sección, abajo | `$PROYECTO` es el de pruebas y distinto de `HUELLA_PROYECTO_PRODUCCION`. |
+| 1 | Proyecto, servicios, IAP y presupuesto (EP-04) | §1, pasos 1 a 7 | `describe` de `evydentia-web` muestra `Iap Enabled: true` (compuerta humana de §1). |
+| 2 | Cloud SQL, buckets y secretos (EP-05) | §2 | Instancia `evydentia-pruebas` encendida; buckets con retención `locked: false`; secretos con prefijo `evydentia-pruebas-` cargados. |
+| 3 | Primer despliegue por digest (EP-06) | §3 | El CI ya publicó la imagen; una cabeza de Alembic por sala; los tres servicios con el mismo digest y el 100 % del tráfico. |
+| 4 | Siembra y cuentas de quienes prueban (EP-03) | §4 | `herramientas\testers-entorno-pruebas.txt` existe y git no lo rastrea; la siembra no se detiene por la huella. |
+| 5 | Verificador (EP-07) | §5 | Todas las líneas `OK` y código 0. |
+| 6 | Flujo de GitHub | `governance/apoyo/BRIEF_PROPIETARIO_EP07_WORKFLOW.md` | `entorno-pruebas.yml` en verde. |
+
+Los pasos 1 a 4 van en ese orden: el despliegue necesita la base y los secretos, y la siembra necesita la base migrada.
+
+### Variables comunes (PowerShell)
+```powershell
+cd "C:\Users\<usuario>\Desktop\Plataforma LOPDP 360\.claude\worktrees\<worktree>"
+$PROYECTO = "<proyecto-de-pruebas>"
+$REGION = "us-central1"
+$env:HUELLA_PROYECTO_PRODUCCION = "<huella-del-proyecto-de-produccion>"
+if ($PROYECTO -eq $env:HUELLA_PROYECTO_PRODUCCION) { throw "DETENIDO: el proyecto es el de produccion" }
+```
+
+### Comprobaciones de solo lectura entre pasos
+```powershell
+gcloud run services list --project=$PROYECTO --region=$REGION --format="table(metadata.name)"
+gcloud run services describe evydentia-web --project=$PROYECTO --region=$REGION --format="yaml(metadata.annotations)"
+gcloud run services get-iam-policy evydentia-backend --project=$PROYECTO --region=$REGION
+gcloud sql instances list --project=$PROYECTO --format="table(name,state,settings.activationPolicy)"
+gcloud storage buckets list --project=$PROYECTO --format="table(name,retention_policy.isLocked)"
+gcloud secrets list --project=$PROYECTO --format="value(name)"
+```
+Esperado: los servicios `evydentia-backend`, `evydentia-web` y `evydentia-vault-worker`; `Iap Enabled: true` en el frontend; en la política del backend solo la cuenta del frontend; la instancia `evydentia-pruebas` en `RUNNABLE` con `ALWAYS`; ningún bucket con la retención bloqueada (vacío o `False`); todos los secretos con prefijo `evydentia-pruebas-`.
+
+### Verificador, salida esperada
+Se corre como en §5. La salida lleva una línea por comprobación, `OK` o `FALLA` seguido del nombre: `credenciales`, `salud`, `entorno`, `sin_headers`, `iap`, `robots` y `digest`, y al final `DIGEST sha256:...`. El código de salida (`$LASTEXITCODE`) debe ser 0. Con cualquier `FALLA`, el código es 1 y se sigue la tabla de §5. Después se registra el digest con `digest_verificado.py guardar` (§5).
+
+### Si un paso falla
+- No se sigue al paso siguiente ni se promueve nada a producción.
+- Cada fallo se corrige en su apartado (§1 a §5); si el error está en un comando de otra tarea, se avisa al Tech Lead en vez de corregirlo aquí.
+- Un digest rechazado se repite con un digest nuevo (§3).
+
+### Registro de la puesta en marcha (se llena al ejecutar)
+Sin identificadores de proyecto, URL ni correos.
+
+- Fecha y quién lo hizo:
+- Decisión 1, borde (opción A o B):
+- Decisión 2, Memorystore (mínima o ninguna):
+- Decisión 3, horario de Cloud SQL (siempre encendida, 2026-11-08):
+- Decisión 4, firma (respuesta de ANF):
+- Resultado del verificador (código y líneas):
+- Resultado del flujo `entorno-pruebas.yml`:
+- Comprobación a mano por rol:
+  - [ ] El aviso «Entorno de pruebas · datos ficticios» se ve.
+  - [ ] IAP deja pasar solo a quienes prueban.
+  - [ ] El inicio de sesión con Google funciona.
+  - [ ] Un correo a un destinatario no permitido queda retenido.
+  - [ ] La retención de los buckets aparece como no bloqueada en la consola.
+- Siguiente versión: llega a producción con el digest verificado en pruebas (GCP-07).
 <!-- === fin EP-09 === -->

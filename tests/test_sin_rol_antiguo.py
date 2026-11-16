@@ -50,6 +50,8 @@ EXENCIONES = {
     "features/regulacion_rag/domain/corpus.py": "Términos de búsqueda del corpus legal (Art. 34 LOPDP, encargado del tratamiento), no el rol.",
     "features/organizacion/services/alta_engine.py": "Valor rol_datos en sentido legal (encargado del tratamiento), no el rol de usuario.",
     "frontend/src/lib/organizacion/alta.ts": "Valor rol_datos en sentido legal (encargado del tratamiento), no el rol de usuario.",
+    "features/organizacion/services/sedes_engine.py": "Valor rol_datos en sentido legal, no el rol de usuario.",
+    "tests/test_organizacion_sedes.py": "Valor rol_datos en sentido legal, no el rol de usuario.",
 }
 
 

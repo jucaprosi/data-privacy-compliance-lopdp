@@ -1,12 +1,20 @@
 // ¤navegacion-menus
-/**
- * Submenús de DIAG-04. FE-22 lo deja vacío: lo llena DIAG-04 cuando cree sus pantallas, y solo DIAG-04
- * edita este archivo. Si la pantalla es una vista nueva, se declara aquí mismo:
- *
- *   declare module "../dashboardNavigation" {
- *     interface VistasRegistradas { mi_vista: true }
- *   }
- */
+// ¤diagnostico-asignacion
+/** Submenús de DIAG-04: Diagnóstico › Asignación. Solo DIAG-04 edita este archivo. */
 import type { Submenu } from "./base";
 
-export const SUBMENUS_DIAG_04: Submenu[] = [];
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    asignacion_dominios: true;
+  }
+}
+
+export const SUBMENUS_DIAG_04: Submenu[] = [
+  {
+    vista: "asignacion_dominios",
+    menu: "diagnostico",
+    nombre: "Asignación",
+    subtitulo: "Encargado de cada dominio",
+    orden: 4,
+  },
+];

@@ -109,25 +109,38 @@ test.describe("Interruptor de evidencia física (FE-26)", () => {
 });
 
 test.describe("PMV sin subida de archivos (FE-26)", () => {
-  test("el diagnóstico no ofrece cargar evidencias y avisa que la evidencia es declarada", async ({ page, context }) => {
-    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
+  test("el diagnóstico no ofrece cargar evidencias y avisa que la evidencia es declarada", async ({ page, context, browser }) => {
+    // DIAG-07 R1 y R4: responde el administrador y sella el DPO, cada uno en su sesión.
+    const servidor = await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await expect(page.getByRole("heading", { name: "Normativa", exact: true })).toBeVisible();
     // Primera pregunta: es donde se montaba la carga de evidencias.
+    await expect(page.getByRole("radiogroup", { name: /Nivel de madurez/ }).first()).toBeVisible();
     await expect(page.getByText("Registro de Evidencias con Huella SHA-256")).toHaveCount(0);
     await responderControlActual(page, 3);
     await expect.poll(() => servidor.filas.length).toBe(1);
 
-    const cierre = await abrirCierreDelDiagnostico(context, page);
+    // Antes del sello, el aviso va a quien responde: se comprueba en el cierre del administrador.
+    const cierreAdmin = await abrirCierreDelDiagnostico(context, page);
+    await expect(cierreAdmin.getByTestId("aviso-evidencia-declarada")).toHaveText(`${AVISO_EVIDENCIA_DECLARADA}.`);
+    await expect(cierreAdmin.getByText(/evidencia 0/)).toHaveCount(0);
+
+    const contextoDpo = await browser.newContext();
+    await simularApiDiagnostico(contextoDpo, { roles: ["dpo"], usuario: "usuario-dpo", filas: [...servidor.filas] });
+    const paginaDpo = await contextoDpo.newPage();
+    await abrirAppLimpia(paginaDpo);
+    await configurarProyecto(paginaDpo);
+    await expect(paginaDpo.getByText("Registro de Evidencias con Huella SHA-256")).toHaveCount(0);
+    const cierre = await abrirCierreDelDiagnostico(contextoDpo, paginaDpo);
     const aviso = cierre.getByTestId("aviso-evidencia-declarada");
-    await expect(aviso).toHaveText(`${AVISO_EVIDENCIA_DECLARADA}.`);
     await expect(cierre.getByText(/evidencia 0/)).toHaveCount(0);
 
     await cierre.getByRole("button", { name: "Sellar diagnóstico de prueba" }).click();
     await expect(cierre.getByText(/Resultado sellado n\.º 1/)).toBeVisible();
-    await expect(aviso).toHaveCount(1);
+    await expect(aviso).toHaveText(`${AVISO_EVIDENCIA_DECLARADA}.`);
     await expect(cierre.getByText(/pudo comprobar|evidencia 0/)).toHaveCount(0);
+    await contextoDpo.close();
   });
 
   test("la hoja de ruta no ofrece la custodia de evidencias", async ({ page }) => {

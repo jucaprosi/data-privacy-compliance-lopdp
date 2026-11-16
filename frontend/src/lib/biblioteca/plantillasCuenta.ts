@@ -8,6 +8,14 @@
  */
 import { fetchAutenticado } from "@/lib/auth/fetchAutenticado";
 
+/** Fallo al hablar con la API: lleva solo el código HTTP; el texto que ve la persona lo fija la vista (nunca el del servidor). */
+export class ErrorPlantillasCuenta extends Error {
+  constructor(public readonly estado: number) {
+    super(`plantillas-cuenta: HTTP ${estado}`);
+    this.name = "ErrorPlantillasCuenta";
+  }
+}
+
 const API_BASE = "/api/v1/biblioteca/plantillas-cuenta";
 const ROLES_URL = "/api/v1/organizacion/me/roles";
 
@@ -69,20 +77,14 @@ export async function esImplementador(): Promise<boolean> {
 /** Lista las copias de plantilla pertenecientes a la cuenta profesional. */
 export async function listarPlantillasCuenta(): Promise<PlantillaCuenta[]> {
   const res = await fetchAutenticado(API_BASE);
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || `Error ${res.status} al listar plantillas de cuenta`);
-  }
+  if (!res.ok) throw new ErrorPlantillasCuenta(res.status);
   return res.json();
 }
 
 /** Obtiene una copia de plantilla de cuenta por ID. */
 export async function obtenerPlantillaCuenta(id: string): Promise<PlantillaCuenta> {
   const res = await fetchAutenticado(`${API_BASE}/${id}`);
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || `Error ${res.status} al obtener plantilla de cuenta`);
-  }
+  if (!res.ok) throw new ErrorPlantillasCuenta(res.status);
   return res.json();
 }
 
@@ -93,10 +95,7 @@ export async function crearPlantillaCuenta(entrada: PlantillaCuentaCreate): Prom
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(entrada),
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || `Error ${res.status} al crear plantilla de cuenta`);
-  }
+  if (!res.ok) throw new ErrorPlantillasCuenta(res.status);
   return res.json();
 }
 
@@ -110,20 +109,14 @@ export async function actualizarPlantillaCuenta(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(entrada),
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || `Error ${res.status} al actualizar plantilla de cuenta`);
-  }
+  if (!res.ok) throw new ErrorPlantillasCuenta(res.status);
   return res.json();
 }
 
 /** Obtiene la diferencia textual entre la copia y la maestra vigente. */
 export async function obtenerDiffMaestra(id: string): Promise<DiffMaestra> {
   const res = await fetchAutenticado(`${API_BASE}/${id}/diff`);
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || `Error ${res.status} al obtener diff con la maestra`);
-  }
+  if (!res.ok) throw new ErrorPlantillasCuenta(res.status);
   return res.json();
 }
 
@@ -132,9 +125,6 @@ export async function aplicarMaestra(id: string): Promise<PlantillaCuenta> {
   const res = await fetchAutenticado(`${API_BASE}/${id}/aplicar-maestra`, {
     method: "POST",
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || `Error ${res.status} al aplicar maestra`);
-  }
+  if (!res.ok) throw new ErrorPlantillasCuenta(res.status);
   return res.json();
 }

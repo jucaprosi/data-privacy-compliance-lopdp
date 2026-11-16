@@ -3,7 +3,7 @@
 # ¤arbitro
 """Corre pytest con plugin_contar_consultas contra PostgreSQL local y escribe la tabla por archivo.
 
-El número de consultas no depende de la región, así que nunca se usa Neon. Sin argumentos mide los 10 archivos más
+El número de consultas no depende de la región, así que solo se usa una base local. Sin argumentos mide los 10 archivos más
 lentos de governance/operaciones/MEDICION_PRUEBAS_LENTAS.md; `--todos` mide la suite completa, siempre en serie.
 El worktree necesita su `.env` propio aunque solo apunte a la base local.
 
@@ -16,6 +16,7 @@ import importlib.util
 import json
 import os
 import re
+from urllib.parse import urlparse
 import statistics
 import subprocess
 import sys
@@ -27,12 +28,12 @@ MEDICION = RAIZ / "governance" / "operaciones" / "MEDICION_PRUEBAS_LENTAS.md"
 VIAJES_POR_FILA = ("consultas", "checkouts", "begin", "commit", "rollback")
 _FILA_DE_ARCHIVO = re.compile(r"^\| `(test_\w+)` \|", re.M)
 _SIN_CONTAR = re.compile(r"psycopg\.connect|psycopg\.AsyncConnection|AsyncConnection\.connect")
-_HOSTS_PROHIBIDOS = ("neon", "ep-")
+_HOSTS_LOCALES = ("127.0.0.1", "localhost", "::1")
 
 
 def exigir_base_local(url: str) -> None:
-    if any(host in url.lower() for host in _HOSTS_PROHIBIDOS):
-        raise SystemExit("[CONSULTAS] Esta medición solo corre contra PostgreSQL local o en contenedor, nunca contra Neon.")
+    if (urlparse(url).hostname or "") not in _HOSTS_LOCALES:
+        raise SystemExit("[CONSULTAS] Esta medición solo corre contra PostgreSQL local o en contenedor (127.0.0.1), nunca contra una base remota.")
 
 
 def archivos_de_la_medicion(texto: str) -> list[str]:

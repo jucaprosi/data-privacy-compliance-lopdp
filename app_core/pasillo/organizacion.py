@@ -88,3 +88,68 @@ def error_rbac(codigo: int, mensaje: str) -> Exception:
 # === ADPA-06 ===
 # ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
 # === fin ADPA-06 ===
+
+
+# === FIRMA-02 ===
+# ¤firma-electronica Persona del inventario (ORG-17) a la que se envía un documento; sin cédula.
+async def obtener_persona_para_firma(session, tenant_id: str, persona_id: str) -> dict | None:
+    from features.organizacion import organizacion_service
+
+    for persona in await organizacion_service.listar_personas(session, tenant_id):
+        if str(persona["id"]) == str(persona_id) and not persona.get("archivada"):
+            return {"id": str(persona["id"]), "nombre": persona["nombre"], "email": persona["email"]}
+    return None
+# === fin FIRMA-02 ===
+
+# === DEMO-03a ===
+# ¤demo Solo reexporta: la lógica vive en la compuerta organizacion_service.
+async def clonar_desde_plantilla(session, origen: str, destino: str, mapa_ids: dict) -> dict:
+    from features.organizacion import organizacion_service
+
+    return await organizacion_service.clonar_desde_plantilla(session, origen, destino, mapa_ids)
+
+
+async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
+    from features.organizacion import organizacion_service
+
+    await organizacion_service.sembrar_en_plantilla(session, plantilla_id, datos)
+# === fin DEMO-03a ===
+
+# === DIAG-04 ===
+# Sección reservada para DIAG-04.
+# === fin DIAG-04 ===
+
+# === ORG-17 ===
+# Sección reservada para ORG-17.
+# === fin ORG-17 ===
+
+# === DIAG-07 ===
+# Sección reservada para DIAG-07.
+# === fin DIAG-07 ===
+
+# === ORG-18 ===
+# Sección reservada para ORG-18.
+# === fin ORG-18 ===
+
+# === REG-01 ===
+# Sección reservada para REG-01.
+# === fin REG-01 ===
+
+
+# === CAPA-04 ===
+# Sección reservada para CAPA-04.
+# === fin CAPA-04 ===
+
+
+# === FOR-01 ===
+# Sección reservada para FOR-01.
+# === fin FOR-01 ===
+
+
+# === RAT-08 ===
+# Sección reservada para RAT-08.
+# === fin RAT-08 ===
+
+# === ORG-20 ===
+# Sección reservada para ORG-20.
+# === fin ORG-20 ===

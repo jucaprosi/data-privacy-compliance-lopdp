@@ -1,7 +1,7 @@
 # ¤entorno-pruebas ¤arbitro
 """Verificador del entorno de pruebas de EVYDENTIA (EP-07).
 
-Contrato: PRD_EVYDENTIA_REVENTA_NUBE.md §5.5 («Interfaz pública que comparten las tareas») e
+Contrato: PRD.md §5.5 («Interfaz pública que comparten las tareas») e
 invariante 57. Se programa contra esa interfaz, no contra el código de EP-01.
 
     python scripts/verificar_entorno_pruebas.py <frontend> [<backend>] --proyecto <id-de-pruebas>

@@ -14,7 +14,7 @@ from app_core import security
 RAIZ = Path(__file__).resolve().parents[1]
 RUTA_ARRANCADOR = RAIZ / "tests" / "humo" / "servidor_humo.py"
 CARPETAS_DESPLEGADAS = ("api", "app_core", "features", "alembic", "scripts")
-ARCHIVOS_DE_DESPLIEGUE = ("vercel.json", "backend.Dockerfile", "docker-compose.yml", "iniciar_backend.bat")
+ARCHIVOS_DE_DESPLIEGUE = ("backend.Dockerfile", "docker-compose.yml", "iniciar_backend.bat")
 
 
 # ¤seguridad
@@ -27,7 +27,7 @@ def cargar_arrancador():
 
 ENTORNO_VALIDO = {
     "HUMO_E2E": "1",
-    "DATABASE_URL": "postgresql://rama-de-prueba/lopdp",
+    "DATABASE_URL": "postgresql://localhost:5432/lopdp",
     "GOOGLE_CLIENT_ID": "humo-ci",
     "HUMO_CLAVE_PRIVADA": "clave.pem",
 }
@@ -40,11 +40,13 @@ def test_arranca_solo_con_el_entorno_completo_de_humo():
 
 # ¤seguridad
 @pytest.mark.parametrize("cambio, motivo", [
-    ({"VERCEL": "1"}, "Vercel"),
-    ({"VERCEL_ENV": "production"}, "Vercel"),
-    ({"DATABASE_URL": "postgresql://ep-late-hall-b50bpbk5/lopdp"}, "producción"),
-    ({"TEST_DATABASE_URL": "postgresql://ep-late-hall-b50bpbk5/lopdp"}, "producción"),
-    ({"MIGRATION_DATABASE_URL": "postgresql://ep-late-hall-b50bpbk5/lopdp"}, "producción"),
+    ({"K_SERVICE": "evydentia-api"}, "Cloud Run"),
+    ({"CLOUD_RUN_SERVICE": "evydentia-api"}, "Cloud Run"),
+    ({"APP_ENV": "production"}, "producción"),
+    ({"DATABASE_URL": "postgresql://bd.remota.ejemplo/lopdp"}, "local"),
+    ({"TEST_DATABASE_URL": "postgresql://bd.remota.ejemplo/lopdp"}, "local"),
+    ({"MIGRATION_DATABASE_URL": "postgresql://bd.remota.ejemplo/lopdp"}, "local"),
+    ({"DATABASE_URL": "postgresql:///lopdp?host=/cloudsql/proyecto:region:instancia"}, "producción"),
     ({"HUMO_E2E": "0"}, "HUMO_E2E"),
     ({"DATABASE_URL": ""}, "DATABASE_URL"),
     ({"GOOGLE_CLIENT_ID": ""}, "GOOGLE_CLIENT_ID"),
@@ -55,14 +57,14 @@ def test_se_detiene_ante_un_despliegue_produccion_o_entorno_incompleto(cambio, m
 
 
 # ¤seguridad
-def test_en_vercel_el_proceso_termina_sin_generar_clave(monkeypatch, tmp_path, capsys):
+def test_en_cloud_run_el_proceso_termina_sin_generar_clave(monkeypatch, tmp_path, capsys):
     arrancador = cargar_arrancador()
     clave = tmp_path / "clave.pem"
-    for nombre, valor in {**ENTORNO_VALIDO, "HUMO_CLAVE_PRIVADA": str(clave), "VERCEL": "1"}.items():
+    for nombre, valor in {**ENTORNO_VALIDO, "HUMO_CLAVE_PRIVADA": str(clave), "K_SERVICE": "evydentia-api"}.items():
         monkeypatch.setenv(nombre, valor)
     assert arrancador.main() == 1
     assert not clave.exists()
-    assert "Vercel" in capsys.readouterr().err
+    assert "Cloud Run" in capsys.readouterr().err
 
 
 # ¤seguridad
@@ -138,7 +140,7 @@ def test_los_limites_de_la_metodologia_se_cumplen():
     assert not any("page.route" in t or "context.route" in t or "test.skip" in t or "test.only" in t for t in textos)
     configuracion = (RAIZ / "frontend" / "playwright.humo.config.ts").read_text(encoding="utf-8")
     assert "retries: 0" in configuracion and "maxFailures: 1" in configuracion and "workers: 1" in configuracion
-    assert "ep-late-hall" in configuracion and "AUTH_MODE" not in configuracion
+    assert "HOSTS_DE_PRUEBAS" in configuracion and "AUTH_MODE" not in configuracion
 
 
 # ¤arbitro
@@ -165,20 +167,20 @@ def test_el_humo_corre_en_los_pr_y_no_en_el_push_a_main():
 
 
 # ¤arbitro
-def test_los_pr_usan_el_contenedor_y_el_push_a_main_sigue_contra_neon():
-    """CI-17: tanto los PR como el push a main corren contra el contenedor PostgreSQL 16 del runner, sin Neon."""
+def test_los_pr_usan_el_contenedor_y_el_push_a_main_tambien():
+    """CI-17: tanto los PR como el push a main corren contra el contenedor PostgreSQL 16 del runner, sin base remota."""
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert flujo.count("&postgres_de_las_ramas") == 1 and flujo.count("*postgres_de_las_ramas") == 2
     assert "image: pgvector/pgvector:pg16\n" in flujo
     assert "TEST_DATABASE_URL: postgresql://lopdp_beta_owner:solo-en-este-runner@localhost:5432/lopdp\n" in flujo
     assert "secrets.TEST_DATABASE_URL" not in flujo
-    assert "esperar_turno_neon.py" not in flujo
+    assert "esperar_turno" not in flujo
     assert "verificar_revision_alembic.py" not in flujo
     assert "testcontainers" not in flujo.lower()
 
 
 # ¤arbitro
-def test_pytest_va_en_paralelo_contra_el_contenedor_y_en_serie_hacia_neon():
+def test_pytest_va_en_paralelo_contra_el_contenedor_y_en_serie_hacia_main():
     """CI-17: tanto en PR como en el push a main se instala pytest-xdist y pytest corre en paralelo (-n auto)."""
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert flujo.count("-n auto") == 2

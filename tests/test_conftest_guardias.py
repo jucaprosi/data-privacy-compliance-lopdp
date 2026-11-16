@@ -1,5 +1,5 @@
 # ¤arbitro
-"""La suite no arranca sobre producción ni en un worktree sin `.env` propio, y nunca imprime la URL."""
+"""La suite toma su configuración del proceso, acepta solo bases locales y nunca imprime la URL ni secretos."""
 import os
 import shutil
 import subprocess
@@ -8,55 +8,51 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 SECRETO = "clave-que-no-debe-salir"
-URL_PRODUCCION = f"postgresql://dueno:{SECRETO}@EP-LATE-HALL-prueba-pooler.neon.test/base"
-URL_PRUEBAS = f"postgresql://dueno:{SECRETO}@ep-pruebas.neon.test/base"
+HOST_REMOTO = "base.ejemplo.test"
+URL_REMOTA = f"postgresql://usuaria_secreta:{SECRETO}@{HOST_REMOTO}:5432/lopdp"
+URL_LOCAL = "postgresql://usuaria_local:clave@127.0.0.1:5432/lopdp"
 
 
 def _proyecto(tmp_path: Path) -> Path:
-    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests").mkdir(parents=True)
     shutil.copy(RAIZ / "tests" / "conftest.py", tmp_path / "tests" / "conftest.py")
     (tmp_path / "tests" / "test_uno.py").write_text("def test_uno():\n    assert True\n", encoding="utf-8")
     return tmp_path
 
 
-def _correr(proyecto: Path, **variables) -> subprocess.CompletedProcess:
-    entorno = {k: v for k, v in os.environ.items() if "DATABASE_URL" not in k}
-    entorno.update(UPSTASH_REDIS_URL="prueba", R2_ACCESS_KEY_ID="prueba", **variables)
-    return subprocess.run([sys.executable, "-m", "pytest", "tests", "-q", "-p", "no:cacheprovider"],
-                          cwd=proyecto, capture_output=True, text=True, env=entorno)
+def _correr(proyecto: Path, **variables: str) -> subprocess.CompletedProcess:
+    claves_base = {"TEST_DATABASE_URL", "DATABASE_URL", "MIGRATION_DATABASE_URL", "PYTEST_ADDOPTS"}
+    entorno = {k: v for k, v in os.environ.items() if k not in claves_base}
+    entorno.update(variables)
+    return subprocess.run(
+        [sys.executable, "-m", "pytest", "tests", "-q", "-p", "no:cacheprovider"],
+        cwd=proyecto,
+        capture_output=True,
+        text=True,
+        env=entorno,
+    )
 
 
-def test_url_de_produccion_detiene_la_suite_sin_imprimirla(tmp_path):
-    res = _correr(_proyecto(tmp_path), TEST_DATABASE_URL=URL_PRODUCCION)
+def test_base_no_local_detiene_la_suite_sin_imprimir_la_url(tmp_path):
+    res = _correr(_proyecto(tmp_path), TEST_DATABASE_URL=URL_REMOTA)
+    salida = res.stdout + res.stderr
     assert res.returncode == 3
-    assert "TEST_DATABASE_URL, DATABASE_URL apunta a produccion" in res.stdout + res.stderr
-    assert SECRETO not in res.stdout + res.stderr and "LATE-HALL" not in res.stdout + res.stderr
+    assert "TEST_DATABASE_URL" in salida
+    assert HOST_REMOTO not in salida
+    assert "usuaria_secreta" not in salida
+    assert SECRETO not in salida
 
 
-def test_database_url_de_produccion_sin_url_de_pruebas_tambien_se_detiene(tmp_path):
-    res = _correr(_proyecto(tmp_path), DATABASE_URL=URL_PRODUCCION)
-    assert res.returncode == 3 and "DATABASE_URL apunta a produccion" in res.stdout + res.stderr
+def test_base_local_pasa(tmp_path):
+    res = _correr(_proyecto(tmp_path), TEST_DATABASE_URL=URL_LOCAL)
+    assert res.returncode == 0
 
 
-def test_url_de_pruebas_pasa(tmp_path):
-    assert _correr(_proyecto(tmp_path), TEST_DATABASE_URL=URL_PRUEBAS).returncode == 0
+def test_arranca_en_carpeta_y_en_worktree(tmp_path):
+    principal = _proyecto(tmp_path / "principal")
+    (principal / ".git").mkdir()
+    assert _correr(principal, TEST_DATABASE_URL=URL_LOCAL).returncode == 0
 
-
-def test_worktree_sin_env_se_detiene_con_mensaje_claro(tmp_path):
-    proyecto = _proyecto(tmp_path)
-    (proyecto / ".git").write_text("gitdir: ../.git/worktrees/x\n", encoding="utf-8")
-    res = _correr(proyecto, TEST_DATABASE_URL=URL_PRUEBAS)
-    assert res.returncode == 3 and "no tiene .env propio" in res.stdout + res.stderr
-
-
-def test_worktree_con_env_propio_pasa(tmp_path):
-    proyecto = _proyecto(tmp_path)
-    (proyecto / ".git").write_text("gitdir: ../.git/worktrees/x\n", encoding="utf-8")
-    (proyecto / ".env").write_text(f"TEST_DATABASE_URL={URL_PRUEBAS}\n", encoding="utf-8")
-    assert _correr(proyecto).returncode == 0
-
-
-def test_carpeta_principal_sin_env_sigue_funcionando_como_en_ci(tmp_path):
-    proyecto = _proyecto(tmp_path)
-    (proyecto / ".git").mkdir()
-    assert _correr(proyecto, TEST_DATABASE_URL=URL_PRUEBAS).returncode == 0
+    worktree = _proyecto(tmp_path / "worktree")
+    (worktree / ".git").write_text("gitdir: ../.git/worktrees/x\n", encoding="utf-8")
+    assert _correr(worktree, TEST_DATABASE_URL=URL_LOCAL).returncode == 0

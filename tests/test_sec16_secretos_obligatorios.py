@@ -4,7 +4,7 @@
 Contrato: `INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD`. Predicado, con S = {JWT_SECRET, SESSION_SECRET}:
     nube ∧ (∃ s ∈ S : s = ∅ ∨ s ∈ CLAVES_POR_DEFECTO ∨ |s| < 32  ∨  JWT_SECRET = SESSION_SECRET)
     ⟹  no arranca.
-«nube» ≡ K_SERVICE definida (Cloud Run; decisión del CTO, PR #445). VERCEL no cuenta.
+«nube» ≡ K_SERVICE definida (Cloud Run; decisión del CTO, PR #445).
 Fuera de la nube no cambia nada.
 
 Solo valores generados en la propia prueba (`secrets.token_urlsafe`): ningún secreto real.
@@ -23,14 +23,20 @@ from pathlib import Path
 import jwt
 import pytest
 
+_ENTORNO_PREVIO = {k: os.environ.get(k) for k in ("DATABASE_URL", "CORS_ORIGINS", "JWT_SECRET")}
 from app_core.config import (
     CLAVES_POR_DEFECTO, LONGITUD_MINIMA_SECRETO, REGLA_SECRETOS, SECRETOS_OBLIGATORIOS,
     corre_en_cloud_run, exigir_secretos_en_la_nube,
 )
+for _var, _val in _ENTORNO_PREVIO.items():
+    if _val is None:
+        os.environ.pop(_var, None)
+    else:
+        os.environ[_var] = _val
 from features.biblioteca.services import archivos
 
 RAIZ = Path(__file__).resolve().parent.parent
-VARIABLES_DE_NUBE = ("VERCEL", "K_SERVICE")
+VARIABLES_DE_NUBE = ("K_SERVICE",)
 
 
 def _secreto() -> str:
@@ -102,10 +108,14 @@ def test_k_service_definida_aunque_vacia_es_la_nube(valor):
     _rechaza({"K_SERVICE": valor}, "JWT_SECRET")
 
 
-def test_vercel_sin_k_service_no_es_la_nube_para_sec16():
-    """El PMV en Vercel está congelado: SEC-16 no cambia su arranque."""
-    assert not corre_en_cloud_run({"VERCEL": "1"})
-    exigir_secretos_en_la_nube({"VERCEL": "1"})
+def test_solo_k_service_es_la_nube_para_sec16():
+    """Solo Cloud Run (K_SERVICE) activa las guardias de secretos en la nube."""
+    from app_core.huellas_produccion import VARIABLES_DE_NUBE as NUBE_HUELLAS
+
+    assert NUBE_HUELLAS == ("K_SERVICE",)
+    assert corre_en_cloud_run({"K_SERVICE": "evydentia-backend"})
+    assert not corre_en_cloud_run({"ENVIRONMENT": "production"})
+    exigir_secretos_en_la_nube({"ENVIRONMENT": "production"})
 
 
 def test_fuera_de_la_nube_sin_secretos_arranca():
@@ -129,7 +139,7 @@ def _python(codigo: str, **variables) -> subprocess.CompletedProcess:
 
 
 SALUD = (
-    "import json; from fastapi.testclient import TestClient; from api.index import app; "
+    "import json; from fastapi.testclient import TestClient; from main import app; "
     "r = TestClient(app).get('/health'); print('SALUD=' + json.dumps([r.status_code, r.json().get('status')]))"
 )
 
@@ -140,18 +150,19 @@ def _salud(resultado: subprocess.CompletedProcess) -> list:
     return json.loads(linea[-1][len("SALUD="):])
 
 
-def test_api_index_en_la_nube_sin_jwt_secret_responde_503_startup_error():
+def test_main_en_la_nube_sin_jwt_secret_no_arranca():
     resultado = _python(SALUD, K_SERVICE="evydentia-backend", SESSION_SECRET=_secreto())
-    assert _salud(resultado) == [503, "STARTUP_ERROR"]
+    assert resultado.returncode != 0
     assert REGLA_SECRETOS in resultado.stderr and "JWT_SECRET" in resultado.stderr
 
 
-def test_api_index_en_la_nube_con_secretos_validos_no_es_startup_error():
-    """Control: el 503 anterior se debe a la guarda, no a otra cosa del entorno."""
+def test_main_en_la_nube_con_secretos_validos_arranca():
+    """Control: el fallo anterior se debe a la guarda, no a otra cosa del entorno."""
     # SEC-17: en Cloud Run también hacen falta DATABASE_URL con lopdp_app y CORS_ORIGINS https (ficticios).
     resultado = _python(SALUD, K_SERVICE="evydentia-backend", JWT_SECRET=_secreto(), SESSION_SECRET=_secreto(),
                         DATABASE_URL=f"postgresql+psycopg://lopdp_app:{_secreto()}@db.ejemplo.invalid:5432/evydentia",
-                        CORS_ORIGINS="https://app.ejemplo.invalid")
+                        CORS_ORIGINS="https://app.ejemplo.invalid", PROXIES_CONFIABLES="1")  # SEC-21
+    assert resultado.returncode == 0, resultado.stderr[-2000:]
     assert _salud(resultado)[1] != "STARTUP_ERROR", resultado.stderr[-2000:]
 
 
@@ -162,8 +173,8 @@ def test_fuera_de_la_nube_sin_secretos_la_configuracion_carga_como_hoy():
     assert resultado.stdout.strip().endswith("True")
 
 
-def test_api_index_ya_no_pone_jwt_secret_por_defecto():
-    texto = (RAIZ / "api" / "index.py").read_text(encoding="utf-8")
+def test_main_no_pone_jwt_secret_por_defecto():
+    texto = (RAIZ / "main.py").read_text(encoding="utf-8")
     assert 'setdefault("JWT_SECRET"' not in texto
 
 

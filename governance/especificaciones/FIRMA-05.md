@@ -13,7 +13,7 @@ Sin endpoint nuevo. Los casos de matriz usan la API ya definida en FIRMA-03 y FI
 
 - **R1 · FILAS vacía.** `FILAS: list[tuple[str, str, str, set[str]]] = []` en cada archivo; no se añaden filas de roles.
 - **R2 · Aislamiento por UUID.** Cada caso crea sus propios tenants con `uuid4()`, no depende del orden de ejecución y limpia lo que crea en el bloque `finally`.
-- **R3 · Sin producción.** El fixture afirma que `TEST_DATABASE_URL` no contiene `ep-late-hall-b50bpbk5`.
+- **R3 · Base local de pruebas.** El fixture valida `TEST_DATABASE_URL` mediante `exigir_base_de_pruebas()` contra PostgreSQL 16 local o el servicio del CI.
 - **R4 · Rol restringido.** Los casos de FIRMA-03 usan `SET LOCAL ROLE lopdp_app` para verificar los permisos de la tabla `firma_sessions`; los de FIRMA-04 usan el router HTTP con `AsyncClient`.
 - **R5 · Sin secretos en código.** El secreto del webhook en FIRMA-04.py se genera con `secrets.token_hex(16)` en cada ejecución y se inyecta con `monkeypatch.setenv`.
 
@@ -23,7 +23,7 @@ Sin interfaz.
 
 ## 5. Aceptación
 
-Las matrices se ejecutan por ruta, contra la rama Neon de pruebas de la persona: `pytest tests/matriz/FIRMA-03.py tests/matriz/FIRMA-04.py`.
+Las matrices se ejecutan por ruta, contra la base local de pruebas de la persona: `pytest tests/matriz/FIRMA-03.py tests/matriz/FIRMA-04.py`.
 
 ### Matriz FIRMA-03 (10 casos)
 

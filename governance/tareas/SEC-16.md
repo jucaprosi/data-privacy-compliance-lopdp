@@ -5,17 +5,17 @@ ola = "D"
 estado = "hecha"
 sala = "pasillo_central, biblioteca"
 depende_de = ["SEC-15", "FIRMA-06", "BIB-104", "SEC-06", "RM-13"]
-propiedad = ["app_core/config.py#SEC-16", "api/index.py", "features/biblioteca/services/archivos.py#SEC-16", "tests/test_sec16_secretos_obligatorios.py"]
+propiedad = ["app_core/config.py#SEC-16", "features/biblioteca/services/archivos.py#SEC-16", "tests/test_sec16_secretos_obligatorios.py"]
 arbitro = "pytest tests/test_sec16_secretos_obligatorios.py + suite completa + vigilantes; prueba de mutación documentada"
 rastros = ["¤seguridad", "¤arbitro"]
 +++
 
 # SEC-16 · Secretos obligatorios en la nube
 
-**Cambio 2026-11-07 (todo en Google Cloud, decisión del propietario):** la nube es Cloud Run. La detección de nube es solo `K_SERVICE`, que Cloud Run define siempre; donde esta ficha dice `VERCEL=1` o `VERCEL_ENV=production`, se lee `K_SERVICE` definida. La sección «Antes de fusionar» sobre Vercel queda para el PMV congelado: en EVYDENTIA, `JWT_SECRET` y `SESSION_SECRET` van en Secret Manager, montadas en el servicio de Cloud Run (las carga el propietario con Antigravity).
+**Arquitectura en Google Cloud:** la detección de nube usa `K_SERVICE`, definida siempre en Cloud Run. En EVYDENTIA, `JWT_SECRET` y `SESSION_SECRET` se gestionan en Secret Manager y se montan por servicio en Cloud Run.
 
 **Hallazgo (2026-11-05, preparación del guion de publicación, PR #422).** Tres sitios del backend ponen una clave escrita en el código cuando falta la variable. El repositorio es público, así que esas claves son conocidas:
-- `api/index.py:12`, el punto de entrada de Vercel: `os.environ.setdefault("JWT_SECRET", ...)`.
+- La entrada única `main.app` en Cloud Run falla cerrado cuando faltan secretos obligatorios.
 - `app_core/config.py:48`: la misma clave por defecto para `JWT_SECRET`.
 - `features/biblioteca/services/archivos.py:24`: los enlaces de descarga de la Biblioteca se firman con `SESSION_SECRET`, y si falta, con `SECRET_KEY` o una clave fija.
 
@@ -36,7 +36,7 @@ Si en producción falta la variable, o se carga con otro nombre (en Google Cloud
 
 ## Pruebas
 - `tests/test_sec16_secretos_obligatorios.py`:
-  - en la nube (`VERCEL=1`), cada uno de estos casos lanza el error:
+  - en la nube (`K_SERVICE` definida), cada uno de estos casos lanza `RuntimeError`:
     - sin `JWT_SECRET`;
     - con la clave por defecto;
     - con una de 20 caracteres;
@@ -46,19 +46,19 @@ Si en producción falta la variable, o se carga con otro nombre (en Google Cloud
     El mensaje nunca contiene el valor;
   - en la nube, con dos secretos válidos: arranca;
   - fuera de la nube, sin ninguna de las dos: arranca, como hoy;
-  - importar `api.index` en un subproceso con `VERCEL=1` y sin `JWT_SECRET`: `/health` responde 503 con `STARTUP_ERROR`;
+  - importar `main` en un subproceso con `K_SERVICE` definido y sin `JWT_SECRET` falla cerrado en el arranque;
   - `archivos.py`, en la nube y sin `SESSION_SECRET`, no firma enlaces.
 - Las pruebas usan valores generados en la propia prueba, nunca secretos reales.
 - Mutación documentada: quitar la comprobación de la clave por defecto; el caso «con la clave por defecto» debe fallar.
 
 ## Antes de fusionar
-- `JWT_SECRET` y `SESSION_SECRET` deben estar cargadas en Vercel, en **Production y Preview**. Si no, el despliegue siguiente responde 503. Ver `governance/operaciones/PUBLICACION_PMV.md`, paso 2.1, y `VARIABLES_VERCEL.md`.
+- `JWT_SECRET` y `SESSION_SECRET` deben estar declaradas en Secret Manager para los servicios de Cloud Run.
 - En Google Cloud, el secreto se llama `JWT_SECRET`, no `JWT_SECRET_KEY`.
 
 ## Límites
 - No cambia el algoritmo ni la duración de los tokens.
 - No rota claves: rotar lo hacen las personas.
-- No toca `DEEPSEEK_API_KEY` (`features/roadmap/ai/client.py`, con `dummy_key` por defecto). Una clave falsa ahí solo hace fallar la llamada a la IA y no abre acceso.
+- La inferencia en Vertex AI opera mediante credenciales ADC sin claves estáticas.
 
 ## Notas para el propietario
 - `api/index.py` también pone por defecto `DATABASE_URL` (SQLite en `/tmp`) y `CORS_ORIGINS="*"`. En la nube, los dos fallan abiertos: el primero esconde una base mal configurada y el segundo admite cualquier origen. Merecen la misma guarda, pero es una decisión aparte.

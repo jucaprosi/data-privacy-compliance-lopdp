@@ -27,7 +27,20 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 # El caso apagado del PMV lo cubre tests/test_fe26_sin_subida_pmv.py.
 @pytest.fixture(autouse=True)
 def _evidencia_fisica_encendida(monkeypatch):
+    from types import SimpleNamespace
+    from api.routers import roadmaps as router_roadmaps
+    from app_core.storage import FirmaSubida
+
     monkeypatch.setenv("EVIDENCIA_FISICA", "true")
+    almacen = SimpleNamespace(
+        firmar_subida=lambda clave, mime: FirmaSubida(
+            clave=clave,
+            url=f"https://storage.googleapis.com/pruebas/{clave}",
+            metodo="PUT",
+            cabeceras={"Content-Type": mime},
+        )
+    )
+    monkeypatch.setattr(router_roadmaps, "_almacen_evidencias", lambda: almacen)
 # === fin FE-26 ===
 
 

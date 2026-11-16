@@ -2,7 +2,7 @@
 id = "DEMO-02"
 titulo = "Ciclo de sesión demo: entrar, tope, reemplazo, terminar, vencimiento y orquestador de la copia"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "demo"
 depende_de = ["DEMO-00", "DEMO-08", "DEMO-03", "DEMO-03a", "DEMO-03b", "DEMO-03c", "DEMO-03d", "GCP-01"]
 propiedad = ["features/demo/domain/vendedores.py", "features/demo/services/entrada_engine.py", "features/demo/services/cierre_engine.py", "api/routers/demo_sesion.py", "tests/test_demo_ciclo.py"]
@@ -36,8 +36,8 @@ rastros = ["¤demo"]
 - Nunca uses la base ni el proyecto de producción; solo datos ficticios con correos `.invalid`.
 
 ## Fuentes
-- `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
-- `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
+- `governance/artefactos/PRD.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
+- `governance/artefactos/INVARIANTS.md`, invariantes 60 a 63.
 - Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
 - Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.
 

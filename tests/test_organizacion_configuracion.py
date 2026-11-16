@@ -31,9 +31,12 @@ pytestmark = pytest.mark.asyncio
 
 
 def _async_url() -> str:
-    url = os.environ.get("TEST_DATABASE_URL") or os.environ.get("DATABASE_URL")
+    from conftest import exigir_base_de_pruebas
+
+    url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         pytest.skip("Sin TEST_DATABASE_URL para tests de BD")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url

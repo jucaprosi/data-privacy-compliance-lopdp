@@ -1,6 +1,6 @@
 # Demo comercial EVYDENTIA — cambios de UX/UI frente a la demo del PMV (DEMO-04)
 
-UX/UI de EVYDENTIA · 2026-11-07 · Fuentes: PRD_EVYDENTIA_REVENTA_NUBE.md §5.5 y §5.6 (PR #435, rama `tarea/juan-carlos/prd-evydentia-demo`); FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md §1 (Arquitecto ADPA). Antecedente: `governance/apoyo/UX_DEMO_COMERCIAL.md`. **Todo lo que no se cita aquí sigue igual que en el antecedente.**
+UX/UI de EVYDENTIA · 2026-11-07 · Fuentes: PRD.md §5.5 y §5.6 (PR #435, rama `tarea/juan-carlos/prd-evydentia-demo`); FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md §1 (Arquitecto ADPA). Antecedente: `governance/apoyo/UX_DEMO_COMERCIAL.md`. **Todo lo que no se cita aquí sigue igual que en el antecedente.**
 
 Nota: en `origin/main` todavía no existe el aviso de EP-02 ni `GET /api/v1/entorno` en el frontend. Esta especificación define el componente común; la tarea que lo construya primero (EP-02 o DEMO-04) lo crea y la otra lo reutiliza.
 
@@ -45,7 +45,7 @@ Orden fijo, de acuerdo con el ciclo que se enseña: Administrador de la organiza
 | DPO | Supervisa con independencia: reúne el soporte del diagnóstico, lo sella y valida la evidencia. |
 | Coordinador | Reparte las tareas a las áreas y hace la primera validación de la evidencia. |
 | Implementador | Acompaña el RAT, la Biblioteca y el plan de acción. |
-| Responsable de área · *Unidad* | Responde los dominios de su unidad, ejecuta sus tareas y carga la evidencia. |
+| Responsable de área · *Unidad* | Responde los dominios de su unidad, pero lo que responde queda como borrador hasta que el DPO lo verifique y lo selle. |
 | Auditor | Audita por dominio, levanta actas por área y verifica las acciones correctivas. |
 
 Textos propuestos por el CTO, alineados con el §3 del PRD EVYDENTIA y con el art. 48 de la LOPDP (independencia del DPO). **Validados por el propietario el 2026-11-07, incluida la versión del DPO que dice «reúne el soporte».** Los cuatro ojos son el coordinador y el DPO; el responsable de área no aprueba el cierre de sus propias tareas.

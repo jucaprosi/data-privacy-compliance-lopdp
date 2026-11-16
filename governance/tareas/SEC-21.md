@@ -2,10 +2,10 @@
 id = "SEC-21"
 titulo = "Límite por IP en la ruta pública GET /api/v1/entorno"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central"
-depende_de = ["SEC-13", "SEC-13a"]
-propiedad = ["app_core/limites/politicas.py", "api/middleware/limite_peticiones.py", "tests/test_limite_entorno_publico.py", "governance/apoyo/BRIEF_PROPIETARIO_SEC21_WORKFLOW.md"]
+depende_de = ["SEC-13", "SEC-13a", "DEMO-00", "SEC-16", "SEC-17"]
+propiedad = ["app_core/limites/politicas.py", "api/middleware/limite_peticiones.py", "tests/test_limite_entorno_publico.py", "governance/apoyo/BRIEF_PROPIETARIO_SEC21_WORKFLOW.md", "tests/test_sec13_limite_peticiones.py", "tests/test_demo00_entorno_limite.py"]
 crea = ["tests/test_limite_entorno_publico.py", "governance/apoyo/BRIEF_PROPIETARIO_SEC21_WORKFLOW.md"]
 arbitro = "pytest tests/test_limite_entorno_publico.py tests/test_sec13_limite_peticiones.py; mutaciones documentadas; revisión de Seguridad"
 rastros = ["¤seguridad"]
@@ -58,3 +58,6 @@ Detrás del balanceador externo de GCP, X-Forwarded-For llega como «<IP cliente
 - **Complemento recomendado, no bloqueante:** una regla de rate limit en Cloud Armor para `/api/v1/entorno`, que el propietario aplica por brief.
 
 Sin `import yaml` ni migración. Lleva revisión de Seguridad; no pasa por UX/UI.
+
+**Ampliación 2026-11-11 (Tech Lead, a petición de la sesión de SEC-21):** con `PROXIES_CONFIABLES=0` por defecto fuera de la nube (la IP del cliente no sale de `X-Forwarded-For`), dos pruebas de otras fichas fallan: `tests/test_sec13_limite_peticiones.py::test_ip_tras_balanceador` (espera la última entrada de XFF sin configurar nada; está en el árbitro de SEC-21 y debe seguir en verde) y `tests/test_demo00_entorno_limite.py` (separa cubetas con XFF de una entrada). SEC-21 asume ambos archivos solo para ajustes mínimos: en `test_sec13_limite_peticiones.py::test_ip_tras_balanceador`, fijar `PROXIES_CONFIABLES=1` con `monkeypatch`; en `test_demo00_entorno_limite.py`, tres retoques: `PROXIES_CONFIABLES=1` en el fixture, el nombre de la variable que baja el tope (`LIMITE_ENTORNO_PUBLICO` en lugar de `LIMITE_API_GENERAL`) y la política esperada de `test_entorno_cae_en_la_politica_general` (`("entorno_publico",)` en lugar de `("api_general",)`), por diseño de la ficha. No cambia otra lógica ni otras aserciones. Mantiene el valor por defecto de la ficha.
+- **Dos pruebas ajenas que cambian con el arranque (propiedad ampliada por el Tech Lead, 2026-11-12, a petición de la sesión; SEC-16 y SEC-17 hechas):** `tests/test_sec16_secretos_obligatorios.py::test_api_index_en_la_nube_con_secretos_validos_no_es_startup_error` y `tests/test_sec17_configuracion_nube.py::test_api_index_en_la_nube_con_configuracion_valida_no_es_startup_error` simulan Cloud Run (`K_SERVICE`) con configuración válida, y con SEC-21 el arranque exige `PROXIES_CONFIABLES`. Cambio mínimo: añadir `PROXIES_CONFIABLES="1"` a la llamada `_python(...)` de esa prueba en cada archivo (una línea cada uno), como en #627. Comprobado por la sesión: con ese valor pasan.

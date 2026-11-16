@@ -15,8 +15,6 @@ from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-import features.biblioteca.biblioteca_service as _bib
-
 from api.errores import ErrorNegocio
 from api.rbac import get_context, require_role
 from app_core.db.session import get_tenant_session
@@ -44,14 +42,13 @@ async def crear_aceptaciones(
 ):
     """Envía un documento aprobado a una o varias personas como enlace con caducidad."""
     try:
-        enlaces = await firma.crear_enlaces(
+        enlaces = await firma.enviar_a_aceptacion(
             session,
             tenant_id=ctx["tenant_id"],
             user_id=ctx["user_id"],
             documento_id=str(solicitud.documento_id),
             persona_ids=solicitud.persona_ids,
             dias_vigencia=solicitud.dias_vigencia,
-            obtener_doc=getattr(_bib, "obtener_documento_para_firma", None),
         )
     except ErrorNegocio:
         raise
@@ -85,5 +82,5 @@ async def verificar_documento(
     contenido = await archivo.read(MAX_VERIFICAR_BYTES + 1)
     if len(contenido) > MAX_VERIFICAR_BYTES:
         raise ErrorNegocio("ARCHIVO_DEMASIADO_GRANDE", detail="El archivo supera 10 MB.", status_code=413)
-    coincide, tipo = await firma.verificar_hash(session, ctx["tenant_id"], contenido)
+    coincide, tipo = await firma.verificar_archivo(session, ctx["tenant_id"], ctx["user_id"], contenido)
     return {"coincide": coincide, "tipo": tipo}

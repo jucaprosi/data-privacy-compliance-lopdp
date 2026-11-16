@@ -110,7 +110,7 @@ async def ctx():
     app.dependency_overrides[get_session] = session_override
     app.dependency_overrides[get_context] = lambda: dict(identidad)
     async with AsyncClient(transport=ASGITransport(app=app, raise_app_exceptions=False), base_url="http://test") as client:
-        yield {"client": client, "factory": factory, "tenant": tenant, "otro": otro, "dpo": dpo}
+        yield {"client": client, "factory": factory, "tenant": tenant, "otro": otro, "dpo": dpo, "identidad": identidad}
     app.dependency_overrides.clear()
 
     async with factory() as s:
@@ -136,11 +136,22 @@ async def _real_sellado(factory, tenant: str, como_app: bool = False) -> bool:
             await s.execute(text("SET LOCAL ROLE lopdp_app"))
         return await pasillo.diagnostico_real_sellado(s, tenant)
 
+async def _guardar(ctx, ruta, cuerpo):
+    """Siembra como administrador (DIAG-07b): cambia el rol de la identidad solo durante el PUT."""
+    identidad = ctx["identidad"]
+    antes = identidad["role"]
+    identidad["role"] = "admin_organizacion"
+    try:
+        return await ctx["client"].put(ruta, json=cuerpo)
+    finally:
+        identidad["role"] = antes
+
+
 
 @pytest.mark.asyncio
 async def test_primer_sello_prueba_segundo_real_tercero_409(ctx):
     c = ctx["client"]
-    assert (await c.put(RESPUESTAS, json={"respuestas": [_respuesta(1)]})).status_code == 200
+    assert (await _guardar(ctx, RESPUESTAS, {"respuestas": [_respuesta(1)]})).status_code == 200
     assert (await c.get(ETAPA)).json() == {"etapa": None, "siguiente": "prueba"}
 
     primero = await c.post(RESULTADOS, json={"perfil": {}})
@@ -175,13 +186,13 @@ async def test_primer_sello_prueba_segundo_real_tercero_409(ctx):
 @pytest.mark.asyncio
 async def test_tras_el_real_guardar_respuestas_es_409(ctx):
     c = ctx["client"]
-    await c.put(RESPUESTAS, json={"respuestas": [_respuesta(1)]})
+    await _guardar(ctx, RESPUESTAS, {"respuestas": [_respuesta(1)]})
     # Entre el de prueba y el real las respuestas siguen abiertas.
     assert (await c.post(RESULTADOS, json={"perfil": {}})).status_code == 201
-    assert (await c.put(RESPUESTAS, json={"respuestas": [_respuesta(1, 4)]})).status_code == 200
+    assert (await _guardar(ctx, RESPUESTAS, {"respuestas": [_respuesta(1, 4)]})).status_code == 200
     assert (await c.post(RESULTADOS, json={"perfil": {}})).status_code == 201
 
-    r = await c.put(RESPUESTAS, json={"respuestas": [_respuesta(1, 5)]})
+    r = await _guardar(ctx, RESPUESTAS, {"respuestas": [_respuesta(1, 5)]})
     assert r.status_code == 409, r.text
     assert r.json()["code"] == "DIAG_RESPUESTAS_CERRADAS"
     assert (await c.get(RESPUESTAS)).json()["respuestas"][0]["nivel_asignado"] == 4
@@ -190,7 +201,7 @@ async def test_tras_el_real_guardar_respuestas_es_409(ctx):
 @pytest.mark.asyncio
 async def test_diagnostico_real_sellado_no_ve_otra_organizacion(ctx):
     c = ctx["client"]
-    await c.put(RESPUESTAS, json={"respuestas": [_respuesta(1)]})
+    await _guardar(ctx, RESPUESTAS, {"respuestas": [_respuesta(1)]})
     await c.post(RESULTADOS, json={"perfil": {}})
     await c.post(RESULTADOS, json={"perfil": {}})
 
@@ -211,7 +222,7 @@ async def test_diagnostico_real_sellado_no_ve_otra_organizacion(ctx):
 @pytest.mark.asyncio
 async def test_la_base_rechaza_un_tercer_sello(ctx):
     c = ctx["client"]
-    await c.put(RESPUESTAS, json={"respuestas": [_respuesta(1)]})
+    await _guardar(ctx, RESPUESTAS, {"respuestas": [_respuesta(1)]})
     await c.post(RESULTADOS, json={"perfil": {}})
     await c.post(RESULTADOS, json={"perfil": {}})
     from app_core.db.session import fijar_contexto_rls

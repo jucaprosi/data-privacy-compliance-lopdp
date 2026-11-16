@@ -114,11 +114,8 @@ test("Prueba de integración: roadmapApi contra MockServer", async () => {
     options
   );
   assert(genRes.job_id.startsWith("job-"));
-
-  // 8. Consultar estado del job
-  const job = await roadmapApi.getJob(genRes.job_id, options);
-  assert.equal(job.status, "completed");
-  assert(job.roadmap_id);
+  assert.equal(genRes.status, "completed");
+  assert(genRes.roadmap_id);
 });
 
 test("Prueba de integración: Evidencias y Regla de Cuatro Ojos contra MockServer", async () => {
@@ -138,12 +135,12 @@ test("Prueba de integración: Evidencias y Regla de Cuatro Ojos contra MockServe
     { filename: "politica.pdf", mime_type: "application/pdf", file_size: 2048 },
     options
   );
-  assert(uploadUrlInfo.upload_url.includes("mock-r2.local"));
-  assert(uploadUrlInfo.r2_key.includes("politica.pdf"));
+  assert(uploadUrlInfo.upload_url.includes("mock-gcs.local"));
+  assert(uploadUrlInfo.clave_objeto.includes("politica.pdf"));
 
   const registered = await roadmapApi.registerEvidence(
     "task-002",
-    { r2_key: uploadUrlInfo.r2_key, mime_type: "application/pdf", file_size: 2048 },
+    { clave_objeto: uploadUrlInfo.clave_objeto, mime_type: "application/pdf", file_size: 2048 },
     options
   );
   assert.equal(registered.validation_status, "pending");
@@ -229,3 +226,50 @@ test("Prueba de integración: organizacionApi contra MockServer", async () => {
   assert.equal(grant.role, "coordinador");
   assert.equal(grant.user_id, newUser.id);
 });
+
+// === RM-25c ===
+// Mutación ejecutada: quitar `/primera-validacion` de la ruta de `registrarPrimeraValidacion` deja en rojo la primera prueba.
+test("RM-25c: registrarPrimeraValidacion hace POST a la ruta de la primera validación con los ids codificados", async () => {
+  const llamadas: { url: string; metodo: string }[] = [];
+  const customFetch: typeof fetch = async (entrada, init) => {
+    llamadas.push({ url: String(entrada), metodo: init?.method ?? "GET" });
+    return new Response(
+      JSON.stringify({
+        id: "evi/1",
+        task_id: "t 1",
+        tenant_id: "t",
+        clave_objeto: "k",
+        validation_status: "pending",
+        primera_validacion_por: "u-coord",
+        primera_validacion_rol: "coordinador",
+        primera_validacion_en: "2026-11-10T15:00:00Z",
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
+  };
+  setIdentitySession({ userId: "u-coord", tenantId: "t", role: "coordinador" });
+  const evidencia = await roadmapApi.registrarPrimeraValidacion("t 1", "evi/1", { customFetch });
+  assert.equal(llamadas.length, 1);
+  assert.equal(llamadas[0].metodo, "POST");
+  assert.match(llamadas[0].url, /\/roadmaps\/tasks\/t%201\/evidence\/evi%2F1\/primera-validacion$/);
+  assert.equal(evidencia.primera_validacion_rol, "coordinador");
+  assert.equal(evidencia.primera_validacion_por, "u-coord");
+});
+
+test("RM-25c: un 409 de la primera validación llega como ApiError con su código", async () => {
+  const customFetch: typeof fetch = async () =>
+    new Response(JSON.stringify({ detail: "Ya registrada.", code: "RM_PRIMERA_VALIDACION_YA_REGISTRADA" }), {
+      status: 409,
+      headers: { "Content-Type": "application/json" },
+    });
+  await assert.rejects(
+    () => roadmapApi.registrarPrimeraValidacion("t1", "e1", { customFetch }),
+    (err: unknown) => {
+      assert(err instanceof ApiError);
+      assert.equal(err.status, 409);
+      assert.equal(err.code, "RM_PRIMERA_VALIDACION_YA_REGISTRADA");
+      return true;
+    }
+  );
+});
+// === fin RM-25c ===

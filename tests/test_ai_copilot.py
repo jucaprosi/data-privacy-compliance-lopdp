@@ -8,17 +8,16 @@ client = TestClient(app)
 
 
 @pytest.fixture(autouse=True)
-def proveedores_en_modo_local(monkeypatch, tmp_path):
-    """Aísla la suite de .env y de la red: el asistente responde con el respaldo local."""
-    monkeypatch.setattr(assistant_provider, "ENV_PATH", tmp_path / "sin-deepseek.env")
-    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+def proveedores_en_modo_local(monkeypatch):
+    """Aísla la suite de la compuerta: el asistente responde con el respaldo local."""
+    from types import SimpleNamespace
 
-    class ClienteProhibido:
-        def __init__(self, *args, **kwargs):
-            raise AssertionError("La suite del copiloto no debe abrir HTTP hacia DeepSeek")
+    async def prohibido(*args, **kwargs):
+        raise AssertionError("La suite del copiloto no debe llamar a la compuerta de inferencia")
 
-    monkeypatch.setattr(assistant_provider.httpx, "AsyncClient", ClienteProhibido)
+    monkeypatch.setattr(assistant_provider, "pasillo_inferencia", SimpleNamespace(
+        estado=lambda: SimpleNamespace(disponible=False), generar_estructurado=prohibido,
+    ))
 
 class MockSession:
     async def commit(self): pass
@@ -36,7 +35,31 @@ async def override_get_db():
 
 app.dependency_overrides[get_tenant_session] = override_get_db
 
-def test_ai_copilot_diagnosticar_mock():
+@pytest.fixture
+def compuerta_falsa(monkeypatch):
+    """Doble de la compuerta de inferencia para el diagnóstico: sin red, sin Vertex, sin clave."""
+    from types import SimpleNamespace
+    from app_core.pasillo import inferencia as pasillo_inferencia
+
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    traza = SimpleNamespace(prompt_id="ai_copilot.plan_mitigacion", prompt_version=1)
+
+    async def generar_trazado(prompt, valores, esquema, *, modelo, org_id, corpus_sha256=None):
+        brechas = ["Falta cláusula en NDA", "Política de retención vencida"]
+        plan = esquema.model_validate({
+            "analisis_general": "Plan de mitigación de prueba.",
+            "tareas_propuestas": [{"descripcion": b, "impacto_riesgo": "ALTO"} for b in brechas],
+        })
+        return plan, traza
+
+    async def registrar_traza(session, traza, entidad, entidad_id):
+        return None
+
+    monkeypatch.setattr(pasillo_inferencia, "generar_trazado", generar_trazado)
+    monkeypatch.setattr(pasillo_inferencia, "registrar_traza", registrar_traza)
+
+
+def test_ai_copilot_diagnosticar_mock(compuerta_falsa):
     headers = {"X-Tenant-ID": "tenant-corp-test"}
     payload = {
         "id_diagnostico": "DIAG-12345",
@@ -133,4 +156,4 @@ def test_estado_declara_coherencia_del_proveedor_activo():
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data["inferencia_externa_habilitada"], bool)
-    assert data["modo"] == ("deepseek" if data["inferencia_externa_habilitada"] else "local")
+    assert data["modo"] == ("externo" if data["inferencia_externa_habilitada"] else "local")

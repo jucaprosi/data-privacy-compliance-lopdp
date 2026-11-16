@@ -29,4 +29,4 @@ Sin cambios visibles: las publicaciones dejan de interrumpir a los usuarios.
 
 ## 6. Trazabilidad
 
-- PRD_EVYDENTIA_REVENTA_NUBE §5.4 pilar 3 y criterio 31; invariante `INV_PROGRESSIVE_DELIVERY_EXPAND_CONTRACT`.
+- PRD §5.4 pilar 3 y criterio 31; invariante `INV_PROGRESSIVE_DELIVERY_EXPAND_CONTRACT`.

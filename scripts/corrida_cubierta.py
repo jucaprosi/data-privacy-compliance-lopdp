@@ -7,8 +7,9 @@ el árbol que probaría el PR es el mismo que probó el push, así que el PR esp
 resultado en vez de repetir el arnés y Playwright. Si no hubo push, si uno de los dos falló o fue cancelado,
 o si la rama está detrás de la base, el PR corre los suyos. Nunca se da por cubierto lo que no pasó.
 
-Un PR hacia main nunca adopta: el push de una rama corrió contra el PostgreSQL en contenedor, y el pooler
-y la latencia reales de Neon solo se comprueban en la corrida propia del PR.
+Desde CI-17 tanto el push como el PR corren contra el mismo PostgreSQL en contenedor, así que un PR hacia
+main también adopta la corrida del push con el mismo commit. La rama base se recibe por compatibilidad con
+el workflow, pero ya no decide nada.
 """
 from __future__ import annotations
 
@@ -21,7 +22,6 @@ import time
 
 ARNESES = ("Arnés por salas", "Arnés completo")
 PLAYWRIGHT = "Playwright Frontend"
-RAMA_NEON = "main"  # la única base cuyos PR exigen una corrida contra Neon
 WORKFLOW = "zero-regression-pipeline.yml"
 ESPERA_APARICION_S = 90  # el push y el PR nacen casi a la vez; la corrida del push puede tardar en listarse
 LIMITE_S = 40 * 60
@@ -79,8 +79,6 @@ def resultado_del_arnes(jobs: list[dict]) -> str | None:
 def decidir(repositorio: str, sha: str, base: str, rama_base: str, corrida_actual: int, api=consultar_api,
             git=ejecutar_git, dormir=time.sleep, reloj=time.monotonic, limite_s: float = LIMITE_S, pausa_s: float = PAUSA_S,
             espera_aparicion_s: float = ESPERA_APARICION_S) -> tuple[int | None, str]:
-    if rama_base == RAMA_NEON:
-        return None, "hacia main el PR corre su propio arnés contra Neon; una corrida del contenedor no lo cubre"
     if not base:
         return None, "sin base de comparación: solo un PR reutiliza la corrida del push"
     if not al_dia(base, sha, git):

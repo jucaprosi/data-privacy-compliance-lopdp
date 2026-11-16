@@ -29,10 +29,13 @@ from features.roadmap.services.auditoria_engine import registrar_auditoria
 from features.roadmap.services.consulta_engine import get_kpis, get_roadmap
 from features.roadmap.services.evidencia_engine import (
     list_evidence,
+    almacen_evidencias,
+    firmar_subida_evidencia,
     register_evidence_upload,
+    validar_archivo_evidencia,
+    validar_clave_objeto_tenant,
     validate_evidence,
 )
-from features.roadmap.services.generacion_engine import enqueue_generation, get_job
 from features.roadmap.services.tarea_estado_engine import update_task_status
 
 __all__ = [
@@ -52,13 +55,15 @@ __all__ = [
     "TaskPriority",
     "TaskStatus",
     "TaskStatusUpdate",
-    "enqueue_generation",
     "ensure_task_in_area_scope",
-    "get_job",
     "get_kpis",
     "get_roadmap",
     "list_evidence",
+    "almacen_evidencias",
+    "firmar_subida_evidencia",
     "register_evidence_upload",
+    "validar_archivo_evidencia",
+    "validar_clave_objeto_tenant",
     "registrar_auditoria",
     "update_task_status",
     "validate_evidence",
@@ -327,7 +332,12 @@ __all__.extend(["RM_EVIDENCIA_NO_DISPONIBLE", "EvidenciaFisicaDesconocida", "evi
 # === fin FE-26 ===
 
 # === DEMO-03c ===
-# Reservada para DEMO-03c: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+from features.roadmap.services.clon_plantilla_engine import (  # noqa: E402
+    clonar_desde_plantilla,
+    sembrar_en_plantilla,
+)
+
+__all__.extend(["clonar_desde_plantilla", "sembrar_en_plantilla"])
 # === fin DEMO-03c ===
 
 
@@ -338,5 +348,104 @@ from features.roadmap.domain import errores as _errores_sala  # noqa: E402,F401
 
 
 # === ORG-15 ===
-# Sección reservada para ORG-15 (cartera por pertenencia).
+# ¤cartera
+from app_core.zona_negocio import hoy_negocio as _hoy_negocio  # noqa: E402
+from features.roadmap.services.contexto_tenant import set_session_context as _fijar_contexto  # noqa: E402
+
+
+async def contar_tareas_vencidas(session, tenant_id: str, user_id: str, hoy=None) -> int:
+    """Tareas no completadas con `end_date` anterior al día de negocio (ORG-15, R5)."""
+    await _fijar_contexto(session, tenant_id, user_id)
+    cuenta = await session.execute(
+        _sql_text(
+            "SELECT count(*) FROM roadmap_tasks WHERE tenant_id = :t AND status <> 'completada' "
+            "AND end_date IS NOT NULL AND end_date < :hoy"
+        ),
+        {"t": tenant_id, "hoy": hoy or _hoy_negocio()},
+    )
+    return int(cuenta.scalar_one())
 # === fin ORG-15 ===
+
+# === DIAG-12 ===
+# ¤roadmap ¤diagnostico-estados Lectura de tareas cerradas con evidencia validada, para los estados del diagnóstico.
+from features.roadmap.services.tareas_validadas_engine import (  # noqa: E402
+    tareas_cerradas_con_evidencia_validada,
+)
+
+__all__.extend(["tareas_cerradas_con_evidencia_validada"])
+# === fin DIAG-12 ===
+
+# === RM-25a ===
+# ¤roadmap Primera validación de la evidencia por el Coordinador.
+from features.roadmap.services.evidencia_doble_validacion_engine import (  # noqa: E402
+    registrar_primera_validacion,
+)
+
+__all__.extend(["registrar_primera_validacion"])
+# === fin RM-25a ===
+
+# === RM-26 ===
+# ¤roadmap ¤arbitro Cifras de la hoja de ruta calculadas por código determinista.
+from features.roadmap.domain.esfuerzo_controles import (  # noqa: E402
+    HORAS_POR_PRIORIDAD,
+    PlanCifrado,
+)
+from features.roadmap.services.cifras_engine import cifrar_plan  # noqa: E402
+
+__all__.extend(["HORAS_POR_PRIORIDAD", "PlanCifrado", "cifrar_plan"])
+# === fin RM-26 ===
+
+# === ADPA-12 ===
+# ¤adpa Carga automática de extensiones de compuerta por ficha (features/roadmap/compuerta/<ficha>.py).
+import importlib as _importlib  # noqa: E402
+import pkgutil as _pkgutil  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+from types import ModuleType as _ModuleType  # noqa: E402
+
+
+def cargar_extensiones_compuerta(
+    paquete: str,
+    carpeta: _Path,
+    espacio: dict[str, object],
+    publicos: list[str],
+    importar=_importlib.import_module,
+) -> list[str]:
+    """Descubre y fusiona submódulos de `carpeta` en `espacio` y `publicos` en orden alfabético."""
+    if not carpeta.is_dir():
+        return []
+    cargados: list[str] = []
+    for _, nombre_mod, _ in sorted(_pkgutil.iter_modules([str(carpeta)]), key=lambda item: item[1]):
+        if nombre_mod.startswith("_"):
+            continue
+        mod: _ModuleType = importar(f"{paquete}.{nombre_mod}")
+        exportados = getattr(mod, "__all__", None)
+        if not isinstance(exportados, (list, tuple)) or not exportados or not all(
+            isinstance(x, str) and x for x in exportados
+        ):
+            raise ValueError(f"{paquete}.{nombre_mod}: debe declarar __all__ no vacío")
+        reemplaza = set(getattr(mod, "REEMPLAZA", ()))
+        if not reemplaza.issubset(set(exportados)):
+            raise ValueError(f"{paquete}.{nombre_mod}: REEMPLAZA contiene nombres fuera de __all__")
+        for simbolo in exportados:
+            if not hasattr(mod, simbolo):
+                raise AttributeError(f"{paquete}.{nombre_mod}: '{simbolo}' en __all__ no existe en el módulo")
+            valor = getattr(mod, simbolo)
+            if simbolo in espacio and espacio[simbolo] is not valor and simbolo not in reemplaza:
+                raise ValueError(
+                    f"Colisión en compuerta {paquete}: '{simbolo}' ya existe y {nombre_mod} no lo declara en REEMPLAZA"
+                )
+            espacio[simbolo] = valor
+            if simbolo not in publicos:
+                publicos.append(simbolo)
+        cargados.append(nombre_mod)
+    return cargados
+
+
+COMPUERTAS_FICHA_CARGADAS = cargar_extensiones_compuerta(
+    "features.roadmap.compuerta",
+    _Path(__file__).resolve().parent / "compuerta",
+    globals(),
+    __all__,
+)
+# === fin ADPA-12 ===
+

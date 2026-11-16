@@ -26,8 +26,27 @@ import {
 } from "@/lib/evidencias/hash";
 import type { EvidenciaDocumental } from "@/lib/evidencias/tipos";
 // --- INICIO EVI-01 ---
+/** Si el servidor registró y comprobó el documento, o si solo vive en este navegador. */
+function EstadoEnServidor({ evidencia }: { evidencia: EvidenciaDocumental }) {
+  return evidencia.enServidor ? (
+    <div data-testid="estado-servidor" className="mt-1 text-[10px] font-semibold text-[#00c853]">
+      Registrado y comprobado en el servidor
+    </div>
+  ) : (
+    <div
+      data-testid="estado-servidor"
+      title="No está en el almacén de la organización; otras personas no lo ven."
+      className="mt-1 text-[10px] text-[var(--ui-texto-suave)]"
+    >
+      <span aria-hidden="true">⚠ </span>
+      Solo en este navegador
+      <span className="sr-only">. No está en el almacén de la organización; otras personas no lo ven.</span>
+    </div>
+  );
+}
 // --- FIN EVI-01 ---
 // --- INICIO EVI-02 ---
+import PaqueteInspeccion from "@/components/evidencias/PaqueteInspeccion";
 // --- FIN EVI-02 ---
 
 const NOMBRE_CONTROL: ReadonlyMap<number, string> = new Map(
@@ -257,6 +276,8 @@ export default function EvidenciasModule() {
         />
       </div>
 
+      <PaqueteInspeccion />
+
       {evidencias.length === 0 ? (
         <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-10 flex flex-col items-center text-center space-y-3">
           <div className="w-12 h-12 rounded-full bg-[var(--ui-boton)] flex items-center justify-center">
@@ -330,6 +351,7 @@ export default function EvidenciasModule() {
                       </td>
                       <td className="p-3 font-mono text-[10px] text-[var(--ui-texto-suave)] whitespace-nowrap">
                         {formatearFechaRegistro(e.registradaEn)}
+                        <EstadoEnServidor evidencia={e} />
                       </td>
                     </tr>
                   ))}

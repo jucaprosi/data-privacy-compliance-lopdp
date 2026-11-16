@@ -40,3 +40,7 @@ __all__ = [
     "revocar_invitacion",
     "verificar_operador",
 ]
+
+# === ORG-20 ===
+# Sección reservada para ORG-20.
+# === fin ORG-20 ===

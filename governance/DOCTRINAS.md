@@ -1,4 +1,4 @@
-# Doctrinas Constitucionales de JUBYS Plataforma LOPDP 360
+# Doctrinas Constitucionales de EVYDENTIA Plataforma LOPDP 360
 `¤doctrinas`
 `¤reglas` `¤dpo-independencia` `¤evidencias` `¤regulation-code` `¤copiloto-ia`
 

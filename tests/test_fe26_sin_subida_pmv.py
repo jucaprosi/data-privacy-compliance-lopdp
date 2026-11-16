@@ -10,7 +10,7 @@ Con el interruptor apagado, `upload-url` y el registro de evidencia responden 40
 registrados. Con él encendido se conserva el comportamiento de antes, incluidos los permisos de
 `responsable_area` y `coordinador`.
 
-Las pruebas de la API recorren PostgreSQL real (rama Neon de revisión propia, nunca producción);
+Las pruebas de la API recorren PostgreSQL 16 local o el servicio PostgreSQL 16 del CI;
 sin TEST_DATABASE_URL se omiten.
 
 Prueba de mutación documentada (FE-26): ver la cabecera de frontend/tests/pmv/sin-subida.spec.ts
@@ -30,6 +30,8 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from conftest import exigir_base_de_pruebas
+
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
     os.environ["DATABASE_URL"] = _TEST_URL
@@ -46,7 +48,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 SUBIDA = "/api/v1/roadmaps/tasks/{tarea}/evidence/upload-url"
 REGISTRO = "/api/v1/roadmaps/tasks/{tarea}/evidence"
 CUERPO = {"filename": "evidencia.pdf", "mime_type": "application/pdf", "file_size": 1024}
-REGISTRO_PARAMS = {"r2_key": "evidencia.pdf", "mime_type": "application/pdf", "file_size": 1024}
+REGISTRO_PARAMS = {"clave_objeto": "tenant-pmv/task-pmv/evidencia.pdf", "mime_type": "application/pdf", "file_size": 1024}
 
 
 # --- Interruptor (sin base) -------------------------------------------------------------------
@@ -95,7 +97,7 @@ def _h(user: str, tenant: str, role: str) -> dict[str, str]:
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una rama de desarrollo o test (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     monkeypatch.delenv("EVIDENCIA_FISICA", raising=False)
     from app_core.db.session import get_session
@@ -170,7 +172,20 @@ async def test_apagado_la_lista_de_evidencias_sigue_respondiendo(ctx):
 
 @pytest.mark.asyncio
 async def test_encendido_se_conserva_la_subida_y_sus_permisos(ctx, monkeypatch):
+    from types import SimpleNamespace
+    from api.routers import roadmaps as router_roadmaps
+    from app_core.storage import FirmaSubida
+
     monkeypatch.setenv("EVIDENCIA_FISICA", "true")
+    almacen = SimpleNamespace(
+        firmar_subida=lambda clave, mime: FirmaSubida(
+            clave=clave,
+            url=f"https://storage.googleapis.com/pruebas/{clave}",
+            metodo="PUT",
+            cabeceras={"Content-Type": mime},
+        )
+    )
+    monkeypatch.setattr(router_roadmaps, "_almacen_evidencias", lambda: almacen)
     r = await ctx["client"].post(SUBIDA.format(tarea="any-task"), json=CUERPO, headers=_como(ctx, "responsable_area"))
     assert r.status_code == 200, r.text
     assert {"url", "key"} <= set(r.json())

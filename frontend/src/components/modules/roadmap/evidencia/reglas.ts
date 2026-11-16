@@ -23,8 +23,8 @@ export const TIPOS_PERMITIDOS: Readonly<Record<string, readonly string[]>> = {
 
 export const EXTENSIONES_PERMITIDAS: readonly string[] = Object.values(TIPOS_PERMITIDOS).flat();
 
-/** Tamaño máximo por archivo en la interfaz: 10 MB. El límite real lo fija el servidor (no verificado aquí). */
-export const TAMANO_MAXIMO_BYTES = 10 * 1024 * 1024;
+/** Tamaño máximo por archivo en la interfaz: 25 MB, alineado con el límite de Cloud Storage en el servidor. */
+export const TAMANO_MAXIMO_BYTES = 25 * 1024 * 1024;
 
 /** Suben evidencia el responsable de área y el coordinador (PRD §5.2). */
 export function puedeSubir(rol: OrganizacionRole): boolean {
@@ -47,7 +47,7 @@ export function bloqueaCuatroOjos(usuarioId: string, evidencia: TaskEvidence): b
   return Boolean(evidencia.uploaded_by) && evidencia.uploaded_by === usuarioId;
 }
 
-export function nombreDeArchivo(r2Key: string): string {
-  const partes = r2Key.split("/");
-  return partes[partes.length - 1] || r2Key;
+export function nombreDeArchivo(claveObjeto: string): string {
+  const partes = claveObjeto.split("/");
+  return partes[partes.length - 1] || claveObjeto;
 }

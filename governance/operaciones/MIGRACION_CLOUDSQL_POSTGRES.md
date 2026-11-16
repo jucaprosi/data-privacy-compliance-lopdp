@@ -1,8 +1,8 @@
-# Migración de Neon a Cloud SQL PostgreSQL 16 (GCP-04)
+# Migración de la base del PMV a Cloud SQL PostgreSQL 16 (GCP-04)
 `¤cloud-run-perf` `¤seguridad-tenant` `¤ci-cd`
 
 Procedimiento para el propietario. Lo ejecuta una persona con Antigravity; ninguna sesión de IA
-escribe en Google Cloud ni en la base. El PMV sigue congelado en Neon y Vercel: este corte afecta
+escribe en Google Cloud ni en la base. Este procedimiento aplica a los servicios en Cloud Run y Cloud SQL de EVYDENTIA:
 solo a EVYDENTIA.
 
 ## Estado de destino
@@ -21,11 +21,11 @@ solo a EVYDENTIA.
 1. **Crear la instancia** según `cloud_sql_instance.yaml`, crear la base `evydentia_prod` y el usuario
    `lopdp_beta_owner`. Guardar su contraseña en Secret Manager.
 2. **Esquema por Alembic, no por copia de DDL.** Desde `main`, con `MIGRATION_DATABASE_URL` apuntando a
-   la instancia: `python -m alembic upgrade head`. La migración `20261008_app_role_rls` crea
+   la instancia: `python -m alembic upgrade heads` (una cabeza por sala, CI-28). La migración `20261008_app_role_rls` crea
    `lopdp_app` y fuerza RLS en las tablas con políticas.
 3. **Activar el rol de la aplicación:** `ALTER ROLE lopdp_app WITH LOGIN PASSWORD '<secreto>';` en la
    consola SQL. La contraseña va solo a Secret Manager, dentro del secreto `DATABASE_URL`.
-4. **Datos (si se migran desde Neon).** Con la escritura detenida en origen y destino:
+4. **Datos (si se migran desde la base remota del PMV).** Con la escritura detenida en origen y destino:
    1. Volcar el origen en formato personalizado, que es el que lee `pg_restore`:
       `pg_dump -Fc --data-only --no-owner --no-privileges -f datos.dump`.
    2. Quitar FORCE durante la carga. FORCE ROW LEVEL SECURITY también aplica al dueño, y

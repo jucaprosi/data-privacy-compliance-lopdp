@@ -1,8 +1,8 @@
 # ¤adpa
 # ¤¤developer-architect
-"""Árbitro BIB-105: reglas puras y persistencia real opt-in en Neon propio.
+"""Árbitro BIB-105: reglas puras y persistencia real contra PostgreSQL 16 local o servicio PostgreSQL 16 del CI.
 
-Sin TEST_DATABASE_URL solo se ejecutan reglas/contratos; los skips no acreditan RLS.
+Sin base local solo se ejecutan reglas/contratos; los skips no acreditan RLS.
 No aplica migraciones automáticamente ni crea asignaciones reales: datos sintéticos rollback.
 """
 import base64
@@ -16,6 +16,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from pydantic import ValidationError
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
@@ -263,7 +264,7 @@ def test_migracion_base_unica_sin_asignaciones():
     configuracion = Config(str(ROOT / "alembic.ini"))
     configuracion.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(configuracion)
-    cabezas = guion.get_heads()
+    cabezas = [cabeza_de_sala("biblioteca", guion)]
     assert len(cabezas) == 1
     assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
     assert isinstance(migracion.down_revision, str)
@@ -295,11 +296,12 @@ def test_migracion_audita_capacidades_con_search_path_fijo():
 # ¤adpa
 @pytest_asyncio.fixture
 async def db_bib():
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall-b50bpbk5" in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or os.environ.get("BIB105_RAMA_PROPIA") != "1":
-        pytest.skip("Persistencia/RLS pendientes: falta rama Neon propia (TEST_DATABASE_URL y BIB105_RAMA_PROPIA=1)")
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)
@@ -308,7 +310,7 @@ async def db_bib():
         try:
             existe = (await conexion.execute(text("SELECT to_regclass('public.biblioteca_versiones')"))).scalar()
             if not existe:
-                pytest.fail("Aplicar migración BIB-105 solo en la rama propia antes de este árbitro", pytrace=False)
+                pytest.fail("Aplicar migración BIB-105 en la base de pruebas antes de este árbitro", pytrace=False)
             ids = {rol: "bib-test-" + uuid4().hex for rol in ("editor", "tecnico", "juridico", "publicador", "sin_permiso")}
             for rol, usuario in ids.items():
                 await conexion.execute(text("INSERT INTO users(id,email,nombre) VALUES (:id,:email,:nombre)"),

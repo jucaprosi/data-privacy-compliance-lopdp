@@ -16,7 +16,7 @@ Sin navegador: lee la configuración y las especificaciones como texto.
 Mutación documentada (también automatizada abajo, sobre copias temporales):
 - quitar una entrada de `SOLO_DESARROLLO` hace fallar `test_ninguna_especificacion_queda_sin_proyecto`
   y el mensaje nombra ese archivo;
-- marcar BIB-401 como `hecha` hace fallar la excepción.
+- una excepción cuya tarea está `hecha` caduca y hace fallar la prueba (con una excepción sintética).
 """
 import re
 from pathlib import Path
@@ -29,14 +29,28 @@ PRUEBAS = RAIZ / "frontend" / "tests"
 TAREAS = RAIZ / "governance" / "tareas"
 FUERA = ("integracion", "humo")  # tienen su propia configuración (playwright.integracion / .humo)
 
-# {especificación relativa a frontend/tests: tarea que la arregla}. Una sola entrada (CI-16).
-EXCEPCIONES = {"biblioteca/plantillas-cuenta.spec.ts": "BIB-401"}
+# {especificación relativa a frontend/tests: tarea que la arregla}. Vacío desde el cierre de BIB-401 (2026-11-13).
+EXCEPCIONES: dict[str, str] = {}
 
 SALTA_EN_PRODUCCION = re.compile(r"""test\.skip\(\s*\w+\.project\.name\s*===\s*["']produccion["']""")
 
 
-def patrones_solo_desarrollo(config: Path = CONFIG) -> list[str]:
+def patrones_solo_desarrollo(config: Path = CONFIG, pruebas: Path = PRUEBAS) -> list[str]:
+    """CI-30: Soporta autodescubrimiento dinámico o lista fija heredada."""
     texto = config.read_text(encoding="utf-8")
+    if "descubrirSoloDesarrollo" in texto:
+        encontrados = ["**/*-activa.spec.ts"]
+        claves_simulacion = ("fijarAjustes", "__LOPDP_AUTH_PRUEBAS__", "harness-roadmap")
+        for f in sorted(pruebas.rglob("*.spec.ts")):
+            if any(p in f.parts for p in FUERA):
+                continue
+            rel = f.relative_to(pruebas).as_posix()
+            if f.name.endswith("-activa.spec.ts"):
+                continue
+            contenido = f.read_text(encoding="utf-8")
+            if SALTA_EN_PRODUCCION.search(contenido) or any(k in contenido for k in claves_simulacion):
+                encontrados.append(f"**/{rel}")
+        return encontrados
     bloque = re.search(r"const SOLO_DESARROLLO\s*=\s*\[(.*?)\];", texto, flags=re.S)
     assert bloque, "No se encontró `const SOLO_DESARROLLO = [...]` en playwright.config.ts"
     return re.findall(r"""["']([^"']+)["']""", bloque.group(1))
@@ -92,9 +106,11 @@ def estado_de_tarea(tarea: str, tareas: Path = TAREAS) -> str:
 
 
 def sin_proyecto(config: Path = CONFIG, pruebas: Path = PRUEBAS, tareas: Path = TAREAS,
-                 excepciones: dict[str, str] = EXCEPCIONES) -> list[str]:
+                 excepciones: dict[str, str] = EXCEPCIONES,
+                 patrones: list[str] | None = None) -> list[str]:
     """Especificaciones que no correrían en ningún proyecto del CI, con lo que hay que añadir."""
-    patrones = patrones_solo_desarrollo(config)
+    if patrones is None:
+        patrones = patrones_solo_desarrollo(config, pruebas)
     faltan = []
     for relativa, linea in especificaciones_que_saltan_en_produccion(pruebas).items():
         if coincide(relativa, patrones):
@@ -124,7 +140,7 @@ def test_el_inventario_ve_las_especificaciones_de_biblioteca():
 
 
 def test_las_excepciones_son_pocas_y_apuntan_a_tareas_reales():
-    assert EXCEPCIONES == {"biblioteca/plantillas-cuenta.spec.ts": "BIB-401"}
+    assert len(EXCEPCIONES) <= 1, EXCEPCIONES
     for relativa, tarea in EXCEPCIONES.items():
         assert (PRUEBAS / relativa).is_file(), relativa
         # Mientras la excepción vale, el archivo no está en SOLO_DESARROLLO (si lo estuviera, sobra).
@@ -156,17 +172,21 @@ def _copia(tmp_path: Path, config: str | None = None, estado_bib401: str | None 
     return config_copia, tareas
 
 
-def test_mutacion_quitar_una_entrada_falla_y_nombra_el_archivo(tmp_path):
-    original = CONFIG.read_text(encoding="utf-8")
-    entrada = '  "**/biblioteca/descarga.spec.ts",\n'
-    assert entrada in original.replace("\r\n", "\n")
-    config, tareas = _copia(tmp_path, config=original.replace("\r\n", "\n").replace(entrada, ""))
-    faltan = sin_proyecto(config=config, tareas=tareas)
+def test_mutacion_quitar_una_entrada_falla_y_nombra_el_archivo():
+    patrones = [p for p in patrones_solo_desarrollo() if p != "**/biblioteca/descarga.spec.ts"]
+    faltan = sin_proyecto(patrones=patrones)
     assert len(faltan) == 1 and faltan[0].startswith("frontend/tests/biblioteca/descarga.spec.ts:"), faltan
     assert '"**/biblioteca/descarga.spec.ts"' in faltan[0]
 
 
 def test_mutacion_bib401_hecha_hace_caducar_la_excepcion(tmp_path):
-    config, tareas = _copia(tmp_path, estado_bib401="hecha")
-    faltan = sin_proyecto(config=config, tareas=tareas)
+    sintetica = {"biblioteca/plantillas-cuenta.spec.ts": "BIB-401"}
+    patrones = [p for p in patrones_solo_desarrollo() if p != "**/biblioteca/plantillas-cuenta.spec.ts"]
+    tareas = tmp_path / "tareas"
+    tareas.mkdir()
+    ficha = (TAREAS / "BIB-401.md").read_text(encoding="utf-8")
+    (tareas / "BIB-401.md").write_text(re.sub(r'^estado\s*=\s*"[^"]+"', 'estado = "en_curso"', ficha, count=1, flags=re.M), encoding="utf-8")
+    assert sin_proyecto(tareas=tareas, excepciones=sintetica, patrones=patrones) == []
+    (tareas / "BIB-401.md").write_text(re.sub(r'^estado\s*=\s*"[^"]+"', 'estado = "hecha"', ficha, count=1, flags=re.M), encoding="utf-8")
+    faltan = sin_proyecto(tareas=tareas, excepciones=sintetica, patrones=patrones)
     assert len(faltan) == 1 and "plantillas-cuenta.spec.ts" in faltan[0] and "caducó" in faltan[0], faltan

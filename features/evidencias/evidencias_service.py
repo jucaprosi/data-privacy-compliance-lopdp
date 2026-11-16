@@ -102,7 +102,12 @@ def reiniciar_repositorio_evidencias() -> None:
     reiniciar_repositorio()
 
 # === DEMO-03e ===
-# Reservada para DEMO-03e: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+from features.evidencias.services.clon_plantilla_engine import (  # noqa: E402
+    clonar_desde_plantilla,
+    sembrar_en_plantilla,
+)
+
+__all__.extend(["clonar_desde_plantilla", "sembrar_en_plantilla"])
 # === fin DEMO-03e ===
 
 
@@ -110,3 +115,53 @@ def reiniciar_repositorio_evidencias() -> None:
 # ¤adpa Los códigos de error de esta sala viven en features/evidencias/domain/errores.py y se registran al importarlo.
 from features.evidencias.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+# === EVI-01 ===
+# ¤evidencias Documentos guardados en el almacén y comprobados por el servidor.
+from app_core.storage.gcs import FirmaSubida  # noqa: E402,F401
+from features.evidencias.domain.models import (  # noqa: E402,F401
+    ROLES_CONSULTA_DOCUMENTOS,
+    DocumentoEvidencia,
+)
+from features.evidencias.domain.retencion import retencion_dias  # noqa: E402,F401
+from features.evidencias.services.evidencias_engine import (  # noqa: E402,F401
+    almacen_de_evidencias,
+    confirmar_subida,
+    controles_con_documento_registrado,
+    desvincular_documento,
+    listar_documentos,
+    pedir_subida,
+    subida_firmada_activa,
+    vincular_documento,
+)
+# === fin EVI-01 ===
+
+# === EVI-02 ===
+# ¤evidencias-vigencia Vigencia, visibilidad y paquete para inspección.
+from features.evidencias.domain import errores as errores_sala  # noqa: E402,F401
+from features.evidencias.domain.vigencia import AtributosDocumento, esta_vigente, puede_ver  # noqa: E402,F401
+from features.evidencias.services.paquete_inspeccion_engine import armar_paquete  # noqa: E402,F401
+from features.evidencias.services.vigencia_engine import (  # noqa: E402,F401
+    atributos_de,
+    controles_con_documento_vigente,
+    controles_para_sellar,
+    documentos_vencidos_de_controles,
+    fijar_atributos,
+    listar_atributos,
+)
+# === fin EVI-02 ===
+
+# === EVI-03 ===
+from features.evidencias.domain.models import ROLES_DEFINIR_ATRIBUTOS  # noqa: E402,F401
+from features.evidencias.domain.vigencia import ROLES_VEN_TODO  # noqa: E402,F401
+# === fin EVI-03 ===
+
+# === EVI-04 ===
+# ¤evidencias Custodia de documentos generados por el servidor; el llamador ya autorizó, no se expone por router.
+from app_core.storage.gcs import ObjetoYaExiste  # noqa: E402,F401
+from features.evidencias.services.custodia_generados_engine import (  # noqa: E402,F401
+    TIPOS_EVIDENCIA,
+    CustodiaInvalida,
+    custodiar_documento_generado,
+)
+# === fin EVI-04 ===

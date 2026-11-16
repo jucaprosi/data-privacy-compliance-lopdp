@@ -174,28 +174,13 @@ export const useRoadmapStore = create<RoadmapState>()(
       generateRoadmap: async (variables: PlanningVariables, assessment: Record<string, unknown> = {}) => {
         set({ isGenerating: true, lastError: null });
         try {
-          const { job_id } = await roadmapApi.generate(variables, assessment);
-
-          // Espera determinista del resultado del job
-          let attempts = 0;
-          const maxAttempts = 30;
-          let roadmapId = "";
-
-          while (attempts < maxAttempts) {
-            attempts++;
-            const job = await roadmapApi.getJob(job_id);
-            if (job.status === "completed" && job.roadmap_id) {
-              roadmapId = job.roadmap_id;
-              break;
-            }
-            if (job.status === "failed") {
-              throw new Error(job.error || "Falló la generación del roadmap");
-            }
-            await new Promise((r) => setTimeout(r, 1000));
+          const resultado = await roadmapApi.generate(variables, assessment);
+          if (resultado.status === "failed") {
+            throw new Error(resultado.error || "Falló la generación del roadmap");
           }
-
+          const roadmapId = resultado.roadmap_id;
           if (!roadmapId) {
-            throw new ApiError(504, "Tiempo de espera agotado al generar el roadmap", "TIMEOUT");
+            throw new ApiError(500, "No se recibió el identificador del roadmap generado", "GENERATION_FAILED");
           }
 
           await get().loadRoadmap(roadmapId);
@@ -311,18 +296,19 @@ export const useRoadmapStore = create<RoadmapState>()(
             file_size: file.size,
           });
 
-          // 2. Simular o realizar subida directa a R2
+          // 2. Simular o realizar subida directa a Cloud Storage
           if (uploadInfo.upload_url.startsWith("http")) {
+            const cabecerasSubida = uploadInfo.cabeceras ?? uploadInfo.headers ?? {};
             await fetch(uploadInfo.upload_url, {
               method: "PUT",
-              headers: { "Content-Type": file.type || "application/octet-stream" },
+              headers: { "Content-Type": file.type || "application/octet-stream", ...cabecerasSubida },
               body: file,
             });
           }
 
           // 3. Registrar evidencia en backend
           const registered = await roadmapApi.registerEvidence(taskId, {
-            r2_key: uploadInfo.r2_key,
+            clave_objeto: uploadInfo.clave_objeto,
             mime_type: file.type || "application/octet-stream",
             file_size: file.size,
           });

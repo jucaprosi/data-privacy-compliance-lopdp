@@ -28,8 +28,8 @@ from sqlalchemy.engine import make_url
 
 from app_core import huellas_produccion as huellas
 from app_core.huellas_produccion import (
-    HUELLA_HOST_PRODUCCION, INSTANCIA_CLOUD_SQL_PRODUCCION, VARIABLES_DEL_CONECTOR, apunta_a_produccion,
-    base_es_produccion,
+    INSTANCIA_CLOUD_SQL_PRODUCCION, VARIABLES_DEL_CONECTOR, apunta_a_produccion,
+    base_es_produccion, es_base_local,
 )
 
 INSTANCIA = INSTANCIA_CLOUD_SQL_PRODUCCION
@@ -67,11 +67,15 @@ def test_1_cada_variable_del_conector(sin_red, variable, valor):
 
 
 def test_1_control_otra_instancia_y_local_no_son_produccion(sin_red):
-    assert not apunta_a_produccion(f"postgresql://lopdp_app@/db?host=/cloudsql/{OTRA_INSTANCIA}", {})
+    cloudsql_pruebas = f"postgresql://lopdp_app@/db?host=/cloudsql/{OTRA_INSTANCIA}"
+    assert not apunta_a_produccion(cloudsql_pruebas, {})
+    assert not es_base_local(cloudsql_pruebas, {})
     assert not apunta_a_produccion("postgresql://lopdp_app@127.0.0.1:5432/lopdp", {})
+    assert es_base_local("postgresql://lopdp_app@127.0.0.1:5432/lopdp", {})
     assert not apunta_a_produccion("postgresql://lopdp_app@127.0.0.1:5432/lopdp",
                                    {"CLOUD_SQL_INSTANCE": OTRA_INSTANCIA})
-    assert apunta_a_produccion(f"postgresql://u@{HUELLA_HOST_PRODUCCION}.neon.invalid/db", {})
+    assert not apunta_a_produccion("postgresql://u@db.remota.invalid/db", {})
+    assert not es_base_local("postgresql://u@db.remota.invalid/db", {})
 
 
 def test_1_la_variable_del_despliegue_esta_en_la_lista():

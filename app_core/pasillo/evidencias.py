@@ -17,3 +17,62 @@ def huella_registrada(tenant_id: str, sha256: str) -> Optional[str]:
 # === ADPA-06 ===
 # ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
 # === fin ADPA-06 ===
+
+# === DIAG-04 ===
+# Sección reservada para DIAG-04.
+# === fin DIAG-04 ===
+
+# === DEMO-03e ===
+# ¤demo Copia y siembra de la sala para la demo «Cooperativa Demo»; la lógica vive en el motor de la sala.
+async def clonar_desde_plantilla(session, origen: str, destino: str, mapa_ids: dict) -> dict:
+    from features.evidencias import evidencias_service
+
+    return await evidencias_service.clonar_desde_plantilla(session, origen, destino, mapa_ids)
+
+
+async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
+    from features.evidencias import evidencias_service
+
+    await evidencias_service.sembrar_en_plantilla(session, plantilla_id, datos)
+# === fin DEMO-03e ===
+
+
+# === CAPA-04 ===
+# Sección reservada para CAPA-04.
+# === fin CAPA-04 ===
+
+
+# === FOR-01 ===
+# Sección reservada para FOR-01.
+# === fin FOR-01 ===
+
+
+# === EVI-04 ===
+# ¤evidencias Custodia de documentos generados: el llamador ya autorizó; no exponer por router.
+async def custodiar_documento_generado(session, tenant_id: str, user_id: str, **datos) -> dict:
+    from features.evidencias import evidencias_service
+
+    return await evidencias_service.custodiar_documento_generado(session, tenant_id, user_id, **datos)
+# === fin EVI-04 ===
+
+# === INC-02 ===
+# ¤evidencias Huella de un documento custodiado de la organización, con la misma fuente que
+# GET /evidencias/documentos (evidencias_documentos); None si no es válida o no está custodiada.
+async def huella_custodiada(session, tenant_id: str, user_id: str, sha256: str) -> Optional[str]:
+    from features.evidencias import evidencias_service
+
+    try:
+        huella = evidencias_service.normalizar_sha256(sha256)
+    except evidencias_service.HashInvalido:
+        return None
+    documentos = await evidencias_service.listar_documentos(session, tenant_id, user_id)
+    return huella if any(d.sha256 == huella for d in documentos) else None
+# === fin INC-02 ===
+
+# === MTGE-03 ===
+# Sección reservada para MTGE-03.
+# === fin MTGE-03 ===
+
+
+# === TER-02 ===
+# === fin TER-02 ===

@@ -2,7 +2,7 @@
 id = "CAPA-03"
 titulo = "La evidencia vencida reabre el control periódico y produce un hallazgo"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "auditoria_capa"
 depende_de = ["CAPA-02", "EVI-02", "RM-21", "ADPA-05", "ADPA-06"]
 propiedad = ["features/auditoria_capa/services/reapertura_engine.py", "features/auditoria_capa/auditoria_capa_service.py#CAPA-03", "tests/test_controles_reapertura.py", "features/auditoria_capa/domain/errores.py#CAPA-03", "app_core/pasillo/auditoria_capa.py#CAPA-03", "app_core/pasillo/evidencias.py#CAPA-03", "app_core/pasillo/roadmap.py#CAPA-03", "app_core/pasillo/notificaciones.py#CAPA-03", "app_core/pasillo/dpo_cockpit.py#CAPA-03"]

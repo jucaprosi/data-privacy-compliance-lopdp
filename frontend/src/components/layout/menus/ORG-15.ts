@@ -1,12 +1,21 @@
 // ¤navegacion-menus
 /**
- * Submenús de ORG-15. FE-22 lo deja vacío: lo llena ORG-15 cuando cree sus pantallas, y solo ORG-15
- * edita este archivo. Si la pantalla es una vista nueva, se declara aquí mismo:
- *
- *   declare module "../dashboardNavigation" {
- *     interface VistasRegistradas { mi_vista: true }
- *   }
+ * Submenú de ORG-15 en el menú INICIO: el tablero de cartera. Solo ORG-15 edita este archivo.
  */
 import type { Submenu } from "./base";
 
-export const SUBMENUS_ORG_15: Submenu[] = [];
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    cartera: true;
+  }
+}
+
+export const SUBMENUS_ORG_15: Submenu[] = [
+  {
+    vista: "cartera",
+    menu: "inicio",
+    nombre: "Tablero de cartera",
+    subtitulo: "Tus organizaciones y sus semáforos",
+    orden: 2,
+  },
+];

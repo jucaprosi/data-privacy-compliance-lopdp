@@ -16,7 +16,7 @@ rastros = ["¤diagnostico", "¤dpo-independencia"]
 1. **diagnóstico de prueba**;
 2. **diagnóstico real**, que es la línea base.
 
-Los dos son assessments de diagnóstico. Después del real, el assessment actual sale de los **estados** (`DIAG-12`); las 80 preguntas no se vuelven a contestar. Contrato: `PRD_EVYDENTIA_REVENTA_NUBE.md`, Módulo 1, e invariantes 58 y 59 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`.
+Los dos son assessments de diagnóstico. Después del real, el assessment actual sale de los **estados** (`DIAG-12`); las 80 preguntas no se vuelven a contestar. Contrato: `PRD.md`, Módulo 1, e invariantes 58 y 59 de `INVARIANTS.md`.
 
 **Hoy** el sellado de `DIAG-03` encadena sellos sin límite (`secuencia` 1, 2, 3…, en `features/diagnostico/services/resultados_engine.py`).
 

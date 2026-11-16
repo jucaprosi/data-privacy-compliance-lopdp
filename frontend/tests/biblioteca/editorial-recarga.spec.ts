@@ -34,7 +34,7 @@ async function preparar(page: Page, responder: (n: number, tenant: string, perso
     }
     // Rastro de si el panel llegó a pintarse en algún momento.
     new MutationObserver(() => {
-      if (document.body?.innerText.includes("dashboard.adpa.view")) sessionStorage.setItem("bib119-paso-panel", "1");
+      if (document.querySelector('[data-testid="pestana-vista"]')?.textContent === "Tablero de la organización") sessionStorage.setItem("bib119-paso-panel", "1");
     }).observe(document, { subtree: true, childList: true, characterData: true });
   }, ORG_A);
   await page.route("**/api/v1/**", (ruta) => ruta.fulfill({ status: 503, json: { detail: "API simulada" } }));
@@ -69,7 +69,7 @@ async function entrarEnEditorial(page: Page) {
 
 const pasoPorPanel = (page: Page) => page.evaluate(() => sessionStorage.getItem("bib119-paso-panel") === "1");
 const marcarSinPanel = (page: Page) => page.evaluate(() => sessionStorage.removeItem("bib119-paso-panel"));
-const enPanel = (page: Page) => expect(page.getByText("dashboard.adpa.view")).toBeVisible();
+const enPanel = (page: Page) => expect(page.getByTestId("pestana-vista").getByText("Tablero de la organización", { exact: true })).toBeVisible();
 
 test.describe("Biblioteca: capacidades editoriales al recargar y cambiar de persona (BIB-119)", () => {
   test.beforeEach(({}, testInfo) => {

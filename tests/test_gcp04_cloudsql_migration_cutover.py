@@ -84,14 +84,15 @@ def test_ci18_01_revision_en_la_unica_cabeza_da_0():
 
 def test_ci18_02_revision_atrasada_da_1():
     assert vc.comprobar_revision("anterior", {"cabeza"}) == 1
-    assert "atrasada" in vc.motivo_revision("anterior", {"cabeza"})
+    assert "atrasada" in vc.motivo_revision_por_conjuntos("anterior", {"cabeza"})
 
 
-def test_ci18_05_varias_cabezas_sin_fusionar_da_1():
+def test_ci18_05_dos_cabezas_por_conjuntos():
     cabezas = {"rama_a", "rama_b"}
-    assert vc.comprobar_revision("rama_a", cabezas) == 1
-    assert vc.comprobar_revision({"rama_a", "rama_b"}, cabezas) == 1
-    assert "cabezas sin fusionar" in vc.motivo_revision("rama_a", cabezas)
+    assert vc.comprobar_revision({"rama_a", "rama_b"}, cabezas) == 0
+    assert vc.comprobar_revision({"rama_a"}, cabezas) == 1
+    assert vc.comprobar_revision({"rama_a", "rama_b", "zz"}, cabezas) == 1
+    assert vc.comprobar_revision(None, cabezas) == 1
 
 
 def test_ci18_06_base_sin_alembic_version_da_1():
@@ -140,7 +141,7 @@ def test_verificador_contra_postgres_16_con_lopdp_app(monkeypatch):
     assert estado.tablas_sin_rls == [], estado.tablas_sin_rls
     assert vc.evaluar(estado, exigir_ssl=False) == []
     # CI-18: la base migrada del CI está en la cabeza del repositorio.
-    assert vc.comprobar_revision(estado.revision, vc.cabezas_del_repositorio()) == 0
+    assert vc.motivo_revision_por_conjuntos(estado.revision, vc.cabezas_del_repositorio()) is None  # CI-28: una cabeza por sala
 
 
 @pytest.mark.skipif(not os.environ.get("TEST_DATABASE_URL"), reason="sin TEST_DATABASE_URL")

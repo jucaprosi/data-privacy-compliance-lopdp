@@ -68,6 +68,14 @@
 | Transferencias internacionales | §5 Ubicación de los datos (452) | LOPDP arts. 55 a 61: art. 56, países con nivel adecuado; art. 57, garantías adecuadas; art. 58, normas corporativas vinculantes; art. 59, autorización; art. 60, casos excepcionales; art. 61, control continuo | LOPDP | https://www.finanzaspopulares.gob.ec/wp-content/uploads/2021/07/ley_organica_de_proteccion_de_datos_personales.pdf | El «Art. 60» de la interfaz solo cubre los casos excepcionales | verificado |
 | Bases de legitimación | §6 Paquete normativo (425) | LOPDP art. 7, nums. 1 a 8 | LOPDP | https://www.finanzaspopulares.gob.ec/wp-content/uploads/2021/07/ley_organica_de_proteccion_de_datos_personales.pdf | 8 bases: consentimiento, obligación legal, orden judicial, interés público, contrato, intereses vitales, bases de acceso público e interés legítimo | verificado |
 | Categorías especiales y datos sensibles | §6 Paquete normativo (425) | LOPDP art. 25 (a a d); art. 4, definición de datos sensibles; art. 26 | LOPDP | https://www.finanzaspopulares.gob.ec/wp-content/uploads/2021/07/ley_organica_de_proteccion_de_datos_personales.pdf | Categorías especiales: datos sensibles, de niñas, niños y adolescentes, de salud y de personas con discapacidad. Datos sensibles: etnia, identidad de género, identidad cultural, religión, ideología, filiación política, pasado judicial, condición migratoria, orientación sexual, salud, datos biométricos y genéticos | verificado |
+| Contrato del encargado, instrucciones y no comunicación | TER-02 §1.2 G01 y G02 | LOPDP art. 34 párr. 2: «deberá estar regulado por un contrato» (R.O. 459, pág. 33) | LOPDP | https://www.spdp.gob.ec/wp-content/uploads/2026/10/02-Ley-Organica-de-Proteccion-de-Datos-Personales-2021_compressed.pdf | Contrato con instrucciones del responsable | verificado |
+| Destrucción o devolución al terminar | TER-02 §1.2 G11 | LOPDP art. 34 párr. 3: «deberán ser destruidos o devueltos al responsable» (pág. 34) | LOPDP | https://www.spdp.gob.ec/wp-content/uploads/2026/10/02-Ley-Organica-de-Proteccion-de-Datos-Personales-2021_compressed.pdf | Destruir o devolver al cumplir la prestación | verificado |
+| Obligaciones del encargado | TER-02 §1.2 G08 | LOPDP art. 47 párrafo final: «tendrá las mismas obligaciones que el responsable» (pág. 42); num. 11 | LOPDP | https://www.spdp.gob.ec/wp-content/uploads/2026/10/02-Ley-Organica-de-Proteccion-de-Datos-Personales-2021_compressed.pdf | Mismas obligaciones en lo aplicable | verificado |
+| Contrato escrito responsable-encargado | TER-02 §1.2 G01 y G02 | Reglamento General art. 41, «De la relación entre responsable y encargado»: «debe regirse por un contrato escrito» (R.O. 435, pág. 22 del PDF) | Reglamento General | https://esacc.corteconstitucional.gob.ec/storage/api/v1/10_DWL_FL/eyJjYXJwZXRhIjoicm8iLCJ1dWlkIjoiMGYxZjliNDctODQzNC00ZmExLTgwNDYtN2UyZGVlZDNiNzMzLnBkZiJ9 | Contrato escrito con instrucciones | verificado |
+| Asistencia en los derechos de los titulares | TER-02 §1.2 G08 | Reglamento General art. 42, «Obligación del responsable»: «el encargado deberá asistir al responsable» (pág. 22) | Reglamento General | https://esacc.corteconstitucional.gob.ec/storage/api/v1/10_DWL_FL/eyJjYXJwZXRhIjoicm8iLCJ1dWlkIjoiMGYxZjliNDctODQzNC00ZmExLTgwNDYtN2UyZGVlZDNiNzMzLnBkZiJ9 | El encargado asiste al responsable | verificado |
+| Subcontratación por el encargado | TER-02 §1.2 G06 y G07 | Reglamento General art. 45, «Contratación»: consta en el contrato o «requerirá la autorización escrita del responsable» (pág. 23) | Reglamento General | https://esacc.corteconstitucional.gob.ec/storage/api/v1/10_DWL_FL/eyJjYXJwZXRhIjoicm8iLCJ1dWlkIjoiMGYxZjliNDctODQzNC00ZmExLTgwNDYtN2UyZGVlZDNiNzMzLnBkZiJ9 | Contrato o autorización escrita | verificado |
+| Devolución o eliminación de datos | TER-02 §1.2 G11 | Reglamento General art. 46, «Eliminación de datos personales»: «deberá devolver o eliminar todos los datos personales» (pág. 23) | Reglamento General | https://esacc.corteconstitucional.gob.ec/storage/api/v1/10_DWL_FL/eyJjYXJwZXRhIjoicm8iLCJ1dWlkIjoiMGYxZjliNDctODQzNC00ZmExLTgwNDYtN2UyZGVlZDNiNzMzLnBkZiJ9 | Devolver o eliminar con todas las copias | verificado |
+| Revisión de registros del encargado | TER-02 §1.2 G12 y G13 | Reglamento General art. 47, «Revisión de registros» (pág. 23) | Reglamento General | https://esacc.corteconstitucional.gob.ec/storage/api/v1/10_DWL_FL/eyJjYXJwZXRhIjoicm8iLCJ1dWlkIjoiMGYxZjliNDctODQzNC00ZmExLTgwNDYtN2UyZGVlZDNiNzMzLnBkZiJ9 | Revisión a solicitud del responsable | verificado |
 
 ## Valor propuesto por parámetro del paquete normativo
 
@@ -97,26 +105,27 @@ Lo genera `python scripts/verificar_citas_legales.py --pares` con los `git grep`
 | `features/biblioteca/domain/reglas.py` | Art. 42 | LOPDP | LOPDP, art. 42 (Evaluación de impacto del tratamiento de datos personales) | verificado |
 | `features/biblioteca/domain/reglas.py` | Art. 47 | LOPDP | LOPDP, art. 47 (Obligaciones del responsable y encargado del tratamiento de datos personales) | verificado |
 | `features/biblioteca/domain/reglas.py` | Art. 48 | LOPDP | LOPDP, art. 47 num. 11 (encargado); el art. 48 es el delegado | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 6 | LOPDP | LOPDP, art. 6 (Normas aplicables al ejercicio de derechos); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 10 | LOPDP | LOPDP, art. 10 (Principios) | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 12 | LOPDP | LOPDP, art. 12 (Derecho a la información); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 13 | LOPDP | LOPDP, art. 13 (Derecho de acceso); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 15 | LOPDP | LOPDP, art. 15 (Derecho de eliminación); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 17 | LOPDP | LOPDP, art. 17 (texto no leído en LEG-03) | no verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 18 | LOPDP | LOPDP, art. 18 (Excepciones a los derechos de rectificación, actualización, eliminación, oposición, anulación y portabilidad) | verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 21 | LOPDP | LOPDP, art. 21 trata decisiones automatizadas sobre niñas, niños y adolescentes, no la representación legal; la cita correcta no se pudo fijar | no verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 22 | LOPDP | LOPDP, art. 62 (requerimiento directo del titular al responsable) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 25 | LOPDP | LOPDP, art. 25 (Categorías especiales de datos personales) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 26 | LOPDP | LOPDP, art. 26 (Tratamiento de datos sensibles) | verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 30 | LOPDP | LOPDP, art. 62 (requerimiento directo del titular); el art. 30 trata datos de salud | verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 31 | LOPDP | LOPDP, arts. 13 a 16 (plazo de quince días) y art. 62 (término de diez días para contestar) | verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 35 | LOPDP | LOPDP, art. 47 num. 12 y art. 51 (Registro Nacional); la LOPDP no regula un «registro de actividades de tratamiento» | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 34 | LOPDP | LOPDP, art. 34 (Acceso a datos personales por parte del encargado); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 37 | LOPDP | LOPDP, art. 37 (Seguridad de datos personales); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 38 | LOPDP | LOPDP, art. 37 (seguridad) y art. 39 (diseño y por defecto); el art. 38 es solo para el sector público | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 39 | LOPDP | LOPDP, art. 39 (Protección de datos personales desde el diseño y por defecto) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 40 | LOPDP | LOPDP, art. 43 (término de 5 días a la Autoridad; 2 días del encargado) y art. 46 (término de 3 días al titular) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 41 | LOPDP | LOPDP, art. 43 (término de 5 días a la Autoridad; 2 días del encargado) y art. 46 (término de 3 días al titular) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 42 | LOPDP | LOPDP, art. 42 (Evaluación de impacto del tratamiento de datos personales) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 43 | LOPDP | LOPDP, art. 42 (evaluación de impacto); el art. 43 es la notificación de vulneraciones | verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 44 | LOPDP | Consulta previa: no aparece en el texto leído de la LOPDP; el art. 44 trata emergencias e incidentes informáticos | no verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 46 | LOPDP | LOPDP, art. 47 num. 10 y 11 (contratos y garantías con el encargado) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 47 | LOPDP | LOPDP, art. 47 (Obligaciones del responsable y encargado del tratamiento de datos personales) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 48 | Res. SPDP-SPD-2026-0005-R | Res. SPDP-SPD-2026-0005-R, art. 48 (texto no leído en LEG-03) | no verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 51 | LOPDP | LOPDP, art. 51 (Registro Nacional de protección de datos personales); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 56 | LOPDP | LOPDP, art. 56 (Transferencia o comunicación internacional de datos personales a países declarados como nivel adecuado de protección) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 57 | LOPDP | LOPDP, art. 57 (Transferencia o comunicación mediante garantías adecuadas) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 7 | LOPDP | LOPDP, art. 7 (Tratamiento legítimo de datos personas) | verificado |
@@ -156,11 +165,7 @@ Lo genera `python scripts/verificar_citas_legales.py --pares` con los `git grep`
 | `features/riesgos_mtge/services/obligaciones_engine.py` | Art. 18 | Res. SPDP-SPD-2026-0005-R | Res. SPDP-SPD-2026-0005-R, art. 18 (texto no leído en LEG-03) | no verificado |
 | `frontend/src/components/AyudaContextual.tsx` | Art. 7 | Ejemplo de formato | No es una cita: ejemplo del formato de búsqueda | verificado |
 | `frontend/src/components/CommandPalette.tsx` | Art. 21 | LOPDP | LOPDP, arts. 12 a 20 (derechos del titular) | verificado |
-| `frontend/src/components/CommandPalette.tsx` | Art. 37 | LOPDP | LOPDP, arts. 13 a 16 (plazo de quince días) y art. 62 (término de diez días para contestar) | verificado |
-| `frontend/src/components/CommandPalette.tsx` | SLA 15 | LOPDP | LOPDP, arts. 13 a 16 (plazo de quince días) y art. 62 (término de diez días para contestar) | verificado |
-| `frontend/src/components/CommandPalette.tsx` | SLA 72 | LOPDP | LOPDP, art. 43 (término de 5 días a la Autoridad; 2 días del encargado) y art. 46 (término de 3 días al titular) | verificado |
 | `frontend/src/components/conocimiento/AyudaView.tsx` | Art. 7 | Ejemplo de formato | No es una cita: ejemplo del formato de búsqueda | verificado |
-| `frontend/src/components/modules/ArcoModule.tsx` | Art. 13 | LOPDP | LOPDP, art. 13 (Derecho de acceso) | verificado |
 | `frontend/src/components/modules/DpoCockpitModule.tsx` | Art. 17 | Reglamento del Delegado | Reglamento del Delegado, art. 17 (consolidado de LEG-01; texto no releído en LEG-03) | no verificado |
 | `frontend/src/components/modules/DpoCockpitModule.tsx` | Art. 4 | Reglamento General | Reglamento General, art. 4 (texto no leído en LEG-03) | no verificado |
 | `frontend/src/components/modules/DpoCockpitModule.tsx` | Art. 49 | LOPDP | LOPDP, art. 49 (Funciones del delegado de protección de datos personales) | verificado |
@@ -176,25 +181,26 @@ Lo genera `python scripts/verificar_citas_legales.py --pares` con los `git grep`
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 10 | LOPDP | LOPDP, art. 10 (Principios) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 25 | LOPDP | LOPDP, art. 25 (Categorías especiales de datos personales) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 26 | LOPDP | LOPDP, art. 26 (Tratamiento de datos sensibles) | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 35 | LOPDP | LOPDP, art. 47 num. 12 y art. 51 (Registro Nacional); la LOPDP no regula un «registro de actividades de tratamiento» | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 47 | LOPDP | LOPDP, art. 47 (Obligaciones del responsable y encargado del tratamiento de datos personales) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 48 | Res. SPDP-SPD-2026-0005-R | Res. SPDP-SPD-2026-0005-R, art. 48 (texto no leído en LEG-03) | no verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 7 | LOPDP | LOPDP, art. 7 (Tratamiento legítimo de datos personas) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 8 | LOPDP | LOPDP, art. 8 (Consentimiento) | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 51 | LOPDP | LOPDP, art. 51 (Registro Nacional de protección de datos personales); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 6 | LOPDP | LOPDP, art. 6 (Normas aplicables al ejercicio de derechos); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 10 | LOPDP | LOPDP, art. 10 (Principios) | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 12 | LOPDP | LOPDP, art. 12 (Derecho a la información); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 13 | LOPDP | LOPDP, art. 13 (Derecho de acceso); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 15 | LOPDP | LOPDP, art. 15 (Derecho de eliminación); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 17 | LOPDP | LOPDP, art. 17 (texto no leído en LEG-03) | no verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 18 | LOPDP | LOPDP, art. 18 (Excepciones a los derechos de rectificación, actualización, eliminación, oposición, anulación y portabilidad) | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 21 | LOPDP | LOPDP, art. 21 trata decisiones automatizadas sobre niñas, niños y adolescentes, no la representación legal; la cita correcta no se pudo fijar | no verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 22 | LOPDP | LOPDP, art. 62 (requerimiento directo del titular al responsable) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 25 | LOPDP | LOPDP, art. 25 (Categorías especiales de datos personales) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 26 | LOPDP | LOPDP, art. 26 (Tratamiento de datos sensibles) | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 30 | LOPDP | LOPDP, art. 62 (requerimiento directo del titular); el art. 30 trata datos de salud | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 31 | LOPDP | LOPDP, arts. 13 a 16 (plazo de quince días) y art. 62 (término de diez días para contestar) | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 35 | LOPDP | LOPDP, art. 47 num. 12 y art. 51 (Registro Nacional); la LOPDP no regula un «registro de actividades de tratamiento» | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 34 | LOPDP | LOPDP, art. 34 (Acceso a datos personales por parte del encargado); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 37 | LOPDP | LOPDP, art. 37 (Seguridad de datos personales); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 38 | LOPDP | LOPDP, art. 37 (seguridad) y art. 39 (diseño y por defecto); el art. 38 es solo para el sector público | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 39 | LOPDP | LOPDP, art. 39 (Protección de datos personales desde el diseño y por defecto) | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 46 | LOPDP | LOPDP, art. 47 num. 10 y 11 (contratos y garantías con el encargado) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 47 | LOPDP | LOPDP, art. 47 (Obligaciones del responsable y encargado del tratamiento de datos personales) | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 51 | LOPDP | LOPDP, art. 51 (Registro Nacional de protección de datos personales); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 56 | LOPDP | LOPDP, art. 56 (Transferencia o comunicación internacional de datos personales a países declarados como nivel adecuado de protección) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 57 | LOPDP | LOPDP, art. 57 (Transferencia o comunicación mediante garantías adecuadas) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 7 | LOPDP | LOPDP, art. 7 (Tratamiento legítimo de datos personas) | verificado |
@@ -208,7 +214,7 @@ Lo genera `python scripts/verificar_citas_legales.py --pares` con los `git grep`
 | `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 41 | LOPDP | LOPDP, art. 43 (término de 5 días a la Autoridad; 2 días del encargado) y art. 46 (término de 3 días al titular) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 42 | LOPDP | LOPDP, art. 42 (Evaluación de impacto del tratamiento de datos personales) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 43 | LOPDP | LOPDP, art. 42 (evaluación de impacto); el art. 43 es la notificación de vulneraciones | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 44 | LOPDP | Consulta previa: no aparece en el texto leído de la LOPDP; el art. 44 trata emergencias e incidentes informáticos | no verificado |
+| `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 46 | LOPDP | LOPDP, art. 46 (Notificación de vulneración de seguridad al titular); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 47 | LOPDP | LOPDP, art. 47 (el num. 3 trata verificación y evaluación periódica, no capacitación) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 7 | LOPDP | LOPDP, art. 7 (Tratamiento legítimo de datos personas) | verificado |
 | `frontend/src/lib/bancoPreguntas/perfil.ts` | Art. 25 | LOPDP | LOPDP, art. 25 (Categorías especiales de datos personales) | verificado |
@@ -217,8 +223,6 @@ Lo genera `python scripts/verificar_citas_legales.py --pares` con los `git grep`
 | `frontend/src/lib/bancoPreguntas/perfil.ts` | Art. 42 | LOPDP | LOPDP, art. 42 (Evaluación de impacto del tratamiento de datos personales) | verificado |
 | `frontend/src/lib/bancoPreguntas/perfil.ts` | Art. 48 | LOPDP | LOPDP, art. 48 (Delegado de protección de datos personales) | verificado |
 | `frontend/src/lib/conocimiento/api.ts` | Art. 7 | Ejemplo de formato | No es una cita: ejemplo del formato de búsqueda | verificado |
-| `frontend/src/types/arco.ts` | Art. 21 | LOPDP | LOPDP, arts. 12 a 20 (derechos del titular) | verificado |
-| `frontend/src/types/arco.ts` | Art. 37 | LOPDP | LOPDP, arts. 13 a 16 (plazo de quince días) y art. 62 (término de diez días para contestar) | verificado |
 | `frontend/src/types/capa.ts` | Art. 10 | LOPDP | LOPDP, art. 10 (Principios) | verificado |
 | `frontend/src/types/index.ts` | Art. 21 | LOPDP | LOPDP, arts. 12 a 20 (derechos del titular) | verificado |
 | `frontend/src/types/rat.ts` | Art. 10 | LOPDP | LOPDP, art. 10 (Principios) | verificado |
@@ -266,6 +270,18 @@ Ficha `LEG-04`. Textos leídos y cotejados por el CTO el 2026-11-08 a pedido del
 **Fuentes.**
 - COA: https://casadelacultura.gob.ec/lotaip/16/2023/Mayo/C%c3%b3digo%20Org%c3%a1nico%20Administrativo%20COA.pdf
 - Reglamento General: https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf
+
+## Criterio legal en la fase de desarrollo (decisión del propietario, 2026-11-13)
+
+Durante la fase de desarrollo, el criterio legal de la aplicación se toma de los **textos oficiales publicados en internet** (Registro Oficial, `spdp.gob.ec` y las compilaciones de portales públicos citadas en este documento) y queda registrado aquí, con su fuente, su URL y su estado. La revisión del abogado se hace en la **fase beta**, antes de mostrar la aplicación a clientes.
+
+Reglas para las fichas:
+1. **Ninguna ficha queda bloqueada por esperar al abogado.** Si necesita una regla legal, la toma de este documento. Si la regla no consta aquí, el chat de dominio la busca en el texto oficial, la añade a este documento con su fuente y la marca `verificado` (artículo leído) o `pendiente de verificar` (no se pudo leer el texto oficial).
+2. **Lo que no esté verificado no se inventa.** Se implementa la opción más estricta para el titular, se marca como estimada en la interfaz cuando el usuario la ve, y se añade como pregunta a la lista para el abogado de la fase beta (apartado «No verificado» y «Advertencias para el abogado»).
+3. **Los criterios ya validados por un abogado local** (plazos de 15 y 10 días, comunicados el 2026-11-09) siguen en vigor tal como constan arriba.
+4. **La fase beta cierra la lista.** Antes de mostrar la aplicación a clientes, el abogado revisa este documento entero: cada criterio `pendiente de verificar` pasa a validado o se corrige en la ficha de su sala.
+
+Lo que necesita al propietario tampoco excluye una ficha: el chat de dominio entrega comandos completos para pegar o un brief para Antigravity en `governance/operaciones/`, y el propietario los ejecuta.
 
 ## No verificado
 
@@ -361,4 +377,45 @@ Títulos tal como aparecen en el texto leído; base de la columna «Cita correct
 | 77 | Del titular de la Autoridad de Protección de Datos |
 
 <!-- --- INICIO LEG-05 --- -->
+
+## LEG-05 · Transferencia internacional y tratamiento de datos en Vertex AI (2026-11-12)
+
+Esta sección no afirma ninguna base legal para el uso de Vertex AI: la aprobación del contenido y el dictamen son del propietario. El verificador `scripts/verificar_citas_legales.py` solo lee la tabla bajo «Tabla de verificación»; las tablas de esta sección usan el mismo formato de siete columnas, pero no las recorre ese verificador.
+
+### Reglamento General, capítulo XII (arts. 71 a 78)
+
+Fuente leída: el texto del Decreto Ejecutivo 904 (Registro Oficial Tercer Suplemento 435, 13-nov-2023) publicado por COSEDE en el PDF de la URL de abajo, que tiene capa de texto (16 páginas, cabecera «LEXIS S.A.», estado «Vigente»). Se leyó el capítulo XII completo. Es una compilación, como la de la LOPDP: conviene cotejarla una vez con el PDF del Registro Oficial. El PDF de la SPDP de la tabla de fuentes sigue sin capa de texto.
+
+| Dato | Dónde en el PRD | Artículo literal | Fuente | URL | Valor confirmado | Estado |
+|---|---|---|---|---|---|---|
+| Países con nivel adecuado: resolución de la Autoridad, de oficio o a petición de parte, sin autorización previa para las transferencias | IA-03 (transferencia internacional) | Reglamento General art. 71 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Determina los países, organizaciones o personas jurídicas con nivel adecuado; la resolución tiene efectos generales y la transferencia no requiere autorización previa | verificado |
+| Revisión anual y publicación de la resolución de nivel adecuado | IA-03 (transferencia internacional) | Reglamento General art. 72 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Revisión periódica que «deberá llevarse a cabo anualmente»; la resolución se publica en el Registro Oficial y en la página web de la Autoridad | verificado |
+| Criterios del nivel adecuado de protección | IA-03 (transferencia internacional) | Reglamento General art. 73 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Ocho criterios (legislación, seguridad nacional, transferencias ulteriores, jurisprudencia, derechos, deberes, autoridad independiente, compromisos internacionales) | verificado |
+| Instrumentos de garantías adecuadas para países sin nivel adecuado | IA-03 (transferencia internacional) | Reglamento General art. 74 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Seis instrumentos: acuerdos entre organismos públicos, normas corporativas vinculantes, cláusulas tipo, códigos de conducta, certificación y cláusulas contractuales autorizadas por la Autoridad | verificado |
+| Normas corporativas vinculantes: definición | IA-03 (transferencia internacional) | Reglamento General art. 75 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Políticas de un responsable o encargado establecido en Ecuador, para transferencias dentro de un grupo empresarial | verificado |
+| Normas corporativas vinculantes: autorización | IA-03 (transferencia internacional) | Reglamento General art. 76 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Deben ser autorizadas por la Autoridad y ser vinculantes, conferir derechos exigibles y cumplir la Ley | verificado |
+| Transferencia en casos no contemplados: autorización previa | IA-03 (transferencia internacional) | Reglamento General art. 77 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | La Autoridad autoriza con carácter previo, solo si hay contrato con uno de los dos supuestos del artículo (sometimiento a la Ley y a los tribunales ecuatorianos, o garantía del ejercicio de derechos en el país del destinatario) | verificado |
+| Registro de las transferencias internacionales en el Registro Nacional | IA-03 (transferencia internacional) | Reglamento General art. 78 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Se registran país del destinatario, categorías de datos, finalidades, nombre del destinatario, mecanismo autorizado y criterio de excepción | verificado |
+
+Los arts. 55 a 61 de la LOPDP ya constan en la tabla de verificación y en el anexo; esta sección no los repite.
+
+### Tratamiento de datos en Vertex AI (fuente del proveedor)
+
+Fuente leída el 2026-11-12: https://docs.cloud.google.com/vertex-ai/generative-ai/docs/data-governance y https://docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/data-residency (redirigen desde cloud.google.com; la marca figura ahora como «Gemini Enterprise Agent Platform»). Es documentación del proveedor, no norma ecuatoriana: la regla «.gob.ec» del verificador no aplica. La página cambia con el tiempo.
+
+| Aspecto | Texto leído (cita literal) | Estado |
+|---|---|---|
+| Entrenamiento con datos del cliente | «Google won't use your data to train or fine-tune any AI/ML models without your prior permission or instruction.» | verificado |
+| Caché en memoria | Activa por defecto; «deleted no later than 24 hours after it's written» | verificado |
+| Caché duradera | Activa por defecto en modelos compatibles; «deleted no later than 24 hours after it's written, and is often evicted sooner»; se puede desactivar por proyecto | verificado |
+| Endpoint regional us-central1 | «requests to us-central1 are processed within the United States»: el tratamiento ocurre en Estados Unidos | verificado |
+| Endpoint global | «don't provide any data residency guarantees» | verificado |
+| Retención para monitoreo de abuso (modelos de Google) | La página de gobernanza no da una duración; remite a otra página de abuse monitoring, que no se leyó | no verificado |
+
+### Pendiente del propietario
+
+- Cotejar el texto del capítulo XII del Reglamento General con el PDF del Registro Oficial Tercer Suplemento 435.
+- Leer la página de abuse monitoring de Google y los términos contractuales de Google Cloud aplicables al propietario (el texto leído solo remite a la sección 4.3 de los términos de Cloud).
+- Dictamen sobre la base legal y el mecanismo del art. 74 del Reglamento (o autorización del art. 77) para el uso de Vertex AI en `us-central1`. Aquí no se afirma ninguno.
+
 <!-- --- FIN LEG-05 --- -->

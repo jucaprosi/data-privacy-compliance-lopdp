@@ -2,10 +2,10 @@
 id = "FIRMA-02"
 titulo = "Aceptación simple con acuse (nombre, correo, fecha, IP y sello hash) y verificación de documentos por hash"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "firma_electronica, frontend"
-depende_de = ["FIRMA-01", "EVI-02", "BIB-107", "ADPA-05", "ADPA-06", "ADPA-07"]
-propiedad = ["alembic/versions/20261103_aceptaciones.py", "features/firma_electronica/domain/aceptacion.py", "features/firma_electronica/services/aceptacion_engine.py", "features/firma_electronica/firma_electronica_service.py#FIRMA-02", "api/routers/firma_aceptaciones.py", "api/routers/publico_aceptacion.py", "tests/test_firma_aceptaciones.py", "tests/matriz/FIRMA-02.py", "frontend/src/app/aceptar/**", "frontend/src/components/firma/**", "frontend/src/lib/firma/aceptaciones.ts", "frontend/tests/firma/aceptacion.spec.ts", "features/firma_electronica/domain/errores.py#FIRMA-02", "app_core/pasillo/firma_electronica.py#FIRMA-02", "app_core/pasillo/evidencias.py#FIRMA-02", "app_core/pasillo/rat.py#FIRMA-02", "app_core/pasillo/riesgos_mtge.py#FIRMA-02", "app_core/pasillo/derechos_arco.py#FIRMA-02", "frontend/src/components/layout/menus/index.ts#FIRMA-02", "frontend/src/components/layout/menus/FIRMA-02.ts", "frontend/src/components/layout/pantallas/FIRMA-02.tsx", "frontend/src/components/layout/pantallas/index.tsx#FIRMA-02", "frontend/tests/biblioteca/acceso.spec.ts#FIRMA-02"]
+depende_de = ["ADPA-05", "ADPA-06", "ADPA-07", "BIB-107", "EVI-01b", "EVI-02", "FE-27", "FIRMA-01", "EVI-04", "EVI-05"]
+propiedad = ["alembic/versions/20261103_aceptaciones.py", "features/firma_electronica/domain/aceptacion.py", "features/firma_electronica/services/aceptacion_engine.py", "features/firma_electronica/firma_electronica_service.py#FIRMA-02", "api/routers/firma_aceptaciones.py", "api/routers/publico_aceptacion.py", "tests/test_firma_aceptaciones.py", "tests/matriz/FIRMA-02.py", "frontend/src/app/aceptar/**", "frontend/src/components/firma/**", "frontend/src/lib/firma/aceptaciones.ts", "frontend/tests/firma/aceptacion.spec.ts", "features/firma_electronica/domain/errores.py#FIRMA-02", "app_core/pasillo/firma_electronica.py#FIRMA-02", "app_core/pasillo/evidencias.py#FIRMA-02", "app_core/pasillo/rat.py#FIRMA-02", "app_core/pasillo/riesgos_mtge.py#FIRMA-02", "app_core/pasillo/derechos_arco.py#FIRMA-02", "frontend/src/components/layout/menus/index.ts#FIRMA-02", "frontend/src/components/layout/menus/FIRMA-02.ts", "frontend/src/components/layout/pantallas/FIRMA-02.tsx", "frontend/src/components/layout/pantallas/index.tsx#FIRMA-02", "frontend/tests/biblioteca/acceso.spec.ts#FIRMA-02", "features/biblioteca/biblioteca_service.py#FIRMA-02", "app_core/pasillo/biblioteca.py#FIRMA-02", "app_core/pasillo/organizacion.py#FIRMA-02"]
 arbitro = "pytest tests/test_firma_aceptaciones.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/firma/aceptacion.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤firma-electronica", "¤evidencias"]
 +++
@@ -22,7 +22,7 @@ rastros = ["¤firma-electronica", "¤evidencias"]
 - La firma con certificado (ANF, Radical) sigue fuera del alcance (FIRMA-01, §5.9).
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor validado con `exigir_base_de_pruebas()`.
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 
@@ -40,3 +40,21 @@ rastros = ["¤firma-electronica", "¤evidencias"]
 - **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#FIRMA-02` sin modificar `app_core/errors.py`.
 
 Nota (2026-11-05, FE-26): la aserción del menú BIBLIOTECA en `acceso.spec.ts#FIRMA-02` ya no incluye «Evidencias», porque en el PMV la sala está oculta tras `NEXT_PUBLIC_EVIDENCIA_FISICA`. Si FIRMA-02 la vuelve a tocar, conserva ese criterio o prueba el caso encendido en un spec `*-activa`.
+
+## Decisiones del Tech Lead (2026-11-14)
+- El acuse se custodia con `pasillo.evidencias.custodiar_documento_generado` (EVI-04, hecha), no con un registro en memoria ni con un import directo de `features.evidencias`; el router público deja de importar esa sala.
+- Propiedad ampliada a petición de la sesión: `features/biblioteca/biblioteca_service.py#FIRMA-02` (`obtener_documento_para_firma`: documento aprobado y su sha256, por compuerta), `app_core/pasillo/biblioteca.py#FIRMA-02` y `app_core/pasillo/organizacion.py#FIRMA-02` (la persona sale de ORG-17, no de `users`).
+- EVI-04 (hecha) entra en `depende_de`: el acuse se custodia por su puerto del pasillo de evidencias.
+
+## Textos cerrados por UX/UI (2026-11-15): descarga del comprobante en la página pública
+- Botón (texto visible): «Descargar el comprobante (PDF)». «Comprobante» en vez de «acuse» porque quien acepta es una persona externa y «acuse» se lee como jerga; si la especificación fija la palabra «acuse», va «Descargar el acuse de recibo (PDF)».
+- Nombre accesible: «Descargar el comprobante de aceptación en PDF».
+- Línea sobre el botón, tras aceptar (`role=status`): «Aceptación registrada. Descarga y guarda tu comprobante: es tu constancia de que aceptaste el documento.» No promete ningún correo (NOTIF-01 pendiente).
+- Nombre del archivo: `comprobante-aceptacion-{aaaa-mm-dd}.pdf`, con la fecha de aceptación. Sin nombres de personas, del documento ni ids, porque el nombre queda en la carpeta de descargas y en el historial.
+- Huella, si se muestra bajo el botón: «Huella de integridad: {8 primeros caracteres}». Nunca «hash» ni «SHA-256».
+- Mientras descarga: `aria-busy` en el botón y el texto «Preparando el comprobante…».
+- Errores (fijos, nunca el texto del servidor; `role=alert` bajo el botón):
+  - fallo de descarga: «No pudimos descargar el comprobante. Inténtalo de nuevo.» El botón sigue activo.
+  - `acuse_pdf` es un enlace con caducidad y venció: «El enlace de descarga venció. Vuelve a cargar la página para obtener uno nuevo.»
+  - sin `acuse_pdf` en la respuesta: no se pinta el botón y se muestra «Tu aceptación quedó registrada, pero el comprobante aún no está disponible. Vuelve a cargar esta página en unos minutos.»
+- Playwright: `getByRole("button", { name: "Descargar el comprobante de aceptación en PDF" })` (si es un enlace con `download`, el rol pasa a `link` con el mismo nombre); la descarga tiene el nombre `comprobante-aceptacion-…pdf`; ningún texto visible contiene «hash», «correo» ni «te enviaremos».

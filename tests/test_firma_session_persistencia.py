@@ -1,4 +1,4 @@
-"""Árbitro FIRMA-03 contra TEST_DATABASE_URL (rama Neon de pruebas de la persona, nunca producción).
+"""Árbitro FIRMA-03 contra TEST_DATABASE_URL (PostgreSQL 16 local o servicio PostgreSQL 16 del CI).
 
 Persistencia de `firma_sessions` y compuerta async: alta en borrador, cierre como firmado, RLS entre
 organizaciones con el rol `lopdp_app`, evento de auditoría, listado por estado y compatibilidad de
@@ -6,7 +6,6 @@ los bocetos de FIRMA-01.
 """
 # ¤¤backend-developer
 # ¤firma-electronica
-import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -16,6 +15,8 @@ import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import async_sessionmaker
+
+from conftest import exigir_base_de_pruebas
 
 pytestmark = pytest.mark.asyncio
 
@@ -28,8 +29,7 @@ CERTIFICADO = {"emisor": "ANF AC Ecuador", "numero_serie": "SERIE-TEST-001", "ac
 async def firma_env(db_engine):
     from app_core.db.session import fijar_contexto_rls
 
-    url = os.environ.get("TEST_DATABASE_URL", "")
-    assert url and "ep-late-hall-b50bpbk5" not in url, "Se requiere una rama de desarrollo"
+    exigir_base_de_pruebas()
 
     factory = async_sessionmaker(db_engine, expire_on_commit=False)
     ta, tb = str(uuid4()), str(uuid4())

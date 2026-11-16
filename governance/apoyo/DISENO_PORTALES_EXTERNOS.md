@@ -144,9 +144,9 @@ Fuente: PG-RLS — los superusuarios y los roles con atributo `BYPASSRLS` **siem
 | Resolución sin sesión de organización | Una petición pública no tiene tenant en el token. Se resuelve con una función `SECURITY DEFINER` mínima (slug→`tenant_id`; token o código→`tenant_id` y estado). Requisitos: dueño sin `BYPASSRLS`; `search_path` fijado; `EXECUTE` solo para `lopdp_app`; devuelve solo lo imprescindible; sin SQL dinámico. Después se **fija el tenant en la sesión de base de datos** y todo lo demás pasa por RLS |
 | Portal por tenant | Cada petición pública termina con el tenant restablecido; no hay conexión compartida que arrastre el tenant anterior (prueba de dos peticiones seguidas de organizaciones distintas) |
 | Sala `plataforma` | No accede a datos de ningún tenant (D-11); no se usa para atender estos portales |
-| Pruebas | Contra una rama Neon de revisión propia, nunca producción: una prueba con `lopdp_app` que intenta leer filas de otro tenant y obtiene cero filas; mutación: quitar `FORCE` o dar `BYPASSRLS` ⇒ la prueba cae |
+| Pruebas | Contra una base local propia de pruebas, nunca producción: una prueba con `lopdp_app` que intenta leer filas de otro tenant y obtiene cero filas; mutación: quitar `FORCE` o dar `BYPASSRLS` ⇒ la prueba cae |
 
-**Pendiente de comprobar (no verificado):** el comportamiento exacto de `SECURITY DEFINER` y de `FORCE` con el rol de Neon que usa el despliegue; se comprueba en la tarea de implementación contra la rama de revisión.
+**Pendiente de comprobar (no verificado):** el comportamiento exacto de `SECURITY DEFINER` y de `FORCE` con el rol que usa el despliegue; se comprueba en la tarea de implementación contra `evydentia-pruebas`.
 
 **Base legal** de las medidas técnicas de seguridad y de la separación de datos entre responsables: (\*) por verificar (LEG-03).
 
@@ -193,7 +193,7 @@ Aplica a la única subida prevista: evidencias del proveedor en P2 (y a cualquie
 | §5 sin exposición | pruebas con dos organizaciones y dos titulares; mutación: quitar el filtro de objeto |
 | §6 abuso | prueba de tasa (la sexta solicitud desde una IP responde 429); prueba de que el desafío tiene alternativa sin prueba cognitiva |
 | §7 auditoría | prueba: `lopdp_app` no puede `UPDATE` ni `DELETE`; el evento existe y no contiene datos del titular |
-| §8 RLS | prueba contra rama Neon: `rolbypassrls` falso, `FORCE` activo, lectura cruzada con cero filas |
+| §8 RLS | prueba contra la base de pruebas: `rolbypassrls` falso, `FORCE` activo, lectura cruzada con cero filas |
 | §9 mínimo | prueba: el esquema público rechaza campos fuera del catálogo |
 | §10 DLP | prueba: un CSV con cédulas simuladas queda `bloqueado`; un PDF limpio queda `limpio`; el rechazo se audita |
 
@@ -229,5 +229,5 @@ Orden sugerido; ninguna se abre sin que la propietaria apruebe este diseño. Las
 - Todas las bases legales (§3 a §10): marcadas (\*); sin artículo ni texto oficial leído (LEG-03).
 - Numeración exacta de la subsección de NIST-63B para verificadores fuera de banda; la cifra de 10 minutos de ese apartado se leyó en la página pero su sección no se pudo confirmar, por eso solo se usa como contraste y no como regla.
 - Las cabeceras `Referrer-Policy` y `Cache-Control` y cualquier norma de DLP: sin fuente leída.
-- Comportamiento de `SECURITY DEFINER`/`FORCE`/`BYPASSRLS` con el rol real de Neon del despliegue.
+- Comportamiento de `SECURITY DEFINER`/`FORCE`/`BYPASSRLS` con el rol real del despliegue.
 - Ninguna prueba ejecutada: el documento es diseño.

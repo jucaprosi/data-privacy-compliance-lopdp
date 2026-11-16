@@ -35,4 +35,4 @@ Sin interfaz de usuario.
 
 ## 6. Trazabilidad
 
-- `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.3 (frontend en Cloud Run, GCP-03); requisito 1 de la revisión del 2026-11-04.
+- `PRD.md` §5.3 (frontend en Cloud Run, GCP-03); requisito 1 de la revisión del 2026-11-04.

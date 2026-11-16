@@ -46,8 +46,14 @@ async function comprobarContraste(page: Page, sala: RegExp, tema: TemaContraste)
   await irASala(page, sala);
   await aplicarTema(page, tema);
 
-  const contenido = (await page.locator("main").innerText()).trim();
-  expect(contenido.length, `${sala} debe renderizar contenido verificable`).toBeGreaterThan(20);
+  // Las pantallas se cargan de forma diferida: se espera a que el contenido deje de ser el aviso de carga
+  // en lugar de leerlo en el primer instante (con 8 caracteres de «Cargando» la prueba fallaba al azar).
+  await expect
+    .poll(async () => (await page.locator("main").innerText()).trim().length, {
+      message: `${sala} debe renderizar contenido verificable`,
+      timeout: 10_000,
+    })
+    .toBeGreaterThan(20);
 
   const deficientes = await medirContraste(page, "body");
   expect(deficientes, `${sala} en ${tema}: ${JSON.stringify(deficientes, null, 2)}`).toEqual([]);

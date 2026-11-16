@@ -1,7 +1,13 @@
 import { sanitizarTextoDLP } from "@/lib/dlp";
 import type { ConsultaCopiloto, EstadoCopiloto, FundamentoCopiloto, RespuestaCopiloto } from "@/types/copilot";
+// === SEC-23 ===
+import { fetchAutenticado } from "@/lib/auth/fetchAutenticado";
+// === fin SEC-23 ===
 
-/** The browser never sends company names, documents or credentials. */
+/**
+ * The browser never sends company names, documents or provider credentials in the body.
+ * La identidad de la sesión (token y organización) va en cabeceras con `fetchAutenticado` (SEC-23).
+ */
 export function sanearCopiloto<T>(value: T): T {
   if (typeof value === "string") return sanitizarTextoDLP(value).textoSanitizado as T;
   if (Array.isArray(value)) return value.map(sanearCopiloto) as T;
@@ -23,7 +29,7 @@ export function respuestaVerificable(value: unknown): value is RespuestaCopiloto
   if (!value || typeof value !== "object") return false;
   const r = value as RespuestaCopiloto;
   if (typeof r.respuesta !== "string" || !r.corpus_version || r.dlp_aplicado !== true ||
-      !["local", "deepseek", "sin_fuente"].includes(r.modo) ||
+      !["local", "externo", "sin_fuente"].includes(r.modo) ||
       !Array.isArray(r.fundamentos) || !Array.isArray(r.planes) || !Array.isArray(r.advertencias)) return false;
   if (r.modo === "sin_fuente") return r.planes.length === 0;
   return r.fundamentos.length > 0 && r.fundamentos.every(fuenteConsultable) &&
@@ -34,7 +40,7 @@ export function respuestaVerificable(value: unknown): value is RespuestaCopiloto
 }
 
 export async function consultarCopiloto(consulta: ConsultaCopiloto, signal?: AbortSignal): Promise<RespuestaCopiloto> {
-  const response = await fetch("/api/ai-copilot/consulta", {
+  const response = await fetchAutenticado("/api/ai-copilot/consulta", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify(sanearCopiloto(consulta)), signal,
   });
@@ -45,7 +51,7 @@ export async function consultarCopiloto(consulta: ConsultaCopiloto, signal?: Abo
 }
 
 export async function estadoCopiloto(signal?: AbortSignal): Promise<EstadoCopiloto> {
-  const response = await fetch("/api/ai-copilot/estado", { signal, cache: "no-store" });
+  const response = await fetchAutenticado("/api/ai-copilot/estado", { signal, cache: "no-store" });
   if (!response.ok) throw new Error("Servicio no disponible");
   return response.json();
 }

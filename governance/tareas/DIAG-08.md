@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "diagnostico"
 depende_de = ["DIAG-03", "DIAG-02", "DIAG-01", "RM-21"]
 propiedad = ["alembic/versions/20261031_diagnostico_escala_smartcidi.py", "features/diagnostico/domain/models.py", "features/diagnostico/domain/resultados.py", "features/diagnostico/services/dimensiones_sgpdp.py", "features/diagnostico/services/resultados_engine.py", "features/diagnostico/services/respuestas_engine.py", "features/diagnostico/services/engine.py", "features/diagnostico/services/report_generator.py", "features/diagnostico/diagnostico_service.py#DIAG-08", "api/routers/diagnostico.py", "api/routers/diagnostico_respuestas.py", "api/routers/diagnostico_resultados.py", "tests/test_diagnostico_escala_smartcidi.py", "tests/test_diagnostico_respuestas.py", "tests/test_diagnostico_resultados.py", "tests/test_assessment_matriz.py", "tests/test_diagnostico_timebox.py", "features/roadmap/services/contexto_generacion.py", "features/roadmap/services/hallazgo_engine.py", "governance/contratos/hoja_de_ruta.openapi.json", "tests/test_api_gateway.py", "tests/test_roadmap_hallazgos.py", "tests/test_roadmap_generacion_en_linea.py", "tests/test_roadmap_contexto_real.py", "tests/test_e2e_hoja_de_ruta_real.py", "tests/test_roadmap_control_ref.py", "tests/test_roadmaps_api.py", "tests/test_contrato_hoja_ruta.py"]
-arbitro = "pytest tests/test_diagnostico_escala_smartcidi.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes; prueba de mutación documentada"
+arbitro = "pytest tests/test_diagnostico_escala_smartcidi.py contra PostgreSQL 16 local (incluido RLS con lopdp_app) + suite completa + vigilantes; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤diagnostico-scoring"]
 +++
 
@@ -23,7 +23,7 @@ rastros = ["¤diagnostico", "¤diagnostico-scoring"]
 - Se retira el motor heredado de madurez 0–3 (`ScoringDiagnostico.madurez_spdp` en `engine.py`) y los informes de `api/routers/diagnostico.py` pasan a los niveles por dimensión.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`) ni la rama compartida `test`.
+- Pruebas contra PostgreSQL 16 local o el servicio `postgres:16` del CI mediante `exigir_base_de_pruebas()`.
 
 ## Pruebas
 - La escala, la regla del nivel efectivo, la derivación del estado y los indicadores por dimensión, según los escenarios del contrato.

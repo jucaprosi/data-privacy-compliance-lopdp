@@ -1,12 +1,22 @@
 // ¤navegacion-menus
 /**
- * Submenús de DIAG-06. FE-22 lo deja vacío: lo llena DIAG-06 cuando cree sus pantallas, y solo DIAG-06
- * edita este archivo. Si la pantalla es una vista nueva, se declara aquí mismo:
- *
- *   declare module "../dashboardNavigation" {
- *     interface VistasRegistradas { mi_vista: true }
- *   }
+ * Submenús de DIAG-06. Solo DIAG-06 edita este archivo: Diagnóstico › Comparativo, que compara el
+ * diagnóstico de prueba con el real de la organización.
  */
 import type { Submenu } from "./base";
 
-export const SUBMENUS_DIAG_06: Submenu[] = [];
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    diagnostico_comparativo: true;
+  }
+}
+
+export const SUBMENUS_DIAG_06: Submenu[] = [
+  {
+    vista: "diagnostico_comparativo",
+    menu: "diagnostico",
+    nombre: "Comparativo",
+    subtitulo: "Prueba frente a real",
+    orden: 4,
+  },
+];

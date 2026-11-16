@@ -62,7 +62,7 @@ class TaskEvidence(BaseModel):
     id: str
     task_id: str
     tenant_id: str
-    r2_key: str
+    clave_objeto: str
     mime_type: Optional[str] = None
     file_size: Optional[int] = None
     file_hash: Optional[str] = None
@@ -72,6 +72,13 @@ class TaskEvidence(BaseModel):
     validated_by: Optional[str] = None
     validated_at: Optional[datetime] = None
     notes: Optional[str] = None
+    # === RM-25a ===
+    primera_validacion_por: Optional[str] = None
+    primera_validacion_en: Optional[datetime] = None
+    primera_validacion_rol: Optional[str] = None
+    validado_rol: Optional[str] = None
+    nivel_acreditado: Optional[int] = Field(default=None, ge=0, le=4)
+    # === fin RM-25a ===
 
 
 class TaskEvidenceUploadRequest(BaseModel):

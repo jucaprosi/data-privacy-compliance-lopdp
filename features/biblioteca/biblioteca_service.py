@@ -14,6 +14,58 @@ from features.biblioteca.services.editorial import (
     cargar, crear, editar, historial, listar, publicar, retirar, revisar,
 )
 
+# === FIRMA-02 ===
+# ¤firma-electronica ¤biblioteca Lectura mínima de un documento para enviarlo a aceptación (FIRMA-02).
+from sqlalchemy import text as _text_firma02
+
+from app_core.errors import ErrorNegocio as _ErrorNegocioFirma02
+
+
+async def obtener_documento_para_firma(session, tenant_id: str, documento_id: str) -> dict:
+    """Id, nombre, estado y huella del documento de la organización; no devuelve su contenido."""
+    fila = (
+        await session.execute(
+            _text_firma02(
+                "SELECT id, nombre, estado, sha256 FROM biblioteca_documentos "
+                "WHERE id = :d AND tenant_id = :t"
+            ),
+            {"d": str(documento_id), "t": tenant_id},
+        )
+    ).mappings().first()
+    if fila is None:
+        raise _ErrorNegocioFirma02("BIB_DOCUMENTO_NO_ENCONTRADO")
+    return {"id": fila["id"], "nombre": fila["nombre"], "estado": fila["estado"], "sha256": fila["sha256"]}
+
+
+async def hay_documento_aprobado_con_huella(session, tenant_id: str, sha256: str) -> bool:
+    """¿La organización tiene un documento aprobado con esta huella?"""
+    fila = (
+        await session.execute(
+            _text_firma02(
+                "SELECT 1 FROM biblioteca_documentos "
+                "WHERE tenant_id = :t AND estado = 'aprobado' AND sha256 = :h LIMIT 1"
+            ),
+            {"t": tenant_id, "h": sha256},
+        )
+    ).first()
+    return fila is not None
+
+
+async def controles_del_documento(session, tenant_id: str, documento_id: str) -> list[str]:
+    """Controles vinculados al documento (BIB-402), en orden estable."""
+    filas = (
+        await session.execute(
+            _text_firma02(
+                "SELECT ref FROM biblioteca_vinculos "
+                "WHERE tenant_id = :t AND documento_id = :d AND tipo = 'control' ORDER BY ref"
+            ),
+            {"t": tenant_id, "d": str(documento_id)},
+        )
+    ).all()
+    return [f[0] for f in filas]
+
+# === fin FIRMA-02 ===
+
 # === BIB-105 ===
 __all__ = ["DocumentoEmpresa", "EventoDocumento", "ObjetoDocumento", "PuertoAuditoria",
            "PuertoDocumentos", "PuertoObjetos", "RevisionDocumento", "ArchivoMaestro", "Capacidad",
@@ -334,7 +386,8 @@ __all__ += ["DocumentoVinculado", "EntradaVinculos", "PuertoEvidencias", "Puerto
 # === fin BIB-402 ===
 
 # === DEMO-03d ===
-# Reservada para DEMO-03d: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+from features.biblioteca.services.clon_plantilla_engine import clonar_desde_plantilla, sembrar_en_plantilla
+__all__ += ["clonar_desde_plantilla", "sembrar_en_plantilla"]
 # === fin DEMO-03d ===
 
 # === BIB-117 ===

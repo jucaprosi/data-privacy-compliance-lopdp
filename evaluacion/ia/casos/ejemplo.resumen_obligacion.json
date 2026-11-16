@@ -1,0 +1,16 @@
+{
+  "prompt_id": "ejemplo.resumen_obligacion",
+  "nota": "Conjunto ficticio de ejemplo del formato. Sin datos personales ni de clientes. Cada prompt real tendra su archivo.",
+  "casos": [
+    {
+      "id": "c1",
+      "valores": {"tema": "Plazo para atender el derecho de acceso: 15 dias", "fuente": "Art. 13 de la Ley"},
+      "criterios": {"campos_obligatorios": ["resumen", "cita"], "cita_presente": true, "sin_cifras_inventadas": true}
+    },
+    {
+      "id": "c2",
+      "valores": {"tema": "Notificacion de una vulneracion de seguridad", "fuente": "Art. 43 de la Ley"},
+      "criterios": {"campos_obligatorios": ["resumen", "cita"], "cita_presente": true, "sin_cifras_inventadas": true}
+    }
+  ]
+}

@@ -67,3 +67,8 @@ async def reabrir_por_tareas(session: AsyncSession, tenant_id: str, user_id: str
             session, tenant_id, "hallazgo", hallazgo_id, "reabierto", user_id, {"motivo": "tarea_reabierta"}
         )
     return len(reabiertos)
+
+
+# === CAPA-04 ===
+# Sección reservada para CAPA-04.
+# === fin CAPA-04 ===

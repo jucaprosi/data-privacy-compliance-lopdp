@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "plataforma"
 depende_de = ["ORG-10"]
 propiedad = ["alembic/versions/*_invitacion_unica_emitida.py", "features/plataforma/domain/models.py", "features/plataforma/services/operador_engine.py", "features/plataforma/plataforma_service.py", "api/routers/plataforma.py", "tests/test_plataforma_reemision.py", "frontend/src/app/plataforma/page.tsx", "frontend/src/lib/plataforma/tipos.ts", "frontend/src/lib/plataforma/cliente.ts", "frontend/tests/plataforma/**"]
-arbitro = "pytest tests/test_plataforma_reemision.py tests/test_plataforma_operador.py contra una rama Neon de revisión + Playwright de frontend/tests/plataforma + tsc --noEmit y next build; prueba de mutación documentada"
+arbitro = "pytest tests/test_plataforma_reemision.py tests/test_plataforma_operador.py contra PostgreSQL 16 local + Playwright de frontend/tests/plataforma + tsc --noEmit y next build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤seguridad"]
 +++
 

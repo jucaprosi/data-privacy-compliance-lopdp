@@ -17,10 +17,10 @@ from features.auditoria_capa import auditoria_capa_service
 AUTO_REGISTRO = True
 router = APIRouter(prefix="/auditoria-capa", tags=["Auditoría y CAPA - Controles periódicos"])
 
-ROLES_CONSULTA = ("implementador", "coordinador", "dpo", "admin_organizacion", "responsable_area")
+ROLES_CONSULTA = ("implementador", "coordinador", "dpo", "admin_organizacion", "responsable_area", "auditor")
 ROLES_GESTION = ("implementador", "coordinador")
 # El responsable puede tener cualquier rol salvo `dpo` (R2); el motor exige que el control sea suyo.
-ROLES_VERIFICACION = ("implementador", "coordinador", "admin_organizacion", "responsable_area")
+ROLES_VERIFICACION = ("implementador", "coordinador", "admin_organizacion", "responsable_area", "auditor")
 ROLES_VENCIMIENTO = ("implementador",)
 
 _consulta = require_role(*ROLES_CONSULTA)

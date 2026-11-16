@@ -2,10 +2,10 @@
 id = "DER-06b"
 titulo = "Activar los tipos nuevos de solicitud y sus formularios: TIPOS_ACTIVOS y textos de la interfaz"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "derechos_arco, frontend"
 depende_de = ["DER-06a", "DER-07"]
-propiedad = ["features/derechos_arco/domain/plazos.py", "frontend/src/components/modules/ArcoModule.tsx", "frontend/src/types/arco.ts", "tests/test_der06b_tipos_activos.py"]
+propiedad = ["features/derechos_arco/domain/plazos.py", "frontend/src/components/modules/ArcoModule.tsx", "frontend/src/types/arco.ts", "tests/test_der06b_tipos_activos.py", "tests/test_der06a_tipos_expandir.py"]
 crea = ["tests/test_der06b_tipos_activos.py"]
 arbitro = "pytest tests/test_der06b_tipos_activos.py + Playwright de los formularios + node scripts de citas legales (verificar_citas_legales.py); mutaciones documentadas"
 rastros = ["¤regulation-code", "¤arbitro"]

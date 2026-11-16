@@ -76,7 +76,7 @@ def test_generador_informes_diagnostico_markdown_y_html():
     
     # Generar Markdown
     md_report = generar_informe_diagnostico_markdown(ficha, scoring, respuestas)
-    assert "JUBYS Plataforma LOPDP 360 · Informe Ejecutivo de Diagnóstico" in md_report
+    assert "EVYDENTIA Plataforma LOPDP 360 · Informe Ejecutivo de Diagnóstico" in md_report
     assert "empresa-demo-ec" in md_report
     assert "Brecha #1" in md_report
     assert "Inventario de tratamientos" in md_report

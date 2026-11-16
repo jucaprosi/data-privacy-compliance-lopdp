@@ -1,4 +1,4 @@
-# Documento de Arquitectura de Software (SAD) — JUBYS Plataforma LOPDP 360
+# Documento de Arquitectura de Software (SAD) — EVYDENTIA Plataforma LOPDP 360
 `¤arquitectura`
 `¤adpa` `¤seguridad-tenant` `¤frontend-ide` `¤regulation-code` `¤rat`
 
@@ -40,7 +40,7 @@ La plataforma no se concibe como un monolito tradicional ni como un conjunto ca�
 ┌───────────────────────────────────────────────▼─────────────────────────────────────────────────┐
 │                  CAPA 5: COPILOTO IA RAG DE CONFIANZA CERO (ZERO-TRUST COMPLIANCE)              │
 │   LangChain / LlamaIndex · Búsqueda Híbrida (pgvector + OpenSearch) · DLP Pre-Inferencia        │
-│   (Módulo 10 Cédulas EC + Presidio/spaCy) · Azure OpenAI / vLLM Local (Zero Training & Citas)   │
+│   (Módulo 10 Cédulas EC + Presidio/spaCy) · Vertex AI Gemini / Inferencia Zero-Training & Citas│
 └───────────────────────────────────────────────┬─────────────────────────────────────────────────┘
                                                 │ Directivas Criptográficas & Aislamiento
 ┌───────────────────────────────────────────────▼─────────────────────────────────────────────────┐
@@ -83,7 +83,7 @@ La plataforma no se concibe como un monolito tradicional ni como un conjunto ca�
 5. **Capa 5 — Copiloto IA RAG de Confianza Cero:**
    - Orquestación con LangChain / LlamaIndex con política estricta de citación oficial cerrada (*"sin artículo o resolución formal, no hay respuesta"*).
    - Filtro DLP pre-inferencia obligatorio: validación algorítmica Módulo 10 para cédulas y RUC ecuatorianos más sanitización de PII sensible con Presidio/spaCy.
-   - Modelos hosteados en Azure OpenAI o vLLM on-premise con cláusula contractual de cero re-entrenamiento.
+   - Modelos ejecutados en Google Vertex AI (Gemini) con garantía regional y política de cero re-entrenamiento.
 6. **Capa 6 — Seguridad, IAM y Auditoría:**
    - Autenticación federada (SSO/MFA) con Keycloak / Entra ID.
    - Motor de políticas desacoplado con OPA / Cedar para hacer cumplir las reglas inviolables de Segregación de Funciones (SoD) del DPO.
@@ -342,7 +342,7 @@ Se define un constraint a nivel de base de datos y un validador en la compuerta 
 *   **Ecosistema Proyectado (Próximas Fases):**
     *   *XState (Statecharts):* Modelado matemático de flujos de trabajo con SLAs normativos estrictos (ARCO+, notificación de brechas en <72h).
     *   *React Flow / VisX:* Renderizado visual interactivo del "Compliance Graph" y linaje del RAT.
-    *   *Vercel AI SDK (`ai/react`):* Streaming de inferencia asistida con soporte para agentes RAG con Humano en el Circuito.
+    *   *Streaming HTTP/SSE nativo:* Streaming de inferencia asistida vía Cloud Run con soporte para agentes RAG con Humano en el Circuito.
     *   *Vitest:* Suite de pruebas unitarias y de integración rápida para contratos y componentes React.
 
 ### 5.2 Estructura de Componentes Visuales y Ficha Antecedente

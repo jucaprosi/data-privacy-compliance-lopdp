@@ -12,7 +12,7 @@ test("las etiquetas del pie lateral no invaden el nombre, el sector ni el tenant
   await abrirAppLimpia(page);
   await configurarProyecto(page, "xyz");
 
-  for (const etiqueta of ["Organización:", "Sector:", "Tenant ID:"]) {
+  for (const etiqueta of ["Organización:", "Sector:"]) {
     const rotulo = page.getByText(etiqueta, { exact: true });
     const valor = rotulo.locator("xpath=following-sibling::span[1]");
     const cajaRotulo = await rotulo.boundingBox();

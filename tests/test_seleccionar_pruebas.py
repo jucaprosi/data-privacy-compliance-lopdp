@@ -81,7 +81,7 @@ def test_el_prefijo_respeta_su_limite():
 
 def test_el_nucleo_son_las_pruebas_sin_sala_y_no_esta_vacio():
     nucleo = {p.ruta for p in MAPA if p.es_nucleo}
-    assert {"tests/test_adpa_dependencias.py", "tests/test_adpa_bulkhead.py", "tests/test_alembic_una_cabeza.py"} <= nucleo
+    assert {"tests/test_adpa_dependencias.py", "tests/test_adpa_bulkhead.py", "tests/test_alembic_cabeza_por_sala.py"} <= nucleo
     # recorren todo el repositorio aunque importen una sala: el #265 borró un archivo del frontend y rompió la escala
     assert {"tests/test_escala_madurez.py", "tests/test_sin_rol_antiguo.py"} <= nucleo
     assert POR_RUTA["tests/test_escala_madurez.py"].salas and POR_RUTA["tests/test_escala_madurez.py"].arbitro_de_repositorio
@@ -101,7 +101,10 @@ def test_un_cambio_en_una_sala_corre_sus_pruebas_sus_dependientes_y_el_nucleo():
     seleccion = sp.seleccionar(["features/rat/services/eipd_engine.py"], RAIZ, MAPA)
     assert seleccion.modo == "salas" and "rat" in seleccion.salas and "roadmap" in seleccion.salas
     assert {"tests/test_rat_eipd.py", "tests/test_roadmap_contexto_real.py", "tests/test_adpa_dependencias.py"} <= set(seleccion.pruebas)
-    assert "tests/test_incidentes.py" not in seleccion.pruebas
+    # INC-02: incidentes llama al pasillo de la hoja de ruta (lecciones → hallazgos) y la hoja de ruta depende de
+    # rat, así que un cambio en rat corre también las pruebas de incidentes. Una sala sin esa cadena no se corre.
+    assert "incidentes" in seleccion.salas and "tests/test_incidentes.py" in seleccion.pruebas
+    assert "derechos_arco" not in seleccion.salas and "tests/test_arco_seguro.py" not in seleccion.pruebas
     assert len(seleccion.pruebas) < len(MAPA)
     assert seleccion.etiqueta.startswith("salas: ")
 
@@ -131,9 +134,20 @@ def test_la_zona_frontend_corre_el_nucleo_y_lo_que_la_nombra():
     assert "tests/test_rutas_cliente_frontend.py" in seleccion.pruebas
 
 
-def test_node_solo_cuando_una_prueba_elegida_lo_invoca():
-    assert sp.seleccionar(["features/diagnostico/services/engine.py"], RAIZ, MAPA).necesita_node is True
-    assert sp.seleccionar(["features/incidentes/domain/models.py"], RAIZ, MAPA).necesita_node is False
+def test_node_solo_cuando_una_prueba_elegida_lo_invoca(tmp_path):
+    """Árbol y mapa sintéticos (ORG-24): no depende del grafo real de salas, que cambia con cada tarea.
+
+    Mutación: que `necesita_node` valga siempre True hace fallar el caso de la sala sin pruebas con node.
+    """
+    for sala in ("sala_sin_node", "sala_con_node"):
+        (tmp_path / "features" / sala).mkdir(parents=True)
+        (tmp_path / "features" / sala / "x.py").write_text("X = 1", encoding="utf-8")
+    mapa = [
+        sp.Prueba("tests/test_sin_node.py", frozenset({"sala_sin_node"}), "sin nada especial"),
+        sp.Prueba("tests/test_con_node.py", frozenset({"sala_con_node"}), 'subprocess.run(["node", "x.js"])'),
+    ]
+    assert sp.seleccionar(["features/sala_con_node/x.py"], tmp_path, mapa).necesita_node is True
+    assert sp.seleccionar(["features/sala_sin_node/x.py"], tmp_path, mapa).necesita_node is False
 
 
 def test_un_cambio_en_un_script_corre_las_pruebas_que_lo_nombran():
@@ -142,10 +156,10 @@ def test_un_cambio_en_un_script_corre_las_pruebas_que_lo_nombran():
 
 
 def test_la_salida_para_github(tmp_path):
-    seleccion = sp.Seleccion("salas", [], ["rat"], ["frontend"], ["tests/test_a.py", "tests/test_b.py"], necesita_node=False)
+    seleccion = sp.Seleccion("salas", [], ["rat"], ["frontend"], ["tests/test_a.py", "tests/test_b.py"], necesita_node=False, playwright_specs="tests/rat")
     sp.escribir_salida_github(seleccion, str(tmp_path / "out"))
     assert (tmp_path / "out").read_text(encoding="utf-8").splitlines() == [
-        "modo=salas", "etiqueta=salas: rat; zonas: frontend", "pruebas=tests/test_a.py tests/test_b.py", "frontend=true", "node=false",
+        "modo=salas", "etiqueta=salas: rat; zonas: frontend", "pruebas=tests/test_a.py tests/test_b.py", "frontend=true", "node=false", "playwright_specs=tests/rat",
     ]
 
 

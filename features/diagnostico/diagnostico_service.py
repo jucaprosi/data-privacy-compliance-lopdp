@@ -178,7 +178,11 @@ from features.diagnostico.services.resultados_engine import (  # noqa: E402
 # === fin DIAG-13 ===
 
 # === DEMO-03b ===
-# Reservada para DEMO-03b: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+# ¤demo Copia y siembra de la sala para la demo «Cooperativa Demo» (PRD EVYDENTIA §5.6.8).
+from features.diagnostico.services.clon_plantilla_engine import (  # noqa: E402,F401
+    clonar_desde_plantilla,
+    sembrar_en_plantilla,
+)
 # === fin DEMO-03b ===
 
 
@@ -221,3 +225,47 @@ async def etapa_diagnostico(session, tenant_id: str, user_id: str) -> dict:
     """Etapa sellada (`prueba`, `real` o None) y el sello siguiente (o None tras el real)."""
     return etapa_por_sellos(await contar_sellos(session, tenant_id, user_id))
 # === fin DIAG-11 ===
+
+# === DIAG-04 ===
+# ¤diagnostico-asignacion
+from features.diagnostico.services.asignacion_engine import (  # noqa: E402
+    asignar_dominio,
+    historial_asignaciones,
+    listar_asignaciones,
+)
+# === fin DIAG-04 ===
+
+# === DIAG-06 ===
+# ¤diagnostico-comparativo Comparativo de prueba y real; DIAG-12 lo reutiliza desde su sala por esta compuerta.
+from features.diagnostico.services.comparativo_engine import (  # noqa: E402
+    comparar as comparar_resultados_sellados,
+    comparativo_de_organizacion,
+)
+# === fin DIAG-06 ===
+
+# === DIAG-12 ===
+# ¤diagnostico-estados Estados: el assessment actual a partir del diagnóstico real y la evidencia validada.
+from features.diagnostico.services.estados_engine import (  # noqa: E402
+    COMPARAR_CON_ANTERIOR,
+    COMPARAR_CON_REAL,
+    MODOS_COMPARACION,
+    comparar_estado,
+    emitir_estado,
+    estado_a_salida,
+    listar_estados,
+    primer_estado_alterado,
+)
+# === fin DIAG-12 ===
+
+# === DIAG-07 ===
+# ¤diagnostico ¤dpo-independencia
+from features.diagnostico.services.objeciones_engine import (  # noqa: E402
+    crear_objecion,
+    exigir_puede_escribir,
+    exigir_puede_pedir_propuesta,
+    filas_de_revision,
+    exigir_sin_objeciones_abiertas as objeciones_abiertas,
+    listar_objeciones,
+    resolver_por_guardado,
+)
+# === fin DIAG-07 ===

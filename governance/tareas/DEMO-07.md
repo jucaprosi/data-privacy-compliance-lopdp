@@ -8,6 +8,7 @@ depende_de = ["DEMO-02", "DEMO-04", "DEMO-05", "DEMO-06", "GCP-01", "GCP-03", "G
 propiedad = ["governance/operaciones/DEMO_COMERCIAL.md", "governance/operaciones/entornos/demo/**"]
 arbitro = "Recorrido de aceptación documentado en governance/operaciones/DEMO_COMERCIAL.md: entrada, «Ver como», terminar y purga de la noche siguiente comprobados en el proyecto demo"
 rastros = ["¤demo"]
+agente = "ninguno"
 +++
 
 # DEMO-07 · Infraestructura de la demo en Google Cloud (personas, sin agente)
@@ -36,7 +37,9 @@ rastros = ["¤demo"]
 - Nunca uses la base ni el proyecto de producción; solo datos ficticios con correos `.invalid`.
 
 ## Fuentes
-- `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
-- `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
+- `governance/artefactos/PRD.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
+- `governance/artefactos/INVARIANTS.md`, invariantes 60 a 63.
 - Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
 - Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+
+**Sin agente.** Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.

@@ -85,7 +85,7 @@ def renderizar_correo_lote_asignaciones(
         </ul>
         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
         <p style="font-size: 12px; color: #64748b;">
-            Este es un aviso automático generado por JUBYS Plataforma LOPDP 360 Ecuador.
+            Este es un aviso automático generado por EVYDENTIA Plataforma LOPDP 360 Ecuador.
         </p>
     </body>
     </html>

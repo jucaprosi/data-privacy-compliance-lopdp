@@ -2,7 +2,7 @@
 id = "DEMO-01"
 titulo = "Persona activa y «Ver como»: resolver, 403 si es ajena y auditoría con el vendedor real"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "demo"
 depende_de = ["DEMO-00", "DEMO-08", "EP-01"]
 propiedad = ["features/demo/services/resolutor_engine.py", "features/demo/services/persona_engine.py", "api/routers/demo_persona.py", "tests/test_demo_persona.py"]
@@ -38,7 +38,7 @@ rastros = ["¤demo", "¤seguridad"]
 - Nunca uses la base ni el proyecto de producción; solo datos ficticios con correos `.invalid`.
 
 ## Fuentes
-- `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
-- `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
+- `governance/artefactos/PRD.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
+- `governance/artefactos/INVARIANTS.md`, invariantes 60 a 63.
 - Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
 - Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.

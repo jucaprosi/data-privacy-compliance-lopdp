@@ -11,14 +11,12 @@ Lo ejecuta una persona, nunca la IA, con la credencial del DUEÑO de la base de 
 Guardas, todas antes de abrir conexión (código 2):
   - BIB_CAPACIDADES_DATABASE_URL obligatoria;
   - --confirmar-rama-desarrollo;
-  - nunca producción (huella de app_core/huellas_produccion.py y la instancia de Cloud SQL de producción)
-    ni la rama test compartida (lista de hosts de BIB-109, leída de scripts/cargar_plantillas_pmv.py).
+  - solo base local (`app_core.huellas_produccion.es_base_local`), nunca producción ni Cloud SQL.
 No imprime la URL. No hay opción de baja: revocar es un UPDATE.
 """
 from __future__ import annotations
 
 import argparse
-import ast
 import asyncio
 import os
 import sys
@@ -32,29 +30,19 @@ HUELLAS_CLOUD_SQL_PRODUCCION = ("evydentia-production", "evydentia_prod")
 
 
 # ¤adpa
-def hosts_de_bib109() -> tuple[str, ...]:
-    """HOSTS_PROHIBIDOS de BIB-109, leída del script sin importarlo (no se copia la lista)."""
-    arbol = ast.parse((RAIZ / "scripts" / "cargar_plantillas_pmv.py").read_text(encoding="utf-8"))
-    for nodo in arbol.body:
-        if isinstance(nodo, ast.Assign) and any(getattr(t, "id", None) == "HOSTS_PROHIBIDOS" for t in nodo.targets):
-            return tuple(ast.literal_eval(nodo.value))
-    raise RuntimeError("No se encontró HOSTS_PROHIBIDOS en scripts/cargar_plantillas_pmv.py")
-
-
-# ¤adpa
 def motivo_de_rechazo(url: str, confirmado: bool) -> str | None:
     """Motivo para no conectar, o `None`. No abre conexión ni muestra la URL."""
-    from app_core.huellas_produccion import apunta_a_produccion
+    from app_core.huellas_produccion import apunta_a_produccion, es_base_local
 
     if not url.strip():
-        return f"Falta {VARIABLE_URL} (la base de tu rama de prueba, con la credencial del dueño)."
+        return f"Falta {VARIABLE_URL} (la base local de pruebas, con la credencial del dueño)."
     if not confirmado:
         return "Falta --confirmar-rama-desarrollo."
     minusculas = url.lower()
     if apunta_a_produccion(url) or any(h in minusculas for h in HUELLAS_CLOUD_SQL_PRODUCCION):
         return "La URL apunta a producción; no se abrió conexión."
-    if any(h in minusculas for h in hosts_de_bib109()):
-        return "La URL apunta a producción o a la rama test compartida; no se abrió conexión."
+    if not es_base_local(url):
+        return "La URL debe apuntar a una base local; no se abrió conexión."
     return None
 
 

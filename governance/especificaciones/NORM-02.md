@@ -45,4 +45,4 @@ Legible en tema claro y oscuro con variables de superficie (`FE-18`).
 
 ## 6. Trazabilidad
 
-- `PRD_EVYDENTIA_REVENTA_NUBE.md` Módulo 6.2 y menú 9; invariante 41 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`.
+- `PRD.md` Módulo 6.2 y menú 9; invariante 41 de `INVARIANTS.md`.

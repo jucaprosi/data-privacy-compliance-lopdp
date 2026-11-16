@@ -2,10 +2,10 @@
 """DIAG-03: el DPO responde y sella el diagnóstico; el resultado sellado no se edita ni se borra.
 
 Desde DIAG-08 los indicadores son por dimensión, sin cifra global; la paridad con la pantalla
-(frontend/tests/diagnostico/paridad.json, forma anterior) queda a cargo de DIAG-09. El resto recorre PostgreSQL real (rama Neon de
-desarrollo o la rama test del CI, nunca producción); sin TEST_DATABASE_URL se omite.
+(frontend/tests/diagnostico/paridad.json, forma anterior) queda a cargo de DIAG-09. El resto recorre PostgreSQL 16
+local o el servicio PostgreSQL 16 del CI; sin TEST_DATABASE_URL se omite.
 
-Prueba de mutación ejecutada en la rama Neon rama-diag-03:
+Prueba de mutación ejecutada contra base de pruebas:
 - En api/routers/diagnostico_resultados.py se cambió ROLES_SELLO = ("dpo",) por
   ("dpo", "implementador").
 - pytest tests/test_diagnostico_resultados.py::test_solo_el_dpo_sella devolvió 1
@@ -25,6 +25,8 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from conftest import exigir_base_de_pruebas
 
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
@@ -84,8 +86,7 @@ def _respuesta(pregunta_id: int, nivel_asignado: int = 4, nivel: int = 2) -> dic
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    # Rama de desarrollo o la rama test del CI, nunca producción.
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una rama de desarrollo o test (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     from app_core.db.session import fijar_contexto_rls, get_session
     from features.evidencias import evidencias_service
@@ -159,7 +160,7 @@ def _como(ctx, clave):
 
 
 async def _responder(ctx, *respuestas):
-    r = await ctx["client"].put(RESPUESTAS, headers=_como(ctx, "dpo"), json={"respuestas": list(respuestas)})
+    r = await ctx["client"].put(RESPUESTAS, headers=_como(ctx, "admin"), json={"respuestas": list(respuestas)})
     assert r.status_code == 200, r.text
 
 
@@ -171,7 +172,8 @@ async def test_solo_el_dpo_sella(ctx, clave):
     assert r.status_code == 403, r.text
 
 
-@pytest.mark.parametrize("clave", ["impl", "coord", "admin"])
+# admin escribe desde DIAG-07a; DIAG-07 reescribe estas pruebas (el DPO deja de responder)
+@pytest.mark.parametrize("clave", ["impl", "coord"])
 @pytest.mark.asyncio
 async def test_solo_el_dpo_responde(ctx, clave):
     r = await ctx["client"].put(RESPUESTAS, headers=_como(ctx, clave), json={"respuestas": [_respuesta(1)]})

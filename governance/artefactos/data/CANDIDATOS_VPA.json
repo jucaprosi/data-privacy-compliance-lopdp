@@ -138,7 +138,7 @@
     "rastro": "¤copiloto-ia",
     "proposed_role": "¤¤developer-architect",
     "proposed_room": "features/copiloto-ia/",
-    "intent_description": "La app desplegada en Vercel inicia en tema oscuro; cambiar el tema por defecto a claro, preservando ",
+    "intent_description": "La aplicación desplegada en Cloud Run inicia en tema oscuro; cambiar el tema por defecto a claro, preservando ",
     "status": "DRAFT_CANDIDATE",
     "sessions_observed": 1,
     "first_seen": "2026-09-27 11:36:43"
@@ -147,7 +147,7 @@
     "rastro": "¤frontend-ide",
     "proposed_role": "¤¤developer-architect",
     "proposed_room": "features/frontend-ide/",
-    "intent_description": "En frontend también están las variables: DEEPSEEK_API_KEY y DEEPSEEK_MODEL pero no he colocado contr",
+    "intent_description": "En entorno de inferencia también están las variables: GOOGLE_CLOUD_PROJECT y VERTEX_LOCATION sin secretos ",
     "status": "DRAFT_CANDIDATE",
     "sessions_observed": 1,
     "first_seen": "2026-09-27 22:59:07"

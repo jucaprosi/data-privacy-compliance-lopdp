@@ -19,6 +19,20 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin ADPA-05 ===
 
 # === DIAG-04 ===
+# ¤diagnostico-asignacion Quién puede ser encargado de un dominio del assessment.
+ENCARGADO_SIN_ROL = CodigoErrorNegocio(
+    codigo="ENCARGADO_SIN_ROL",
+    status_code=422,
+    mensaje_defecto="La persona elegida no tiene un rol vigente en la organización.",
+    action_required="elegir_persona_con_rol",
+)
+ENCARGADO_ES_DPO = CodigoErrorNegocio(
+    codigo="ENCARGADO_ES_DPO",
+    status_code=422,
+    mensaje_defecto="El DPO revisa y sella el diagnóstico, pero no lo responde. Elige a otra persona.",
+    action_required="elegir_otra_persona",
+)
+registrar(ENCARGADO_SIN_ROL, ENCARGADO_ES_DPO)
 # === fin DIAG-04 ===
 
 # === DIAG-05 ===
@@ -33,9 +47,52 @@ registrar(NO_APLICA_SIN_JUSTIFICACION)
 # === fin DIAG-05 ===
 
 # === DIAG-06 ===
+# ¤diagnostico-comparativo Un sellado anterior a la escala SMARTCIDI no trae niveles asignados.
+COMPARATIVO_ESCALA_ANTERIOR = CodigoErrorNegocio(
+    codigo="DIAG_COMPARATIVO_ESCALA_ANTERIOR",
+    status_code=409,
+    mensaje_defecto="Uno de los diagnósticos se selló con la escala anterior y no se puede comparar.",
+    action_required="volver_a_sellar",
+)
+registrar(COMPARATIVO_ESCALA_ANTERIOR)
 # === fin DIAG-06 ===
 
 # === DIAG-07 ===
+# ¤diagnostico ¤dpo-independencia Quién responde, quién objeta y cuándo se puede sellar.
+RESPUESTA_FUERA_DE_ASIGNACION = CodigoErrorNegocio(
+    codigo="RESPUESTA_FUERA_DE_ASIGNACION",
+    status_code=403,
+    mensaje_defecto="Esa pregunta pertenece a un dominio que no tienes asignado.",
+    action_required="pedir_asignacion",
+)
+OBJECIONES_ABIERTAS = CodigoErrorNegocio(
+    codigo="OBJECIONES_ABIERTAS",
+    status_code=409,
+    mensaje_defecto="Hay objeciones abiertas: se resuelven cuando la respuesta se vuelve a guardar.",
+    action_required="resolver_objeciones",
+)
+OBJECION_DUPLICADA = CodigoErrorNegocio(
+    codigo="OBJECION_DUPLICADA",
+    status_code=409,
+    mensaje_defecto="Esa pregunta ya tiene una objeción abierta.",
+    action_required="esperar_respuesta",
+)
+DIAGNOSTICO_YA_SELLADO = CodigoErrorNegocio(
+    codigo="DIAGNOSTICO_YA_SELLADO",
+    status_code=409,
+    mensaje_defecto="El diagnóstico real ya está sellado: sus respuestas no admiten objeciones.",
+    action_required="ninguna",
+)
+PREGUNTA_SIN_EVIDENCIA = CodigoErrorNegocio(
+    codigo="PREGUNTA_SIN_EVIDENCIA",
+    status_code=409,
+    mensaje_defecto="La pregunta no tiene evidencia vinculada: el DPO debe vincularla antes de pedir la propuesta.",
+    action_required="vincular_evidencia",
+)
+registrar(
+    RESPUESTA_FUERA_DE_ASIGNACION, OBJECIONES_ABIERTAS, OBJECION_DUPLICADA, DIAGNOSTICO_YA_SELLADO,
+    PREGUNTA_SIN_EVIDENCIA,
+)
 # === fin DIAG-07 ===
 
 # === DIAG-11 ===
@@ -56,4 +113,24 @@ registrar(SELLOS_AGOTADOS, RESPUESTAS_CERRADAS)
 # === fin DIAG-11 ===
 
 # === DIAG-12 ===
+# ¤diagnostico-estados Los estados parten del diagnóstico real sellado.
+ESTADO_SIN_DIAGNOSTICO_REAL = CodigoErrorNegocio(
+    codigo="DIAG_ESTADO_SIN_DIAGNOSTICO_REAL",
+    status_code=409,
+    mensaje_defecto="Aún no hay diagnóstico real sellado: los estados parten de él.",
+    action_required="sellar_diagnostico_real",
+)
+ESTADO_NO_ENCONTRADO = CodigoErrorNegocio(
+    codigo="DIAG_ESTADO_NO_ENCONTRADO",
+    status_code=404,
+    mensaje_defecto="No se encontró ese estado del diagnóstico.",
+    action_required="consultar_estados",
+)
+ESTADO_SIN_ANTERIOR = CodigoErrorNegocio(
+    codigo="DIAG_ESTADO_SIN_ANTERIOR",
+    status_code=409,
+    mensaje_defecto="Este es el primer estado: no hay un estado anterior con el que compararlo.",
+    action_required="comparar_con_real",
+)
+registrar(ESTADO_SIN_DIAGNOSTICO_REAL, ESTADO_NO_ENCONTRADO, ESTADO_SIN_ANTERIOR)
 # === fin DIAG-12 ===

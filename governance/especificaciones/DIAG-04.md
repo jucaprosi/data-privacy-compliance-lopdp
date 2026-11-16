@@ -24,7 +24,7 @@ Router `api/routers/diagnostico_asignaciones.py`, prefijo `/diagnostico`, `AUTO_
 
 | Método y ruta | Roles | Entrada | Respuesta |
 | :--- | :--- | :--- | :--- |
-| `GET /diagnostico/asignaciones` | `implementador`, `coordinador`, `dpo`, `admin_organizacion`, `responsable_area` | — | `200 {"asignaciones": [{dimension, nombre_dimension, responsable_user_id, asignado_en}]}` (10 filas, una por dimensión; sin responsable ⇒ `null`) |
+| `GET /diagnostico/asignaciones` | `implementador`, `coordinador`, `dpo`, `admin_organizacion`, `responsable_area` | — | `200 {"asignaciones": [{dimension, nombre_dimension, responsable_user_id, responsable_nombre, asignado_en}]}`; `responsable_nombre` es solo el nombre (nunca el correo), se resuelve en el servidor y la clave existe únicamente para `admin_organizacion`, `implementador`, `coordinador` y `dpo`; para `responsable_area` la clave no viaja (la pantalla muestra «Asignado»), y es `null` si el encargado ya no tiene rol vigente (10 filas, una por dimensión; sin responsable ⇒ `null`) |
 | `PUT /diagnostico/asignaciones/{dimension}` | `admin_organizacion` | `{"responsable_user_id": str \| null}` | `200` la asignación vigente |
 | `GET /diagnostico/asignaciones/historial?dimension=` | `implementador`, `coordinador`, `dpo` | — | `200 {"historial": [...]}` más reciente primero |
 

@@ -2,14 +2,14 @@
 
 ## Qué es
 
-`evydentia-migrate` es un Cloud Run Job del proyecto `evydentia`, en la región `us-central1`. Ejecuta `alembic upgrade head` contra la base de producción. Lo creó el propietario con Antigravity. La primera migración real con este job llegó hasta `20261118_merge_heads_cierre_dev`, el 6-nov-2026 a las 23:02 ECT, con el propietario presente.
+`evydentia-migrate` es un Cloud Run Job del proyecto `evydentia`, en la región `us-central1`. Ejecuta `alembic upgrade heads` contra la base de producción. Lo creó el propietario con Antigravity. La primera migración real con este job llegó hasta `20261118_merge_heads_cierre_dev`, el 6-nov-2026 a las 23:02 ECT, con el propietario presente.
 
 Definición, leída con `gcloud run jobs describe evydentia-migrate --region us-central1 --project evydentia` (solo lectura):
 
 | Campo | Valor |
 |---|---|
 | Imagen | `us-central1-docker.pkg.dev/evydentia/evydentia-containers/backend:latest` |
-| Comando | `alembic upgrade head` |
+| Comando | `alembic upgrade heads` |
 | Cuenta de servicio | `sa-evydentia-migrator` (propia del job, desde 2026-11-07) |
 | Conexión a Cloud SQL | `evydentia:us-central1:evydentia-production` |
 | Secretos (Secret Manager) | `DATABASE_URL` (usuario `evydentia_app`, con DDL), `JWT_SECRET_KEY` |
@@ -74,19 +74,19 @@ Nunca se publica antes de migrar si la versión trae migraciones.
    alembic heads
    ```
 
-   Tiene que devolver una sola cabeza.
+   Devuelve una cabeza por sala (CI-28): ese conjunto es el esperado.
 2. Para saber si la ejecución terminó bien, se revisa su estado:
 
    ```bash
    gcloud run jobs executions list --job evydentia-migrate --region us-central1 --project evydentia --limit 1
    ```
 
-3. Para ver hasta qué revisión llegó, se leen sus registros y se busca la última línea `Running upgrade … -> <revisión>`:
+3. Para ver hasta qué revisión llegó, se leen sus registros y se buscan las líneas `Running upgrade … -> <revisión>` de cada sala:
 
    ```bash
    gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=evydentia-migrate" --project evydentia --limit 50 --freshness 1d
    ```
 
-4. La revisión del registro tiene que coincidir con la de `alembic heads`. Si no coincide, no se publica y se avisa al CTO.
+4. El conjunto de revisiones que dejó el registro del job tiene que ser igual al conjunto de `alembic heads`, con una cabeza por sala. Si no es igual, no se publica y se avisa al CTO.
 
 Toda migración manual se anota también en `governance/operaciones/REGISTRO_MIGRACIONES_MANUALES.md`.

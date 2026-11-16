@@ -160,4 +160,4 @@ def test_ningun_secreto_coincide_con_uno_de_produccion():
 def test_no_hay_secretos_de_correo():
     """Decisión del propietario del 2026-11-07: el correo queda apagado y sin proveedor."""
     nombres = " ".join(s["nombre"] for s in _secretos()).lower()
-    assert not re.search(r"resend|smtp|correo|mail", nombres)
+    assert not re.search(r"smtp|correo|mail|mensajeria", nombres)

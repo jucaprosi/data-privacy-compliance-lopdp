@@ -38,7 +38,7 @@ Arquitecto de soluciones ADPA · 2026-11-08 · Base: `origin/main` 5499287. Solo
 | Solo las cuatro capacidades | El CHECK existente y el `enum Capacidad` | Una capacidad inventada: rechazo |
 | El dueño puede escribir pese a la RLS forzada | Migración: políticas `bib_cap_propietario_alta` (INSERT) y `bib_cap_propietario_cambio` (UPDATE) **`TO CURRENT_USER`** (el rol que migra, es decir, el dueño), con `WITH CHECK (usuario_id <> concedida_por)`. Sin políticas para `lopdp_app`, y sin DELETE | La prueba conecta como el dueño y concede; conectada como `lopdp_app`, el INSERT se rechaza |
 
-Sobre la última fila: con `FORCE ROW LEVEL SECURITY`, el dueño de la tabla también queda sujeto a las políticas, salvo que su rol tenga BYPASSRLS. Hoy solo hay una política de SELECT, así que la escritura del dueño depende del atributo del rol, que en Neon y en Cloud SQL no es el mismo. La política explícita lo vuelve determinista. **Seguridad lo revisa**, porque cambia la superficie de escritura de una tabla de permisos.
+Sobre la última fila: con `FORCE ROW LEVEL SECURITY`, el dueño de la tabla también queda sujeto a las políticas, salvo que su rol tenga BYPASSRLS. Hoy solo hay una política de SELECT, así que la escritura del dueño depende del atributo del rol, que en el proveedor del PMV y en Cloud SQL no es el mismo. La política explícita lo vuelve determinista. **Seguridad lo revisa**, porque cambia la superficie de escritura de una tabla de permisos.
 
 Uso previsto (lo ejecuta una persona, en la rama de prueba):
 ```

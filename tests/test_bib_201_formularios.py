@@ -2,9 +2,8 @@
 # ¤¤qa-engineer
 """Árbitro BIB-201: formulario por versión (rellenado determinista, faltantes, condicionales y borradores).
 
-Reglas puras y vigilantes siempre. La persistencia (RLS, revisión, guardado incompleto) corre contra la base
-local del arnés; contra Neon exige la rama propia (TEST_DATABASE_URL y BIB201_RAMA_PROPIA=1) y nunca la de
-producción ni la compartida. Datos sintéticos dentro de una transacción que se revierte.
+Reglas puras y vigilantes siempre. La persistencia (RLS, revisión, guardado incompleto) corre contra PostgreSQL 16
+local o el servicio PostgreSQL 16 del CI. Datos sintéticos dentro de una transacción que se revierte.
 """
 import ast
 import os
@@ -15,6 +14,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -230,7 +230,7 @@ def test_migracion_encadenada_con_rls_forzado_y_permisos_minimos():
     configuracion = Config()
     configuracion.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(configuracion)
-    assert len(guion.get_heads()) == 1 or guion.get_revision(revision) is not None
+    assert cabeza_de_sala("biblioteca", guion) or guion.get_revision(revision) is not None
     assert guion.get_revision(revision).down_revision is not None
     for exigido in ("ENABLE ROW LEVEL SECURITY", "FORCE ROW LEVEL SECURITY", "WITH CHECK",
                     "GRANT SELECT, INSERT ON biblioteca_borradores TO lopdp_app",
@@ -254,14 +254,12 @@ def test_router_registrado_con_auto_registro_y_roles_de_edicion():
 # ¤adpa
 @pytest_asyncio.fixture
 async def db_bib():
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall-b50bpbk5" in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    local = "127.0.0.1" in url or "localhost" in url
-    if not url or not (local or os.environ.get("BIB201_RAMA_PROPIA") == "1"):
-        pytest.skip("Persistencia pendiente: falta base local del arnés o rama Neon propia (BIB201_RAMA_PROPIA=1)")
-    if "ep-soft-darkness-b5z454vp" in url.lower():
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)
@@ -269,7 +267,7 @@ async def db_bib():
         transaccion = await conexion.begin()
         try:
             if not (await conexion.execute(text("SELECT to_regclass('public.biblioteca_borradores')"))).scalar():
-                pytest.fail("Aplicar la migración de BIB-201 solo en la base propia antes de este árbitro", pytrace=False)
+                pytest.fail("Aplicar la migración de BIB-201 en la base de pruebas antes de este árbitro", pytrace=False)
             ids = {rol: "bib201-" + uuid4().hex for rol in ("editor", "tecnico", "juridico", "publicador", "miembro", "ajeno")}
             tenant, otro = "bib201-org-" + uuid4().hex, "bib201-org-" + uuid4().hex
             for rol, usuario in ids.items():

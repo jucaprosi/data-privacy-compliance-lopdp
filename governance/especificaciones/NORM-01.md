@@ -7,7 +7,9 @@ Tablas globales (corpus público, sin `tenant_id`; `lopdp_app` con permiso de so
 
 - `normativa_resoluciones`: `id` (UUID PK), `numero_resolucion` (p. ej. `SPDP-SPD-2026-0005-R`), `anio_emision`, `titulo`, `organo_emisor`, `materia`, `fecha_publicacion`, `url_fuente`, `seccion_fuente` (`resoluciones`, `marco_normativo`, `consultas_absueltas`), `archivo_sha256`, `ruta_original`, `tamano_bytes`, `estado` (`pendiente_revision`, `homologada`, `observada`, `vigente`, `reformada`, `derogada`), `detectada_en`, `revisada_por`, `revisada_en`. Único: (`numero_resolucion`, `anio_emision`).
 - `normativa_versiones`: `id`, `resolucion_id` (FK), `archivo_sha256`, `ruta_original`, `detectada_en`, `motivo` (`republicacion`, `fe_de_erratas`, `cambio_en_fuente`). Inmutable: sin UPDATE ni DELETE.
-- `normativa_monitoreo_logs`: `id`, `inicio`, `fin`, `origen` (`programado`, `manual`), `documentos_vistos`, `nuevos`, `versiones_nuevas`, `errores`, `estado` (`ok`, `parcial`, `fallida`).
+- `normativa_monitoreo_logs`: `id`, `inicio`, `fin`, `origen` (`programado`, `manual`), `documentos_vistos`, `nuevos`, `versiones_nuevas`, `errores`, `estado` (`ok`, `parcial`, `fallida`), `codigos_error` (JSONB NOT NULL DEFAULT '[]': lista de códigos de error de la corrida, sin datos personales; `errores` sigue siendo el recuento).
+
+**Escritura y despliegue.** `lopdp_app` solo lee estas tablas. Escribe el monitoreo con el rol `lopdp_normativa` (sin login, creado por la migración): hace `SET LOCAL ROLE lopdp_normativa` en cada transacción. El inicio de sesión del Cloud Run Job debe ser miembro de `lopdp_normativa` (concesión del brief de despliegue del propietario).
 
 ## 2. API
 
@@ -47,4 +49,4 @@ Sin pantalla; la provee NORM-02.
 
 ## 6. Trazabilidad
 
-- `PRD_EVYDENTIA_REVENTA_NUBE.md` Módulo 6.1 (`RF-01..05`) e invariantes 39 a 42 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`.
+- `PRD.md` Módulo 6.1 (`RF-01..05`) e invariantes 39 a 42 de `INVARIANTS.md`.

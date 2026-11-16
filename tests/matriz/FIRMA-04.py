@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """FIRMA-05 · Matriz de aceptación de FIRMA-04: router /api/v1/firma y webhook HMAC (11 casos, F04-01..F04-11).
 
-Se ejecuta por ruta (`pytest tests/matriz/FIRMA-04.py -v`) con HTTP real sobre la app y la base de
-TEST_DATABASE_URL (rama Neon de pruebas de la persona, nunca producción): sin dobles de BD. Cada caso
+Se ejecuta por ruta (`pytest tests/matriz/FIRMA-04.py -v`) con HTTP real sobre la app y TEST_DATABASE_URL
+(PostgreSQL 16 local o el servicio PostgreSQL 16 del CI): sin dobles de BD. Cada caso
 crea organizaciones con UUID únicos, no depende del orden y limpia lo que crea. El secreto del webhook
 se genera por ejecución y se inyecta con `monkeypatch.setenv`; no hay ningún secreto en el código.
 
@@ -18,7 +18,6 @@ exige la lista en cada archivo de esta carpeta).
 import hashlib
 import hmac as hmac_stdlib
 import json
-import os
 import secrets
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
@@ -28,6 +27,8 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker
+
+from conftest import exigir_base_de_pruebas
 
 FILAS: list[tuple[str, str, str, set[str]]] = []
 
@@ -44,8 +45,7 @@ async def entorno(db_engine, monkeypatch):
     from app_core.db import session as sesion_app
     from main import app
 
-    url = os.environ.get("TEST_DATABASE_URL", "")
-    assert url and "ep-late-hall" not in url, "Se requiere la rama de pruebas de la persona, nunca producción"
+    exigir_base_de_pruebas()
     secreto = secrets.token_hex(16)
     monkeypatch.setenv("FIRMA_WEBHOOK_SECRET", secreto)
     # Otros módulos dejan overrides de sesión puestos; aquí se recorre la base real, así que se quitan

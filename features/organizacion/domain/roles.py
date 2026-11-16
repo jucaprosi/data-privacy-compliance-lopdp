@@ -8,6 +8,7 @@ class Role(str, Enum):
     dpo = "dpo"
     implementador = "implementador"
     admin_organizacion = "admin_organizacion"
+    auditor = "auditor"
 
 
 # Roles que pueden acotarse a un área. El resto es transversal al tenant.
@@ -45,9 +46,39 @@ INCOMPATIBILIDADES_ROLES: tuple[tuple[Role, Role, str, str], ...] = (
         "El DPO no puede tomar decisiones sobre la organización y su gestión interna (conflicto de intereses)",
         "Reglamento del Delegado Arts. 18.3 y 15.6",
     ),
+    (
+        Role.auditor,
+        Role.coordinador,
+        "El auditor no puede acumular ningún otro rol en el tenant: verifica los hallazgos y el DPO es la segunda verificación independiente del cierre (cuatro ojos)",
+        "regla de negocio: INV_LOPDP_AUDITOR_SOLE_ROLE (PRD EVYDENTIA §3; decisión del CTO, 2026-11-12); sin artículo vinculante",
+    ),
+    (
+        Role.auditor,
+        Role.responsable_area,
+        "El auditor no puede acumular ningún otro rol en el tenant: verifica los hallazgos y el DPO es la segunda verificación independiente del cierre (cuatro ojos)",
+        "regla de negocio: INV_LOPDP_AUDITOR_SOLE_ROLE (PRD EVYDENTIA §3; decisión del CTO, 2026-11-12); sin artículo vinculante",
+    ),
+    (
+        Role.auditor,
+        Role.implementador,
+        "El auditor no puede acumular ningún otro rol en el tenant: verifica los hallazgos y el DPO es la segunda verificación independiente del cierre (cuatro ojos)",
+        "regla de negocio: INV_LOPDP_AUDITOR_SOLE_ROLE (PRD EVYDENTIA §3; decisión del CTO, 2026-11-12); sin artículo vinculante",
+    ),
+    (
+        Role.auditor,
+        Role.admin_organizacion,
+        "El auditor no puede acumular ningún otro rol en el tenant: verifica los hallazgos y el DPO es la segunda verificación independiente del cierre (cuatro ojos)",
+        "regla de negocio: INV_LOPDP_AUDITOR_SOLE_ROLE (PRD EVYDENTIA §3; decisión del CTO, 2026-11-12); sin artículo vinculante",
+    ),
+    (
+        Role.auditor,
+        Role.dpo,
+        "El auditor no puede acumular ningún otro rol en el tenant: verifica los hallazgos y el DPO es la segunda verificación independiente del cierre (cuatro ojos)",
+        "regla de negocio: INV_LOPDP_AUDITOR_SOLE_ROLE (PRD EVYDENTIA §3; decisión del CTO, 2026-11-12); sin artículo vinculante",
+    ),
 )
 
-# El DPO no puede tener ningún otro rol en la plataforma en el mismo tenant.
+# El DPO no puede tener ningún otro rol en la plataforma en el mismo tenant (incluye al auditor, ORG-22).
 DPO_INCOMPATIBLE_ROLES = {
     r_b if r_a == Role.dpo else r_a
     for r_a, r_b, _, _ in INCOMPATIBILIDADES_ROLES

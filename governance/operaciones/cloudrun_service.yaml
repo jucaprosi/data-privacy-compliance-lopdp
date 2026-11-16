@@ -15,8 +15,8 @@ spec:
       annotations:
         run.googleapis.com/startup-cpu-boost: "true"   # --cpu-boost
         run.googleapis.com/execution-environment: gen2
-        autoscaling.knative.dev/minScale: "0"
-        autoscaling.knative.dev/maxScale: "10"
+        autoscaling.knative.dev/minScale: "0"    # GCP-05: 0 hasta la fase beta (PRD §5.4)
+        autoscaling.knative.dev/maxScale: "10"   # GCP-05: también es el tope de gasto
     spec:
       containerConcurrency: 80                          # --concurrency=80
       timeoutSeconds: 300
@@ -31,6 +31,10 @@ spec:
               cpu: "1"
               memory: 512Mi
           env:
+            - name: DB_POOL_SIZE   # GCP-05: ver presupuesto_conexiones.yaml
+              value: "4"
+            - name: DB_MAX_OVERFLOW
+              value: "4"
             - name: DB_POOLER_TRANSACCIONAL
               value: "1"
             - name: DATABASE_URL

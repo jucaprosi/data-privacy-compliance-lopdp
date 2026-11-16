@@ -3,7 +3,12 @@
 """Árbitro de alcance de un PR: los archivos que cambia caben en la `propiedad` de la ficha de su tarea.
 
 La tarea sale del nombre de la rama: `tarea/<persona>/<id>...`, por ejemplo `adpa-03-roadmap` → ADPA-03.
-Una rama sin ficha no se comprueba. Fuera de PREFIJOS_ESTRICTOS, salirse del alcance solo avisa: esa
+Una rama sin ficha (CI-23) no se comprueba contra un alcance, pero se advierte de los archivos que
+ninguna ficha viva posee (`::warning::` y `sin_ficha=true`) y, con `--estricto-sin-ficha`, falla. Las ramas
+`pmv/**` quedan fuera solo si el PR va hacia `pmv/consolidacion` (`--destino`); sin `--destino`, o hacia
+otra rama (por ejemplo `main`), se advierten y con `--estricto-sin-ficha` fallan como cualquier rama sin ficha.
+Para el propietario: en el workflow, pasar `--destino "${{ github.base_ref }}"` y activar
+`--estricto-sin-ficha`. Fuera de PREFIJOS_ESTRICTOS, salirse del alcance solo avisa: esa
 lista es una decisión del propietario y extenderla bloquea a todo el equipo.
 
 Mismo reparto que R5 de `verificar_reparto.py`, pero contra la ficha: una tarea cerrada ya no tiene bloque.
@@ -11,6 +16,7 @@ Mismo reparto que R5 de `verificar_reparto.py`, pero contra la ficha: una tarea 
 from __future__ import annotations
 
 import argparse
+import os
 import importlib.util
 import re
 import subprocess
@@ -20,7 +26,10 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 PREFIJOS_ESTRICTOS = ("ADPA",)
 _ID_EN_RAMA = re.compile(r"^(?:[^/]+/)*?([a-z]+-\d+[a-z]?)(?:-|$)")
+PREFIJO_SIN_FICHA = "pmv/"  # CI-23: ramas del PMV, sin ficha por decisión del CTO
+DESTINO_PMV = "pmv/consolidacion"  # solo hacia ella se eximen
 EXENCIONES = "governance/tareas/_exenciones_propiedad.txt"
+PORTADA = "governance/apoyo/BRIEFS_POR_BLOQUE.md"  # CI-31 R6: solo entra en el alcance de la ficha que la nombra
 
 
 # ¤adpa
@@ -44,9 +53,15 @@ def id_de_rama(rama: str, ids_conocidos) -> str | None:
 
 
 # ¤adpa
-def retira_solo_exenciones_propias(diff: str, tarea_id: str) -> bool:
-    """El diff (`git diff --unified=0`) de EXENCIONES solo borra líneas que empiezan por `<tarea_id>|`."""
+def retira_solo_exenciones_propias(diff: str, tarea_id: str, siembra: tuple[str, ...] = ()) -> bool:
+    """El diff (`git diff --unified=0`) de EXENCIONES solo borra líneas propias (CI-25).
+
+    Una línea borrada `X|<entrada>|motivo` es propia si empieza por `<tarea_id>|` o si `<entrada>` está en el campo
+    `siembra` de la ficha (la ficha que siembra las marcas de otra obliga a retirar las exenciones de esa otra).
+    Cualquier «+», alta, renombrado o borrado del archivo sigue invalidando.
+    """
     prefijo = f"{tarea_id}|"
+    sembradas = set(siembra)
     borradas = 0
     for linea in diff.splitlines():
         if linea.startswith(("deleted file", "new file", "rename ", "copy ", "+++ /dev/null", "--- /dev/null")):
@@ -56,7 +71,9 @@ def retira_solo_exenciones_propias(diff: str, tarea_id: str) -> bool:
         if linea.startswith("+"):
             return False
         if linea.startswith("-"):
-            if not linea[1:].startswith(prefijo):
+            texto = linea[1:]
+            entrada = texto.split("|", 2)[1] if texto.count("|") >= 2 else None
+            if not (texto.startswith(prefijo) or (entrada is not None and entrada in sembradas)):
                 return False
             borradas += 1
     return borradas > 0
@@ -64,10 +81,11 @@ def retira_solo_exenciones_propias(diff: str, tarea_id: str) -> bool:
 
 # ¤adpa
 def archivos_de_cierre(tarea_id: str) -> set[str]:
-    """Lo que cierra una tarea no es parte de su alcance funcional."""
+    """Lo que cierra una tarea no es parte de su alcance funcional: su ficha y su brief (CI-29 R5).
+
+    TASKS.md y la portada de briefs ya no son de cierre: no los toca ninguna ficha común."""
     return {
-        "governance/apoyo/BRIEFS_POR_BLOQUE.md",
-        "governance/artefactos/TASKS.md",
+        f"governance/apoyo/briefs/{tarea_id}.md",
         f"governance/tareas/{tarea_id}.md",
     }
 
@@ -76,11 +94,29 @@ def archivos_de_cierre(tarea_id: str) -> set[str]:
 def fuera_de_alcance(archivos: list[str], tarea_id: str, propiedad: tuple[str, ...], indice,
                      exenciones_propias: bool = False) -> list[str]:
     patrones = [p.partition("#")[0] for p in propiedad]
+    duena_de_portada = PORTADA in patrones  # un comodín («governance/**») no basta: la portada se nombra
     cierre = archivos_de_cierre(tarea_id) | ({EXENCIONES} if exenciones_propias else set())
     return [
         a for a in archivos
-        if a not in cierre and not any(indice.rutas_se_solapan(a, p) for p in patrones)
+        if a not in cierre and ((a == PORTADA and not duena_de_portada)
+                                or not any(indice.rutas_se_solapan(a, p) for p in patrones))
     ]
+
+
+# ¤adpa
+def sin_duena_viva(archivos: list[str], tareas, indice) -> list[str]:
+    """CI-23: archivos que ninguna ficha no hecha posee."""
+    patrones = [p.partition("#")[0] for t in tareas if getattr(t, "estado", "pendiente") != "hecha"
+                for p in t.propiedad]
+    return [a for a in archivos if not any(indice.rutas_se_solapan(a, p) for p in patrones)]
+
+
+# ¤adpa
+def _salida_github(clave: str, valor: str) -> None:
+    ruta = os.environ.get("GITHUB_OUTPUT")
+    if ruta:
+        with open(ruta, "a", encoding="utf-8") as f:
+            f.write(f"{clave}={valor}" + chr(10))
 
 
 # ¤adpa
@@ -107,6 +143,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--rama", required=True, help="nombre de la rama del PR")
     ap.add_argument("--base", required=True, help="revisión base del PR")
     ap.add_argument("--cabeza", required=True, help="revisión de la cabeza del PR")
+    ap.add_argument("--estricto-sin-ficha", action="store_true",
+                    help="sale con 1 si una rama sin ficha toca archivos sin dueña viva (CI-23)")
+    ap.add_argument("--destino", default=None,
+                    help="rama de destino del PR (github.base_ref); `pmv/**` solo se exime hacia pmv/consolidacion")
     args = ap.parse_args(argv)
 
     indice = _cargar_indice()
@@ -115,12 +155,22 @@ def main(argv: list[str] | None = None) -> int:
     tarea = next((t for t in tareas if t.id == tarea_id), None)
     if tarea is None:
         print(f"ALCANCE: la rama «{args.rama}» no corresponde a ninguna ficha; no se comprueba.")
-        return 0
+        if args.rama.startswith(PREFIJO_SIN_FICHA) and args.destino == DESTINO_PMV:
+            return 0
+        huerfanos = sin_duena_viva(_archivos_del_diff(args.base, args.cabeza), tareas, indice)
+        _salida_github("sin_ficha", "true" if huerfanos else "false")
+        for archivo in huerfanos:
+            print(f"::warning::ALCANCE: «{archivo}» no es propiedad de ninguna ficha viva (rama sin ficha)")
+        return 1 if huerfanos and args.estricto_sin_ficha else 0
 
     archivos = _archivos_del_diff(args.base, args.cabeza)
     propias = EXENCIONES in archivos and retira_solo_exenciones_propias(
-        _diff_de_exenciones(args.base, args.cabeza), tarea.id)
+        _diff_de_exenciones(args.base, args.cabeza), tarea.id, tuple(getattr(tarea, "siembra", ())))
     fuera = fuera_de_alcance(archivos, tarea.id, tarea.propiedad, indice, propias)
+    if EXENCIONES in fuera:
+        # Regla del CTO (2026-11-13): en las exenciones solo se borran líneas propias; lo demás es ERROR siempre.
+        print(f"ALCANCE NO VÁLIDO: {tarea.id} cambia {EXENCIONES} sin limitarse a borrar sus líneas «{tarea.id}|…».")
+        return 1
     if not fuera:
         print(f"ALCANCE OK: {tarea.id} solo toca su propiedad.")
         return 0

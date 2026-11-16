@@ -1,5 +1,14 @@
 # Brief del propietario · Habilitar Vertex AI para EVYDENTIA
 
+> **Aplica a PRODUCCIÓN. No ejecutar hasta el despliegue real (GCP-07) y con autorización del propietario. Para el humo de IA-03b use `EVIDENCIA_HUMO_VERTEX.md` (proyecto de pruebas con guarda).**
+>
+> Guarda invertida obligatoria antes de cualquier comando de este brief: si el proyecto es el de producción, la ejecución se detiene salvo confirmación escrita del propietario.
+>
+> ```powershell
+> $PROYECTO = "evydentia"
+> if ($PROYECTO -eq "evydentia") { throw "PRODUCCIÓN: no ejecutar sin autorización escrita del propietario (GCP-07)." }
+> ```
+
 Fecha: 2026-11-09. Redactado por el Arquitecto ADPA para el Tech Lead. Lo ejecuta el propietario (con Antigravity o desde PowerShell). El Arquitecto y los ingenieros no ejecutan nada de esto.
 
 ## Qué se hace y por qué
@@ -51,17 +60,17 @@ Dos variables, sin ninguna clave. Las aplica el propietario por la vía habitual
 - `GOOGLE_CLOUD_PROJECT=evydentia`
 - `VERTEX_LOCATION=us-central1`
 
-No añadas `OPENAI_API_KEY`, `DEEPSEEK_API_KEY` ni `PREANALISIS_API_KEY`: en EVYDENTIA no existen y la guardia IA-C falla si aparecen.
+Las únicas variables de inferencia requeridas en Cloud Run son `GOOGLE_CLOUD_PROJECT` y `VERTEX_LOCATION`, usando Application Default Credentials (ADC) de la cuenta de servicio.
 
-## Medida provisional (decisión del CTO, 2026-11-09)
-Mientras las fichas IA-B1 a IA-B4 no estén fusionadas, **no configures ninguna variable `DEEPSEEK_*` ni `OPENAI_*` en los servicios de Cloud Run de EVYDENTIA** (backend, jobs ni pruebas). Con eso, los caminos que hoy llaman a OpenAI o a DeepSeek quedan apagados y no sale ningún dato de los clientes a otro proveedor. Para comprobarlo, solo lectura:
+## Verificación de variables de inferencia en Cloud Run
+Todos los servicios de inferencia de EVYDENTIA (backend, jobs y pruebas) operan únicamente mediante Vertex AI y `features/inferencia`. Para inspeccionar las variables declaradas en solo lectura:
 ```powershell
 $PROYECTO = "evydentia"
 $REGION = "us-central1"
 gcloud run services list --project=$PROYECTO --region=$REGION --format="value(metadata.name)"
 gcloud run services describe evydentia-backend --project=$PROYECTO --region=$REGION --format="yaml(spec.template.spec.containers[0].env)"
 ```
-En la lista de variables no debe aparecer ningún nombre que empiece por `DEEPSEEK_`, `OPENAI_` ni `PREANALISIS_API_KEY`. Si aparece alguno, avisa al CTO antes de quitarlo.
+En la lista de variables solo deben figurar `GOOGLE_CLOUD_PROJECT` y `VERTEX_LOCATION` para inferencia, sin claves API estáticas.
 
 ## Prueba de humo y evidencia (condición para lanzar IA-B1 a IA-B4)
 Cuando IA-B0 esté fusionada y desplegada, tú ejecutas una vez la prueba de humo con `VERTEX_HUMO=1` (el ingeniero de IA-B0 te dará el comando exacto en su PR) y entregas al CTO la salida: una llamada estructurada real con el esquema del preanálisis y otra con el del plan de mitigación. **Hasta que el CTO reciba esa evidencia, no se lanzan las fichas IA-B1 a IA-B4.**

@@ -2,10 +2,10 @@
 id = "ORG-20"
 titulo = "Papelera (archivar y restaurar) y exportación completa de los datos de la organización"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "organizacion, plataforma, frontend"
-depende_de = ["ORG-17", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-07"]
-propiedad = ["alembic/versions/20261107_papelera.py", "features/organizacion/services/papelera_engine.py", "features/organizacion/services/exportacion_engine.py", "features/organizacion/organizacion_service.py#ORG-20", "features/plataforma/plataforma_service.py#ORG-20", "api/routers/organizacion_papelera.py", "tests/test_organizacion_papelera.py", "tests/matriz/ORG-20.py", "frontend/src/components/organizacion/papelera/**", "frontend/tests/organizacion/papelera.spec.ts", "frontend/src/components/layout/menus/ORG-20.ts", "frontend/src/components/layout/pantallas/ORG-20.tsx", "features/organizacion/domain/errores.py#ORG-20", "app_core/pasillo/organizacion.py#ORG-20", "app_core/pasillo/biblioteca.py#ORG-20", "frontend/src/components/layout/menus/index.ts#ORG-20", "frontend/src/components/layout/pantallas/index.tsx#ORG-20"]
+depende_de = ["ORG-17", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-07", "ORG-15", "ORG-18", "BIB-106", "BIB-110", "BIB-118", "BIB-119", "BIB-401", "CI-04", "CI-16", "TEST-03"]
+propiedad = ["alembic/versions/org20_papelera.py", "features/organizacion/services/papelera_engine.py", "features/organizacion/organizacion_service.py#ORG-20", "features/plataforma/plataforma_service.py#ORG-20", "api/routers/organizacion_papelera.py", "tests/matriz/ORG-20.py", "frontend/src/components/organizacion/papelera/**", "frontend/tests/organizacion/papelera.spec.ts", "frontend/src/components/layout/menus/ORG-20.ts", "frontend/src/components/layout/pantallas/ORG-20.tsx", "features/organizacion/domain/errores.py#ORG-20", "app_core/pasillo/organizacion.py#ORG-20", "app_core/pasillo/biblioteca.py#ORG-20", "frontend/src/components/layout/menus/index.ts#ORG-20", "frontend/src/components/layout/pantallas/index.tsx#ORG-20", "tests/matriz/roles/auditor.py#ORG-20", "frontend/playwright.config.ts"]
 arbitro = "pytest tests/test_organizacion_papelera.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/organizacion/papelera.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤seguridad"]
 +++
@@ -22,7 +22,7 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
 - El borrado definitivo solo existe al cerrar la organización y lo hace el operador de la plataforma (ORG-09) tras una exportación.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor validado con `exigir_base_de_pruebas()`.
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 
@@ -38,3 +38,9 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
 
 - **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#ORG-20` (ADR 0001).
 - **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#ORG-20` sin modificar `app_core/errors.py`.
+
+## Decisiones del Tech Lead (2026-11-13)
+- La papelera solo cubre `sedes_clientes`, la única tabla con `retirado_en`; el resto lo añade cada sala.
+- Una exportación con entidades faltantes no cuenta como completa y bloquea el cierre R4 con 409.
+- La subida del ZIP por EVI-04 (antes «R2», ya retirado) y las secciones `#ORG-20` de los pasillos de rat, terceros y evidencias van en un PR posterior.
+- `frontend/playwright.config.ts` entra en la propiedad (2026-11-13): `papelera.spec.ts` usa `fijarAjustes`, que solo existe fuera de producción, y va a `SOLO_DESARROLLO` como sus hermanos de `organizacion/` (ORG-15, ORG-17).

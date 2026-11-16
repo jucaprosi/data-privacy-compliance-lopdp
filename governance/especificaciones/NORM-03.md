@@ -42,4 +42,4 @@ Pestaña «Impacto» dentro del detalle de una resolución en la pantalla de NOR
 
 ## 6. Trazabilidad
 
-- `PRD_EVYDENTIA_REVENTA_NUBE.md` Módulo 6.3 y 6.5; invariantes 21, 22 y 41 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`.
+- `PRD.md` Módulo 6.3 y 6.5; invariantes 21, 22 y 41 de `INVARIANTS.md`.

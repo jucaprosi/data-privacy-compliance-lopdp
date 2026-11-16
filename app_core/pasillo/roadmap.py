@@ -79,6 +79,170 @@ async def reabrir_hallazgo(session: AsyncSession, tenant_id: str, user_id: str, 
 # === fin ADPA-06 ===
 
 
+# === DEMO-03c ===
+# ¤demo Copia y siembra de la sala para la demo «Cooperativa Demo»; la lógica vive en el motor de la sala.
+async def clonar_desde_plantilla(session: AsyncSession, origen: str, destino: str, mapa_ids: dict) -> dict:
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.clonar_desde_plantilla(session, origen, destino, mapa_ids)
+
+
+async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: dict) -> None:
+    from features.roadmap import roadmap_service
+
+    await roadmap_service.sembrar_en_plantilla(session, plantilla_id, datos)
+# === fin DEMO-03c ===
+
+
 # === ORG-15 ===
-# Sección reservada para ORG-15 (cartera por pertenencia).
+# ¤cartera
+async def contar_hallazgos_abiertos(session: AsyncSession, tenant_id: str, user_id: str) -> int:
+    """Hallazgos en estado `abierto` de la organización (fija su contexto RLS)."""
+    from features.roadmap import roadmap_service
+
+    abiertos = await roadmap_service.listar_hallazgos(
+        session, tenant_id, user_id, estado=roadmap_service.EstadoHallazgo.abierto.value
+    )
+    return len(abiertos)
+
+
+async def contar_tareas_vencidas(session: AsyncSession, tenant_id: str, user_id: str) -> int:
+    """Tareas sin completar con fecha de fin anterior a hoy en la zona de negocio (fija su contexto RLS)."""
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.contar_tareas_vencidas(session, tenant_id, user_id)
 # === fin ORG-15 ===
+
+# === DIAG-12 ===
+# ¤roadmap ¤diagnostico-estados Lectura de las tareas cerradas con evidencia validada, para los estados del diagnóstico.
+async def tareas_cerradas_con_evidencia_validada(session: AsyncSession, tenant_id: str, user_id: str) -> list[dict]:
+    """Tareas cerradas con evidencia aprobada por el DPO; la consulta vive en la sala Hoja de Ruta."""
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.tareas_cerradas_con_evidencia_validada(session, tenant_id, user_id)
+# === fin DIAG-12 ===
+
+# === DIAG-07 ===
+# Sección reservada para DIAG-07.
+# === fin DIAG-07 ===
+
+
+# === CAPA-04 ===
+# Sección reservada para CAPA-04.
+# === fin CAPA-04 ===
+
+# === MTGE-03 ===
+async def registrar_hallazgo_eipd(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    origen_ref: str,
+    titulo: str,
+) -> tuple[str, bool]:
+    """R2 de MTGE-03: cada punto por corregir de una EIPD es un hallazgo de origen 'eipd' y severidad alta."""
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.registrar_hallazgo(
+        session,
+        tenant_id,
+        user_id,
+        origen=roadmap_service.OrigenHallazgo.eipd.value,
+        origen_ref=origen_ref,
+        severidad=roadmap_service.SeveridadHallazgo.alta.value,
+        titulo=titulo[:roadmap_service.TITULO_MAX],
+        control_ref=None,
+    )
+# === fin MTGE-03 ===
+
+# === TER-01 ===
+# ¤hallazgos Hallazgos de origen `tercero` (contrato y garantía); cerrar y reabrir usan las funciones de arriba.
+async def registrar_hallazgo_tercero(
+    session: AsyncSession, tenant_id: str, user_id: str, origen_ref: str, severidad: str, titulo: str
+) -> tuple[str, bool]:
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.registrar_hallazgo(
+        session,
+        tenant_id,
+        user_id,
+        origen=roadmap_service.OrigenHallazgo.tercero.value,
+        origen_ref=origen_ref,
+        severidad=severidad,
+        titulo=titulo[:roadmap_service.TITULO_MAX],
+    )
+
+
+async def listar_hallazgos_tercero(session: AsyncSession, tenant_id: str, user_id: str) -> list:
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.listar_hallazgos(
+        session, tenant_id, user_id, origen=roadmap_service.OrigenHallazgo.tercero.value
+    )
+# === fin TER-01 ===
+
+
+# === INC-02 ===
+# ¤incidentes ¤hallazgos Cada lección aprendida de una vulneración es un hallazgo de origen «incidente» (INC-02, R4).
+async def registrar_hallazgo_incidente(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    origen_ref: str,
+    severidad: str,
+    titulo: str,
+) -> tuple[str, bool]:
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.registrar_hallazgo(
+        session,
+        tenant_id,
+        user_id,
+        origen=roadmap_service.OrigenHallazgo.incidente.value,
+        origen_ref=origen_ref,
+        severidad=severidad,
+        titulo=titulo[:roadmap_service.TITULO_MAX],
+        control_ref=None,
+    )
+# === fin INC-02 ===
+
+# === ADPA-12 ===
+# ¤adpa Carga automática de capacidades del pasillo por ficha (app_core/pasillo/roadmap_fichas/<ficha>.py).
+import importlib as _importlib  # noqa: E402
+import pkgutil as _pkgutil  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+
+def _cargar_fichas_pasillo(
+    paquete: str = "app_core.pasillo.roadmap_fichas",
+    carpeta: _Path | None = None,
+    espacio: dict[str, object] | None = None,
+    importar=_importlib.import_module,
+) -> list[str]:
+    destino = globals() if espacio is None else espacio
+    ruta = (_Path(__file__).resolve().parent / "roadmap_fichas") if carpeta is None else carpeta
+    if not ruta.is_dir():
+        return []
+    cargados: list[str] = []
+    for _, nombre_mod, _ in sorted(_pkgutil.iter_modules([str(ruta)]), key=lambda item: item[1]):
+        if nombre_mod.startswith("_"):
+            continue
+        mod = importar(f"{paquete}.{nombre_mod}")
+        exportados = getattr(mod, "__all__", None)
+        if not isinstance(exportados, (list, tuple)) or not exportados:
+            raise ValueError(f"{paquete}.{nombre_mod}: debe declarar __all__ no vacío")
+        for simbolo in exportados:
+            valor = getattr(mod, simbolo)
+            if simbolo in destino and destino[simbolo] is not valor:
+                raise ValueError(f"Colisión en pasillo {paquete}: '{simbolo}' repetido en {nombre_mod}")
+            destino[simbolo] = valor
+        cargados.append(nombre_mod)
+    return cargados
+
+
+FICHAS_PASILLO_CARGADAS = _cargar_fichas_pasillo()
+# === fin ADPA-12 ===
+
+
+
+# === TER-02 ===
+# === fin TER-02 ===

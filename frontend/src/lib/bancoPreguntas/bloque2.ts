@@ -22,7 +22,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     control: "Procedimiento de atención de derechos",
     enunciado:
       "¿La organización tiene un procedimiento escrito que indique quién recibe, resuelve y responde las solicitudes de las personas para acceder a sus datos, corregirlos, eliminarlos u oponerse a su uso?",
-    referenciaNormativa: "LOPDP Art. 22 al 24 y Art. 30 (trámite de solicitudes del titular)",
+    referenciaNormativa: "LOPDP Art. 6 (Normas aplicables al ejercicio de derechos) y Art. 12 al 20 (Derechos)",
     criticidad: 5,
     evidenciaEsperada:
       "Procedimiento escrito de atención de derechos con responsable designado",
@@ -40,7 +40,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     control: "Canales de recepción de solicitudes",
     enunciado:
       "¿La organización tiene al menos un medio gratuito, fácil de encontrar y siempre disponible (correo, formulario, ventanilla) para que las personas hagan esas solicitudes?",
-    referenciaNormativa: "LOPDP Art. 30 (canales de atención) y Art. 47",
+    referenciaNormativa: "LOPDP Art. 6 (Normas aplicables al ejercicio de derechos) y Art. 47",
     criticidad: 4,
     evidenciaEsperada:
       "Captura del canal publicado (aviso de privacidad, sitio web o cartelera) y buzón activo",
@@ -56,7 +56,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     control: "Registro y trazabilidad de solicitudes",
     enunciado:
       "¿La organización anota cada solicitud que recibe: fecha, qué pidió la persona, qué se le respondió y cuándo se cerró?",
-    referenciaNormativa: "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 30",
+    referenciaNormativa: "LOPDP Art. 10 (Principios) y Art. 6 (Normas aplicables al ejercicio de derechos)",
     criticidad: 4,
     evidenciaEsperada:
       "Registro o bitácora de solicitudes con fechas de ingreso y cierre",
@@ -74,7 +74,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     control: "Cumplimiento de plazos normativos",
     enunciado:
       "¿La organización responde a estas solicitudes dentro del plazo de la ley, que es de 15 días desde que las recibe?",
-    referenciaNormativa: "LOPDP Art. 31 (Plazo de atención)",
+    referenciaNormativa: "LOPDP Art. 13 al 15 (plazo de quince días)",
     criticidad: 5,
     evidenciaEsperada:
       "Registro de fechas de recepción y respuesta que acredite el cumplimiento del plazo",
@@ -93,7 +93,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     enunciado:
       "¿La respuesta a la persona explica con claridad qué se hizo y, si se le dijo que no a algo, explica por qué?",
     referenciaNormativa:
-      "LOPDP Art. 31 y LOPDP, Capítulo de Derechos del Titular (respuesta motivada)",
+      "LOPDP Art. 13 al 15 y LOPDP, Capítulo III (Derechos)",
     criticidad: 4,
     evidenciaEsperada:
       "Copias de respuestas emitidas al titular con el fundamento de lo resuelto",
@@ -130,7 +130,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     enunciado:
       "Si alguien pidiera datos en nombre de otra persona (apoderado, padre o madre de un menor, heredero), ¿se sabe que hay que pedir y guardar el documento que lo autoriza antes de entregarle nada?",
     referenciaNormativa:
-      "LOPDP Art. 21 (representación legal) y LOPDP, Capítulo de Derechos del Titular",
+      "LOPDP Art. 6 (Normas aplicables al ejercicio de derechos) y LOPDP, Capítulo III (Derechos)",
     criticidad: 3,
     evidenciaEsperada:
       "Documentación habilitante archivada (poder, partida o designación) en los casos atendidos por terceros",
@@ -298,7 +298,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     enunciado:
       "¿La organización borra o bloquea los datos de las personas cuando ya no los necesita o cuando se cumple el plazo para guardarlos?",
     referenciaNormativa:
-      "LOPDP, Capítulo de Derechos del Titular (eliminación) y Art. 35 (plazos de conservación del RAT)",
+      "LOPDP Art. 15 (Derecho de eliminación) y Art. 10 (Principios: conservación)",
     criticidad: 4,
     evidenciaEsperada:
       "Definición escrita de plazos de conservación y constancia de la última depuración realizada",
@@ -331,7 +331,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     control: "Inventario de encargados y proveedores",
     enunciado:
       "¿La organización sabe qué proveedores o terceros (contador, nube, servicio de nómina, mensajería) reciben o ven datos de personas y para qué servicio?",
-    referenciaNormativa: "LOPDP Art. 46 (Acuerdos DPA) y Art. 35 (RAT)",
+    referenciaNormativa: "LOPDP Art. 34 (Acceso a datos personales por parte del encargado) y Art. 51 (Registro Nacional)",
     criticidad: 4,
     evidenciaEsperada:
       "Listado de proveedores con acceso a datos personales y el servicio que prestan",
@@ -349,7 +349,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     control: "Debida diligencia previa a la contratación",
     enunciado:
       "Antes de contratar a un proveedor que va a manejar datos personales, ¿la organización revisa si ese proveedor los protege bien?",
-    referenciaNormativa: "LOPDP Art. 46 y Art. 10 (Responsabilidad Proactiva)",
+    referenciaNormativa: "LOPDP Art. 47 numeral 11 y Art. 10 (Principios)",
     criticidad: 3,
     evidenciaEsperada:
       "Cuestionario de evaluación del proveedor respondido y archivado antes de la contratación",
@@ -365,7 +365,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     control: "Cláusulas contractuales de tratamiento",
     enunciado:
       "¿Los contratos con proveedores que manejan datos por cuenta de la organización dicen por escrito para qué pueden usarlos, que deben guardar reserva y cómo deben protegerlos?",
-    referenciaNormativa: "LOPDP Art. 46 (Acuerdos DPA)",
+    referenciaNormativa: "LOPDP Art. 34 (contrato con el encargado) y Art. 47 numeral 10",
     criticidad: 5,
     evidenciaEsperada:
       "Contratos o acuerdos firmados con las cláusulas de tratamiento incorporadas",
@@ -383,7 +383,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     control: "Gestión de subencargados",
     enunciado:
       "Si un proveedor necesita contratar a su vez a otra organización para trabajar con los datos, ¿el contrato exige que pida permiso antes y que esa otra organización cumpla las mismas reglas?",
-    referenciaNormativa: "LOPDP Art. 46 (subencargados y autorización previa)",
+    referenciaNormativa: "LOPDP Art. 34 (Acceso a datos personales por parte del encargado) y Art. 47 numeral 11",
     criticidad: 3,
     evidenciaEsperada:
       "Cláusula de subcontratación en los contratos y autorizaciones emitidas a los subencargados declarados",
@@ -400,7 +400,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     enunciado:
       "Si la organización guarda datos en servicios en internet (nube, como Google Drive u otros), ¿sabe cuáles son y en qué país están guardados?",
     referenciaNormativa:
-      "LOPDP Art. 46 y Art. 56 (ubicación y transferencia de datos)",
+      "LOPDP Art. 47 numeral 11 y Art. 56 (ubicación y transferencia de datos)",
     criticidad: 4,
     evidenciaEsperada:
       "Listado de servicios en la nube utilizados con la región de almacenamiento declarada",
@@ -433,7 +433,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     enunciado:
       "Cuando un técnico externo entra a revisar o reparar un sistema con datos, ¿se le da acceso solo a lo necesario, solo por un tiempo y se anota lo que hizo?",
     referenciaNormativa:
-      "LOPDP Art. 38 y Art. 39 (control de accesos) y Art. 46",
+      "LOPDP Art. 37 (Seguridad de datos personales) y Art. 47 numeral 10",
     criticidad: 3,
     evidenciaEsperada:
       "Registro de accesos otorgados a soporte externo con alcance, vigencia y constancia de revocación",
@@ -450,7 +450,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     enunciado:
       "Cuando termina el contrato con un proveedor, ¿la organización pide que devuelva o borre los datos, lo confirme por escrito y se le quitan sus accesos?",
     referenciaNormativa:
-      "LOPDP Art. 46 (devolución o supresión al término del encargo)",
+      "LOPDP Art. 34 (contrato con el encargado) y Art. 47 numeral 10",
     criticidad: 3,
     evidenciaEsperada:
       "Acta de devolución o certificado de destrucción de datos y constancia de revocación de accesos",

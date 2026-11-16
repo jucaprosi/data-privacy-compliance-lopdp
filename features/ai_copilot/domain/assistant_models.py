@@ -76,7 +76,7 @@ class PlanImplementacion(Contrato):
 class RespuestaAsistente(Contrato):
     pregunta: str
     respuesta: str
-    modo: Literal["local", "deepseek", "sin_fuente"]
+    modo: Literal["local", "externo", "sin_fuente"]
     fundamentos: list[Fundamento]
     planes: list[PlanImplementacion]
     advertencias: list[str]

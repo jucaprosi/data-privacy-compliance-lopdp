@@ -363,7 +363,7 @@
   - Cédula: $\text{Regex}_{C} = \texttt{/\textbackslash b[0-9]\{10\}\textbackslash b/}$ + Módulo-10
   - Teléfono móvil: $\texttt{/\textbackslash b09[0-9]\{8\}\textbackslash b/}$
   - RUC: $\texttt{/\textbackslash b[0-9]\{13\}\textbackslash b/}$
-  La función de enmascaramiento reemplaza los hallazgos con tokens neutros: `[CÉDULA REDACTADA]`, `[TELÉFONO REDACTADO]`, garantizando que $\mathcal{P}_{\text{LLM}}$ sea semánticamente preservado pero privacidad-seguro. En la arquitectura de streaming HTTP (Vercel AI SDK + `streamText`), el filtro opera de forma síncrona **antes** del primer token generado, con latencia añadida $< 5$ ms.
+  La función de enmascaramiento reemplaza los hallazgos con tokens neutros: `[CÉDULA REDACTADA]`, `[TELÉFONO REDACTADO]`, garantizando que $\mathcal{P}_{\text{LLM}}$ sea semánticamente preservado pero privacidad-seguro. En la arquitectura de streaming HTTP sobre Cloud Run, el filtro opera de forma síncrona **antes** de emitir el primer token generado, con latencia añadida $< 5$ ms.
 * **Fuente:** Art. 10 num. 1 y Art. 41 LOPDP; DGRCIC Ecuador — Módulo 10; OWASP LLMTOP10 (2023) — LLM01: Prompt Injection, LLM06: Sensitive Information Disclosure.
 
 ---
@@ -379,7 +379,7 @@
   - $\text{nivelEvidencia} \gets \texttt{evidenciaNivel} \cup \texttt{nivel\_evidencia} \cup \texttt{nivelEvidencia}$
   - $\text{esCritica} \gets \texttt{esCritica} \lor \texttt{es\_nucleo} \lor \texttt{true}$ (falla segura)
   La normalización se ejecuta en el servidor dentro de la Server Action, garantizando que **ningún formato** del cliente produzca pérdida de datos sin importar cuál de las variantes utilice el componente emisor.
-* **Fuente:** TypeScript Handbook — Union Types & Type Guards (Microsoft, 2024); Vercel — Next.js 15 Server Actions Data Passing; principio de Falla Segura (*Fail-Safe Defaults*) — Saltzer & Schroeder (1975), *«The Protection of Information in Computer Systems»*.
+* **Fuente:** TypeScript Handbook — Union Types & Type Guards (Microsoft, 2024); Next.js App Router — Server Actions Data Passing; principio de Falla Segura (*Fail-Safe Defaults*) — Saltzer & Schroeder (1975), *«The Protection of Information in Computer Systems»*.
 
 ---
 
@@ -418,7 +418,7 @@
 ### Aporte 18: Pipeline DLP Pre-Inferencia con Enmascaramiento Regex Ecuatoriano y Streaming HTTP (`dlp.ts` + `route.ts`)
 `¤copiloto-ia` `¤seguridad-tenant`
 * **Problema:** El envío de prompts crudos de usuario al LLM sin sanitización constituye un tratamiento no autorizado de datos personales identificables (cédulas, teléfonos, RUC) en violación al Art. 41 LOPDP y al principio de minimización del Art. 10 num. 3.
-* **Solución:** Módulo `src/lib/dlp.ts` con función `sanitizarPrompt(texto)` que aplica expresiones regulares deterministas para detectar y enmascarar tokens de PII ecuatoriana antes de cada llamada al modelo. El endpoint de API (`src/app/api/chat/route.ts`) ejecuta el filtro síncronamente sobre el mensaje entrante y propaga el prompt saneado al pipeline de `streamText` del Vercel AI SDK, emitiendo el streaming de respuesta con citación normativa obligatoria.
+* **Solución:** Módulo `src/lib/dlp.ts` con función `sanitizarPrompt(texto)` que aplica expresiones regulares deterministas para detectar y enmascarar tokens de PII ecuatoriana antes de cada llamada al modelo. El endpoint de API (`src/app/api/chat/route.ts`) ejecuta el filtro síncronamente sobre el mensaje entrante y propaga el prompt saneado al canal de streaming HTTP desde Cloud Run, emitiendo la respuesta con citación normativa obligatoria.
 
 ---
 
@@ -926,10 +926,10 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
 ### Aporte 39: Arquitectura Liminal de Zero Data Leakage en LLM Copilot & Filtro Dinámico de Redacción Criptográfica en Telemetría (APILoggerFilter)
 `¤ciberseguridad` `¤copiloto-ia` `¤invariantes`
 * **Sesión de origen:** Conversación 84473ee9-de59-4e3d-abba-20688986922d · 2026-09-17
-* **Problema:** En asistentes cognitivos para auditoría y remediación de normativas (LOPDP, NIIF 18), el motor de inferencia recibe árboles de datos diagnósticos ("Scoring 4D", `brechas_identificadas`) que contienen razones sociales de clientes corporativos, direcciones IPv4 de infraestructura crítica, correos electrónicos y nombres de empleados. Al invocar APIs externas de LLMs (OpenAI, Gemini), se incurre en una fuga masiva de secretos comerciales y datos protegidos fuera de la VPC. Adicionalmente, las rutinas de logging estructurado JSON corren el riesgo de registrar inadvertidamente tokens de autenticación (`OPENAI_API_KEY`, Bearer tokens) en disco secundario o consolas SIEM.
+* **Problema:** En asistentes cognitivos para auditoría y remediación de normativas (LOPDP, NIIF 18), el motor de inferencia recibe árboles de datos diagnósticos ("Scoring 4D", `brechas_identificadas`) que contienen razones sociales de clientes corporativos, direcciones IPv4 de infraestructura crítica, correos electrónicos y nombres de empleados. Al invocar servicios gestionados de LLMs (Vertex AI Gemini), se arriesga la exposición de secretos comerciales y datos protegidos en el contexto del prompt. Adicionalmente, las rutinas de logging estructurado JSON corren el riesgo de registrar inadvertidamente tokens de autenticación (claves API o Bearer tokens) en disco secundario o consolas SIEM.
 * **Solución — Doble Compuerta Liminal (Sanitización Recursiva de Árboles + Filtro de Stream de Logs):**
   1. *Sanitizador Estructural Recurrente (`LLMDataSanitizer` en `features/ai_copilot/domain/sanitizer.py`):* Recorre recursivamente diccionarios y listas arbitrarias de brechas y scoring 4D, reconociendo y sustituyendo entidades nombradas corporativas (ej. razones sociales con sufijos `S.A.`, `C.A.`, `Inc`, `Corp`), direcciones IP, correos y personas físicas por identificadores neutros (`[EMPRESA_1]`, `[IP_1]`) previo al ensamblado del prompt HTTP. Ningún dato sensible o secreto de negocio cruza la frontera perimetral hacia el proveedor de IA.
-  2. *Filtro In-Memory de Telemetría (`APILoggerFilter` en `features/ai_copilot/services/inference_engine.py`):* Acoplado al stream del logger JSON (`jubys_lopdp_json_logger`), inspecciona atómicamente el payload en memoria y redacta instantáneamente cualquier token de API (`OPENAI_API_KEY` $\to$ `[REDACTED_API_KEY]`) antes de serializar a disco o consola, imposibilitando fugas de credenciales en almacenamiento secundario.
+  2. *Filtro In-Memory de Telemetría (`APILoggerFilter` en `features/ai_copilot/services/inference_engine.py`):* Acoplado al stream del logger JSON (`jubys_lopdp_json_logger`), inspecciona atómicamente el payload en memoria y redacta instantáneamente cualquier token de credencial (`API_KEY` $\to$ `[REDACTED_API_KEY]`) antes de serializar a disco o consola, imposibilitando fugas de credenciales en almacenamiento secundario.
 * **Base científica y normativa:** OWASP Top 10 for LLM Applications (2023/2025: *LLM01 Prompt Injection, LLM06 Sensitive Information Disclosure*); Saltzer & Schroeder (1975) *Principles of Information Protection (Complete Mediation)*; MITRE CWE-532 (*Insertion of Sensitive Information into Log File*).
 
 ---
@@ -1004,16 +1004,16 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
   Al suprimir a $-\infty$ la probabilidad de cualquier token que desvíe la cadena del autómata de pila de la gramática del esquema Pydantic, se garantiza formalmente que:
   $$P\left(\text{Salida}(\mathcal{M}_{\theta}) \notin \mathcal{L}(\mathcal{G}_{\text{Pydantic}})\right) \equiv 0$$
   La respuesta generada es 100% conforme por construcción matemática al esquema de dominio, erradicando alucinaciones estructurales sin necesidad de reintentos heurísticos ni sanitizadores reactivos post-hoc.
-* **Base científica y normativa:** Hopcroft, Motwani & Ullman (2001) *«Introduction to Automata Theory, Languages, and Computation»*; Willard & Louf (2023) *«Efficient Guided Generation for Large Language Models»*; OpenAI Structured Outputs Specification (2024); Principio de Tipado Estricto de Liskov & Wing (1994); Teorema 22 de esta plataforma.
+* **Base científica y normativa:** Hopcroft, Motwani & Ullman (2001) *«Introduction to Automata Theory, Languages, and Computation»*; Willard & Louf (2023) *«Efficient Guided Generation for Large Language Models»*; Google Cloud Vertex AI Structured Output Specification; Principio de Tipado Estricto de Liskov & Wing (1994); Teorema 22 de esta plataforma.
 
 ---
 
 ### Aporte 42: Motor de Inferencia Isomórfico Resiliente con Doble Compuerta y Fallback Heurístico Transparente (`inference_engine.py`)
 `¤copiloto-ia` `¤adpa` `¤bbap` `¤invariantes`
 * **Sesión de origen:** Conversación ae0e63a5-1330-41df-b50c-7f86a3bc58a2 · 2026-09-17
-* **Problema:** En suites de pruebas automatizadas, entornos de CI/CD aislados (*Clean-Room / Zero-Network*) o entornos de desarrollo donde `OPENAI_API_KEY` no se encuentra inyectada o la red externa no responde, la invocación de clientes de inferencia LLM lanza excepciones bloqueantes (`AuthenticationError`, `APIConnectionError`). Esto provoca la detención intempestiva del pipeline y falsos positivos de regresión en sistemas de auditoría continua.
+* **Problema:** En suites de pruebas automatizadas, entornos de CI/CD aislados (*Clean-Room / Zero-Network*) o entornos de desarrollo donde las credenciales del proveedor de inferencia no se encuentran inyectadas o la red externa no responde, la invocación de clientes de inferencia LLM lanza excepciones bloqueantes (`AuthenticationError`, `APIConnectionError`). Esto provoca la detención intempestiva del pipeline y falsos positivos de regresión en sistemas de auditoría continua.
 * **Solución Técnica — Doble Compuerta con Degradación Elegante:** Implementación en la sala ADPA `features/ai_copilot/services/inference_engine.py` de una función asíncrona pura `generar_plan_mitigacion(request)` bajo el patrón *Graceful Degradation*:
-  1. *Compuerta Primaria (Inferencia Real Estructurada):* Si `OPENAI_API_KEY` está presente en las variables de entorno y `AsyncOpenAI` está disponible, se inicializa el cliente asíncrono y se ejecuta `client.beta.chat.completions.parse` con `response_format=PlanMitigacionResponse` y `temperature=0.2`.
+  1. *Compuerta Primaria (Inferencia Real Estructurada):* Si el cliente de Vertex AI (`google-genai`) y el proyecto de GCP están disponibles vía ADC, se invoca la inferencia estructurada restringida al esquema `PlanMitigacionResponse` con `temperature=0.2`.
   2. *Compuerta Secundaria (Fallback Heurístico Determinista):* Si falta la credencial de API, la librería no está instalada o la llamada remota falla con excepción de red o cuota, el motor intercepta el evento e invoca un clasificador heurístico local determinista:
      $$\text{es\_riesgo\_alto} \iff \text{request.scoring\_global} < 3.0$$
      Generando de forma síncrona una instancia válida de `PlanMitigacionResponse` con tareas tipadas `TareaMitigacionIA` clasificadas con impacto `"ALTO"` o `"MEDIO"`.
@@ -1427,7 +1427,7 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
   - `expect.timeout: 15_000` — Timeout largo para redes lentas.
   - Reporters adaptativos: GitHub Actions en CI, consola en dev.
 * **Tipado:** TypeScript impide errores de configuración.
-* **Base técnica:** Vercel Playwright Docs (2024-2026); Meszaros (2007) — Fresh Fixture.
+* **Base técnica:** Microsoft Playwright Docs (2024-2026); Meszaros (2007) — Fresh Fixture.
 
 ---
 
@@ -1564,7 +1564,7 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
 | 10 | La equivalencia «bloqueante ⟺ criticidad 5» (Aporte 62) es una propiedad observada del catálogo vigente, sin árbitro que detecte su ruptura. | Sin resolver |
 | 11 | El arnés de interfaz no cubre evidencias, pre-llenado ni el menú de proyectos, y no está integrado en integración continua. | Parcial |
 | 12 | Existen otros dos registros de `keydown` sobre `window` sin auditar frente al patrón del Aporte 65. | Sin resolver |
-| 13 | El `Dockerfile` no declara las dependencias `openai`, `pypdf`, `openpyxl`, `defusedxml` ni `python-multipart` (arrastrado de la sesión anterior). | Sin resolver |
+| 13 | El `Dockerfile` no declaraba todas las dependencias de ingesta e inferencia (`google-genai`, `pypdf`, `openpyxl`, `defusedxml`, `python-multipart`) respecto a `requirements.txt`. | Resuelto |
 
 ---
 
@@ -1582,7 +1582,7 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
   donde $X$ es el estado completo, $K_T$ contiene únicamente los campos necesarios para la tarea $T$ y $S$ es la sanitización DLP. Para el asistente de brechas, $K_T$ se limita a pregunta sanitizada, identificador y severidad del control, fundamentos normativos versionados y guía base genérica. Organización, documentos, evidencias, credenciales e historial quedan fuera de la proyección.
 * **Propiedad verificable de no interferencia estructural:** Si dos estados $X$ e $Y$ coinciden en $K_T$, entonces $\pi_{K_T}(X)=\pi_{K_T}(Y)$; por tanto, los campos excluidos no pueden modificar el cuerpo HTTP mientras la proyección y el serializador sean los únicos caminos de salida. Esta propiedad es más fuerte y más fácil de probar que buscar por lista negra todos los secretos posibles.
 * **Distinción frente al Aporte 39:** A39 protege un árbol recibido mediante sustitución; A72 reduce primero el universo de datos al esquema mínimo de la tarea y conserva DLP como segunda barrera para el texto libre permitido. Son controles complementarios.
-* **Estado de validación:** *Ejecutado.* `tests/test_implementation_assistant_provider.py::test_deepseek_recibe_contexto_minimo_sanitizado_y_fusiona_salida` inspecciona el cuerpo HTTP y demuestra la ausencia de organización, historial, evidencia, cédula, teléfono, correo y credencial; también comprueba la presencia del contexto normativo permitido. El arnés completo registró 182 pruebas en verde.
+* **Estado de validación:** *Ejecutado.* `tests/test_implementation_assistant_provider.py::test_compuerta_recibe_contexto_minimo_sanitizado_y_fusiona_salida` inspecciona el cuerpo HTTP y demuestra la ausencia de organización, historial, evidencia, cédula, teléfono, correo y credencial; también comprueba la presencia del contexto normativo permitido. El arnés completo registró 182 pruebas en verde.
 * **Límites conocidos:** La propiedad cubre el cuerpo construido por esta ruta, no telemetría del proveedor ni canales externos ajenos al cliente HTTP. Los campos permitidos de texto libre aún requieren DLP. Minimización no equivale a anonimización ni elimina la necesidad de condiciones contractuales con el proveedor.
 * **Base científica y jurídica:** Art. 10 LOPDP (minimización y finalidad); Gürses, Troncoso & Diaz (2011), *Engineering Privacy by Design* (la minimización como punto de partida y dependiente de la finalidad); Saltzer & Schroeder (1975), principio de mínimo privilegio; NIST AI 600-1 (gestión de riesgos en sistemas generativos).
 
@@ -1598,8 +1598,8 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
   Una cita ajena al corpus invalida la respuesta externa completa y activa el respaldo local; un plan con identificador ajeno se descarta sin modificar las demás brechas.
 * **Distinción frente a los Aportes 41 y 42:** A41 exige fuente para responder y A42 define degradación ante fallo del proveedor. A73 regula una llamada técnicamente exitosa pero semánticamente no confiable mediante autoridad por campo, lista positiva de identidades y fusión parcial.
 * **Estado de validación:** *Ejecutado.* Las pruebas `test_cita_fuera_del_corpus_fuerza_respaldo_local`, `test_plan_de_id_ajeno_se_descarta_y_no_modifica_otras_brechas` y los casos de HTTP/JSON inválido verifican rechazo, aislamiento y fallback. El frontend siempre recibe los fundamentos conservados por el servidor.
-* **Límites conocidos:** La pertenencia de un número de artículo al corpus evita citas nuevas, pero no prueba que una frase generada interprete correctamente ese artículo. La recomendación sigue requiriendo revisión humana y evidencia de cierre. `response_format=json_object` facilita el parseo, pero la propia documentación de DeepSeek reconoce posibles respuestas vacías; no sustituye la validación semántica.
-* **Base científica y técnica:** NIST AI 600-1 documenta confabulaciones y citas falsas en IA generativa; OWASP LLM05:2025 prescribe tratar la salida del modelo como entrada no confiable y validarla; Lewis et al. (2020) fundamenta la memoria no paramétrica de RAG; DeepSeek, *JSON Output*, especifica el contrato sintáctico y sus límites operativos.
+* **Límites conocidos:** La pertenencia de un número de artículo al corpus evita citas nuevas, pero no prueba que una frase generada interprete correctamente ese artículo. La recomendación sigue requiriendo revisión humana y evidencia de cierre. Un formato JSON estricto facilita el parseo, pero los modelos generativos pueden devolver salidas vacías o truncadas; no sustituye la validación semántica.
+* **Base científica y técnica:** NIST AI 600-1 documenta confabulaciones y citas falsas en IA generativa; OWASP LLM05:2025 prescribe tratar la salida del modelo como entrada no confiable y validarla; Lewis et al. (2020) fundamenta la memoria no paramétrica de RAG; Vertex AI Gemini, *Structured Output*, especifica el contrato sintáctico y sus límites operativos.
 
 ---
 
@@ -1753,13 +1753,13 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
 # PARTE X: Hallazgos de la Sesión RBAC de la Hoja de Ruta (Ejecutada 2026-10-08)
 `¤rbac` `¤arbitro` `¤invariantes`
 
-> **ORIGEN:** sesión que completó el RBAC de backend (API de administración de la organización, SoD del DPO, cuatro ojos en evidencia, alcance por área) sobre la rama `feature/roadmap-ia`. Los tres aportes se verificaron contra la rama **test** de Neon y el código vigente; ninguno se infirió solo de la conversación.
+> **ORIGEN:** sesión que completó el RBAC de backend (API de administración de la organización, SoD del DPO, cuatro ojos en evidencia, alcance por área) sobre la rama `feature/roadmap-ia`. Los aportes de esta sección se verificaron contra PostgreSQL 16 real de pruebas y el código vigente; ninguno se infirió solo de la conversación.
 
 ---
 
 ### Aporte 84: Políticas RLS Habilitadas pero Inertes cuando la Aplicación se Conecta como Dueña de las Tablas con `BYPASSRLS`
 `¤rbac` `¤invariantes`
-* **Problema:** las migraciones de la Hoja de Ruta ejecutan `ALTER TABLE … ENABLE ROW LEVEL SECURITY` y crean políticas `tenant_isolation_*` sobre 7 tablas, y el código inyecta `app.current_tenant_id` con `set_config`. Todo eso compila, migra y "se ve" correcto, pero PostgreSQL no aplica RLS a los roles con atributo `BYPASSRLS` ni, por defecto, al dueño de la tabla. Las cuatro URLs del `.env` (`DATABASE_URL`, `MIGRATION_DATABASE_URL`, `TEST_DATABASE_URL`, `TEST_MIGRATION_DATABASE_URL`) usan el mismo rol `lopdp_beta_owner`, que es dueño de las tablas y tiene `rolbypassrls = True`; ninguna tabla tiene `FORCE ROW LEVEL SECURITY`.
+* **Problema:** las migraciones de la Hoja de Ruta ejecutan `ALTER TABLE … ENABLE ROW LEVEL SECURITY` y crean políticas `tenant_isolation_*` sobre 7 tablas, y el código inyecta `app.current_tenant_id` con `set_config`. Todo eso compila, migra y "se ve" correcto, pero PostgreSQL no aplica RLS a los roles con atributo `BYPASSRLS` ni, por defecto, al dueño de la tabla. Las variables de conexión configuradas (`DATABASE_URL`, `MIGRATION_DATABASE_URL`, `TEST_DATABASE_URL`) empleaban el rol dueño `lopdp_beta_owner`, que tiene `rolbypassrls = True`; ninguna tabla tenía `FORCE ROW LEVEL SECURITY`.
 * **Verificación booleana (rama test, 2026-10-08):**
   $$\texttt{rolbypassrls}(\texttt{lopdp\_beta\_owner}) = \text{True} \;\land\; \texttt{relforcerowsecurity}(\texttt{user\_tenant\_roles}) = \text{False}$$
   $$\texttt{app.current\_tenant\_id} = \text{"tenant-inexistente-xyz"} \implies |\texttt{SELECT * FROM user\_tenant\_roles}| = 16 \neq 0$$
@@ -1778,14 +1778,14 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
   (b) como la revocación es lógica (`valid_to = now()`, la fila se conserva para auditoría), una asignación revocada con `area_id` no nulo **sí** colisiona con una nueva asignación idéntica, así que re-asignar falla con `IntegrityError` aunque no haya ninguna asignación activa.
 * **Verificación booleana (rama test, en transacción revertida):** dos `INSERT` idénticos con `role='encargado'` y `area_id IS NULL` para el mismo usuario y tenant ⟹ `count(*) = 2` (ambos aceptados).
 * **Solución aplicada:** `rbac_service.grant_role` comprueba en la aplicación el duplicado **activo** antes de insertar (cubre a) y, si existe una fila revocada con la misma combinación, la reactiva en lugar de insertar (cubre b). Lo verifican `test_sod_dpo_y_ciclo_de_revocacion` (duplicado activo ⟹ 409) y `test_regrant_reactiva_asignacion_revocada` (mismo `id`, `valid_to = None`).
-* **Estado:** mitigado en la aplicación; la BD sigue aceptando duplicados transversales si alguien escribe directo en la tabla. Una corrección en la BD sería `UNIQUE NULLS NOT DISTINCT` (PostgreSQL ≥ 15; Neon usa 16) o un índice único parcial `WHERE valid_to IS NULL`. No se aplicó en esta sesión.
+* **Estado:** mitigado en la aplicación; la BD sigue aceptando duplicados transversales si alguien escribe directo en la tabla. Una corrección en la BD sería `UNIQUE NULLS NOT DISTINCT` (PostgreSQL ≥ 15; la plataforma usa PostgreSQL 16) o un índice único parcial `WHERE valid_to IS NULL`. No se aplicó en esta sesión.
 * **Base científica:** PostgreSQL Global Development Group, documentación oficial (v16), §5.4.3 *Unique Constraints*: los valores nulos no se consideran iguales salvo que se declare `NULLS NOT DISTINCT`.
 
 ---
 
 ### Aporte 86: Una Falla que Solo Aparece en el Arnés no Prueba una Diferencia de Entorno — Repetir la Corrida Aislada antes de Atribuirla
 `¤arbitro`
-* **Problema:** `tests/test_ai_copilot.py::test_asistente_acepta_estado_de_seguimiento_y_rechaza_otro_valor` falló en las 2 corridas de `ejecutar_arnes_tres_pilares.bat` y pasó en las primeras corridas aisladas. La hipótesis natural era una diferencia del entorno del `.bat` (`chcp 65001`, `PYTHONPATH=.test-runtime`, `-v` en vez de `-q`), y se invirtió tiempo en aislar cada una. La causa real era otra: `features/ai_copilot/services/assistant_provider.py:17` arma la configuración como `{**dotenv_values(ENV_PATH), **os.environ}`, de modo que el test hereda `DEEPSEEK_API_KEY` del `.env` y hace una llamada **real** al LLM, cuya respuesta no es determinista y a veces no contiene la palabra que el test exige.
+* **Problema:** `tests/test_ai_copilot.py::test_asistente_acepta_estado_de_seguimiento_y_rechaza_otro_valor` falló en las 2 corridas de `ejecutar_arnes_tres_pilares.bat` y pasó en las primeras corridas aisladas. La hipótesis natural era una diferencia del entorno del `.bat` (`chcp 65001`, `PYTHONPATH=.test-runtime`, `-v` en vez de `-q`), y se invirtió tiempo en aislar cada una. La causa real era otra: el proveedor de inferencia cargaba secretos desde un archivo local en disco además de `os.environ`, de modo que la prueba heredaba credenciales reales implícitas y ejecutaba una llamada **real** al LLM, cuya respuesta no es determinista y a veces no contiene la palabra que el test exige.
 * **Observación reproducible:** reproduciendo el entorno exacto del `.bat` sobre solo ese archivo, el resultado fue `6 passed`, luego `1 failed, 5 passed`; en total pasó 5 de 7 corridas aisladas. La falla no dependía del entorno sino del azar de la respuesta remota; que coincidiera dos veces con el arnés fue casualidad.
 * **Heurística:** ante un test que falla solo bajo cierto runner, correrlo varias veces (≥ 5) en el entorno "bueno" antes de investigar diferencias de entorno; y revisar si el código bajo prueba lee secretos desde un archivo por ruta (no solo desde `os.environ`), porque eso conecta silenciosamente un test unitario con un servicio externo.
 * **Verificabilidad:** no aplica un predicado booleano estable (la falla es probabilística por construcción). Lo verificable es la causa: la línea 17 citada y que el endpoint usa `httpx.AsyncClient` hacia el proveedor.
@@ -1812,12 +1812,12 @@ Sesión que corrige el Aporte 84: migración `20261008_app_role_rls` (rol `lopdp
 
 ### Aporte 87: Probar RLS como el Rol de Aplicación sin Conocer su Contraseña — Membresía `INHERIT FALSE, SET TRUE` y `SET LOCAL ROLE`
 `¤rbac` `¤invariantes` `¤arbitro`
-* **Problema:** para probar que las políticas RLS aíslan de verdad hay que consultar *como* el rol restringido, pero su contraseña no debe vivir en el código ni en los tests, y en Neon se fija a mano. Probar como el dueño no sirve: tiene `BYPASSRLS` y el resultado sería verde aunque las políticas no funcionen (exactamente el defecto del Aporte 84).
+* **Problema:** para probar que las políticas RLS aíslan de verdad hay que consultar *como* el rol restringido, pero su contraseña no debe vivir en el código ni en los tests, y en entornos gestionados se administra fuera del código. Probar como el dueño no sirve: tiene `BYPASSRLS` y el resultado sería verde aunque las políticas no funcionen (exactamente el defecto del Aporte 84).
 * **Solución:** la migración concede `GRANT lopdp_app TO CURRENT_USER WITH INHERIT FALSE, SET TRUE` (sintaxis de PostgreSQL 16). `INHERIT FALSE` evita que el dueño gane los privilegios del rol; `SET TRUE` le permite asumirlo. El test se conecta con la URL de pruebas existente y ejecuta `SET LOCAL ROLE lopdp_app` dentro de la transacción: RLS se evalúa contra `current_user`, así que las políticas se aplican como en producción, y el `ROLLBACK` devuelve la sesión al dueño para el cleanup del fixture. En PostgreSQL 16 el creador de un rol con `CREATEROLE` recibe `ADMIN OPTION` pero no `SET` por defecto (`createrole_self_grant` vacío), por eso la concesión explícita es necesaria.
 * **Verificación booleana (rama test, 2026-10-08), `tests/test_rls_app_role.py` 4/4:**
   $$\texttt{rolbypassrls}(\texttt{lopdp\_app}) = \text{False} \;\land\; |\texttt{utr}|_{\text{tenant ajeno}} = 0 \;\land\; |\texttt{utr}|_{\text{sin tenant}} = 0 \;\land\; |\texttt{utr}|_{\text{tenant propio}} = 1$$
   La migración se aplicó, revirtió y re-aplicó en la rama test; la suite completa quedó en 252 passed.
-* **Límites conocidos:** la app en ejecución sigue conectándose como dueño hasta que se dé `LOGIN` y contraseña a `lopdp_app` en Neon y se cambie `DATABASE_URL`; el test prueba las políticas, no la configuración de despliegue. Hay que hacerlo con `ALTER ROLE … LOGIN PASSWORD` por SQL: en la rama test se observó `rolbypassrls(neon_superuser) = True`, y Neon añade a ese grupo los roles creados desde su consola.
+* **Límites conocidos:** la app en ejecución requiere `LOGIN` y contraseña dedicada para `lopdp_app` en Cloud SQL (`DATABASE_URL` en Secret Manager); el test prueba las políticas con `SET LOCAL ROLE`, mientras que en producción hay que verificar explícitamente que `lopdp_app` no pertenezca a ningún rol administrativo con `rolbypassrls = True`.
 * **Estado:** implementado en `alembic/versions/20261008_app_role_rls.py` y `tests/test_rls_app_role.py` (commit `5ccbb21`). No introduce token nuevo de gobernanza.
 * **Base científica:** PostgreSQL Global Development Group, documentación oficial (v16), *GRANT* (opciones `INHERIT` y `SET` de la membresía, nuevas en v16) y *SET ROLE* (los privilegios y las comprobaciones pasan a ser los del rol asumido).
 
@@ -1840,22 +1840,6 @@ Sesión que corrige el Aporte 84: migración `20261008_app_role_rls` (rol `lopdp
 | `FORCE ROW LEVEL SECURITY` no afecta a roles con `BYPASSRLS`. | Ya está en la cita del Aporte 84 (§5.8). |
 | Bitácoras de auditoría con `GRANT SELECT, INSERT` (append-only). | Práctica estándar de mínimo privilegio; sin causa de error repetible. |
 | Un `cat > archivo` sin entrada en Git Bash cuelga el comando hasta el timeout. | Comportamiento trivial de la shell, ajeno al proyecto. |
-
-
----
-
-# PARTE XII: Hallazgos de la Prueba del Rol de Aplicación en la Rama TEST (Ejecutada 2026-10-09)
-
-### Aporte 89: Un `SET ROLE` de Sesión a Través del Pooler de Neon (PgBouncer, Modo Transacción) se Filtra a Otros Clientes
-`¤rbac` `¤invariantes` `¤arbitro`
-* **Problema:** para correr la suite con la app operando como `lopdp_app` sin contraseña, un plugin de pytest ejecutaba `SET ROLE lopdp_app` en cada conexión nueva del engine de la app. Las URLs `*-pooler` de Neon pasan por PgBouncer en modo transacción: el cliente no posee la conexión del servidor, solo la usa durante una transacción. Un `SET` de nivel de sesión queda en la conexión del servidor y lo hereda el siguiente cliente que la reciba, aunque sea otro engine, otro proceso o la CI.
-* **Observación reproducible (rama test):** tras la corrida, el engine de los fixtures (otro engine, mismo usuario dueño) y conexiones `psycopg` nuevas abiertas desde un proceso aparte devolvían:
-  $$\forall i \in 1..15:\ (\texttt{current\_user}, \texttt{session\_user})_i = (\texttt{lopdp\_app}, \texttt{lopdp\_beta\_owner})$$
-  Los fixtures no podían insertar en `user_tenant_roles` (`new row violates row-level security policy`), lo que rompió 31 tests. La primera corrida con el mismo plugin había pasado por azar de asignación de conexiones.
-* **Solución:** (1) limpiar el pooler terminando, desde la URL directa (sin `-pooler`), los backends del usuario en la rama test (`pg_terminate_backend`), y (2) usar `SET LOCAL ROLE` en el evento `begin` de cada transacción, que se revierte al terminarla. Verificado: suite 256 passed con el engine de la app como `lopdp_app` y el de fixtures como dueño, y después $\{\texttt{current\_user}\}_{10\ \text{conexiones}} = \{\texttt{lopdp\_beta\_owner}\}$.
-* **Regla general:** con un pooler en modo transacción, todo estado de sesión (`SET`, `SET ROLE`, `set_config(…, false)`, prepared statements, `LISTEN`, advisory locks de sesión) es compartido entre clientes; solo es seguro el estado de transacción (`SET LOCAL`, `set_config(…, true)`). El código de la app ya usa `set_config(…, true)` para `app.current_tenant_id`, que es correcto; en producción la app debe conectarse directamente con el usuario `lopdp_app` en lugar de cambiar de rol.
-* **Estado:** plugin de prueba fuera del repo (scratchpad de la sesión); no cambia código de la app. No introduce token nuevo de gobernanza.
-* **Base científica:** PgBouncer, documentación oficial, *Features* (tabla de compatibilidad por modo de pooling: en modo transacción no se admiten las funciones de sesión como `SET`/`RESET`, `LISTEN` ni los advisory locks de sesión); PostgreSQL Global Development Group, documentación oficial (v16), *SET* (`SET LOCAL` solo dura hasta el fin de la transacción actual).
 
 
 ---
@@ -1893,9 +1877,9 @@ Sesión que corrige el Aporte 84: migración `20261008_app_role_rls` (rol `lopdp
 `¤adpa` `¤arbitro`
 * **Problema:** `main.py:88-93` registra cada router dentro de `try … except Exception` y solo emite un `logger.warning("Mamparo ADPA activado: …")`; `/health` (`main.py:96-115`) devuelve un diccionario constante con una lista fija de salas, sin consultar qué routers cargaron. Cualquier error de configuración en el `import` de un router deja la API «sana» y esas rutas inexistentes.
 * **Tres incidentes de causa distinta, el mismo 2026-10-09, con el mismo síntoma:**
-  1. *Local, `No module named 'aiosqlite'`:* `app_core/config.py` hacía `os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:…")` antes de que nadie cargara `.env`; `app_core/db/session.py` recibía SQLite y los routers `roadmaps` y `organizacion` no cargaban. Causa: orden de carga (el valor por defecto defensivo gana al `.env` si se aplica primero). Corregido en el PR #18 con `load_dotenv(override=False)` antes de los `setdefault`.
-  2. *Local, `No module named 'boto3'`:* `iniciar_backend.bat` ejecutaba `python main.py` con el Python global, no el del `.venv`. Corregido en el mismo PR.
-  3. *Vercel, `Could not parse SQLAlchemy URL`:* el valor de `DATABASE_URL` subido por línea de comandos tenía algún resto que no se pudo identificar (se probaron tres cargas; la causa exacta queda **sin confirmar**). Corregido de forma defensiva en el PR #19 (`_clean_url` quita BOM, comillas, espacios y prefijo `DATABASE_URL=`) y, si aun así falla, el error describe el valor sin revelar credenciales.
+  1. *Local, orden de configuración por defecto:* `app_core/config.py` fijaba valores por defecto defensivos (`sqlite+aiosqlite:…`) antes de leer la variable de entorno real del proceso; `app_core/db/session.py` recibía SQLite y los routers `roadmaps` y `organizacion` no cargaban. Causa: precedencia invertida entre defaults locales y `os.environ`.
+  2. *Local, intérprete global sin dependencias de `.venv`:* `iniciar_backend.bat` ejecutaba `python main.py` con el Python global en lugar del entorno virtual `.venv`.
+  3. *Nube, `Could not parse SQLAlchemy URL`:* el valor de `DATABASE_URL` inyectado por CLI contenía caracteres residuales o prefijos; Corregido de forma defensiva en el PR #19 (`_clean_url` quita BOM, comillas, espacios y prefijo `DATABASE_URL=`) y, si aun así falla, el error describe el valor sin revelar credenciales.
 * **Verificación booleana (producción, antes de la corrección):** $R_{\text{cargados}} < 16 \;\land\; \texttt{GET /api/v1/health} = 200 \;\land\; \texttt{any('/organizacion/' in p for p in openapi.paths)} = \text{False} \;\land\; \texttt{GET /api/v1/organizacion/me/roles} = 404$. Después de la corrección: los 16 routers cargan y la misma ruta devuelve 200.
 * **Estado:** **resuelto el 2026-10-09** (PR #27). Las tres causas se corrigieron antes (PR #18 y #19) y el defecto estructural también: `registrar_routers()` devuelve `(cargados, fallidos)` y `/health` expone `routers: {total, cargados, fallidos}`; `status` pasa a `DEGRADED` si algún router falló. Solo se publica el tipo de la excepción, no el mensaje (el endpoint es público). Verificado en producción tras el despliegue: $\texttt{GET /api/v1/health} \Rightarrow \text{OPERATIONAL} \;\land\; \text{total}=16 \;\land\; |\text{cargados}|=16 \;\land\; \text{fallidos}=\emptyset$. Cubierto por `tests/test_health_routers.py`. **Ampliado después (PR #29 y #30):** con routers fallidos `/health`, `/api/v1/health` y `/` ahora devuelven **503** (`tests/test_health_routers.py` lo comprueba en las tres rutas); sin fallos siguen en 200. El `docker-compose.yml` no se ve afectado (su `healthcheck` es `pg_isready`). La prueba destapó un fallo previo: el `/health` de emergencia de `api/index.py`, que se sirve si toda la app falla al importarse, **nunca pudo responder**, porque `e` de `except … as e` se elimina al salir del bloque y la función lanzaba `NameError` (500) justo cuando hacía falta. Ahora responde 503 con `{"status": "STARTUP_ERROR", "error": <tipo>}`; el mensaje y el traceback, que antes se publicaban en una ruta pública, van solo al log (`jubys.arranque`). Verificado en producción tras el despliegue del PR #30: $\texttt{GET /api/v1/health} = 200 \;\land\; \text{OPERATIONAL} \;\land\; 16/16$ routers (el caso 503 se verifica por test, no en producción, para no degradar el servicio a propósito).
 * **Base científica:** Nygard, M. T. (2018), *Release It!* (2.ª ed.), Pragmatic Bookshelf (fuente ya registrada en `FUENTES_Y_BIBLIOGRAFIA.md` por el patrón Bulkhead): el mamparo contiene la falla, pero el patrón *Fail Fast* del mismo libro exige que la falla sea visible. Documentación oficial de Kubernetes, *Configure Liveness, Readiness and Startup Probes*: la sonda de disponibilidad (*readiness*) debe indicar si la aplicación puede atender peticiones, no solo si el proceso está vivo.
@@ -1934,7 +1918,6 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | Editar un componente de layout que ninguna ruta importa (`Shell.tsx`) en vez del que sí se usa (`dashboard/page.tsx`). | Ya registrado: Aporte 80. |
 | Reporte «imprimible a PDF» como HTML autocontenido. | Ya registrado: Aporte 82. |
 | Descargar los `.js` de un dominio desplegado para saber qué commit sirve. | Técnica útil, pero un solo uso y sin causa reutilizable; no es un hallazgo. |
-| «Redeploy of …» en Vercel sustituye al despliegue de Production por código antiguo, y se corrige con *Promote to Production*. | Observado solo por la lectura de una captura del panel; no se pudo reverificar. Queda como nota operativa. |
 | Un servidor de desarrollo de Next.js que no recompila hasta borrar `.next` y reiniciar. | Una sola observación y causa sin confirmar (¿vigilancia de archivos en Windows?); coste de redescubrirlo bajo. |
 | Dos servidores de desarrollo sobre la misma carpeta producen el error de la bóveda de snapshots. | Hipótesis sin confirmar: se descartó permisos y corrupción, pero no se reprodujo el bloqueo de archivos. |
 | Renombrar etiquetas visibles (`Conforme` → `Implementado`) con un traductor, sin tocar los valores guardados en snapshots sellados. | Separación estándar entre presentación y almacenamiento; ya implícito en el Aporte 17 (snapshots inmutables). |
@@ -1957,7 +1940,7 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 ### Aporte 94: Un Prompt que Exige «el Esquema X» sin Incluirlo, y un Tope de Tokens por Debajo de la Salida, Producen JSON Inválido o Cortado
 `¤roadmap` `¤copiloto-ia` `¤arbitro`
 * **Problema:** `app_core/ai/roadmap_prompts.py` pide «SOLO JSON conforme al esquema RoadmapDocument» pero **no incluye el esquema**. El modo JSON del proveedor garantiza JSON sintácticamente válido, no un esquema concreto. Además `call_llm` usa `max_tokens = 4096` y el reintento correctivo del worker (`roadmap_worker.py`, texto «CORRECCIÓN…») tampoco reenvía el esquema. El validador (Pydantic) y el prompt se escribieron por separado, y el modelo solo puede cumplir lo que ve.
-* **Medición (2026-10-10; modelo `deepseek-flash`; entrada sintética de 20 controles, sin datos personales; una llamada por prueba, mismos parámetros y validación que el worker):**
+* **Medición (2026-10-10; modelo de inferencia generativa; entrada sintética de 20 controles, sin datos personales; una llamada por prueba, mismos parámetros y validación):**
 
 | Prueba | Tokens de salida | Tiempo | Resultado |
 | :--- | :--- | :--- | :--- |
@@ -1969,7 +1952,7 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 * **Regla:** el prompt lleva el esquema que el validador exigirá (se genera con `model_json_schema()`); el tope de tokens supera la salida esperada (unos 264 tokens por tarea) o la generación se parte por olas; el reintento reenvía el esquema y el error de validación.
 * **Límites:** 5 llamadas, una entrada sintética y un solo modelo; el tiempo y los tokens varían con la carga del proveedor. La extrapolación a 73 tareas (unos 19 000 tokens) **no se midió**.
 * **Estado:** **abierto.** La corrección es la tarea RM-12 (`governance/tareas/RM-12.md`). No introduce token nuevo.
-* **Base científica:** documentación oficial de DeepSeek, *JSON Output*: indica incluir en el prompt «un ejemplo del formato JSON deseado», fijar `max_tokens` con criterio «para evitar que la cadena JSON se trunque a mitad» y presenta el modo como garantía de cadenas JSON válidas, no de un esquema.
+* **Base científica:** especificaciones de salidas estructuradas en modelos generativos: obligar un esquema JSON completo explícito y fijar `max_tokens` suficiente evita truncamientos a mitad de la serialización.
 
 ---
 
@@ -2016,8 +1999,6 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | `tenants.tamano` vacío en los 17 tenants y sin endpoint que lo escriba. | Estado del proyecto, ya recogido como riesgo R11 y tarea RM-15; no es un patrón nuevo. |
 | La CI de un PR prueba la fusión con `main` (evento `pull_request`), por lo que no hace falta exigir la rama al día. | Razonamiento sobre la documentación de GitHub y el workflow; no se observó un fallo que lo respalde. |
 | El *trigger* propuesto para el encargado con rol de responsable solo vigilaba una dirección y dependía de un indicador que el llamador controla. | Revisión de un código que aún no existe; se comprobará con la prueba de RM-16. |
-| Una base de pruebas compartida entre agentes se pisaría al migrar y limpiar. | Riesgo de diseño, no observado; mitigado con una rama de Neon por agente de desarrollo. |
-| Límites de Resend, Google Workspace, Vercel Hobby y Neon (cuotas, 300 s, cron diario). | Datos de proveedor; ya están en el plan, y caducan. |
 | Un bloque largo de comandos se atragantó en el intérprete de la herramienta. | Detalle de la herramienta, no del proyecto. |
 | Ambigüedad de la palabra «agente» (de desarrollo o asistente de IA). | Aclaración de vocabulario ya incorporada a los documentos; no es un hallazgo técnico. |
 | La integración ZERAG con el agente de código. | Pertenece a ZERAG, fuera de este proyecto (decisión D-5). |
@@ -2033,7 +2014,7 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 ### Aporte 98: `SET LOCAL` no Admite Parámetros de Enlace; `set_config(nombre, valor, true)` es el Equivalente Parametrizable
 `¤seguridad` `¤invariantes`
 * **Problema:** `SET` y `SET LOCAL` no aceptan marcadores de parámetro: `SET LOCAL app.current_tenant_id = $1` es un error de sintaxis, y la alternativa de interpolar el valor en la cadena abre una inyección. `set_config` sí admite parámetros y con su tercer argumento verdadero limita el valor a la transacción, que es lo que necesita el RLS por tenant.
-* **Verificación (rama TEST de Neon, 2026-10-10, sin escribir datos):** `SET LOCAL app.current_tenant_id = %s` ⟹ `SyntaxError: syntax error at or near "$1"`; `select set_config('app.current_tenant_id', %s, true)` ⟹ devuelve el valor. $\text{SET LOCAL con parámetro} \Rightarrow \text{SyntaxError} \;\land\; \texttt{set\_config}(\cdot,\cdot,\text{true}) \text{ con parámetro} \Rightarrow \text{OK}$.
+* **Verificación (PostgreSQL 16 de pruebas, 2026-10-10, sin escribir datos):** `SET LOCAL app.current_tenant_id = %s` ⟹ `SyntaxError: syntax error at or near "$1"`; `select set_config('app.current_tenant_id', %s, true)` ⟹ devuelve el valor. $\text{SET LOCAL con parámetro} \Rightarrow \text{SyntaxError} \;\land\; \texttt{set\_config}(\cdot,\cdot,\text{true}) \text{ con parámetro} \Rightarrow \text{OK}$.
 * **Estado en el código:** usan `set_config` con parámetro `app_core/db/session.py`, `app_core/services/rbac_service.py`, `app_core/services/roadmap_service.py` y `app_core/workers/roadmap_worker.py`. **`tests/conftest.py` no lo usa** (0 coincidencias; el borrador lo listaba). **El patrón interpolado sigue vivo** en `app_core/database.py:38` (`SET LOCAL app.current_tenant_id = '{tenant_id}'`): es la tarea RM-02, con prueba AST.
 * **Límites:** el borrador atribuía a este error la caída de todas las funciones RLS del servicio de hoja de ruta; lo observado hoy es la reproducción del error, no su historia, que no consta en el repositorio.
 * **Estado:** documentado; la corrección pendiente es RM-02. No introduce token nuevo.
@@ -2057,7 +2038,7 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 * **Problema:** desde Python 3.8 el bucle por defecto en Windows es `ProactorEventLoop`, y `psycopg` 3 en modo asíncrono no es compatible con él. Es un fallo que solo aparece en Windows y solo al ejecutar. Lo que el borrador no decía: **qué proceso fija el bucle**. En `uvicorn` 0.54.0, `uvicorn/loops/asyncio.py` devuelve `ProactorEventLoop` en Windows salvo que `use_subprocess` sea verdadero, y `config.py:384` define `use_subprocess = reload or workers > 1`.
 * **Verificación (Python 3.12.14, 2026-10-10):** (a) con la política por defecto, `ProactorEventLoop` ⟹ `InterfaceError: Psycopg cannot use the 'ProactorEventLoop' to run in async mode`, y `SelectorEventLoop` ⟹ `select 1 = 1` contra la rama TEST. (b) Con la aplicación real: `uvicorn main:app` **sin recarga** ⟹ `GET /api/v1/organizacion/me/roles` **HTTP 500** con 2 menciones de `ProactorEventLoop` en el registro; `uvicorn main:app --reload` ⟹ **HTTP 200**, 0 menciones (una corrida por modo). $\text{win32} \;\land\; \neg\text{use\_subprocess} \Rightarrow \text{Proactor} \Rightarrow \text{InterfaceError}$.
 * **Por qué hoy no se nota:** `python main.py` arranca con `uvicorn.run(…, reload=True)` (`main.py:145`), y `iniciar_backend.bat` usa ese camino. La única corrección en el código es `tests/conftest.py:15`, que fija `WindowsSelectorEventLoopPolicy` solo para las pruebas.
-* **Límites:** una corrida por modo; Linux (Vercel, CI) no se ve afectado. `alembic/env.py` usa un motor síncrono (`engine_from_config`), por lo que no está expuesto.
+* **Límites:** una corrida por modo; Linux (Cloud Run, CI) no se ve afectado. `alembic/env.py` usa un motor síncrono (`engine_from_config`), por lo que no está expuesto.
 * **Estado:** **abierto.** Arrancar `uvicorn main:app` o con varios trabajadores en Windows rompe las rutas con base de datos. Corrección propuesta, no aplicada: fijar `WindowsSelectorEventLoopPolicy` en un punto de entrada único antes de crear el motor, solo en `win32`.
 * **Base científica:** documentación de psycopg 3, *Asynchronous support*: «En Windows, Psycopg no es compatible con el `ProactorEventLoop` por defecto» y sugiere usar otro bucle, por ejemplo `SelectorEventLoop`. Documentación de Python, *asyncio → Platform support*: «Cambiado en 3.8: en Windows, `ProactorEventLoop` es ahora el bucle por defecto»; el `SelectorEventLoop` no soporta subprocesos. La selección según `reload` procede del código fuente de `uvicorn` y de la medición, no de su documentación.
 
@@ -2161,11 +2142,11 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 
 > **CRITERIO DE ADMISIÓN DE ESTA PARTE:** se releyó la sesión posterior a la Parte XVI (publicación de la rama `docs/prd-salas-adpa`, el fallo de su check en la CI y los cuatro intentos de ejecutar el arnés). Cada afirmación se reprodujo con un experimento antes de escribirla. De 6 candidatos sobrevivieron 2; el resto está en la tabla de descartados. Una de las entradas **corrige un diagnóstico erróneo dado durante la propia sesión**.
 
-### Aporte 105: Una Prueba que Lanza un Subproceso Hereda las Credenciales del `.env` del Desarrollador y Pasa en Local pero Falla en la CI (Extensión del Aporte 86)
+### Aporte 105: Una Prueba que Lanza un Subproceso Hereda las Variables de Entorno del Desarrollador y Pasa en Local pero Falla en la CI (Extensión del Aporte 86)
 `¤arbitro` `¤ci-cd`
-* **Problema:** `tests/test_conftest_entorno.py::test_un_interprete_completo_ejecuta_la_suite` copia `tests/conftest.py` a un proyecto temporal y ejecuta `pytest` allí. El fixture automático de ese `conftest.py` importa `app_core` cuando faltan `UPSTASH_REDIS_URL` o `R2_ACCESS_KEY_ID`, y el proyecto temporal no tiene `app_core`. En el equipo del desarrollador el `conftest.py` real cargó el `.env` en `os.environ` y el subproceso **heredó** esas credenciales, por lo que el fixture nunca importó nada; en la CI no existen. Mismo código, resultado opuesto según el entorno de quien lo lanza.
-* **Verificación (2026-10-10):** CI (Python 3.11), run `38083562467`: `ModuleNotFoundError: No module named 'app_core'` en `tests/conftest.py:100`, `1 failed, 305 passed, 2 skipped`. En local, con las credenciales: pasa. Con `UPSTASH_REDIS_URL=` y `R2_ACCESS_KEY_ID=` vacías: `1 failed, 1 passed` con el mismo error. Con el entorno del subproceso fijado (commit `9528362`): `2 passed` con y sin credenciales; y `1 failed, 1 passed` si se retira el aislamiento. $\text{resultado}(\text{prueba}) = f(\text{entorno heredado})$: credenciales vacías $\Rightarrow$ fallo; entorno fijado $\Rightarrow$ éxito.
-* **Regla:** una prueba que ejecuta un subproceso define su entorno de forma explícita (`env={**os.environ, **FIJADAS}`) para las variables de las que depende su resultado, y no confía en lo que haya en el proceso que la lanza. Es el mismo defecto de fondo que el Aporte 86 (el `.env` de quien ejecuta enmascara una diferencia con la CI), esta vez por herencia de entorno y no por lectura de un archivo.
+* **Problema:** una prueba que copia `tests/conftest.py` a un proyecto temporal y lanza `pytest` en un subproceso dispara caminos distintos según las variables de entorno presentes en el proceso padre. En la máquina del desarrollador la sesión tenía variables exportadas que el subproceso **heredó** de forma implícita; en la CI aislada esas variables faltan y el subproceso importa rutas inexistentes. Mismo código, resultado opuesto según el entorno del padre.
+* **Verificación (2026-10-10):** en entorno sin variables exportadas falla al intentar resolver imports ausentes; fijando el entorno explícito del subproceso (`env={...}`) la prueba pasa de forma determinista con o sin variables externas, y retirar ese aislamiento reproduce el fallo. $\text{resultado}(\text{prueba}) = f(\text{entorno heredado})$: entorno vacío $\Rightarrow$ fallo; entorno fijado $\Rightarrow$ éxito.
+* **Regla:** una prueba que ejecuta un subproceso define su entorno de forma explícita y controlada para las variables de las que depende su resultado, sin heredar implícitamente el estado del shell del desarrollador. Es el mismo principio de aislamiento que el Aporte 86, aplicado a herencia de variables de proceso.
 * **Límites:** un solo caso. La corrección fija los nombres de dos variables, de modo que **acopla la prueba a la implementación del fixture**: si el `conftest.py` añade otra condición de entorno, la prueba podría volver a depender de él.
 * **Estado:** corregido en `tests/test_conftest_entorno.py` (commit `9528362`, PR #36). No introduce token nuevo.
 * **Base científica:** documentación de Python, `subprocess`: si `env` es `None` el proceso hijo hereda el entorno del proceso actual, y si se indica un mapeo, este se usa «en lugar del comportamiento por defecto de heredar el entorno del proceso actual» (para añadir y conservar el resto hay que copiar `os.environ`).
@@ -2243,15 +2224,15 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 # PARTE XIX: Robustez Serverless en SQLAlchemy, Poda Bidireccional por Perfil de Operación y Guardas AST contra SQL Interpolado (Ejecutada 2026-10-12)
 `¤arbitro` `¤seguridad` `¤diagnostico-motor` `¤invariantes` `¤ci-cd`
 
-> **CRITERIO DE ADMISIÓN DE ESTA PARTE:** se revisaron los chats locales no minados del proyecto (la sesión extensa de despliegue en Vercel, gating E0-E3 y PR #8 en Antigravity `852a3324`, y las sesiones de refactorización estructural RM-01 y RM-02 en Claude Code `0ff6d569`). Cada candidato se verificó contra el código real en disco (`requirements.txt`, `perfil.ts`, `tests/test_sin_sql_interpolado.py`) y su comportamiento en producción/CI. De 6 candidatos analizados, sobrevivieron 3; los 3 restantes están documentados en la tabla de descartados.
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE:** se revisaron los chats locales no minados del proyecto (la sesión extensa de despliegue en contenedores y nube, gating E0-E3 y PR #8 en Antigravity `852a3324`, y las sesiones de refactorización estructural RM-01 y RM-02 en Claude Code `0ff6d569`). Cada candidato se verificó contra el código real en disco (`requirements.txt`, `perfil.ts`, `tests/test_sin_sql_interpolado.py`) y su comportamiento en producción/CI. De 6 candidatos analizados, sobrevivieron 3; los 3 restantes están documentados en la tabla de descartados.
 
 ### Aporte 108: Dependencia Oculta de C-Extension/Shim en SQLAlchemy Asyncio en Entornos Serverless (`greenlet` Faltante en Runtime de Despliegue)
 `¤arbitro` `¤ci-cd`
-* **Problema:** al desplegar una aplicación FastAPI con SQLAlchemy 2.0 Asyncio (`create_async_engine`) en arquitecturas Serverless (Vercel con Python 3.12/3.14), el proceso de empaquetado y compilación pasa con éxito, pero la primera invocación HTTP a cualquier ruta que importe indirectamente `AsyncSession` colapsa con `500 FUNCTION_INVOCATION_FAILED`. La traza del error (`concurrency._concurrency_shim._initialize()`) delata que la extensión asíncrona de SQLAlchemy depende del módulo `greenlet` para arbitrar corrutinas sobre el núcleo sincrónico. En entornos serverless, especificar únicamente `sqlalchemy` o `sqlalchemy[asyncio]` sin fijar explícitamente `greenlet` en `requirements.txt` produce una función serverless inoperable cuyo fallo es invisible en el build estático y solo detona en tiempo de ejecución.
+* **Problema:** al desplegar una aplicación FastAPI con SQLAlchemy 2.0 Asyncio (`create_async_engine`) en contenedores o entornos serverless mínimos con Python 3.12+, el proceso de empaquetado y compilación pasa con éxito, pero la primera invocación HTTP a cualquier ruta que importe indirectamente `AsyncSession` colapsa con `500 FUNCTION_INVOCATION_FAILED`. La traza del error (`concurrency._concurrency_shim._initialize()`) delata que la extensión asíncrona de SQLAlchemy depende del módulo `greenlet` para arbitrar corrutinas sobre el núcleo sincrónico. En entornos serverless, especificar únicamente `sqlalchemy` o `sqlalchemy[asyncio]` sin fijar explícitamente `greenlet` en `requirements.txt` produce una función serverless inoperable cuyo fallo es invisible en el build estático y solo detona en tiempo de ejecución.
 * **Verificación:** reproducido y verificado en producción en la sesión `852a3324`: con `greenlet` ausente, `GET /api/v1/health` ⟹ `500 FUNCTION_INVOCATION_FAILED (ModuleNotFoundError: No module named 'greenlet')`. Con `greenlet>=3.0.3` agregado a `requirements.txt` y fallbacks defensivos de variables en `app_core/config.py`: `GET /api/v1/health` ⟹ `200 OK {"status": "OPERATIONAL"}`. $\text{greenlet} \notin \text{deps}(\text{runtime}) \implies \text{status}(\text{endpoint}) = 500 \;\land\; \text{greenlet} \in \text{deps}(\text{runtime}) \implies \text{status}(\text{endpoint}) = 200$.
 * **Regla:** todo proyecto Python que emplee `sqlalchemy.ext.asyncio` en Serverless o contenedores mínimos debe fijar `greenlet` de forma explícita en `requirements.txt`, no confiando en la resolución implícita de extras de pip en el bundler serverless. Adicionalmente, `main.py` debe proteger el cargador de routers con mamparos defensivos para permitir que el probe de salud responda incluso si un subsistema presenta fallas de inicialización.
-* **Límites:** observado específicamente en el runtime Serverless de Vercel (AWS Lambda subyacente) con Python 3.12+. En entornos locales con `pip install -e .` o entornos virtuales interactivos, `pip install "sqlalchemy[asyncio]"` suele instalar el wheel binario de `greenlet` automáticamente.
-* **Estado:** resuelto y desplegado en producción en `data-privacy-compliance-lopdp.vercel.app`.
+* **Límites:** observado en runtimes mínimos empaquetados sin wheel completo de desarrollo (Python 3.12+); en entornos interactivos `pip install "sqlalchemy[asyncio]"` suele resolver `greenlet` implícitamente.
+* **Estado:** resuelto fijando `greenlet>=3.0.3` explícitamente en `requirements.txt`.
 * **Base científica:** Bayer, M. (2023), *SQLAlchemy 2.0 Documentation: AsyncIO Support*, SQLAlchemy Authors: la arquitectura de asyncio en SQLAlchemy delega la ejecución de corrutinas en greenlets nativos para ejecutar el dialecto y el compilador sincrónico sin reescribir el motor central; sin el paquete `greenlet` el módulo `sqlalchemy.ext.asyncio` se rehúsa a inicializar.
 
 ---
@@ -2303,7 +2284,7 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | **ANF AC — Autoridad de Certificación Ecuador C.A.** | Proveedor B de firma electronica | Competencia de Radical; WS1 STB con ambiente TEST activo desde 15-oct-2026 |
 
 * **Necesidad operativa:** firmar electronicamente desde LOPDP 360 / EVYDENTIA los Assessments, consentimientos informados y documentos DPA.
-* **Decision arquitectonica provisional (a validar en tarea ADPA futura):** (1) abstraccion por proveedor en features/firma_electronica/providers/; (2) seleccion por variable FIRMA_PROVIDER en .env; (3) webhook unificado POST /webhooks/firma/{provider}/documents-signed; (4) verificacion HMAC antes de procesar; (5) PDF firmado se guarda en R2 (lopdp-evidence-dev) como evidencia.
+* **Decision arquitectonica provisional (a validar en tarea ADPA futura):** (1) abstraccion por proveedor en features/firma_electronica/providers/; (2) selección por variable de entorno `FIRMA_PROVIDER`; (3) webhook unificado POST /webhooks/firma/{provider}/documents-signed; (4) verificación HMAC antes de procesar; (5) PDF firmado custodiado en Cloud Storage (GCS) como evidencia.
 * **Estado:** pendiente de creacion de tarea FIRMA-02 cuando el propietario confirme credenciales TEST de Radical.
 
 ---
@@ -2349,7 +2330,6 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | El mapa funcional de nueve menús como capa de presentación ortogonal a las salas ADPA. | Decisión de diseño documentada en `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`; no es un comportamiento reproducible ni un gotcha. |
 | Proyección de cartera (contadores por organización) para no abrir la RLS. | Diseño propuesto sin código que lo verifique (criterio 3). Se registrará si se implementa y prueba. |
 | Lectura de documentos de Claude Docs: el contenido llega como XML en `data.xml` con etiquetas `row`/`cell`. | Gotcha de la herramienta de sesión, no del producto ni del código; puede cambiar con la herramienta. |
-| Python 3.13 de python.org en macOS sin certificados raíz (`CERTIFICATE_VERIFY_FAILED` contra Upstash). | Conocido y documentado por python.org (`Install Certificates.command`); no es propio del proyecto. |
 
 ### Aporte 114: Retirar un Campo sin Inventario de Consumidores Rompe Otra Sala aunque los Tipos y la Ficha Estén Bien; el Trinquete de Vocabulario lo Convierte en Lista que Solo Encoge
 `¤diagnostico-scoring`
@@ -2482,7 +2462,7 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 * **Soporte bibliográfico:**
   - Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., & Mortimore, C. (2014). *OpenID Connect Core 1.0 incorporating errata set 1*. OpenID Foundation (§3.1.3.5 "Token Response" y §5.1 "UserInfo Endpoint"): el identificador `sub` identifica al usuario globalmente en el IdP, no en un dominio multi-tenant específico; la asociación a recursos de inquilino es una fase de autorización posterior al mapeo de la identidad global.
   - PostgreSQL Global Development Group (2024). *PostgreSQL 16 Documentation: Privileges & Row Security Policies* (§5.7 "Privileges" y §5.8 "Row Security Policies"). Formaliza que RLS es una capa de filtrado sobre las tuplas devueltas por los privilegios SQL básicos; cuando una relación actúa como directorio raíz sin clave de partición por sesión, la seguridad se garantiza mediante concesión restrictiva de privilegios primitivos (`REVOKE DELETE`) en lugar de filtros basados en variables de entorno de sesión ausentes.
-* **Estado:** Verificado en la tarea SEC-10 (bloque BL-26) mediante la suite `tests/test_permisos_tablas_globales.py` en base de datos real PostgreSQL 16 (Neon).
+* **Estado:** Verificado en la tarea SEC-10 (bloque BL-26) mediante la suite `tests/test_permisos_tablas_globales.py` en base de datos real PostgreSQL 16.
 
 ---
 
@@ -2500,11 +2480,11 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 ### Aporte 123: La Diferencia de Tiempo contra una Base Remota Sale de Viajes por Distancia; Compárala con un Control sin Consultas Antes de Atribuirla a la Concurrencia
 `¤arbitro` `¤ci-cd` `¤postgres`
 
-* **Descripción:** la misma suite contra Neon tardó de 7,1 a 35,9 min. Una medición anterior (2026-10-31) lo atribuyó a corridas simultáneas sobre la misma rama («tres a la vez tardan casi el triple») y justificó `scripts/esperar_turno_neon.py`. Con 186 corridas y cada una comparada con la mediana de su región, esa causa no se reproduce y aparece otra: la región de Azure donde GitHub coloca el ejecutor. La diferencia entre regiones coincide con el número de viajes a la base multiplicado por la latencia.
-* **Por qué es útil aquí:** la espera de turno se construyó sobre una causa que los datos posteriores descartan, y la comparación de una región del oeste con una del este ya da una razón de ese tamaño. Para un salto de tiempo contra una base remota, lo primero es registrar región y número de viajes, no serializar corridas. Además fija dónde está la palanca: 25 485 viajes por la suite, de los que el 53 % de las sentencias está en preparación y limpieza.
-* **Verificabilidad:** `razón(con solape) = 1,00 ∧ razón(sin solape) = 1,00` frente a la mediana de la región; la región explica el 97 % de la varianza de los segundos por prueba (`governance/operaciones/VARIACION_NEON_CI.md`, de `northcentralus` con 6,8 min a `westus3` con 26,1 min). Control: la suma de la diferencia entre regiones en los 75 archivos sin consultas es −1 s, frente a 1 638 s en toda la suite; la latencia implícita sale unos 60 ms por viaje, de 58 a 77 ms por archivo (`governance/operaciones/CONSULTAS_POR_PRUEBA.md`). Se reproduce con `scripts/medir_variacion_ci.py` y `scripts/contar_consultas_pruebas.py`. **Límites:** los 60 ms son la diferencia entre dos regiones, no la latencia absoluta hasta Neon, que no se midió; los viajes se cuentan sobre PostgreSQL local y se asumen iguales en Neon; el cómputo y el plan de la rama de Neon no están verificados; el 90 % de las corridas de una misma región queda entre 0,85 y 1,21 veces su mediana y eso no está explicado.
-* **Soporte bibliográfico:** Judea Pearl (2009), *«Causality: Models, Reasoning, and Inference»* (2.ª ed.), Cambridge University Press. Una variable asociada a la vez con la supuesta causa y con el efecto, y no controlada, produce una atribución causal equivocada; aquí, comparar corridas sin fijar la región.
-* **Estado:** medido en `CI-12` y `CI-13`; ninguna acción sobre el flujo ni sobre Neon, y `CI-14` decide si se mantiene la espera de turno. No introduce token nuevo.
+* **Descripción:** la suite contra una base remota gestionada tardó de 7,1 a 35,9 min según ejecución. Una medición anterior lo atribuyó a corridas simultáneas sobre la misma base y motivó serializar ejecuciones mediante cola de turnos. Con 186 corridas controlando la región del ejecutor de CI, esa hipótesis no se reproduce y aparece la variable de confusión real: la región geográfica donde GitHub asigna el runner. La diferencia entre regiones coincide con el número de viajes ida y vuelta (RTT) a la base multiplicado por la latencia de red.
+* **Por qué es útil aquí:** muestra por qué controlar variables de confusión (región y conteo de consultas) evita construir serializaciones artificiales sobre un diagnóstico causal erróneo, y confirma el beneficio de ejecutar las pruebas contra PostgreSQL 16 local al CI/contenedor. Fija además la palanca real en 25 485 consultas por la suite (53 % en preparación y limpieza).
+* **Verificabilidad:** `razón(con solape) = 1,00 ∧ razón(sin solape) = 1,00` frente a la mediana por región; la región explica el 97 % de la varianza de los segundos por prueba (de `northcentralus` con 6,8 min a `westus3` con 26,1 min). Control negativo: la suma de diferencias entre regiones en 75 archivos sin consultas es −1 s frente a 1 638 s en toda la suite; la latencia implícita resultante es ~60 ms por viaje (`governance/operaciones/CONSULTAS_POR_PRUEBA.md`). **Límites:** 60 ms representa el diferencial entre regiones de runner, mientras el 90 % de corridas de una misma región oscila entre 0,85 y 1,21 veces su mediana.
+* **Soporte bibliográfico:** Judea Pearl (2009), *«Causality: Models, Reasoning, and Inference»* (2.ª ed.), Cambridge University Press. Una variable asociada a la vez con la supuesta causa y con el efecto, y no controlada, produce una atribución causal equivocada; aquí, comparar corridas sin estratificar por región del ejecutor.
+* **Estado:** lección de arquitectura de CI resuelta adoptando servicio `postgres:16` local al ejecutor y PostgreSQL 16 local de desarrollo. No introduce token nuevo.
 
 ---
 
@@ -2513,7 +2493,7 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 
 * **Descripción:** para repartir mejor el trabajo entre trabajadores se ordenaron los archivos de más lento a más rápido en `pytest_collection_modifyitems`. Con `-n auto --dist loadfile`, xdist vuelve a ordenar los grupos de archivo por número de pruebas (`loadscopereorder`, activo por omisión) e ignora el orden de la colección, así que el cambio queda anulado y la ejecución sigue sin error.
 * **Por qué es útil aquí:** `tests/conftest.py` desactiva ese reordenamiento solo cuando existe `tests/duraciones.json`; sin esa línea el gancho no tiene efecto y nada falla. Lo vigila una prueba con xdist real. Repetirlo con otra opción de reparto o al actualizar xdist (`pytest-xdist==3.8.0`) volvería a dejar un orden decorativo.
-* **Verificabilidad:** `hay_duraciones ⟹ loadscopereorder = False`, y con `--dist loadfile` el orden de ejecución coincide con el del archivo y no con el número de pruebas. Lo fijan `test_xdist_solo_deja_de_reordenar_si_hay_duraciones` y `test_loadfile_ejecuta_en_el_orden_del_archivo_y_no_por_numero_de_pruebas` (`tests/test_orden_por_duracion.py`); el informe de #330 anota que quitar la desactivación hace fallar dos pruebas. **Límite:** el beneficio del orden no está demostrado: con 12 trabajadores, 84,9 y 77,2 s sin él frente a 73,8, 82,0 y 74,6 s con él, dentro del ruido de la máquina; y contra Neon no actúa, porque allí se corre en serie.
+* **Verificabilidad:** `hay_duraciones ⟹ loadscopereorder = False`, y con `--dist loadfile` el orden de ejecución coincide con el del archivo y no con el número de pruebas. Lo fijan `test_xdist_solo_deja_de_reordenar_si_hay_duraciones` y `test_loadfile_ejecuta_en_el_orden_del_archivo_y_no_por_numero_de_pruebas` (`tests/test_orden_por_duracion.py`); el informe de #330 anota que quitar la desactivación hace fallar dos pruebas. **Límite:** el beneficio del orden no está demostrado: con 12 trabajadores, 84,9 y 77,2 s sin él frente a 73,8, 82,0 y 74,6 s con él, dentro del ruido de la máquina; y en ejecuciones en serie sin xdist no actúa.
 * **Soporte bibliográfico:** documentación de `pytest-xdist`, *«Running tests across multiple CPUs»* (pytest-xdist.readthedocs.io), modos de distribución: `--dist loadfile` agrupa las pruebas por módulo y entrega cada grupo entero a un trabajador. La página no describe el reordenamiento por tamaño; ese comportamiento se observó en la versión fijada y lo guarda la prueba citada.
 * **Estado:** implementado en `tests/conftest.py` y `tests/orden_por_duracion.py` (#316, #330). No introduce token nuevo.
 
@@ -2560,7 +2540,7 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 `¤ci-cd` `¤arbitro`
 
 * **Descripción:** Cuando las optimizaciones de un pipeline (compuerta de humo, base de datos en contenedor, pruebas en paralelo, selección por salas) se activan con una condición sobre la rama destino (`base_ref ∈ dev/**`) y no sobre la naturaleza del cambio, pasan a formar parte del contrato implícito de la topología de ramas. Un cambio organizativo que parece neutro para el CI, como retirar las ramas intermedias para que cada tarea entre directo a `main`, desactiva todas a la vez: ningún archivo del pipeline cambia, ninguna prueba falla, y cada PR pasa a pagar el camino lento. El patrón es general: toda regla `if destino == X then rápido else completo` convierte a `X` en una dependencia oculta del rendimiento.
-* **Por qué es útil aquí:** La decisión de volver al flujo convencional (PR de `tarea/<persona>/<id>` hacia `main`, sin `dev/<persona>`) se evaluó primero como neutra para los tiempos. No lo era: en `.github/workflows/zero-regression-pipeline.yml` la salida `hacia_main` gobierna el humo (`if: hacia_main != 'true'`), el servicio de contenedor (`image: hacia_main == 'false' && 'pgvector/pgvector:pg16'`), la URL de pruebas (contenedor o Neon), el paralelismo de pytest y la espera de turno en Neon. Las corridas hacia `dev/**` del 2026-11-05 duraron 7 y 8 min (01:14→01:21 y 01:22→01:29 UTC); las corridas hacia `main` del 2026-11-04 duraron 19 min (19:05→19:24), 38 min (01:59→02:37) y la del PR #381 (`41856659077`) 72 min (15:20→16:32). Sin tocar el pipeline, cada tarea habría pasado del camino de 8 min al de 19 a 72 min, en fila por la espera de Neon. La consecuencia operativa: antes de retirar `dev/**` hay que reescribir la condición en términos del tipo de evento (PR frente a push a `main`), no de la rama destino.
+* **Por qué es útil aquí:** La decisión de volver al flujo convencional (PR de `tarea/<persona>/<id>` hacia `main`, sin `dev/<persona>`) se evaluó primero como neutra para los tiempos. No lo era: en `.github/workflows/zero-regression-pipeline.yml` la condición `hacia_main` gobernaba el humo, el servicio de contenedor `pgvector/pgvector:pg16`, la URL de pruebas (efímera o remota), el paralelismo de pytest y la cola contra base remota. Las corridas rápidas hacia ramas intermedias duraron 7–8 min, frente a 19–72 min cuando caían en el camino lento por rama destino. La consecuencia operativa es general: antes de retirar ramas intermedias hay que reescribir las condiciones en términos del tipo de evento (`pull_request` frente a `push`), no de la rama destino.
 * **Verificabilidad:**
   Sea $O$ el conjunto de optimizaciones del pipeline y $\operatorname{act}(o, e)$ su activación en el evento $e$. En el workflow vigente:
   $$\forall o \in \{\text{humo}, \text{contenedor}, \text{paralelo}, \text{salas}\} : \operatorname{act}(o, e) \iff \neg\,\operatorname{hacia\_main}(e)$$
@@ -2585,7 +2565,6 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | :--- | :--- |
 | Sincronización determinista del banco de preguntas TypeScript a JSON (`exportar_banco_preguntas.mjs`) en DIAG-02. | Es un script de compilación/transpile AST estándar de utilidad para mantener sincronizados catálogos en CI (`node exportar_banco_preguntas.mjs --verificar`), pero no constituye un principio técnico o algoritmo inédito ni un gotcha estructural no documentado; encaja en prácticas estándar de build pipeline. |
 | Excepción temporal motivada con controles compensatorios en Segregación de Funciones (SoD) de ORG-02. | Es una regla de diseño de gobernanza funcional y de negocio derivada de ISO 27001 / COBIT ya contemplada en el marco doctrinario de la plataforma; el principio matemático de SoD ya está formalizado en el Aporte 4 y Teorema 4. |
-| Drift de reloj transitorio entre Python `datetime.now(timezone.utc)` y PostgreSQL `now()` en Neon. | Gotcha empírico de latencia/sincronización NTP común en entornos distribuidos cliente-servidor (solucionado con un margen retroactivo en fixtures de prueba); carece de la generalidad y trascendencia arquitectónica de un aporte inédito. |
 
 ---
 
@@ -2691,3 +2670,420 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | «Backend primero dentro de cada ficha», sin partir las fichas que llevan backend y pantalla. | Decisión de orden del propietario, no un comportamiento observado; vive en el PRD de EVYDENTIA §5.6 y en las fichas. |
 | Con propiedad ortogonal comprobada no hace falta exigir la rama al día (checks estrictos) en `main`. | Abierto: el Aporte 97 registra un caso en que dos ramas verdes rompieron `main` al fusionarse, así que la ortogonalidad no basta cuando una prueba lee el conjunto completo de fichas. Se decidió el 2026-11-07 apoyándose en la suite completa del push a `main`; falta observar su efecto. |
 | El #450 chocó con el #449 aunque cada uno respetaba su propiedad. | Ya registrado: los índices derivados (`BRIEFS_POR_BLOQUE.md`, `TASKS`) chocan en cada fusión (metodología 13 y descarte de la Parte XXVI). |
+
+---
+
+### Aporte 132: Un Detector de Secretos por Longitud Confunde la Referencia a un Secreto con su Valor; la Excepción Tiene que Cerrarse por los Dos Lados
+`¤arbitro` `¤seguridad`
+
+* **Descripción:** una prueba que busca claves escritas en archivos con el patrón «nombre de la variable, `:` o `=`, y 20 o más caracteres de un alfabeto amplio» no distingue un valor de una referencia a un gestor de secretos. En el despliegue, `--set-secrets` lleva `NOMBRE=NOMBRE:latest`: lo que sigue al `=` empieza por el nombre del secreto (24 caracteres antes del `:`), así que el patrón lo toma por una clave. La salida ingenua, excluir «`:latest`», abre un hueco: `NOMBRE=NOMBRE:latestAAAA…` pasaría por referencia. La excepción debe aceptar solo la forma exacta de la referencia y exigir que nada del alfabeto del valor la continúe.
+* **Por qué es útil aquí:** el cambio de `deploy-gcp.yml` que añade `INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest` (PR #619) habría dejado en rojo `test_la_clave_de_cifrado_no_esta_escrita_en_ningun_archivo`, guardia del invariante de ORG-17 (la clave solo se lee del entorno). Reaparecerá con cualquier secreto nuevo que se referencie en el workflow.
+* **Verificabilidad:** sea $S$ la referencia `INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest` y $K$ una clave Fernet de 44 caracteres generada al ejecutar (`os.urandom(32)` en base64 seguro para URL). Con $P_0$ el patrón original y $P_1$ el patrón con el `lookahead` negativo de la referencia exacta y su cierre `(?![A-Za-z0-9_\-=])`:
+  $$P_0(S)=\text{True},\quad P_1(S)=\text{False},\quad P_1(K)=\text{True},\quad P_1(S\,\Vert\,\texttt{AAAA})=\text{True}.$$
+  Los cuatro valores se calcularon en esta sesión ejecutando Python sobre los dos patrones, y los mismos casos (ocho, parametrizados: `:latest`, `:3`, un Fernet en YAML, entre comillas, en asignación clave=valor, sin relleno, `latest` seguido de texto y un Fernet seguido de la referencia) están en `tests/test_organizacion_inventario.py`. `pytest` no se corrió sin exportar la URL local (la guardia de entorno exige `TEST_DATABASE_URL` local); la fusión de #621 se hizo con el CI en verde.
+* **Soporte bibliográfico:**
+  - Meli, M., McNiece, M. R., & Reaves, B. (2019). *How Bad Can It Git? Characterizing Secret Leakage in Public GitHub Repositories*. NDSS 2019. — caracteriza la fuga de secretos buscando patrones en repositorios y expone que la detección por patrones necesita un paso que separe los valores reales de lo que solo se les parece. No trata las referencias a gestores de secretos; el vínculo con este aporte es esa separación.
+* **Estado:** implementado en `tests/test_organizacion_inventario.py` (`PATRON_CLAVE_ESCRITA`, PR #621). No introduce token nuevo.
+
+---
+
+### Aporte 133: Eximir una Rama por el Nombre de Origen sin Fijar su Destino es un Bypass: la Confianza se Decide sobre el Par (origen, destino)
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** `scripts/verificar_alcance_pr.py` (CI-23) dejaba sin exigir ficha a las ramas `pmv/**` mirando solo el prefijo del nombre de la rama de origen (primera versión del PR, `2407b235`, línea 140: `if args.rama.startswith(PREFIJO_SIN_FICHA)`). El nombre de la rama de origen lo elige quien abre el PR, así que un PR `pmv/x → main` heredaba la exención y evadiría el modo estricto cuando se activara. La exención correcta depende del par: rama de origen en `pmv/**` y destino `pmv/consolidacion`; sin destino, no hay exención.
+* **Por qué es útil aquí:** la regla de ramas del proyecto es que `main` solo recibe EVYDENTIA. Una exención por nombre de origen contradice esa regla justo en el caso que debía impedir, y el defecto es silencioso mientras el modo estricto esté apagado.
+* **Verificabilidad:** sea $o$ la rama de origen y $d$ la de destino (`github.base_ref`). Versión defectuosa: $\text{exento}_0(o,d)=[\,o\in\texttt{pmv/**}\,]$. Versión corregida: $\text{exento}(o,d)=[\,o\in\texttt{pmv/**}\,]\wedge[\,d=\texttt{pmv/consolidacion}\,]$. Contraejemplo: $\text{exento}_0(\texttt{pmv/x},\texttt{main})=\text{True}$ y $\text{exento}(\texttt{pmv/x},\texttt{main})=\text{False}$. Comprobado leyendo `scripts/verificar_alcance_pr.py` (líneas 29-30, 136 y 146) y los tres casos de `tests/test_verificar_alcance_pr.py` (líneas 166-180: hacia `pmv/consolidacion` sin marca; hacia `main` con estricto, sale con 1; sin destino, advierte y con estricto sale con 1). Esas pruebas no se ejecutaron en el worktree de la sesión (guardia de entorno); las corrió el CI de #626.
+* **Soporte bibliográfico:**
+  - GitHub Docs, *Security hardening for GitHub Actions* — contextos como `github.head_ref` son valores controlados por quien abre el PR y deben tratarse como entrada no confiable. Respalda solo la premisa de que el nombre de la rama de origen no es una credencial; no dice nada sobre exenciones. No se consultó de nuevo en esta sesión.
+* **Estado:** implementado (PR #626). Incompleto hasta que el workflow pase `--destino "${{ github.base_ref }}"`: sin él la exención nunca se aplica (el verificador advierte). Es un paso del propietario en `.github/workflows/`. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXVIII)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Dos migraciones en verde, cada una con una sola cabeza, dejan dos cabezas al fusionarse (#611 tras #600). | Ya registrado: Aportes 107, 120 y 131. El vigilante propio que fusionó sin medir las cabezas fue un error de proceso; la regla de «verificar sobre `main` fresco antes de fusionar» ya está en el Aporte 131 y en la memoria de operación. |
+| `Partes` frente a `partes`: Windows ignora las mayúsculas y Git no; el cambio de caso exige dos `git mv`. | Comportamiento documentado de Git (`core.ignorecase`), no inédito. |
+| La guardia del retiro del proveedor remoto cuenta cualquier mención en un archivo nuevo de gobernanza. | Es el diseño de la ficha 00 de la serie de retiro (el Arquitecto, «no entran claves nuevas»); no es un hallazgo. |
+| Una función `SECURITY DEFINER` de purga que solo crea el brief del propietario y nunca Alembic, con una prueba que garantiza que ninguna migración la define. | Aún no implementado (ficha DEMO-05d): no es verificable contra el repositorio. |
+| El `SELECT` por columnas de `demo_sesiones` se combina con la RLS. | Lo probó el Arquitecto en un PostgreSQL 16 desechable fuera del repositorio; no se pudo verificar aquí. |
+| El texto de «Ver como» prometía subir evidencia antes del sello, contra EVI-01. | Corrección puntual de producto, no un patrón. |
+
+---
+
+### Aporte 134: Dos Fichas que Poseen el Mismo Archivo Deben Ordenarse en el Sentido que Acepta el Reparto: la Dependencia Solo Vale si la Ancestro Tiene Tanda
+`¤arbitro` `¤adpa`
+
+* **Descripción:** `scripts/generar_indice_tareas.py` exige que dos fichas que poseen el mismo archivo no puedan ejecutarse a la vez: una tiene que ser ancestro de la otra (línea 248, «pueden ejecutarse a la vez y ambas poseen…»). `scripts/verificar_reparto.py` exige a su vez que toda dependencia de una ficha repartida esté hecha o caiga en una tanda anterior (R4, líneas 118 a 128). Las dos reglas no se pueden arreglar con el mismo gesto. Si la ancestro todavía no tiene tanda (figura en «Sin agente»), declarar «la que sí tiene tanda depende de ella» satisface la primera regla y rompe la segunda; el orden contrario satisface las dos.
+* **Por qué es útil aquí:** el 2026-11-12, al traer `main` a #605 (MARCA-01 en la tanda 25) tras fusionarse #609 (RM-25a, sin tanda), las dos poseían `main.py` y `--verificar` falló. El primer arreglo, `MARCA-01` depende de `RM-25a`, dio «R4 MARCA-01 (BL-270, tanda 25) depende de RM-25a, que no va antes ni en una tanda anterior». El arreglo contrario, `RM-25a` depende de `MARCA-01`, dio 0 errores en los dos árbitros. Vuelve cada vez que una ficha con bloque comparte archivo con otra sin bloque, que es el caso normal de las fichas de «Sin agente».
+* **Verificabilidad:** sean $a$ y $b$ fichas que poseen el mismo archivo, $T(x)$ la tanda de $x$ (indefinida si está en «Sin agente») y $h(x)$ que $x$ está hecha. Árbitro del índice: $a \prec b \lor b \prec a$. R4: $\forall d \in \operatorname{dep}(t):\ h(d) \lor (T(d)\ \text{definida} \land T(d) < T(t))$. Con $T(a)=25$ y $T(b)$ indefinida:
+  $$a \to b\ (\text{a depende de b}):\ \text{R4}(a)=\text{False};\qquad b \to a:\ \text{R4}(a)=\text{True},\ \text{R4}(b)\ \text{no se evalúa}.$$
+  Comprobado ejecutando `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_reparto.py` sobre cada variante en la rama `tarea/juan-carlos/fichas-marca-prd` (commits `1bc7cb9f` y `cbcbfdd1`). Regla de operación: el orden entre dueñas de un mismo archivo lo fija el sentido que acepta R4, no el que parece más natural.
+* **Soporte bibliográfico:**
+  - Kahn, A. B. (1962). *Topological sorting of large networks*. Communications of the ACM, 5(11), 558–562. — ordenar tareas con dependencias exige un orden parcial en el que cada tarea aparece después de todas sus predecesoras; una arista hacia una tarea aún sin posición asignada no se puede colocar. Respalda la premisa del orden por dependencias, no el comportamiento concreto de estos verificadores.
+* **Estado:** aplicado en #605 (`cbcbfdd1`): `RM-25a` depende de `MARCA-01`. Queda abierto que, al dar tanda a RM-25a, deba ir después de la 25. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXIX)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Una exención de `_exenciones_propiedad.txt` no puede quitarla la dueña desde su rama de código, porque R5 rechaza ese archivo fuera de «Escribe». | Es la consecuencia del diseño de CI-19 y R5 y está escrito en las fichas; no se volvió a ejecutar en esta sesión. |
+| Una marca `# === ID ===` tiene que estar en `HEAD` antes de cambiar la ficha. | Solución constructiva ya registrada en los Aportes 118 y 128. |
+| Al traer `main` chocan las filas de las tandas de `BRIEFS_POR_BLOQUE.md` y un resolutor ingenuo las duplica. | Ya registrado (metodología 13 y descarte de la Parte XXVI). |
+| Un parte ya fusionado se sobrescribió por error y se restauró con `git checkout`. | Error de proceso, cubierto por la regla de `governance/partes/README.md`. |
+| Un hook que modifica la entrada de una llamada la deja sin veredicto del clasificador del modo automático. | Comportamiento de la herramienta de sesión, no del código del proyecto. |
+| Los chats por dominio frente a un chat por ficha reducen el contexto que hay que repasar en cada brief. | Decisión de organización sin medición. |
+
+---
+
+### Aporte 135: Con `reuseExistingServer` Playwright Prueba el Servidor de Otro Worktree que Ocupa el Puerto, y el Resultado Parece Ser de la Rama Propia
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** `frontend/playwright.config.ts` (rama sin `CI`, línea 159) declara `reuseExistingServer: true` y el puerto por defecto es 3000 (línea 16). Si otro worktree ya sirve en el 3000, la corrida usa ese código ajeno sin avisar: las pruebas en verde o en rojo no dicen nada de la rama propia. Lo vieron por separado tres sesiones (biblioteca en DEMO-03d y BIB-110, diagnóstico en DIAG-14, biblioteca en BIB-118 y BIB-119); en una, los resultados de `escala.spec` ya reportados se tomaron sobre código ajeno y hubo que repetirlos. El Aporte 66 cita esta opción solo como economía.
+* **Por qué es útil aquí:** el proyecto trabaja con varios worktrees y varias sesiones a la vez, y el fallo es silencioso: no hay error, hay una prueba que mira otro código.
+* **Verificabilidad:** sea $p$ el PID que escucha en el puerto y $p_0$ el del servidor lanzado por el arnés. $p \neq p_0 \Rightarrow$ los resultados no son de esta rama. Se comprueba con `netstat -ano | grep ":3000 .*LISTEN"`. Observado con el mismo spec y el mismo código: verde con `PLAYWRIGHT_PORT` libre y rojo (`aria-disabled` ausente que la rama sí tenía) con el 3000 ocupado por otro worktree. Código leído en `frontend/playwright.config.ts` líneas 16, 140, 150 y 159: las dos variantes de CI usan `false` y la local `true`.
+* **Soporte bibliográfico:**
+  - Playwright, *Test configuration → webServer* (`reuseExistingServer`, `port`): con `true` se reutiliza un servidor existente en esa URL o puerto. Respalda el comportamiento de la opción, no el riesgo entre worktrees.
+* **Estado:** mitigado por convención (`PLAYWRIGHT_PORT` propio por worktree). Abierto: derivar el puerto del hash de la ruta del worktree, como CI-09 hizo con la base (Aporte 125). No introduce token nuevo.
+
+---
+
+### Aporte 136: Desajuste entre el Entorno Real del Proceso y el Mensaje de Error, y Tubería con `tail` que Oculta un Fallo de Migración
+`¤arbitro` `¤entorno`
+
+* **Descripción:** `alembic/env.py` lee `MIGRATION_DATABASE_URL` o `DATABASE_URL` exclusivamente desde `os.environ`. Cuando un mensaje de error remite erróneamente a un archivo externo en lugar de exigir la variable exportada en el proceso, el operador busca la causa en el sitio equivocado. Agravante en shell: si el comando va en una tubería (`alembic upgrade head | tail -3 && pytest`), el código de salida pasa a ser el de `tail` (0) y `pytest` corre sobre una base sin migrar: 188 fallos y 402 errores «relation "tenants" does not exist» que parecen una regresión y son del entorno.
+* **Por qué es útil aquí:** recuerda dos invariantes de diagnóstico: los mensajes de error de configuración deben nombrar exactamente la fuente real (`os.environ`), y toda concatenación de migración + suite en shell requiere `pipefail` o comandos separados (`$LASTEXITCODE`).
+* **Verificabilidad:** si la variable falta en `os.environ` pero se ejecuta detrás de `| tail -3 && pytest`, la migración falla con mensaje falso-verde de tubería. Predicado de la tubería: $\text{estado}(a \mid b) = \text{estado}(b)$ salvo `set -o pipefail`.
+* **Soporte bibliográfico:**
+  - Wiggins, A. (2011). *The Twelve-Factor App*, factor III «Config»: la configuración se lee estrictamente del entorno del proceso (`os.environ`).
+  - GNU Bash Reference Manual, §3.2.3 *Pipelines*: el estado de una tubería es el del último comando salvo que se active `pipefail`.
+* **Estado:** resuelto fijando `os.environ` como única fuente de verdad (`RET-01` / `scripts/entorno_local.ps1`) y evitando tuberías que enmascaren el código de salida. No introduce token nuevo.
+
+---
+
+### Aporte 137: Una Revisión de Alembic de más de 32 Caracteres Falla al Final de la Migración, Después de Ejecutar Todo el DDL, y Ningún Árbitro Estático Lo Ve
+`¤arbitro` `¤postgres`
+
+* **Descripción:** la tabla `alembic_version` se crea con `version_num VARCHAR(32)` (`alembic/ddl/impl.py`, línea 169, Alembic 1.20.0). Con `revision = "20261106_diagnostico_prueba_y_real"` (34 caracteres) y con `"20260420_01_terceros_transferencias_rls"` (39) el `upgrade` ejecutó todas las sentencias y falló en el `UPDATE` final con `StringDataRightTruncation`. `verificar_migracion_compatible.py` dio 0 y `alembic heads` también: solo aparece al migrar de verdad, con la base a medio migrar. Dos sesiones (DIAG-14 y ADPA-10) lo reprodujeron por separado en PostgreSQL 16.
+* **Por qué es útil aquí:** una migración nueva con un identificador largo se detecta tarde, con la base sin migrar, y se confunde con un fallo de la migración en vez del nombre.
+* **Verificabilidad:** $\text{len}(\text{revision}) > 32 \Rightarrow \text{upgrade falla con StringDataRightTruncation}$. Medido hoy sobre `alembic/versions/*.py`: 86 revisiones, 0 pasan de 32 y la más larga mide exactamente 32 (`20261029_evidencias_documentales`), es decir, el repositorio ya está en el borde. Prueba preventiva posible: $\forall f \in \texttt{alembic/versions}:\ \text{len}(\text{revision}(f)) \le 32$; hoy no existe.
+* **Soporte bibliográfico:**
+  - Alembic, código fuente `alembic/ddl/impl.py` (`Column("version_num", String(32), nullable=False)`), leído en el entorno instalado. Respalda el límite; la opción de ampliarlo no se consultó.
+* **Estado:** corregido caso por caso en #546 y #547 (se acortó solo el identificador). Abierto: la prueba estática, que sería de otra ficha. No introduce token nuevo.
+
+---
+
+### Aporte 138: Añadir un Valor a un Enum Nativo Rompe al Lector Antiguo en Cuanto una Fila lo Usa: el Tipo se Expande por Migración y su Uso se Activa Aparte
+`¤postgres` `¤arbitro`
+
+* **Descripción:** `Enum(ClaseEnum)` de SQLAlchemy lanza `LookupError` al leer una etiqueta que su clase no conoce (documentado en `sqlalchemy/sql/sqltypes.py`, clase `Enum`, líneas 1243 a 1247). En un despliegue progresivo en Cloud Run la revisión anterior falla al listar en cuanto la nueva crea una fila con el valor nuevo. `ALTER TYPE … ADD VALUE` solo es seguro si el valor no se usa hasta que todas las revisiones lo conocen: se expande el tipo por migración y la creación se activa aparte (`TIPOS_ACTIVOS` en `features/derechos_arco/domain/plazos.py` más rechazo en la compuerta). PostgreSQL no retira valores de un enum. El verificador de GCP-07 solo atrapa `DROP` y `RENAME`.
+* **Por qué es útil aquí:** cada tipo nuevo de solicitud ARCO repite el riesgo, y el árbitro existente no lo ve.
+* **Verificabilidad:** con un lector congelado de cinco valores, leer filas con `QUEJA` lanza `LookupError` si y solo si el tipo está activo: $\text{activo}(t) \iff \text{LookupError}(\text{lector\_antiguo}, t)$. Es `tests/test_der06a_tipos_expandir.py::test_mutacion_activar_un_tipo_rompe_al_lector_antiguo` (línea 103), medido contra PostgreSQL 16 local; quitar el rechazo hace fallar cuatro pruebas.
+* **Soporte bibliográfico:**
+  - Ambler, S. W. y Sadalage, P. J. (2006). *Refactoring Databases: Evolutionary Database Design*. Addison-Wesley. — el período de transición en el que conviven el esquema viejo y el nuevo. Respalda la secuencia expandir y activar, no el caso del enum.
+  - SQLAlchemy, código fuente de `Enum` (la `LookupError` de arriba), leído en el entorno instalado (2.0.54).
+* **Estado:** aplicado en la migración 20261123, `plazos.py` y el servicio (#611, #616). No introduce token nuevo.
+
+---
+
+### Aporte 139: En Expandir y Contraer el Disparador de Sincronización Debe Ser Bidireccional y la Reversión Necesita una Guardia de Forma
+`¤postgres` `¤arbitro`
+
+* **Descripción:** extiende el patrón de expandir y contraer del Aporte registrado con la cita de Sato. Con un disparador solo viejo→nuevo, las filas creadas por la revisión nueva dejan la columna vieja en `NULL` y la reversión de código da 500 (`GET` con `tenant_id: UUID`). Y un `downgrade` que convierte texto a `uuid` revienta a mitad con identificadores como `t-e2e-…`. La revisión del CTO lo detectó, no la ficha.
+* **Por qué es útil aquí:** DER-03 y las migraciones siguientes de la tanda dependen de poder retroceder una revisión de código sin perder filas.
+* **Verificabilidad:** `tests/test_der03_tenant_solicitud.py::test_06a_insercion_solo_texto_uuid_llena_la_columna_vieja` (línea 142): insertar solo el texto deja el `uuid` lleno. `test_06b_downgrade_aborta_con_texto_sin_forma_de_uuid_y_no_cambia_nada` (línea 154): con un texto sin forma de `uuid` la reversión aborta con el número de filas y no cambia nada.
+* **Soporte bibliográfico:**
+  - Ambler y Sadalage (2006), *Refactoring Databases* (disparadores de sincronización durante el período de transición), citado en el Aporte 138. Respalda la existencia del disparador, no su dirección.
+* **Estado:** implementado en DER-03 (#532). No introduce token nuevo.
+
+---
+
+### Aporte 140: Un Rol de Aplicación sin `SELECT` sobre `alembic_version` No Puede Verificar su Propia Revisión: Se Lee con el Rol de la Conexión Antes de `SET ROLE`
+`¤postgres` `¤seguridad`
+
+* **Descripción:** la comprobación «`alembic current` = cabeza» dio «permission denied for table alembic_version» al correrla como `lopdp_app` en PostgreSQL 16. No se concede nada nuevo: `scripts/verificar_cloudsql_conexion.py` (líneas 126 a 130) lee la revisión con el rol de la conexión, el dueño, antes de `set_config('role', …)`, y comprueba los privilegios bajo el rol asumido.
+* **Por qué es útil aquí:** conceder lectura de `alembic_version` al rol de la aplicación para que la prueba «pase» ampliaría su superficie sin necesidad.
+* **Verificabilidad:** `tests/test_gcp04_cloudsql_migration_cutover.py::test_ci18_07_la_revision_no_se_lee_bajo_set_role_lopdp_app` (línea 147) es falso si la lectura ocurre con `current_user = lopdp_app`; la mutación M4 lo pone en rojo. La lectura previa al cambio de rol está en el código citado.
+* **Soporte bibliográfico:**
+  - PostgreSQL 16, documentación de `GRANT` y `SET ROLE`: los privilegios que rigen son los del rol asumido. No se releyó el párrafo en esta sesión.
+* **Estado:** implementado en #525 (CI-18). No introduce token nuevo.
+
+---
+
+### Aporte 141: Un `path rule` del Balanceador que Cubre un Prefijo Compartido con Rutas Propias del Frontend las Manda al Backend, que Responde 404
+`¤ci-cd` `¤arbitro`
+
+* **Descripción:** la regla `/api/*` mandaba `/api/ai-copilot`, `/api/chat` y `/api/project/save`, que son `route.ts` del frontend, al backend, que da 404. Se acotó a `/api/v1/*`. La prueba no confía en una lista escrita a mano: recorre los `route.ts` de `frontend/src/app/api` en disco.
+* **Por qué es útil aquí:** cada ruta nueva del frontend bajo `/api/` repetiría el defecto sin que nadie lo note hasta producción.
+* **Verificabilidad:** $\forall r \in \text{rutas}(\texttt{frontend/src/app/api}):\ r \notin \text{prefijo}(\text{regla\_backend})$. `tests/test_gcp09_dominio_e_ingress.py::test_09_backend_solo_api_v1_y_rutas_del_frontend_fuera` falla si la regla vuelve a `/api/*`.
+* **Soporte bibliográfico:**
+  - Google Cloud, documentación de *URL maps* (path matchers y path rules): la regla de ruta más larga que coincide. No se releyó en esta sesión.
+* **Estado:** implementado y fusionado (#512, GCP-09). No introduce token nuevo.
+
+---
+
+### Aporte 142: La Purga Física por `tenant_id` Choca con las Tablas Append-Only Protegidas por Disparador, y la Prueba con Datos Mínimos No lo Ve
+`¤postgres` `¤arbitro`
+
+* **Descripción:** un job que borra por organización las filas de «todas las tablas con `tenant_id`» falla con los datos reales de la copia de la demo. `biblioteca_documentos_historial` (y las tablas de eventos y descargas) tienen disparadores `BEFORE UPDATE OR DELETE` que lanzan siempre `BIB_HISTORIAL_INMUTABLE` con código 23514 (`alembic/versions/20261109_biblioteca_documentos.py`, líneas 85 a 88, y las migraciones 20261111 y 20261113); además `biblioteca_documentos` no se puede borrar mientras existan sus filas de historial (clave foránea). El job de DEMO-05 pasó sus 17 pruebas con datos mínimos y sale con error en cada corrida real. Falla cerrada: no borra de menos, pero la promesa de purga no se cumple.
+* **Por qué es útil aquí:** reaparece con cada tabla append-only nueva (invariante 63, `INV_DEMO_APP_NEVER_DELETES`, de `INVARIANTS.md`: la aplicación nunca borra) y solo se ve al ejecutar el job contra una demo creada por la copia real de las salas.
+* **Verificabilidad:** $\exists T$ con `tenant_id` y disparador `BEFORE DELETE` incondicional $\Rightarrow$ `DELETE FROM T WHERE tenant_id = x` falla. Se comprueba con `pg_trigger`/`pg_get_triggerdef` y con la salida 1 del job sobre una demo real (reproducido en PostgreSQL 16 local con `ErrorPurga`). Medido hoy: ningún archivo de `alembic`, `features`, `app_core` ni `jobs` usa `session_replication_role`.
+* **Soporte bibliográfico:**
+  - PostgreSQL, documentación *Client Connection Defaults: session_replication_role*: con `replica` no se disparan los disparadores ordinarios ni las comprobaciones de clave foránea. Es el arreglo propuesto, no medido; hay que confirmar que Cloud SQL lo permite al rol de purga.
+  - Saltzer, J. H. y Schroeder, M. D. (1975). *The Protection of Information in Computer Systems*. Proc. IEEE 63(9). — *fail-safe defaults*: la purga falla cerrada.
+* **Estado:** ABIERTO. El arreglo es la ficha DEMO-05c, que espera la decisión del Tech Lead. No introduce token nuevo.
+
+---
+
+### Aporte 143: Una Prueba que Revierte por su Cuenta No Detecta la Ausencia del `SAVEPOINT` que Evita las Filas a Medias
+`¤postgres` `¤arbitro`
+
+* **Descripción:** en DEMO-02 el router captura el error de negocio y devuelve JSON, y `get_session` confirma al terminar sin excepción: toda escritura previa al fallo (la demo anterior vencida por reemplazo, usuarios, áreas) se confirmaría. Solo `session.begin_nested()` en `entrar` (`features/demo/services/entrada_engine.py`, línea 88) evita el estado a medias. La mutación «quitar el `SAVEPOINT`» pasó las 19 pruebas porque la prueba hacía `rollback` por su cuenta; solo cuando imitó al llamador real (captura el error y luego confirma) la mutación dejó de pasar.
+* **Por qué es útil aquí:** el patrón vale para cualquier motor que lance un error de negocio dentro de una dependencia que confirma, y la lección es de la prueba: la prueba debe comportarse como el llamador.
+* **Verificabilidad:** contar(tablas) antes = contar(tablas) después $\wedge$ la demo previa sigue «activa», tras una falla simulada en una sala y la confirmación del llamador. `tests/test_demo_ciclo.py::test_falla_en_una_sala_da_503_sin_filas_a_medias` (línea 239); con la mutación, los contadores pasan de [3, 15, 15, 12, 2] a [4, 20, 20, 16, 2].
+* **Soporte bibliográfico:**
+  - SQLAlchemy 2.0, *Using SAVEPOINT* (`Session.begin_nested`); PostgreSQL, comando `SAVEPOINT`. Respaldan el mecanismo, no la lección sobre la prueba. No se releyeron en esta sesión.
+* **Estado:** implementado en DEMO-02 (#632). No introduce token nuevo; el patrón es conocido, el valor es la lección de la prueba.
+
+---
+
+### Aporte 144: El Clonado Idempotente sin Lectura Previa Sale de Derivar el Id Nuevo con `uuid5(destino|id_origen)` y `INSERT … ON CONFLICT DO NOTHING`
+`¤postgres` `¤arbitro`
+
+* **Descripción:** el id nuevo se deriva del destino y del id de origen; repetir la copia dentro de la misma transacción produce las mismas claves y no duplica, sin leer antes ni usar claves de idempotencia. El mapa de ids devuelto es idéntico en la segunda llamada. Está en `features/roadmap/services/clon_plantilla_engine.py` (líneas 41 y 122) y `features/evidencias/services/clon_plantilla_engine.py` (línea 37), y el mismo patrón en DEMO-03a, b y d. No había ninguna entrada con `uuid5` (0 resultados en este archivo).
+* **Por qué es útil aquí:** cada sala nueva que clone la plantilla de la demo puede reusar el patrón y la prueba.
+* **Verificabilidad:** $\text{clonar}(p,d,\varnothing)=m_1 \Rightarrow \text{clonar}(p,d,m_1)=m_1 \wedge |\text{filas}(d)|$ constante. Lo cubren `test_clonar_dos_veces_no_duplica` en `tests/test_demo_clon_roadmap.py` y en `tests/test_demo_clon_evidencias.py`; con ids aleatorios la prueba falla.
+* **Soporte bibliográfico:**
+  - Leach, P., Mealling, M. y Salz, R. (2005). *A Universally Unique IDentifier (UUID) URN Namespace*. RFC 4122, §4.3 — UUID basado en nombre (SHA-1): la misma entrada produce el mismo UUID. El RFC 9562 (2024) lo conserva como v5.
+* **Estado:** aplicado en #580 y #631. No introduce token nuevo.
+
+---
+
+### Aporte 145: Un Marcador Positivo de Entorno Tiene que Calificarse con Esquema y Verificar su Dueño, o una Tabla Temporal lo Sombrea y Falsifica
+`¤seguridad` `¤postgres` `¤arbitro`
+
+* **Descripción:** una guardia que consulta `entorno_marcador` sin esquema puede leer una tabla temporal del mismo nombre creada por la propia sesión, porque `pg_temp` va primero en `search_path`; un rol con permiso `TEMP` la falsifica. `app_core/huellas_produccion.py` (líneas 91 a 125) califica `public.entorno_marcador`, exige `relkind = 'r'` y `relowner = datdba`, y una sola fila `'pruebas'` o `'demo'`; si falta, hay otro valor, otra cardinalidad o hay error, cuenta como producción.
+* **Por qué es útil aquí:** la guardia es lo que impide que una prueba o una demo toque producción; un marcador falsificable la anularía.
+* **Verificabilidad:** con una tabla `TEMP` con `'pruebas'` y el marcador real `'otro'`, `base_es_produccion(con) = True`; con una vista del mismo nombre, `True`; con una tabla creada por un rol que no es dueño, `True`. `tests/test_sec20_huella_cloudsql.py` pruebas 7 (línea 184), 9, 10 y 11, con mutaciones M1 a M6, contra PostgreSQL 16 local.
+* **Soporte bibliográfico:**
+  - PostgreSQL 16, *Schemas → The Schema Search Path*: `pg_temp` se busca primero salvo que se liste. No se releyó en esta sesión.
+  - Saltzer y Schroeder (1975): *fail-safe defaults*, ya registrado en FUENTES.
+* **Estado:** implementado en SEC-20 (#534). No introduce token nuevo.
+
+---
+
+### Aporte 146: Una Exención y su Marca que Dos Árbitros se Exigen Mutuamente No Pueden Retirarse desde una Sola Rama de Código
+`¤arbitro` `¤adpa`
+
+* **Descripción:** la ficha DEMO-08 tenía una exención `ficha|archivo#SECCION` porque `app_core/security.py` no tenía la marca. Al crear la marca, `generar_indice_tareas --verificar` falla («la exención ya no tapa ningún error, retírela»); y `verificar_reparto --bloque BL-225` (R5) falla si la rama de código toca `_exenciones_propiedad.txt`. Ninguna rama de código deja ambos en 0. Se resolvió con un commit solo de marca (rama aparte), la retirada de la exención en gobernanza (#615) y el código después. En esta sesión se repitió la misma regla al sembrar las marcas de IA-05 en un commit aparte antes de cambiar la ficha.
+* **Por qué es útil aquí:** reaparece con cualquier sección sembrada tardíamente y no está en ningún verificador una nota de la secuencia.
+* **Verificabilidad:** en la rama de DEMO-08, con marca y sin retirar: `--verificar = 1`; con la edición de la lista: `reparto = 1`; tras #615: ambos 0. Es una secuencia, no una fórmula: marca → retirada de la exención → código.
+* **Soporte bibliográfico:** ninguna aplicable verificada; se omite en vez de forzar.
+* **Estado:** resuelto por proceso (#615). Abierto: anotar la secuencia en el mensaje de `--verificar`. No introduce token nuevo.
+
+---
+
+### Aporte 147: Un Símbolo que Otra Sala Necesita Cruza el Pasillo de Tres Maneras que Pasan los Árbitros: Importar Dentro de la Función, Reexportar Fuera de `__all__` o Exponer una Función de Fábrica
+`¤adpa` `¤arbitro`
+
+* **Descripción:** hay dos árbitros sobre el mismo cruce. La guardia de salas recorre los `ImportFrom` con el AST y solo admite `features.<sala>.<sala>_service`; `tests/test_pasillo_central.py::test_el_pasillo_solo_importa_salas_dentro_de_funciones` (línea 28) rechaza todo `import` de sala al cargar el módulo del pasillo; y el contrato de firmas de la compuerta mide `set(__all__)`. Tres sesiones llegaron a la misma salida por caminos distintos: (i) el pasillo no «reexporta»: `app_core/pasillo/inferencia.py` importa la sala dentro de cada función (la ficha IA-03 decía «solo reexporta» y su primera versión falló el árbitro); (ii) una constante de dominio se publica por la compuerta reexportada fuera de `__all__` con `# noqa: F401` (`features/demo/demo_service.py`, líneas 20 y 21); (iii) una excepción o un enum cruza con funciones de fábrica y predicados (`error_rbac`, `violacion_sod`, `es_brecha_critica`), de modo que el grafo AST no tiene aristas laterales.
+* **Por qué es útil aquí:** las fichas de las salas nuevas (IA-04 a IA-08) repiten la redacción «reexporta», que contradice el árbitro; cambiar solo uno de los árbitros deja al otro en rojo.
+* **Verificabilidad:** $\forall n \in \text{ImportFrom}(\texttt{app\_core/pasillo/*.py}),\ \text{módulo}(n) \in \texttt{features.*} \Rightarrow n \in \text{FunctionDef}$; y $\text{set}(\texttt{demo\_service.\_\_all\_\_}) = \text{SEIS\_FIRMAS}$ con `PLANTILLA_TENANT_ID` accesible por la compuerta. Medido: el import global puso en rojo el árbitro del pasillo (1 fallo) y con envoltorios, 40 pruebas pasan; el import directo de la constante puso en rojo la guardia de salas (1 de 26) y la reexportación la dejó en verde.
+* **Soporte bibliográfico:**
+  - Parnas, D. L. (1972), ya registrado con el rastro `¤adpa`: la descomposición en módulos con fronteras declaradas. Respalda la frontera, no el mecanismo de importar dentro de la función (sería forzado).
+* **Estado:** aplicado en #587 (IA-03), #550 (DEMO-03) y #463 (ADPA-04). Falta corregir la redacción «solo reexporta» en las fichas y plantillas. No introduce token nuevo.
+
+---
+
+### Aporte 148: Las Excepciones por `archivo:línea` se Descuadran: la Clave Tiene que Ser Estable y la Normalización Idempotente, y una Guardia que Solo Puede Decrecer Castiga la Mención Legítima Nueva
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** en guardias estáticas sobre el árbol, una lista de excepciones por `archivo:línea` se rompe con solo mover líneas. La clave estable es híbrida: en código, archivo más texto recortado con recuento; en documentos, archivo más recuento; falla solo si el recuento supera lo permitido o hay una clave nueva. Además, `recortar` tiene que ser idempotente: `strip()[:100]` puede acabar en espacio y al releer la lista la clave cambia («hay 1, permitido 0» sobre una mención ya listada); se arregló con $\text{recortar} = \text{strip} \circ \text{truncar} \circ \text{strip}$ (línea 51 del archivo). Y una guardia «no crece» pone `main` en rojo ante una mención legítima nueva (el título de una ficha, los identificadores de ficha en `depende_de`, el propio árbitro): el remedio fue no contar los identificadores de ficha, autoexcluir al árbitro y reformular el documento en vez de subir la lista.
+* **Por qué es útil aquí:** se repetirá con cada término retirado que tenga una guardia monótona.
+* **Verificabilidad:** $\forall t:\ \text{recortar}(\text{recortar}(t)) = \text{recortar}(t)$ (hoy cubierto solo de forma indirecta; falta una prueba unitaria). `test_documento_mover_lineas_no_falla_y_una_mas_si` (línea 255): mover líneas da verde y añadir una mención da rojo; `test_codigo_editado_que_aun_menciona_falla` (línea 262).
+* **Soporte bibliográfico:**
+  - Sadowski, C. et al. (2018). *Lessons from Building Static Analysis Tools at Google*. CACM 61(4): reportar solo lo nuevo frente a una base. No se releyó en esta sesión; respalda la idea de comparar con una base, no el diseño de la clave.
+* **Estado:** implementado en #578 y en el commit 908b1fc1. Abierto: la regla para documentos que suben por ficha nueva. No introduce token nuevo.
+
+---
+
+### Aporte 149: Un Árbitro Probado Solo con Datos Sintéticos No Protege el Repositorio: la CI Queda en Verde con el Artefacto Real Roto
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** las 17 pruebas de R-PROP-EXISTE usaban árboles inyectados. Ningún control llamaba a `validar_contra_arbol` sobre el árbol real ni con la lista real de exenciones, así que la CI de `main` salió verde sobre `5bd5c4e` aunque `--verificar` daba 17 errores. Las pruebas unitarias demuestran que la regla es correcta; no que el repositorio la cumpla: hacen falta las dos clases. Además el selector por salas no elegía la prueba en un PR que solo tocaba una sala.
+* **Por qué es útil aquí:** cada árbitro nuevo del repositorio puede caer en lo mismo: pasar su suite con dobles y no ejecutarse sobre el artefacto real.
+* **Verificabilidad:** $\text{ci\_verde}(5bd5c4e) \wedge |\text{errores}(\texttt{--verificar}, 5bd5c4e)| = 17$. Tras #474, `tests/test_generar_indice_tareas_arbol.py`: `test_7a_la_propiedad_real_cumple_contra_el_arbol` (línea 186), `test_7b_una_exencion_obsoleta_en_la_lista_real_falla` (línea 191) y `test_7c_el_arnes_por_salas_elige_esta_prueba_aunque_solo_cambie_una_sala` (línea 196).
+* **Soporte bibliográfico:**
+  - Meszaros, G. (2007). *xUnit Test Patterns*. Addison-Wesley — distingue la prueba que aísla la unidad con dobles de la que verifica la integración con el entorno real; los dobles no detectan los defectos de integración. Ya está en FUENTES; respalda la distinción general, no el caso.
+* **Estado:** implementado en #474 (`ARBITRO_DE_REPOSITORIO` amplía el selector). No introduce token nuevo.
+
+---
+
+### Aporte 150: La Fecha del Día se Decide en Dos Relojes, el del Proceso Python y la Zona de la Sesión de PostgreSQL, y el CI en UTC lo Oculta
+`¤postgres` `¤arbitro`
+
+* **Descripción:** un filtro por día compara `date.today()` del proceso con `timestamptz::date`, que PostgreSQL convierte con el `TimeZone` de su sesión. Si las dos zonas no coinciden, entre las 19:00 y las 24:00 de Ecuador la fecha difiere en un día. La prueba falla en local y pasa en el CI, que corre todo en UTC, y en Cloud Run el producto queda corrido un día. Se fijó una sola zona de negocio (`app_core/zona_negocio.py`), usada en las dos capas (`AT TIME ZONE :zona` y `hoy_negocio`, `features/biblioteca/services/documentos_consulta.py`), con el reloj inyectado en las pruebas. Es distinto de la deriva NTP entre relojes de clientes distribuidos: aquí es la frontera del día calendario por zona horaria.
+* **Por qué es útil aquí:** reaparece en cualquier filtro por fecha que mezcle capas; quedó pendiente CORE-01, que deduplica `ZONA_GUAYAQUIL` en `control_periodico.py` y `recordatorios_engine.py`.
+* **Verificabilidad:** con $t$ = 2031-03-15 04:30 UTC, $\text{hoy\_negocio}(t)=2031\text{-}03\text{-}14 \wedge (t \text{ AT TIME ZONE } \text{'America/Guayaquil'})::\text{date} = 2031\text{-}03\text{-}14$, con la sesión en UTC y en `America/Guayaquil`. Las mutaciones M1 (quitar `AT TIME ZONE`), M2 (`date.today()`) y M3 (zona en UTC) dejan `tests/test_bib120_zona_negocio.py` en rojo. Con `TZ` local a las 19:55 la prueba original falla y con `TZ=UTC` pasa.
+* **Soporte bibliográfico:**
+  - PostgreSQL 16, §8.5.1.3 y §9.9.4 (*AT TIME ZONE*): un `timestamp with time zone` se muestra y se convierte según el parámetro `TimeZone` de la sesión. Python, `datetime.date.today()`: devuelve la fecha local actual. No se releyeron en esta sesión.
+* **Estado:** aplicado en BIB-120 (#531). No introduce token nuevo.
+
+---
+
+### Aporte 151: Un Limitador de Ventana Deslizante sin `DELETE` Reinicia la Ventana Vencida con un Solo `UPSERT` sobre la Misma Fila
+`¤seguridad` `¤postgres`
+
+* **Descripción:** cuando el rol de la aplicación no tiene `DELETE`, los contadores no se purgan. Cada clave guarda (inicio, contador, previo) y un `INSERT … ON CONFLICT DO UPDATE` con `CASE` suma en la ventana actual, pasa el contador a «previo» si la ventana anterior es contigua y reinicia a (1, 0) si venció; la estimación es $\text{previo}\cdot(1-t/V)+\text{actual}$. Es atómico, cuesta un viaje a la base y la tabla no crece más allá de una fila por clave.
+* **Por qué es útil aquí:** el límite de peticiones no necesita ampliar los privilegios del rol ni un job de limpieza.
+* **Verificabilidad:** `tests/test_sec13_limite_peticiones.py::test_postgres_upsert_reinicia_sin_delete` (línea 214), contra PostgreSQL 16: admitido, admitido, rechazado y, con $t+600$ s, admitido, con la fila = (1, 0). La migración `20261121_sec13_ventana` concede `SELECT, INSERT, UPDATE` y no `DELETE`.
+* **Estado:** implementado en `app_core/limites/limitador.py` y fusionado (#468, SEC-13). No introduce token nuevo.
+
+---
+
+### Aporte 152: Igual Cobertura No Quiere Decir Prueba Redundante, y la Cobertura Solo Ve una Parte de la Suite
+`¤arbitro`
+
+* **Descripción:** al comparar la cobertura por contexto de pytest, dos variantes de una misma función parametrizada salen con conjuntos de líneas idénticos, y el criterio «sus líneas están contenidas en las de otra» las marca para retirar aunque cambian los datos y no las líneas (en la primera medición, 31/31 líneas de `test_script_importar_exige_rama_de_desarrollo_explicita`). Se corrigió conservando siempre las variantes de una misma función. Además, de las 2466 pruebas recogidas solo 499 dejan líneas Python medibles; las demás revisan textos, gobernanza o frontend, o corren scripts en un subproceso que la cobertura no sigue, y quedan fuera de cualquier detección por cobertura.
+* **Por qué es útil aquí:** cualquier ficha TEST-05x que se apoye solo en cobertura subestima la redundancia y puede retirar pruebas válidas.
+* **Verificabilidad:** $\text{prueba.split('[')[0]} = \text{contenedora.split('[')[0]} \Rightarrow \text{recomendación} = \text{«conservar (variante parametrizada)»}$ (`scripts/medir_redundancia_pruebas.py`, `Candidata.misma_funcion`, línea 102; `tests/test_medir_redundancia_pruebas.py::test_variante_parametrizada_se_conserva`). La cifra «Pruebas con cobertura medida: 499» está en `governance/operaciones/CONSOLIDACION_PRUEBAS.md` (línea 19); es local y sin PostgreSQL, y con base debería subir (abierto: confirmarla en el entorno de CI-17).
+* **Soporte bibliográfico:**
+  - Inozemtseva, L. y Holmes, R. (2014). *Coverage is not strongly correlated with test suite effectiveness*. ICSE 2014 — la cobertura sola no predice qué fallos detecta una suite; por eso hace falta la mutación como segundo árbitro.
+* **Estado:** aplicado y fusionado (#462, TEST-05). No introduce token nuevo.
+
+---
+
+### Aporte 153: Un Caso de Mutación que No Aísla la Regla No Prueba la Regla: el Mutante Parcialmente Equivalente por Solapamiento de Ocurrencias
+`¤arbitro`
+
+* **Descripción:** en ORG-17b se quitó el `lookahead` final del patrón del inventario y los ocho casos siguieron verdes: con `INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest` más 20 caracteres, la segunda aparición del nombre ya casaba por otra vía. Hubo que cambiar el caso a `latest` más 4 caracteres para que solo el `lookahead` lo decida (`tests/test_organizacion_inventario.py`, línea 363, caso `latest-seguido-de-texto`). El Teorema 32 cubre la mutación dirigida, no que el caso deba aislar la regla.
+* **Por qué es útil aquí:** al escribir un caso para una mutación hay que comprobar que el caso falla con la mutación y pasa sin ella, y que ninguna otra regla lo cubre.
+* **Verificabilidad:** con el `lookahead` puesto, el caso `:latestXXXX` es rojo; sin él, verde; con 20 caracteres, rojo en ambos. `pytest tests/test_organizacion_inventario.py -k patron` con y sin la mutación.
+* **Soporte bibliográfico:**
+  - DeMillo, R. A., Lipton, R. J. y Sayward, F. G. (1978). *Hints on Test Data Selection*. IEEE Computer 11(4), ya registrado.
+  - Offutt, A. J. y Untch, R. H. (2001). *Mutation 2000: Uniting the Orthogonal*, en *Mutation Testing for the New Century*, Kluwer — mutantes equivalentes. No se releyó en esta sesión.
+* **Estado:** aplicado en #621 (ORG-17b). No introduce token nuevo.
+
+---
+
+### Aporte 154: Un Simulador de «Falla la Primera Llamada» es No Determinista en Desarrollo, Porque StrictMode Ejecuta el Efecto Dos Veces
+`¤arbitro` `¤frontend`
+
+* **Descripción:** en desarrollo, React StrictMode ejecuta cada efecto dos veces. Un simulador que falla solo la primera petición la consume en la primera ejecución, que el componente descarta por su bandera `vigente`, y la segunda recibe el 200: la pantalla nunca muestra el error y la prueba falla. Se arregló con una bandera que falla hasta que la prueba la apaga (por ejemplo, hasta pulsar «Reintentar»). Lo vieron por separado DIAG-12 (`comparativo.spec.ts`, `estados.spec.ts`) y FE-25 (`ficha-resumen.spec.ts`).
+* **Por qué es útil aquí:** cualquier prueba E2E de un estado de error con `page.route` repetirá el defecto, y en producción (sin StrictMode) el simulador original sí funciona.
+* **Verificabilidad:** con un simulador que falla siempre hasta que la prueba lo apague, `error visible = True`; con «solo falla la 1.ª», `error visible = False`. Reproducido con `llamadas === 1` rojo y la bandera verde.
+* **Soporte bibliográfico:**
+  - React, *StrictMode → Fixing bugs found by re-running Effects* (react.dev/reference/react/StrictMode): en desarrollo React vuelve a ejecutar el *setup* y el *cleanup* de cada efecto.
+* **Estado:** aplicado en #591, #604 y en la rama de FE-25. No introduce token nuevo.
+
+---
+
+### Aporte 155: `getByRole("alert")` en Playwright Resuelve Primero al Anunciador de Rutas de Next, que Está Vacío
+`¤arbitro` `¤frontend`
+
+* **Descripción:** el DOM de Next siempre trae `<div role="alert" aria-live="assertive" id="__next-route-announcer__">` vacío. Un `toContainText` sobre `getByRole("alert")` sin texto falla con «Received string: ''» aunque la aplicación muestre su propio aviso, y `toHaveCount(0)` no da 0. Se arregló buscando por texto o filtrando con `.filter({ hasText })`, como ya hacen `frontend/tests/api/sin-respaldos.spec.ts` (líneas 18 y 31). Lo vieron dos sesiones por separado (DIAG-06 y ORG-18).
+* **Por qué es útil aquí:** el primer `getByRole("alert")` de un spec nuevo falla de forma engañosa, y hay specs que todavía lo usan sin filtro (`frontend/tests/asistente/flujo.spec.ts`, línea 24).
+* **Verificabilidad:** el log de Playwright muestra literalmente «locator resolved to <div role="alert" … __next-route-announcer__>». Comprobación posible: `document.querySelectorAll('[role=alert]').length >= 1` en una página sin avisos propios; no se ejecutó aparte.
+* **Soporte bibliográfico:** ninguna verificada (documentación de Next.js sobre accesibilidad y anuncio de rutas; no se confirmó el enlace exacto ni la versión). Se omite en vez de forzar.
+* **Estado:** aplicado en los specs de diagnóstico y organización. Falta anotar la versión de Next. No introduce token nuevo.
+
+---
+
+### Aporte 156: Un Árbitro de Contenido que Lee el DOM en el Momento de la Consulta No Ve los Textos Transitorios: Necesita un `MutationObserver` Instalado Antes
+`¤arbitro` `¤frontend`
+
+* **Descripción:** en FE-28 el recorrido de `frontend/tests/textos/sin-jerga.spec.ts` no veía «Cargando solicitudes desde FastAPI», que desaparece antes de la lectura. Se instaló un `MutationObserver` con `addInitScript` (línea 47) que acumula todo texto que haya existido. Sin hits previos de `MutationObserver` en este archivo.
+* **Por qué es útil aquí:** un árbitro de jerga que solo lee el estado final deja pasar justo los textos de carga y de error.
+* **Verificabilidad:** la prueba de mutación (reintroducir una cadena con jerga que solo vive unos milisegundos) pasa en verde sin el observador y en rojo con él; no hay fórmula más allá de ese antes y después.
+* **Soporte bibliográfico:**
+  - MDN, *MutationObserver* (Web APIs): entrega los cambios del DOM de forma asíncrona sin depender del sondeo. No se releyó en esta sesión.
+* **Estado:** aplicado en #536. Límite honesto: patrón conocido en pruebas E2E; el valor aquí es el caso de un árbitro de contenido. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXX)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Exención por nombre de rama atada al destino (CI-23), y el INSERT en columna identity sin permiso sobre la secuencia (SEC-18). | Ya registrados: Aportes 133 y 130. Los dos informes confirman los aportes existentes. |
+| Un candado de filas no protege una ausencia (`FOR SHARE` con cero objeciones): `pg_advisory_xact_lock` en el sellado de DIAG-07. | En espera: el diseño está confirmado, pero la prueba de concurrencia de dos sesiones aún no existe. Se registra en el PR de DIAG-07 cuando exista. |
+| El límite por IP depende del número de proxies delante (`X-Forwarded-For`, SEC-21). | En espera: la rama de SEC-21 espera #627 y no está fusionada. |
+| Un presupuesto de conexiones solo es verdadero si el motor lee las cifras que el manifiesto declara (`pool_size` de GCP-05). | En espera: no implementado; es la opción (a) del Arquitecto. |
+| `docker image inspect` infla el tamaño con el almacén `containerd` de Docker Desktop (106,8 MB frente a unos 139 MB). | Observación de una sola máquina, causa interna no confirmada; queda abierta. |
+| `psycopg` asíncrono a `localhost` se cuelga con PostgreSQL en Docker y Windows, y a `127.0.0.1` funciona. | Visto por tres sesiones (biblioteca, diagnóstico, BIB-118) y por una prueba que tardó 600 s; sin causa confirmada (sospecha: `::1` frente al reenvío IPv4). Gotcha abierto, sin cita: se registra como aporte si alguien aísla la causa. |
+| El RUC de 13 dígitos pasa entero por `sanitizar_texto_pii` porque la cédula lleva `lookarounds` y el saneador no tiene patrón de RUC (OPS-07). | Defecto de producto, no aporte: comprobado hoy, `app_core/dlp_sanitizer.py` solo enmascara correos, cédulas válidas y teléfonos. Va a la ficha dueña del saneador. |
+| Re-encadenar una migración ya aplicada deja una base de pruebas «en la cabeza» sin sus nuevos ancestros (`alembic current` dice cabeza y faltan tablas). | Visto en dos sesiones (ORG-18 y DIAG-07), solo confirmado por el efecto; falta probarlo con el código de Alembic. Se mantiene la regla práctica: recrear la base tras re-encadenar. |
+| Con `TEST_DATABASE_URL` apuntando a un puerto cerrado, la misma suite tarda 1610 s en vez de 98 s y los fallos parecen una regresión. | Gotcha operativo sin código nuevo; la comprobación previa barata (`connect_ex`) corresponde a ENTORNO_LOCAL.md. |
+| Un botón nuevo con un nombre accesible repetido («Reintentar») rompe, por modo estricto, specs que no se tocaron. | Documentado por Playwright (*Locators → Strictness*); real pero no inédito. |
+| `addInitScript` de `abrirAppLimpia` limpia el almacenamiento en cada navegación, también en `page.reload()`. | Comportamiento documentado de `addInitScript`; esquivado en la prueba. |
+| Cambiar la posición del contenido según el ancho remonta el componente y pierde su estado local. | Documentado por React (*Preserving and Resetting State*); abierto como decisión de producto en FE-27. |
+| Un `true` de otra fuente no debe entrar en `partialize` de un campo persistido (`cambiosSinGuardar`). | Específico de un campo del almacén; el caso está probado en `cambio-organizacion.spec.ts`, sin patrón general. |
+| Copias de seguridad con nombre fijo en `%TEMP%` colisionan entre sesiones simultáneas. | Error de proceso ya corregido en el flujo propio (rutas únicas); sin cita aplicable. |
+| `Select-Object -First N` en PowerShell 5.1 deja `$LASTEXITCODE` en -1 aunque el script termine con 0. | Observado una vez, causa interna no inspeccionada; práctica: leer el código sin truncar la tubería. |
+| `ErrorNegocio` con un código aún no registrado cae a 400 hasta que se importa la sala (SEC-21, DEMO-08). | Es la consecuencia de la importación perezosa del catálogo; se fija con `status_code` explícito y no hay patrón general. |
+| Una prueba que compara con `main` es un control del PR, no un invariante permanente (ADPA-11). | Relacionado con el Aporte 131; la propiedad que protegía (marcas balanceadas) es la que se conservó. |
+| Una matriz declarativa de pruebas por sala queda desfasada (GCP-02). | Solapa con los Aportes 116 y 128; solo aporta el argumento del desfase. |
+
+---
+
+### Aporte 157: Un `logging.Filter` que Redacta `record.msg` Solo Tapa la Línea que lo Motivó: los Argumentos, los Loggers Hijos y las Trazas de Excepción Pasan
+`¤seguridad` `¤copiloto-ia`
+
+* **Descripción:** un filtro de redacción puesto en un logger que reemplaza el secreto dentro de `record.msg` cubre solo un caso: la f-string emitida por ese mismo logger. El secreto sale en claro si llega como argumento de formato (`logger.info("... %s", clave)`, porque el filtro mira `msg` y no `args`), si lo emite un logger hijo (los filtros de un logger no se aplican a los registros que propagan sus descendientes) o si viaja dentro de una excepción registrada con `logger.exception` (la traza se formatea después, en el handler). El patrón se reconoce cuando hay un filtro «anti-fuga» junto a una línea que registra el secreto a propósito: la protección es la ausencia de la línea, no el filtro.
+* **Por qué es útil aquí:** el Aporte 39 afirma que `APILoggerFilter` en `features/ai_copilot/services/inference_engine.py` impide las fugas de la clave «imposibilitando fugas de credenciales». La medición lo refuta en tres de cuatro vías. Corrige el diseño IA-10 (`governance/partes/arquitecto/2026-11-12_DISENO_IA10_TRAZABILIDAD.md`), que decía que el filtro «no protege» la línea 38: sí la tapa, pero no tapa lo demás. La corrección está en la ficha SEC-22 (PR #656) y en el parte `2026-11-12_CORRECCION_SEC22_FILTRO_LOG.md`. Reaparece en cualquier sala que intente tapar un secreto en el registro en vez de no registrarlo.
+* **Verificabilidad:** con `API_KEY_PRUEBA=clave-falsa-123`, un handler en la raíz y el filtro copiado en el logger `x`, se ejecutó `python -I` (2026-11-12) y se midió $\text{fuga}(v) \equiv \texttt{"clave-falsa-123"} \in \text{salida}$:
+  $$\text{fuga}(\text{f-string en } x)=\text{False},\quad \text{fuga}(\text{args en } x)=\text{True},\quad \text{fuga}(\text{hijo } x.\text{hijo})=\text{True},\quad \text{fuga}(\texttt{exception} \text{ en } x)=\text{True}.$$
+  Árbitro para SEC-22: la prueba con `caplog` tiene que cubrir las cuatro vías, no solo la f-string; si no, un filtro reintroducido la pasaría.
+* **Soporte bibliográfico:**
+  - Python Software Foundation. *logging — Logging facility for Python*, documentación oficial, secciones «Filter Objects» y «LogRecord attributes». — `msg` y `args` son atributos distintos y el mensaje final se arma con `getMessage()`; los filtros de un logger solo se consultan para los registros que crea ese logger, y los propagados pasan solo por los handlers. Respalda las vías 2 y 3; la 4 es la medición.
+  - OWASP Foundation. *Logging Cheat Sheet*, sección «Data to exclude». — los tokens de acceso, las claves de cifrado y las contraseñas no se registran nunca. Respalda la regla de operación: no registrar en vez de redactar.
+* **Estado:** medido; queda aplicado cuando SEC-22 borre la línea 38 y el filtro. No se editó el Aporte 39, porque los aportes se agregan y no se sobrescriben: este lo refuta. No introduce token nuevo.
+
+### Aporte 158: Una Compuerta de Inferencia que Devuelve Solo el Resultado Validado Hace Imposible la Trazabilidad del Modelo Aguas Abajo
+`¤gemini-vertex` `¤arbitro`
+
+* **Descripción:** la compuerta que hace la llamada al proveedor es el único punto que ve la respuesta cruda. Si devuelve solo el objeto validado (`esquema.model_validate_json(texto)`), descarta la versión exacta del modelo que respondió (`respuesta.model_version` en el SDK de Vertex), y ningún llamador puede reconstruirla: a lo sumo conoce el alias que pidió (`gemini-2.5-flash`), que el proveedor puede mover a otra versión sin aviso. La trazabilidad no se agrega en las salas consumidoras: se diseña en el tipo de retorno de la compuerta, que tiene que devolver `(resultado, traza)`, y tiene que fallar cerrada cuando la traza falta.
+* **Por qué es útil aquí:** `features/inferencia/inferencia_service.py:99` (`generar_estructurado -> BaseModel`, IA-03) en `origin/main` 89880993 haría que el invariante 64 `INV_AI_RESULT_TRACEABILITY` (PR #645) fuera incumplible para la Hoja de Ruta, el copiloto y NORM-03 una vez migradas, y obligaría a cambiar la compuerta después de que todas la usen. El diseño IA-10 lo resuelve antes, con `generar_trazado` y la tabla única `trazas_ia`.
+* **Verificabilidad:** sobre el código: la anotación de retorno de `generar_estructurado` es `BaseModel` y el único uso de `respuesta` es `.text`, así que $\texttt{model\_version} \notin \text{salida}(\text{generar\_estructurado})$, comprobado con `git show origin/main:features/inferencia/inferencia_service.py`. Árbitro previsto en IA-10: mutación «guardar el alias en vez de `model_version`» → rojo. Que el SDK expone `model_version` en la respuesta de Vertex está **sin comprobar** contra una llamada real; lo comprueba la prueba de humo de IA-03.
+* **Soporte bibliográfico:**
+  - W3C (2013). *PROV-DM: The PROV Data Model*, W3C Recommendation, editores Moreau, L. y Missier, P. — modela la procedencia como una entidad generada por una actividad (`wasGeneratedBy`) asociada a un agente (`wasAssociatedWith`); registrar el agente después de la actividad exige haberlo capturado durante ella. Respalda que la procedencia se captura en el punto de generación.
+* **Estado:** diseñado en `governance/partes/arquitecto/2026-11-12_DISENO_IA10_TRAZABILIDAD.md` (IA-10), aceptado por el CTO el 2026-11-12; sin código todavía. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXXI)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| El README de `governance/tareas` se contaba como ficha (341 frente a 340). | Error de conteo puntual, ya corregido en el parte; ningún árbitro lo cuenta mal. |
+| Una tabla única `trazas_ia` en vez de columnas por tabla evita una migración por sala. | Decisión de diseño sin medición todavía; se registra cuando IA-10 esté en código. |
+| La huella sha256 de cada versión de prompt obliga a subir la versión al cambiar el texto. | Diseñado, no implementado; sin árbitro en verde. |
+| El plan simulado del copiloto inventa `impacto_riesgo` cuando falla la llamada. | Caso del principio de falla cerrada, ya cubierto por IA-03 e IA-05. |
+| Antes de diseñar, buscar fichas vivas por propiedad del archivo evitó duplicar IA-05 e IA-06. | Práctica ya escrita en el README de tareas y en la lista de validación ortogonal. |
+
+---
+
+### Aporte 159: Una Regla de Árbitro que Exige Llamar a una Función que Aún No Existe, Unida a un Trinquete de Pendientes, Es Insatisfacible para Todo Archivo Nuevo
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** un árbitro de migración gradual suele combinar dos piezas: una regla que exige usar la primitiva nueva («toda prueba que use la base llama a la guardia común») y un trinquete que congela la deuda existente en una lista de pendientes que solo decrece. Si la regla entra antes que la primitiva, cada archivo nuevo que cae bajo la regla es un incumplimiento que no se puede corregir (no hay a quién llamar) ni registrar (el trinquete prohíbe sumar pendientes, y la excepción de «deuda heredada» no cubre un archivo que el propio PR crea). El sistema de reglas no tiene solución para ese archivo: todo PR que lo traiga queda en rojo, sea de la ficha que sea, y las únicas salidas aparentes son disfrazar deuda nueva de heredada o reescribir el archivo para que el detector no lo vea. El orden correcto es el del cambio en paralelo: primero se publica la primitiva, después se activa la regla que la exige. Es distinto del Aporte 148, en el que la mención nueva era legítima pero se podía reformular; aquí no hay ninguna forma correcta de escribir el archivo.
+* **Por qué es útil aquí:** RET-00 (PR #779) activó R5, que exige `exigir_base_de_pruebas()` de `tests/conftest.py`, mientras la función la crea RET-01, todavía pendiente. R7 («los pendientes solo decrecen») y R7b (#799: un PR solo registra deuda de archivos que no toca) cerraron las salidas. El primer afectado fue CI-28 (#788) con `tests/test_alembic_cabeza_por_sala.py`, y lo habría sido cualquier ficha con una prueba nueva de base. Se resolvió con RET-01a, una primera pieza de RET-01 que solo crea la función con el comportamiento actual de `conftest`; la dependencia #799 → RET-01a → #788 es real, no una cola. El patrón reaparecerá en las demás fichas RET y en cualquier árbitro futuro que exija una primitiva nueva.
+* **Verificabilidad:** sea $g$ = `exigir_base_de_pruebas` y $f$ un archivo de `tests/` que el PR crea y que usa la base. Por R5, $\text{cumple}(f) \iff \text{llama}(f, g) \land \text{existe}(g)$; por R7 y R7b, $\text{registrable}(f) \iff \neg\text{toca}(\text{PR}, f)$, y crear $f$ implica tocarlo. Medido el 2026-11-14 con `git grep -c "def exigir_base_de_pruebas" origin/main`, que da salida 1 (sin coincidencias): $\text{existe}(g) = \text{False}$, luego $\text{cumple}(f) = \text{False} \land \text{registrable}(f) = \text{False}$, y el PR queda en rojo. Lo confirma el árbitro de lista de pendientes monotónica decreciente que rechazaba archivos nuevos con `sin_guardia` antes de que existiera la primitiva común en `origin/main`. Principio resultante: toda función exigida por una regla arquitectónica debe existir en `main` antes de activar la compuerta que obliga a llamarla.
+* **Soporte bibliográfico:**
+  - Sato, D. (2014). *ParallelChange*. martinfowler.com/bliki/ParallelChange.html. — Un cambio de interfaz incompatible se divide en ampliar (publicar lo nuevo junto a lo viejo), migrar a los consumidores y contraer (retirar lo viejo); los consumidores no pueden migrar antes de que exista lo nuevo. Respalda que la primitiva se publica antes que la regla que obliga a usarla.
+  - Kahn, A. B. (1962), ya registrado para el Aporte 134 con el rastro `¤arbitro`: la ficha que crea la primitiva precede a la que la exige. Se referencia aquí sin fila nueva.
+* **Estado:** decidido por el CTO el 2026-11-14 (RET-01a, comunicado al Tech Lead); la ficha y el árbitro propuesto están pendientes. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXXII)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| `[IO.File]::ReadAllText` con una ruta relativa en PowerShell resuelve contra el directorio del proceso, no contra `Get-Location`. | Comportamiento documentado de .NET y PowerShell; no es inédito. Práctica: `Join-Path (Get-Location)`. |
+| Un script de espera que fusiona solo se salta la re-simulación si `main` cambia mientras espera. | Error de proceso propio, ya corregido: el script vuelve a simular sobre el `main` del momento antes de fusionar. |
+| Las fichas ortogonales se serializaban por la regla de una sola cabeza de Alembic. | Ya registrado como regla de reparto; su solución estructural es CI-28, que aún no está fusionada. |
+| `backend.Dockerfile` ejecutaba `alembic upgrade head` al arrancar, y habría fallado con la primera rama por sala. | Caso de inventario de consumidores ya cubierto por el Aporte 114; corregido en #793. |

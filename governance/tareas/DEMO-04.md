@@ -22,7 +22,7 @@ rastros = ["¤demo", "¤interfaz"]
 -   - DPO: «Supervisa con independencia: reúne el soporte del diagnóstico, lo sella y valida la evidencia.»
 -   - Coordinador: «Reparte las tareas a las áreas y hace la primera validación de la evidencia.»
 -   - Implementador: «Acompaña el RAT, la Biblioteca y el plan de acción.»
--   - Responsable de área · Unidad: «Responde los dominios de su unidad, ejecuta sus tareas y carga la evidencia.»
+-   - Responsable de área · Unidad: «Responde los dominios de su unidad, ejecuta sus tareas y, con el diagnóstico real sellado, carga la evidencia.» (texto corregido por DEMO-04b)
 -   - Auditor: «Audita por dominio, levanta actas por área y verifica las acciones correctivas.»
 - Recorrido sugerido «Responsable de área → Coordinador → DPO → Auditor»: al pulsarlo, cambia a Responsable de área.
 - «Terminar demo» con el aviso «La demo se cerró y sus datos se eliminan esta noche».
@@ -43,7 +43,7 @@ rastros = ["¤demo", "¤interfaz"]
 - Nunca uses la base ni el proyecto de producción; solo datos ficticios con correos `.invalid`.
 
 ## Fuentes
-- `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
-- `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
+- `governance/artefactos/PRD.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
+- `governance/artefactos/INVARIANTS.md`, invariantes 60 a 63.
 - Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
 - Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.

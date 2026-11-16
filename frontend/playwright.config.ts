@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { defineConfig, devices } from "@playwright/test";
 
 /**
@@ -22,55 +24,49 @@ const URL_DESARROLLO = `http://localhost:${PUERTO_DESARROLLO}`;
 const COPIA_PRODUCCION = "node_modules/.cache/e2e-produccion";
 
 /**
- * Dependen de `window.__LOPDP_AUTH_PRUEBAS__` o de `/harness-roadmap/*`, que solo existen fuera de
- * producción (`src/lib/auth/modo.ts`). Una prueba nueva que use `fijarAjustes` se añade aquí.
+ * CI-30: Autodescubrimiento de especificaciones exclusivas de desarrollo.
+ * Escanea dinámicamente frontend/tests/ y detecta:
+ * 1. Convención de sufijo: `*-activa.spec.ts`
+ * 2. Omitidas en producción: `test.skip(x.project.name === "produccion")`
+ * 3. Dependientes de auth simulada o arnés: `fijarAjustes`, `__LOPDP_AUTH_PRUEBAS__`, `harness-roadmap`.
  *
- * CI-16: toda especificación que se salte en «produccion» debe estar aquí, o no corre en ningún
- * proyecto del CI. Lo vigila `tests/test_ci16_pruebas_sin_proyecto.py`, que nombra la que falte.
+ * Ninguna ficha futura necesita registrar manualmente su spec en este archivo.
  */
-const SOLO_DESARROLLO = [
-  "**/arco/arco.spec.ts",
-  "**/auth/datos-por-usuario.spec.ts",
-  "**/auth/identidad.spec.ts",
-  "**/auth/organizaciones.spec.ts",
-  "**/biblioteca/acceso.spec.ts",
-  "**/biblioteca/aplicabilidad.spec.ts",
-  "**/biblioteca/catalogo.spec.ts",
-  "**/biblioteca/concurrencia.spec.ts",
-  "**/biblioteca/conservacion.spec.ts",
-  "**/biblioteca/descarga.spec.ts",
-  "**/biblioteca/documentos.spec.ts",
-  "**/biblioteca/editorial-menu.spec.ts",
-  "**/biblioteca/editorial-recarga.spec.ts",
-  "**/biblioteca/enlaces.spec.ts",
-  "**/biblioteca/externos.spec.ts",
-  "**/biblioteca/ficha.spec.ts",
-  "**/biblioteca/fichas-iniciales.spec.ts",
-  "**/biblioteca/formularios.spec.ts",
-  "**/biblioteca/generacion.spec.ts",
-  "**/biblioteca/preview.spec.ts",
-  "**/biblioteca/registro.spec.ts",
-  "**/biblioteca/tablas.spec.ts",
-  "**/biblioteca/verificacion.spec.ts",
-  "**/biblioteca/vinculos.spec.ts",
-  "**/designaciones/designaciones.spec.ts",
-  "**/estructura/estructura.spec.ts",
-  "**/organizacion/alta.spec.ts",
-  "**/organizacion/datos-documentales.spec.ts",
-  // Convención: un spec que necesita el interruptor de evidencia física
-  // (`window.__LOPDP_EVIDENCIA_PRUEBAS__`, solo fuera de producción) se nombra `*-activa.spec.ts`
-  // y corre solo en desarrollo.
-  "**/*-activa.spec.ts",
-  "**/tamano/ficha.spec.ts",
-  "**/roadmap/admin-colores.spec.ts",
-  "**/roadmap/admin.spec.ts",
-  "**/roadmap/colores-hoja-de-ruta.spec.ts",
-  "**/roadmap/evidencia.spec.ts",
-  "**/roadmap/olas.spec.ts",
-  "**/roadmap/planeacion.spec.ts",
-  "**/roadmap/tarjeta-colores.spec.ts",
-  "**/roadmap/vistas.spec.ts",
-];
+export function descubrirSoloDesarrollo(dirTests: string): string[] {
+  const encontrados: string[] = ["**/*-activa.spec.ts"];
+  const regexSkip = /test\.skip\(\s*\w+\.project\.name\s*===\s*["']produccion["']/;
+  const clavesSimulacion = ["fijarAjustes", "__LOPDP_AUTH_PRUEBAS__", "harness-roadmap"];
+
+  function escanear(dir: string) {
+    if (!fs.existsSync(dir)) return;
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      const rutaAbs = path.join(dir, ent.name);
+      if (ent.isDirectory()) {
+        if (ent.name !== "integracion" && ent.name !== "humo") {
+          escanear(rutaAbs);
+        }
+      } else if (ent.name.endsWith(".spec.ts")) {
+        const rel = path.relative(dirTests, rutaAbs).replace(/\\/g, "/");
+        if (ent.name.endsWith("-activa.spec.ts")) {
+          continue; // ya cubierto por **/*-activa.spec.ts
+        }
+        try {
+          const contenido = fs.readFileSync(rutaAbs, "utf-8");
+          if (regexSkip.test(contenido) || clavesSimulacion.some((k) => contenido.includes(k))) {
+            encontrados.push(`**/${rel}`);
+          }
+        } catch {
+          // Si no se puede leer, ignorar
+        }
+      }
+    }
+  }
+
+  escanear(dirTests);
+  return encontrados;
+}
+
+export const SOLO_DESARROLLO = descubrirSoloDesarrollo(path.join(__dirname, "tests"));
 
 const copiarCompilacion = [
   `const fs = require('fs');`,

@@ -21,7 +21,7 @@ rastros = ["¤regulation-code", "¤frontend-ide"]
 - Componente `AyudaContextual` reutilizable: dado un `control_ref` o un artículo, muestra el texto del corpus con su cita; si no hay fuente, dice «sin fuente en el corpus» (Doctrina 7).
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra PostgreSQL 16 local o el servicio `postgres:16` del CI mediante `exigir_base_de_pruebas()`.
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 

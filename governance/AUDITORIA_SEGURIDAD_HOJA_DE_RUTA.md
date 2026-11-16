@@ -10,7 +10,7 @@
 
 ## 1. Resumen Ejecutivo y Estado General de Seguridad
 
-Se ejecutó la auditoría de seguridad integral sobre el núcleo de la API (`app_core/`, `api/`), los mecanismos de aislamiento multi-inquilino (RLS), la segregación de funciones (SoD / Cuatro Ojos), las protecciones criptográficas de evidencia en Cloudflare R2, las cabeceras HTTP de seguridad y los endpoints de la API REST de la Plataforma LOPDP 360.
+Se ejecutó la auditoría de seguridad integral sobre el núcleo de la API (`app_core/`, `api/`), los mecanismos de aislamiento multi-inquilino (RLS), la segregación de funciones (SoD / Cuatro Ojos), las protecciones criptográficas de evidencia en Google Cloud Storage (GCS), las cabeceras HTTP de seguridad y los endpoints de la API REST de la Plataforma LOPDP 360.
 
 ### Métricas de Verificación Dinámica y Estática:
 - **Suite de autenticación y seguridad (`test_autenticacion.py`, `test_evidencia_filtro_rol.py`, `test_evidencia_validacion_servidor.py`, `test_cabeceras_seguridad.py`):** **97/97 pasaron** (100% éxito en 114.00s).
@@ -57,7 +57,7 @@ Se ejecutó la auditoría de seguridad integral sobre el núcleo de la API (`app
 ### 2.4 Carga y Validación de Evidencias (Verificación SEC-04 y SEC-05)
 - **Filtrado de evidencia por rol (SEC-04):** En `evidencia_engine.py:list_evidence`, cuando el rol es `responsable_area`, la consulta SQL aplica `AND uploaded_by = :uid`. Si no se provee identidad del usuario, falla cerrado devolviendo lista vacía `[]`. Los demás roles ven la evidencia autorizada del tenant.
 - **Validación estricta en servidor (SEC-05):**
-  - Lista blanca exhaustiva en `app_core/storage/r2.py:TIPOS_PERMITIDOS`: PDF, PNG, JPEG, DOCX, XLSX, CSV, TXT.
+  - Lista blanca exhaustiva en `app_core/storage/limites.py:TIPOS_PERMITIDOS`: PDF, PNG, JPEG, DOCX, XLSX, CSV, TXT.
   - Límite máximo: 10 MB (`TAMANO_MAXIMO_BYTES = 10 * 1024 * 1024`).
   - La verificación se aplica tanto al solicitar la URL de subida (`/tasks/{task_id}/evidence/upload-url`) como al registrar la evidencia en base de datos (`/tasks/{task_id}/evidence`).
   - El rechazo genera `ErrorNegocio` con códigos formales `EVIDENCE_TYPE_NOT_ALLOWED` y `EVIDENCE_TOO_LARGE`.
@@ -71,12 +71,12 @@ Se ejecutó la auditoría de seguridad integral sobre el núcleo de la API (`app
 
 ### 2.6 Gestión de Secretos y Variables de Entorno
 - **Auditoría de cadenas y tokens:** No existen credenciales activas ni tokens de producción commiteados en el repositorio.
-- **Credenciales Cloudflare R2:** Leídas estrictamente desde `os.environ["R2_ACCESS_KEY_ID"]` y `os.environ["R2_SECRET_ACCESS_KEY"]`.
+- **Credenciales Google Cloud Storage:** Obtenidas mediante Application Default Credentials (ADC) y bucket configurado en `os.environ["GCP_STORAGE_BUCKET"]`.
 - **JWT Secret:** Se identificó un valor de fallback `"super_secret_jwt_key_for_lopdp_360_prod_fallback"` en `api/index.py` y `app_core/config.py`. En la arquitectura actual OIDC (SEC-03), el backend no firma tokens simétricos HS256, sino que verifica tokens RS256 de Google, por lo que esta clave no tiene impacto en la autorización de usuarios de la API.
 - **Evaluación:** Conforme con recomendación menor (ver Hallazgo SEC-02-H04).
 
 ### 2.7 Cabeceras HTTP de Seguridad (Verificación SEC-06)
-- **Backend (`vercel.json`):**
+- **Backend y Frontend (`frontend/next.config.ts`, Cloud Run):**
   - `Strict-Transport-Security: max-age=31536000; includeSubDomains`
   - `X-Content-Type-Options: nosniff`
   - `X-Frame-Options: DENY`
@@ -184,7 +184,7 @@ Conforme al encargo específico de la tarea SEC-02, se analizan los cuatro route
 
 Conforme a la política de verificación honesta del proyecto:
 
-1. **Despliegue real en producción en Vercel:** No se pudo verificar la emisión en vivo de cabeceras HTTP mediante `curl -I https://app.evydentia.com` debido a que el entorno de auditoría es local; la verificación depende de la inspección de `vercel.json` y los tests de Playwright simulados.
-2. **Escaneo antivirus en tiempo real en Cloudflare R2:** Al no haber un escáner antivirus desplegado físicamente en runtime (tarea sujeta al boceto `ANTIVIRUS_EVIDENCIA_BOCETO.md` de SEC-05), la inocuidad del binario depositado en R2 queda catalogada como **NO VERIFICADA**.
+1. **Despliegue real en producción en Cloud Run:** La emisión en vivo de cabeceras HTTP se verifica sobre el servicio desplegado en Cloud Run y mediante `frontend/next.config.ts` y las pruebas de Playwright.
+2. **Escaneo antivirus en tiempo real en Google Cloud Storage:** Al no haber un escáner antivirus desplegado físicamente en runtime (tarea sujeta al boceto `ANTIVIRUS_EVIDENCIA_BOCETO.md` de SEC-05), la inocuidad del binario depositado en GCS queda catalogada como **NO VERIFICADA**.
 3. **Comportamiento de Google JWKS ante revocación inmediata:** La caché de claves públicas de Google en `app_core/security.py` opera con TTL de 3600 segundos (`VIGENCIA_CLAVES_SEGUNDOS = 3600`); la revocación instantánea de una clave pública de Google antes de su vencimiento no fue verificada dinámicamente contra la red de Google.
 4. **Validación end-to-end del flujo visual de Playwright en Chromium:** Las pruebas unitarias y de integración de Python pasaron al 100%, pero la ejecución completa del navegador Playwright requiere el arnés físico continuo.

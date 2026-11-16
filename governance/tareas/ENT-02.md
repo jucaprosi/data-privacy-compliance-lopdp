@@ -21,7 +21,7 @@ rastros = ["¤arbitro", "¤seguridad"]
 
 ## Límites
 - No cambia `uvicorn`, `psycopg` ni la estrategia de arranque (`reload`).
-- No toca Linux, Vercel ni la CI, que no están afectados.
+- No toca Linux ni la CI en Cloud Run, que no están afectados.
 - `tests/conftest.py` conserva su propia política para las pruebas.
 
 ## Hecho cuando

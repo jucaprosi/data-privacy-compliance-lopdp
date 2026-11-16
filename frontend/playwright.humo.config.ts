@@ -2,7 +2,7 @@
  * Pruebas de humo de extremo a extremo: compuerta de fallo rápido antes de Pytest y Playwright.
  * Metodología: governance/operaciones/PRUEBAS_DE_HUMO.md.
  *
- * Next.js de producción y FastAPI reales contra una rama Neon de prueba, en modo `oidc`, sin `page.route`.
+ * Next.js de producción y FastAPI reales contra PostgreSQL 16 local (127.0.0.1) o el servicio PostgreSQL 16 del CI, en modo `oidc`, sin `page.route`.
  *
  * Comandos, desde frontend/ y con TEST_DATABASE_URL en el entorno:
  *   $env:BACKEND_URL = "http://127.0.0.1:5200"; $env:NEXT_PUBLIC_GOOGLE_CLIENT_ID = "humo-ci"; npm run build
@@ -25,9 +25,29 @@ function precondicion(motivo: string): never {
   throw new Error(`[PRECONDICION FALLIDA] ${motivo}`);
 }
 
+const HOSTS_DE_PRUEBAS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
+function exigirBaseDePruebas(urlCruda: string): void {
+  let parsed: URL;
+  try {
+    parsed = new URL(urlCruda);
+  } catch {
+    precondicion("TEST_DATABASE_URL no es una URL válida.");
+  }
+  if (parsed.protocol !== "postgres:" && !parsed.protocol.startsWith("postgresql")) {
+    precondicion("TEST_DATABASE_URL no usa esquema PostgreSQL.");
+  }
+  if (!HOSTS_DE_PRUEBAS.has(parsed.hostname.toLowerCase())) {
+    precondicion("TEST_DATABASE_URL no apunta a un host PostgreSQL local permitido (localhost, 127.0.0.1 o ::1).");
+  }
+  const hostParam = parsed.searchParams.get("host");
+  if (hostParam !== null && !HOSTS_DE_PRUEBAS.has(hostParam.toLowerCase())) {
+    precondicion("TEST_DATABASE_URL especifica un parámetro host fuera de la lista permitida.");
+  }
+}
+
 const dbUrl = (process.env.TEST_DATABASE_URL ?? "").trim();
-if (!dbUrl) precondicion("TEST_DATABASE_URL no está configurada: el humo exige una rama Neon de prueba.");
-if (dbUrl.includes("ep-late-hall")) precondicion("TEST_DATABASE_URL apunta a PRODUCCIÓN.");
+if (!dbUrl) precondicion("TEST_DATABASE_URL no está configurada: el humo exige PostgreSQL 16 local o el servicio PostgreSQL 16 del CI.");
+exigirBaseDePruebas(dbUrl);
 
 const manifiesto = path.join(__dirname, ".next", "routes-manifest.json");
 if (!fs.existsSync(manifiesto) || !fs.readFileSync(manifiesto, "utf-8").includes(ORIGEN_API)) {

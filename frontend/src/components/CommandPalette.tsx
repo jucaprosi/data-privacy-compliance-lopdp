@@ -486,7 +486,7 @@ export default function CommandPalette({
               </Command.Item>
 
               <Command.Item
-                keywords={["incidentes", "playbook", "vulneracion", "sla", "72h", "ciberseguridad", "brechas", "seguridad"]}
+                keywords={["incidentes", "playbook", "vulneracion", "ciberseguridad", "brechas", "seguridad"]}
                 onSelect={() => ejecutarAccionNavegacion("incidentes", "incidentes")}
                 className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
@@ -496,7 +496,7 @@ export default function CommandPalette({
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
-                      Ir a Playbook de Incidentes &amp; SLA 72h
+                      Ir al Playbook de Incidentes
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Cómputo perentorio de notificación de brechas (Ley de Ciberseguridad 2026)
@@ -509,7 +509,7 @@ export default function CommandPalette({
               </Command.Item>
 
               <Command.Item
-                keywords={["arco", "derechos", "acceso", "rectificacion", "cancelacion", "oposicion", "portabilidad", "eliminacion", "titular", "solicitud", "art 21", "art 22", "art 23", "art 24", "art 37", "sla 15 dias"]}
+                keywords={["arco", "derechos", "acceso", "rectificacion", "cancelacion", "oposicion", "portabilidad", "eliminacion", "titular", "solicitud", "art 13", "art 14", "art 15", "art 16", "art 62", "plazo"]}
                 onSelect={() => ejecutarAccionNavegacion("arco", "arco")}
                 className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
@@ -522,7 +522,7 @@ export default function CommandPalette({
                       Ir a Gestión de Derechos ARCO+
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
-                      Tickets de Acceso/Rectificación/Cancelación · SLA 15 días laborables (Art. 37 LOPDP)
+                      Solicitudes de los titulares: acceso, rectificación, eliminación, oposición y más · con plazo legal estimado
                     </p>
                   </div>
                 </div>

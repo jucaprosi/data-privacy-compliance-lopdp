@@ -13,7 +13,7 @@ Configuración de compilación `NextCloudRunConfig` (`output: 'standalone'`, `po
 
 - **R1 · Modo standalone obligatorio (`INV_LOPDP_STANDALONE_FRONTEND_CONTAINER`).** La compilación para producción en Cloud Run debe usar exclusivamente `output: 'standalone'` para reducir la imagen a $< 120	ext{ MB}$.
 - **R2 · Ejecución non-root.** El contenedor en Cloud Run se ejecuta bajo el usuario no privilegiado `nextjs` (UID 1001).
-- **R3 · Cero colisiones con Vercel.** Los archivos de configuración de Cloud Run coexisten de forma ortogonal sin modificar `frontend/vercel.json` hasta el cutover definitivo.
+- **R3 · Despliegue aislado en Cloud Run.** Los archivos de configuración de Cloud Run (`frontend/next.config.cloudrun.ts`, `frontend/Dockerfile.cloudrun` y manifiestos) gobiernan de forma ortogonal la compilación y ejecución del frontend.
 
 ## 4. Interfaz
 

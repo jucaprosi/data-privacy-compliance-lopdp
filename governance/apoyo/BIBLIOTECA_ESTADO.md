@@ -304,7 +304,7 @@ Los originales de `data/biblioteca/kit_v1/` no se editan (verifican con `MANIFIE
 
 ## 11. Guía de pruebas: carga y publicación de las 12 plantillas del PMV
 
-Solo vale para una rama de pruebas personal de Neon (`test-<persona>` o una hija suya). Nunca para producción ni para `test-main`; el script lo impide sin abrir conexión. Las 12 plantillas tienen la revisión legal pendiente: lo que se publique en pruebas no se usa con clientes.
+Solo vale para una base local de pruebas (PostgreSQL 16 del arnés). Nunca para producción ni para una base compartida; el script lo impide sin abrir conexión. Las 12 plantillas tienen la revisión legal pendiente: lo que se publique en pruebas no se usa con clientes.
 
 **Decisión de la propietaria (2026-11-08):** en la rama de pruebas no aplica el criterio 5 de BIB-109 («aprobación individual de la propietaria» antes de publicar). Siguen aplicando la revisión técnica, la jurídica y la separación de funciones. En producción el criterio 5 se mantiene.
 

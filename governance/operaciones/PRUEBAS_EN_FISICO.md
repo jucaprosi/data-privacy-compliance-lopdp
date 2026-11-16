@@ -7,7 +7,7 @@ Esta guía detalla el procedimiento paso a paso para desplegar un entorno de dem
 ## 1. Alcance y Límites
 
 - **Qué sí cubre esta guía:**
-  - Creación reproducible e idempotente de la organización de prueba en su rama Neon personal `test-<persona>` (hija de `test-main`; nunca `production` ni `test-main`).
+  - Creación reproducible e idempotente de la organización de prueba en su base local de pruebas (PostgreSQL 16 del arnés; nunca producción ni una base compartida).
   - Levantamiento del backend FastAPI y del frontend Next.js en modo desarrollo con cabeceras explícitas (`headers`).
   - Navegación rol por rol (`admin_organizacion`, `coordinador`, `implementador`, `responsable_area`, `dpo`), verificando lo que cada uno puede y no puede ver/hacer.
 - **Qué NO cubre esta guía:**
@@ -23,25 +23,21 @@ Abra una consola de **PowerShell** y ejecute los siguientes comandos (cada bloqu
 ```powershell
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
 
-# 1. Cargar la URL directa de su rama Neon personal desde el archivo local `rama-<persona>.txt` (fuera del repositorio,
-#    lo crea `crear_rama_neon.ps1`; cambie `juan-carlos` por su nombre).
+# 1. Cargar la URL de su base local de pruebas desde el archivo local `rama-<persona>.txt` (fuera del repositorio,
+#    la crea usted; cambie `juan-carlos` por su nombre).
 # Nunca escriba la URL ni la contraseña en este documento ni en la consola.
-$archivo = "C:\Users\Juan Carlos\Desktop\herramientas\rama-juan-carlos.txt"
-$linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match '^MIGRATION_DATABASE_URL=' } | Select-Object -First 1
-$env:TEST_DATABASE_URL = ($linea -replace '^MIGRATION_DATABASE_URL=', '').Trim().Trim('"')
-if ($env:TEST_DATABASE_URL -match 'ep-late-hall-b50bpbk5') { throw "Esa URL es de producción: abortado." }
-$env:DATABASE_URL = $env:TEST_DATABASE_URL
+. .\scripts\entorno_local.ps1
 $env:AUTH_MODE = "headers"
 
 # 2. Asegurar que las migraciones estén al día (cabeza única)
-.\.venv\Scripts\alembic.exe upgrade head
+.\.venv\Scripts\alembic.exe upgrade heads
 
 # 3. Ejecutar el script generador de la organización demo
 .\.venv\Scripts\python.exe scripts\crear_organizacion_dev.py
 ```
 
 > **Nota:** El script es **estrictamente idempotente**. Puede ejecutarlo tantas veces como desee y nunca duplicará registros ni arrojará errores de restricción única.
-> Cuenta con **fallo cerrado**: si detecta el host de producción (`ep-late-hall-b50bpbk5`) o si `AUTH_MODE != 'headers'`, abortará de forma inmediata sin tocar la base.
+> Cuenta con **fallo cerrado**: exige una URL de base local permitida (`exigir_base_local()` de `app_core.entorno.guardias`) y `AUTH_MODE == 'headers'`; de lo contrario aborta de forma inmediata sin tocar la base.
 
 ---
 
@@ -68,13 +64,9 @@ Requiere dos terminales de PowerShell abiertas en paralelo:
 ### Terminal 1 — Backend (FastAPI):
 ```powershell
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
-# Cargar la URL de su rama Neon de desarrollo desde el archivo local (fuera del repositorio).
+# Cargar la URL de su base local de desarrollo desde el archivo local (fuera del repositorio).
 # Nunca escriba la URL ni la contraseña en este documento ni en la consola.
-$archivo = "C:\Users\Juan Carlos\Desktop\herramientas\rama-juan-carlos.txt"
-$linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match '^MIGRATION_DATABASE_URL=' } | Select-Object -First 1
-$env:TEST_DATABASE_URL = ($linea -replace '^MIGRATION_DATABASE_URL=', '').Trim().Trim('"')
-if ($env:TEST_DATABASE_URL -match 'ep-late-hall-b50bpbk5') { throw "Esa URL es de producción: abortado." }
-$env:DATABASE_URL = $env:TEST_DATABASE_URL
+. .\scripts\entorno_local.ps1
 $env:AUTH_MODE = "headers"
 
 .\.venv\Scripts\python.exe main.py
@@ -132,9 +124,9 @@ Para cambiar de rol, modifique `NEXT_PUBLIC_USER_ID` y `NEXT_PUBLIC_USER_ROLE` e
 | Aprobar, rechazar y ejecutar esa alta | ❌ | ❌ | ❌ | ✅ | ❌ |
 
 ### Recorrido de prueba recomendado (de punta a punta)
-1. **Implementador** → «Hoja de Ruta» → Generar Hoja de Ruta: generar la hoja de ruta (requiere `DEEPSEEK_API_KEY`).
+1. **Implementador** → «Hoja de Ruta» → Generar Hoja de Ruta: generar la hoja de ruta (requiere `GOOGLE_CLOUD_PROJECT`, `VERTEX_LOCATION` y credenciales ADC).
 2. **Coordinador** → «Hoja de Ruta» → Olas & Tareas: asignar una tarea al responsable de Operaciones.
-3. **Responsable de área** → la tarea → Custodia de Evidencias: subir un PDF (requiere las variables `R2_*` y que el bucket permita subidas desde `http://localhost:3000`).
+3. **Responsable de área** → la tarea → Custodia de Evidencias: subir un PDF (requiere `GCP_STORAGE_BUCKET`, credenciales ADC y CORS habilitado en el bucket para `http://localhost:3000`).
 4. **Responsable de área** intenta validar su propia evidencia: debe rechazarse (quien sube no valida).
 5. **DPO** → la tarea → Custodia de Evidencias: aprobar la evidencia.
 6. **Implementador** → marcar la tarea como completada.
@@ -156,12 +148,8 @@ Las pantallas del operador están fuera del dashboard: `http://localhost:3000/pl
 
 ```powershell
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
-$archivo = "C:\Users\Juan Carlos\Desktop\herramientas\rama-juan-carlos.txt"
-$linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match '^MIGRATION_DATABASE_URL=' } | Select-Object -First 1
-$env:MIGRATION_DATABASE_URL = ($linea -replace '^MIGRATION_DATABASE_URL=', '').Trim().Trim('"')
-if ($env:MIGRATION_DATABASE_URL -match 'ep-late-hall-b50bpbk5') { throw "Esa URL es de producción: abortado." }
+. .\scripts\entorno_local.ps1
 .\.venv\Scripts\python.exe -m features.plataforma.administrar_operadores alta "operador@example.test" "Operador de pruebas"
-Remove-Item Env:MIGRATION_DATABASE_URL
 ```
 
 2. En `frontend/.env.local`, para actuar como operador en modo `headers`:

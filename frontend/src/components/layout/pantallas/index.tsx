@@ -52,6 +52,11 @@ import { PANTALLAS_DIAG_06 } from "./DIAG-06";
 registrar(PANTALLAS_DIAG_06);
 // === fin DIAG-06 ===
 
+// === DIAG-12 ===
+import { PANTALLAS_DIAG_12 } from "./DIAG-12";
+registrar(PANTALLAS_DIAG_12);
+// === fin DIAG-12 ===
+
 // === BIB-101 ===
 import { PANTALLAS_BIB_101 } from "./BIB-101";
 registrar(PANTALLAS_BIB_101);
@@ -69,22 +74,38 @@ registrar(PANTALLAS_FIRMA_02);
 // --- INICIO CAPA-04 ---
 // --- FIN CAPA-04 ---
 // --- INICIO DIAG-07 ---
+import GrillaRevision from "@/components/diagnostico/GrillaRevision";
+registrar({ diagnostico_revision: () => <GrillaRevision /> });
 // --- FIN DIAG-07 ---
 // --- INICIO DPO-03 ---
+import { PANTALLAS_DPO_03 } from "./DPO-03";
+registrar(PANTALLAS_DPO_03);
 // --- FIN DPO-03 ---
 // --- INICIO FIRMA-02 ---
 // --- FIN FIRMA-02 ---
+// --- INICIO API-02 ---
+// --- FIN API-02 ---
 // --- INICIO FOR-01 ---
 // --- FIN FOR-01 ---
 // --- INICIO INC-02 ---
+import { PANTALLAS_INC_02 } from "./INC-02";
+registrar(PANTALLAS_INC_02);
 // --- FIN INC-02 ---
 // --- INICIO MTGE-03 ---
+import { PANTALLAS_MTGE_03 } from "./MTGE-03";
+registrar(PANTALLAS_MTGE_03);
 // --- FIN MTGE-03 ---
 // --- INICIO ORG-18 ---
+import { PANTALLAS_ORG_18 } from "./ORG-18";
+registrar(PANTALLAS_ORG_18);
 // --- FIN ORG-18 ---
 // --- INICIO ORG-20 ---
+import { PANTALLAS_ORG_20 } from "./ORG-20";
+registrar(PANTALLAS_ORG_20);
 // --- FIN ORG-20 ---
 // --- INICIO CON-01 ---
+import { PANTALLAS_CON_01 } from "./CON-01";
+registrar(PANTALLAS_CON_01);
 // --- FIN CON-01 ---
 
 export const PANTALLAS: Readonly<RegistroPantallas> = registro;
@@ -94,3 +115,21 @@ import VistaAdministracionEditorial from "@/components/biblioteca/editorial/Vist
 // `PANTALLAS` es el mismo objeto que `registro`: registrar aquí también lo publica.
 registrar({ biblioteca_editorial: () => <VistaAdministracionEditorial /> });
 // === fin BIB-118 ===
+
+// === ORG-20 ===
+// Sección reservada para ORG-20.
+// === fin ORG-20 ===
+
+// === DLP-01 ===
+import { PANTALLAS_DLP_01 } from "./DLP-01";
+registrar(PANTALLAS_DLP_01);
+// === fin DLP-01 ===
+
+// === NORM-02 ===
+// Sección reservada para NORM-02.
+// === fin NORM-02 ===
+
+// === BOV-01 ===
+import { PANTALLAS_BOV_01 } from "./BOV-01";
+registrar(PANTALLAS_BOV_01);
+// === fin BOV-01 ===

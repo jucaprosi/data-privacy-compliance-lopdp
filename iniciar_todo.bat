@@ -1,7 +1,7 @@
 @echo off
-title JUBYS Plataforma LOPDP 360 - Lanzador Integral
+title EVYDENTIA Plataforma LOPDP 360 - Lanzador Integral
 echo ============================================================
-echo   Iniciando JUBYS Plataforma LOPDP 360 (Backend + Frontend)
+echo   Iniciando EVYDENTIA Plataforma LOPDP 360 (Backend + Frontend)
 echo ============================================================
 echo [1/2] Levantando Backend FastAPI en ventana separada...
 start "LOPDP 360 Backend (:5000)" cmd /k iniciar_backend.bat

@@ -46,34 +46,39 @@ def modo_autenticacion() -> str:
 
 
 # ¤arbitro
-# SEC-15 · INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION. En modo de cabeceras la identidad sale de
-# X-User-ID y X-Role, que cualquiera escribe: nunca contra la base de producción ni en la nube.
-# Saltzer y Schroeder (1975), «Fail-safe defaults». Se evalúa con las variables ya cargadas, incluido
-# lo que `load_dotenv` tomó del `.env`. El error nombra la regla y la variable, nunca la URL.
+# SEC-15 / RET-01 · INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION. En modo de cabeceras la identidad sale de
+# X-User-ID y X-Role, que cualquiera escribe: solo arranca fuera de Cloud Run y contra una base local
+# (`localhost`, `127.0.0.1`, `::1`; `/cloudsql/` y hosts remotos fallan cerrado).
+# Saltzer y Schroeder (1975), «Fail-safe defaults». Se evalúa con las variables de entorno del proceso;
+# el error nombra la regla y la variable, nunca la URL ni las credenciales.
 REGLA_ARRANQUE = "INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION"
 VARIABLES_DE_BASE = ("DATABASE_URL", "MIGRATION_DATABASE_URL", "DATABASE_URL_DIRECT")
 
 
 def exigir_arranque_seguro() -> None:
-    """Lanza `RuntimeError` si el modo es `headers` y alguna base apunta a producción o se corre en la nube.
+    """Lanza `RuntimeError` si el modo es `headers` y alguna base no es local o se corre en la nube.
 
-    Con `oidc` no hace nada: es el modo de Vercel con la base de producción.
+    Con `oidc` no aplica la guardia de base local: es el modo de Cloud Run con Cloud SQL (`/cloudsql/`).
     """
     if modo_autenticacion() != MODO_HEADERS:
         return
+    from app_core.config import DATABASE_URL_DESARROLLO
     from app_core.huellas_produccion import (
-        VARIABLES_DE_NUBE, apunta_a_produccion, corre_en_la_nube, host_de,
+        VARIABLES_DE_NUBE, corre_en_la_nube, host_de, variables_no_locales,
     )
 
-    motivos = [f"{nombre} apunta al host de producción" for nombre in VARIABLES_DE_BASE
-               if apunta_a_produccion(os.environ.get(nombre))]
+    no_locales = variables_no_locales(
+        variables=VARIABLES_DE_BASE,
+        urls_sqlite_permitidas=(DATABASE_URL_DESARROLLO,),
+    )
+    motivos = [f"{nombre} no apunta a una base local" for nombre in no_locales]
     if corre_en_la_nube():
         definidas = ", ".join(n for n in VARIABLES_DE_NUBE if n in os.environ)
         motivos.append(f"corre en la nube ({definidas} definida)")
     if motivos:
         raise RuntimeError(
             f"{REGLA_ARRANQUE}: el backend no arranca con AUTH_MODE=headers porque "
-            f"{'; '.join(motivos)}. Use AUTH_MODE=oidc o una base de pruebas (test-<persona>)."
+            f"{'; '.join(motivos)}. Use AUTH_MODE=oidc o una base PostgreSQL local."
         )
     import logging
 
@@ -186,11 +191,69 @@ async def usuario_de_identidad(session, identidad: IdentidadVerificada) -> str:
     return fila[0]
 
 
+# === DEMO-08 ===
+# ¤demo ¤seguridad
+# Gancho de identidad de la demo comercial (PRD EVYDENTIA §5.6, invariantes 60 a 63). El vendedor no es
+# usuario de la base demo: con `APP_ENV=demo`, un resolutor que registra `features/demo` (por su pasillo)
+# traduce el `sub` ya verificado a la persona activa. Fuera de la demo no existe resolutor y
+# `usuario_verificado` sigue el camino de siempre. La identidad sale siempre del token verificado de
+# Google: ni una cabecera ni `AUTH_MODE` deciden quién es el usuario. Falla cerrado (Saltzer y Schroeder,
+# 1975): un resolutor que lanza o que no devuelve nada nunca cae al camino normal.
+from typing import Any, Awaitable, Callable
+
+ResolutorIdentidad = Callable[[Any, str], Awaitable[Any]]  # (sesión, sub verificado) -> persona o None
+_resolutor_identidad: Optional[ResolutorIdentidad] = None
+
+
+def registrar_resolutor_identidad(resolutor: ResolutorIdentidad) -> None:
+    """Registra el resolutor de la demo. Solo con `entorno_actual() == "demo"` y una sola vez por proceso."""
+    from app_core.entorno.guardias import entorno_actual  # EP-01: única fuente del entorno
+
+    global _resolutor_identidad
+    if entorno_actual() != "demo":
+        raise RuntimeError("DEMO-08: el resolutor de identidad solo se registra con APP_ENV=demo.")
+    if _resolutor_identidad is not None:
+        raise RuntimeError("DEMO-08: ya hay un resolutor de identidad registrado.")
+    _resolutor_identidad = resolutor
+
+
+def _demo_vencida() -> Exception:
+    from app_core.errors import ErrorNegocio
+
+    return ErrorNegocio("DEMO_VENCIDA", status_code=status.HTTP_401_UNAUTHORIZED)
+
+
+def _resolutor_activo() -> Optional[ResolutorIdentidad]:
+    """El resolutor, solo si existe y el proceso sigue siendo `demo`; en otro caso, el camino normal."""
+    if _resolutor_identidad is None:
+        return None
+    from app_core.entorno.guardias import entorno_actual
+
+    return _resolutor_identidad if entorno_actual() == "demo" else None
+
+
+async def _usuario_de_demo(resolutor: ResolutorIdentidad, session, identidad: IdentidadVerificada) -> UsuarioAutenticado:
+    try:
+        persona = await resolutor(session, identidad.sub)
+    except Exception:  # noqa: BLE001 - cualquier fallo cierra la demo, sin detalle hacia el cliente
+        raise _demo_vencida() from None
+    if isinstance(persona, UsuarioAutenticado):
+        return persona
+    usuario_id = getattr(persona, "usuario_id", None)
+    if not isinstance(usuario_id, str) or not usuario_id:
+        raise _demo_vencida()
+    return UsuarioAutenticado(usuario_id=usuario_id, email=identidad.email, sub=identidad.sub)
+
+
 async def usuario_verificado(session, authorization: Optional[str]) -> UsuarioAutenticado:
-    """Token ⟹ identidad verificada ⟹ usuario de la plataforma."""
+    """Token ⟹ identidad verificada ⟹ usuario de la plataforma (en la demo, la persona activa)."""
     identidad = await verificar_token_google(extraer_bearer(authorization))
+    resolutor = _resolutor_activo()
+    if resolutor is not None:
+        return await _usuario_de_demo(resolutor, session, identidad)
     usuario_id = await usuario_de_identidad(session, identidad)
     return UsuarioAutenticado(usuario_id=usuario_id, email=identidad.email, sub=identidad.sub)
+# === fin DEMO-08 ===
 
 
 async def roles_activos(session, tenant_id: str, usuario_id: str) -> set[str]:

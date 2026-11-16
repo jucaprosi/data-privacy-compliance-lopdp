@@ -2,7 +2,7 @@
 id = "NORM-03"
 titulo = "Análisis de impacto de una resolución con Gemini, validado por persona, y regeneración de la caché de contexto"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "inteligencia_normativa, ai_copilot"
 depende_de = ["NORM-01", "VTX-01"]
 propiedad = ["alembic/versions/20261104_norm03_analisis_impacto.py", "features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-03", "features/inteligencia_normativa/domain/errores.py#NORM-03", "features/inteligencia_normativa/services/impacto.py", "features/inteligencia_normativa/services/extraccion.py", "features/ai_copilot/ai_copilot_service.py#NORM-03", "app_core/pasillo/ai_copilot.py#NORM-03", "app_core/pasillo/regulacion_rag.py#NORM-03", "api/routers/inteligencia_normativa_impacto.py", "tests/test_norm03_impacto_hitl.py", "frontend/src/components/normativa_impacto/**", "frontend/tests/normativa_impacto/**"]
@@ -11,7 +11,7 @@ rastros = ["¤inteligencia-normativa", "¤copiloto-ia", "¤vertex-cache", "¤dpo
 +++
 # NORM-03 · Análisis de impacto de una resolución con Gemini, validado por persona, y regeneración de la caché de contexto
 
-**Origen.** `PRD_EVYDENTIA_REVENTA_NUBE.md`, Módulo 6.3 (fase 2 de BRF-001), con el principio de validación humana inviolable. El tablero `TASKS_EVYDENTIA_REVENTA_NUBE.md` la citaba (BL-189, tanda 45) sin ficha.
+**Origen.** `PRD.md`, Módulo 6.3 (fase 2 de BRF-001), con el principio de validación humana inviolable. El tablero `TASKS.md` la citaba (BL-189, tanda 45) sin ficha.
 
 **Contrato:** `governance/especificaciones/NORM-03.md`.
 

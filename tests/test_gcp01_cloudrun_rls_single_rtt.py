@@ -40,7 +40,7 @@ def test_rls_set_config_un_solo_viaje_sql():
 
 @pytest.mark.skipif(not os.environ.get("TEST_DATABASE_URL"), reason="sin TEST_DATABASE_URL")
 def test_rls_set_config_valores_activos_en_transaccion():
-    """Contra la rama Neon de prueba: ambos valores quedan fijados tras una sola sentencia."""
+    """Contra la base local de pruebas: ambos valores quedan fijados tras una sola sentencia."""
     from sqlalchemy.ext.asyncio import create_async_engine
 
     from app_core.cloud.gcp_runtime import argumentos_motor
@@ -73,8 +73,8 @@ def test_pgbouncer_prepare_threshold_y_manifiesto_cloudrun(monkeypatch):
     from app_core.cloud import gcp_runtime as rt
 
     monkeypatch.delenv("DB_POOLER_TRANSACCIONAL", raising=False)
-    pooler = "postgresql+psycopg://u:p@ep-x-pooler.c-7.us-east-2.aws.neon.tech/db?sslmode=require"
-    directa = "postgresql+psycopg://u:p@ep-x.c-7.us-east-2.aws.neon.tech/db?sslmode=require"
+    pooler = "postgresql+psycopg://u:p@db-pooler.remoto.example/db?sslmode=require"
+    directa = "postgresql+psycopg://u:p@directa.remoto.example/db?sslmode=require"
     proxy = "postgresql+psycopg://u:p@/db?host=/cloudsql/proy:region:inst"
     assert rt.argumentos_motor(pooler) == {"prepare_threshold": None}
     assert rt.argumentos_motor(proxy) == {"prepare_threshold": None}

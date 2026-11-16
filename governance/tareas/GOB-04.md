@@ -20,7 +20,7 @@ rastros = ["¤arbitro"]
 - Dos carpetas de worktrees documentadas (`.worktrees/` y `.claude/worktrees/`); la segunda pasa a `.gitignore` porque solo estaba en el `info/exclude` local.
 - Retirar el worktree al fusionar su PR; la carpeta principal solo para operar.
 - Un solo escritor por día para `TASKS.md` y `BRIEFS_POR_BLOQUE.md`: el coordinador, en el PR de gobernanza que cierra la tanda.
-- Metodología 15: procedimiento paso a paso, con comandos para Windows y Mac o Linux, para que cada colaborador y cada chat creen el worktree desde la punta remota, escriban su `.env`, verifiquen, abran el PR, retiren el worktree y cierren la jornada; incluye la comprobación de tres líneas que el coordinador repite al integrar.
+- Metodología 15: procedimiento paso a paso, con comandos para Windows y Mac o Linux, para que cada colaborador y cada chat creen el worktree desde la punta remota, carguen su entorno local con `scripts/entorno_local.ps1`, verifiquen, abran el PR, retiren el worktree y cierren la jornada; incluye la comprobación de tres líneas que el coordinador repite al integrar.
 
 ## Lo comprobado y descartado del brief
 - El workflow ya corre para `push` y `pull_request` en `dev/**`; los 53 PR fusionados hacia `dev/*` tienen checks. No hubo corrección de CI.

@@ -45,4 +45,4 @@ Sin pantalla de usuario. La guía `OBSERVABILIDAD.md` es para quien opera la pla
 
 ## 6. Trazabilidad
 
-- `PRD_EVYDENTIA_REVENTA_NUBE.md` §1 ley 8 (minimización) y §5.3 (Cloud Run); requisito 10 de la revisión del 2026-11-04.
+- `PRD.md` §1 ley 8 (minimización) y §5.3 (Cloud Run); requisito 10 de la revisión del 2026-11-04.

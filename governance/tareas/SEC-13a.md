@@ -35,6 +35,6 @@ rastros = ["¤seguridad", "¤seguridad-tenant", "¤copiloto-ia"]
 - Nunca uses la base de producción: solo tu PostgreSQL 16 local en contenedor.
 
 ## Fuentes
-- `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6.7 (decisión del propietario: «techo de 5 por demo»).
+- `governance/artefactos/PRD.md` §5.6.7 (decisión del propietario: «techo de 5 por demo»).
 - Decisión del CTO del 2026-11-07: se amplía SEC-13; no lo cuenta la demo.
 - `governance/tareas/SEC-13.md`.

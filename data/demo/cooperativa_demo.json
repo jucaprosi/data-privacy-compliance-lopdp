@@ -1,5 +1,5 @@
 {
-  "_descripcion": "Plantilla ficticia «Cooperativa Demo» (DEMO-03, PRD EVYDENTIA §5.6.1.4). Cinco personas; la sexta, el auditor, la añade ORG-22. Todos los datos son inventados; los correos terminan en .invalid.",
+  "_descripcion": "Plantilla ficticia «Cooperativa Demo» (DEMO-03, PRD EVYDENTIA §5.6.1.4). Seis personas, una por rol (el auditor lo añadió ORG-22). Todos los datos son inventados; los correos terminan en .invalid.",
   "tenant": {
     "nombre_comercial": "Cooperativa Demo (FICTICIA)",
     "razon_social": "FICTICIA Cooperativa de Ahorro y Crédito Demo Ltda. (datos de demostración)",
@@ -66,6 +66,13 @@
       "rol": "responsable_area",
       "rol_etiqueta": "Responsable de área",
       "unidad": "DEMO-UNID-CREDITOS"
+    },
+    {
+      "correo": "auditoria@cooperativa-demo.invalid",
+      "nombre": "Aurora Ficticia (auditoría)",
+      "rol": "auditor",
+      "rol_etiqueta": "Auditor",
+      "unidad": null
     }
   ],
   "salas": {

@@ -206,7 +206,7 @@ test.describe("Identidad en las llamadas a la API (FE-07)", () => {
 
     const api = llamadas.filter(esApi);
     const destinos = new Set(api.map((l) => ruta(l.url())));
-    for (const esperado of ["/arco/solicitudes", "/terceros", "/ai/mitigaciones", "/organizacion/me/roles"]) {
+    for (const esperado of ["/arco/solicitudes", "/terceros/garantias", "/ai/mitigaciones", "/organizacion/me/roles"]) {
       expect(destinos, `se esperaba una llamada a ${esperado}`).toContain(esperado);
     }
     for (const peticion of api) {

@@ -165,7 +165,7 @@ _WEB_PRODUCCION = {
             "run.googleapis.com/vpc-access-connector": "CONECTOR_VPC",
             "run.googleapis.com/vpc-access-egress": "private-ranges-only",
             "autoscaling.knative.dev/minScale": "0",
-            "autoscaling.knative.dev/maxScale": "10",
+            "autoscaling.knative.dev/maxScale": "5",
         }},
         "spec": {
             "containerConcurrency": 80,

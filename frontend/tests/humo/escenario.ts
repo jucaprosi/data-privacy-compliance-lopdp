@@ -86,6 +86,9 @@ function borrarOrganizacion(org: OrganizacionHumo): void {
        END $$`,
       [],
     ],
+    // La auditoría de las altas (ORG-18 y siguientes) referencia al usuario del escenario: solo las filas de
+    // esta organización y de este usuario, nunca las de otros.
+    ["DELETE FROM audit_events WHERE tenant_id = %s AND user_id = %s", [org.tenantId, org.userId]],
     ["DELETE FROM users WHERE id = %s", [org.userId]],
     ["DELETE FROM tenants WHERE id = %s", [org.tenantId]],
   ]);

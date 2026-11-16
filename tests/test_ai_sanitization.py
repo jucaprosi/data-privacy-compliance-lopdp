@@ -4,7 +4,7 @@ import os
 import logging
 from features.ai_copilot.domain.sanitizer import LLMDataSanitizer
 from features.ai_copilot.domain.models import AnalisisDiagnosticoRequest
-from features.ai_copilot.services.inference_engine import generar_plan_mitigacion, APILoggerFilter
+from features.ai_copilot.services.inference_engine import generar_plan_mitigacion
 
 # ¤test-sanitizer-removes-llm-pii
 def test_sanitizer_removes_llm_pii():
@@ -49,8 +49,15 @@ def test_sanitizer_dict_recursive():
 @pytest.mark.asyncio
 # ¤test-generar-plan-mitigacion-anonymizes-data
 async def test_generar_plan_mitigacion_anonymizes_data(monkeypatch):
-    """Valida que el request al motor de inferencia es interceptado y anonimizado."""
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    """Valida que lo que llega a la compuerta de inferencia ya está anonimizado."""
+    from features.ai_copilot.domain.models import PlanMitigacionResponse, TareaMitigacionIA
+    from features.ai_copilot.services import inference_engine
+
+    async def compuerta(prompt, valores, esquema, *, modelo, org_id, corpus_sha256=None):
+        tareas = [TareaMitigacionIA(descripcion=f"Corregir: {b}", impacto_riesgo="ALTO") for b in valores["brechas"]]
+        return PlanMitigacionResponse(analisis_general="ok", tareas_propuestas=tareas), object()
+
+    monkeypatch.setattr(inference_engine.pasillo_inferencia, "generar_trazado", compuerta)
     request = AnalisisDiagnosticoRequest(
         id_diagnostico="test-123",
         normativa="LOPDP",
@@ -59,7 +66,7 @@ async def test_generar_plan_mitigacion_anonymizes_data(monkeypatch):
         tenant_id="test"
     )
     
-    response = await generar_plan_mitigacion(request)
+    response, _ = await generar_plan_mitigacion(request, "org-1")
     
     # Validamos en la respuesta (mock) que las tareas contengan el texto sanitizado
     tarea = response.tareas_propuestas[0]
@@ -74,19 +81,6 @@ async def test_generar_plan_mitigacion_anonymizes_data(monkeypatch):
 class MockLogRecord:
     def __init__(self, msg):
         self.msg = msg
-
-# ¤test-api-logger-filter
-def test_api_logger_filter(monkeypatch):
-    """Valida que el filtro de log elimina la API key."""
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-12345secret")
-    
-    filtro = APILoggerFilter()
-    record = MockLogRecord("Intentando invocar LLM con API KEY sk-12345secret")
-    
-    filtro.filter(record)
-    assert "sk-12345secret" not in record.msg
-    assert "[REDACTED_API_KEY]" in record.msg
-
 
 # ¤test-sanitizer-nested-lists-dicts-and-tuples-are-sanitized-without-mutation
 def test_sanitizer_nested_lists_dicts_and_tuples_are_sanitized_without_mutation():

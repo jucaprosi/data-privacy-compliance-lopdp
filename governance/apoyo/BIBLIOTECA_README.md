@@ -39,7 +39,7 @@ Las capacidades se asignan en `biblioteca_capacidades`. Ser administrador de una
 - Las ocho plantillas v0.1 no se publican sin la aprobación expresa de la propietaria, una por una.
 - No cites artículos de la LOPDP ni de su Reglamento de memoria; las referencias de las plantillas están POR VERIFICAR hasta su revisión jurídica.
 - No guardes credenciales, URLs de bases de datos ni datos reales de personas, tampoco en ejemplos o pruebas.
-- Las pruebas con base de datos usan una rama propia de Neon (`TEST_DATABASE_URL`); sin ella, el resultado se informa como no verificado.
+- Las pruebas con base de datos usan una base local propia (`TEST_DATABASE_URL`); sin ella, el resultado se informa como no verificado.
 
 ## Cómo comprobar
 

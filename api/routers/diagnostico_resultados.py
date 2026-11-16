@@ -9,7 +9,7 @@ from dataclasses import asdict
 from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.rbac import require_role
@@ -87,6 +87,10 @@ async def sellar(
     ctx: dict = Depends(_sello),
     session: AsyncSession = Depends(get_session),
 ):
+    # === DIAG-07 ===
+    # R3: no se sella con una objeción abierta; la comprobación y el sello comparten la transacción.
+    await diagnostico_service.objeciones_abiertas(session, ctx["tenant_id"], ctx["user_id"])
+    # === fin DIAG-07 ===
     configuracion = await organizacion_service.get_tenant_config(session, ctx["tenant_id"])
     try:
         resultado = await diagnostico_service.sellar_diagnostico(
@@ -95,7 +99,7 @@ async def sellar(
             ctx["user_id"],
             tamano=configuracion.get("tamano"),
             perfil=payload.perfil.model_dump(),
-            controles_con_documento=_controles_con_documento(ctx["tenant_id"]),
+            controles_con_documento=await _controles_documentados(session, ctx["tenant_id"]),
         )
     except diagnostico_service.SelladoNoPermitido as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
@@ -125,3 +129,78 @@ async def historial(ctx: dict = Depends(_consulta), session: AsyncSession = Depe
 async def etapa(ctx: dict = Depends(_consulta), session: AsyncSession = Depends(get_session)):
     return await diagnostico_service.etapa_diagnostico(session, ctx["tenant_id"], ctx["user_id"])
 # === fin DIAG-11 ===
+
+# === EVI-01 ===
+# ¤evidencias ¤diagnostico Con la bandera EVIDENCIAS_SUBIDA_FIRMADA encendida, los controles con documento
+# comprobable salen de la base y deben estar vigentes en el día de negocio de Guayaquil (EVI-02): un control cuyo único
+# respaldo venció deja de poder sellarse y el rechazo nombra el documento. Apagada, queda la regla anterior, que no mira
+# la vigencia (transitoria). Los sellos ya hechos no cambian: sus huellas son inmutables.
+from app_core.zona_negocio import hoy_negocio  # noqa: E402
+
+
+async def _controles_documentados(session: AsyncSession, tenant_id: str) -> set[int]:
+    if evidencias_service.subida_firmada_activa():
+        return await evidencias_service.controles_para_sellar(session, tenant_id, hoy_negocio())
+    return _controles_con_documento(tenant_id)
+# === fin EVI-01 ===
+
+# === DIAG-07 ===
+# ¤diagnostico ¤dpo-independencia Objeciones del DPO a las respuestas; solo el DPO objeta.
+_objeta = require_role("dpo")
+_lee_objeciones = require_role("dpo", "admin_organizacion", "implementador", "coordinador", "responsable_area")
+
+
+class ObjecionEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    pregunta_id: int = Field(ge=1, le=80)
+    motivo: str = Field(min_length=20, max_length=2000)
+
+    @field_validator("motivo")
+    @classmethod
+    def _motivo_con_texto(cls, valor: str) -> str:
+        if len(valor.strip()) < 20:
+            raise ValueError("El motivo necesita al menos 20 caracteres.")
+        return valor
+
+
+def _objecion_a_salida(fila: dict) -> dict:
+    return {
+        "id": fila["id"],
+        "pregunta_id": fila["pregunta_id"],
+        "motivo": fila["motivo"],
+        "objetado_por": fila["objetado_por"],
+        "objetado_en": fila["objetado_en"].isoformat(),
+        "resuelta_en": fila["resuelta_en"].isoformat() if fila["resuelta_en"] else None,
+    }
+
+
+@router.post("/objeciones", status_code=status.HTTP_201_CREATED)
+async def objetar(
+    payload: ObjecionEntrada,
+    ctx: dict = Depends(_objeta),
+    session: AsyncSession = Depends(get_session),
+):
+    fila = await diagnostico_service.crear_objecion(
+        session, ctx["tenant_id"], ctx["user_id"], payload.pregunta_id, payload.motivo
+    )
+    return _objecion_a_salida(fila)
+
+
+@router.get("/objeciones")
+async def listar_las_objeciones(
+    abiertas: bool = False,
+    ctx: dict = Depends(_lee_objeciones),
+    session: AsyncSession = Depends(get_session),
+):
+    filas = await diagnostico_service.listar_objeciones(session, ctx["tenant_id"], ctx["user_id"], abiertas)
+    return {"objeciones": [_objecion_a_salida(f) for f in filas]}
+
+
+@router.get("/revision")
+async def revision(ctx: dict = Depends(_objeta), session: AsyncSession = Depends(get_session)):
+    """Grilla del DPO: lo declarado y el nivel de evidencia calculado, de solo lectura."""
+    documentados = await _controles_documentados(session, ctx["tenant_id"])
+    filas = await diagnostico_service.filas_de_revision(session, ctx["tenant_id"], ctx["user_id"], documentados)
+    return {"filas": filas}
+# === fin DIAG-07 ===

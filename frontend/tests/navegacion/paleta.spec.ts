@@ -26,7 +26,7 @@ test.describe("Ctrl+K sobre las pantallas de los nueve menús (FE-22)", () => {
 
     await page.keyboard.press("Enter");
     await expect(buscador(page)).toBeHidden();
-    await expect(page.getByText("mtge_relacional.adpa.view", { exact: true })).toBeVisible();
+    await expect(page.getByTestId("pestana-vista").getByText("Evaluaciones de impacto", { exact: true })).toBeVisible();
     await expect(barraDeMenus(page).locator('[aria-current="page"]')).toHaveText("Riesgos y auditoría");
   });
 
@@ -38,6 +38,6 @@ test.describe("Ctrl+K sobre las pantallas de los nueve menús (FE-22)", () => {
 
     await page.keyboard.press("Escape");
     await expect(buscador(page)).toBeHidden();
-    await expect(page.getByText("diagnostico.adpa.view", { exact: true })).toBeVisible();
+    await expect(page.getByTestId("pestana-vista").getByText("Assessment", { exact: true })).toBeVisible();
   });
 });

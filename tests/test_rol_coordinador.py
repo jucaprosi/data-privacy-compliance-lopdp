@@ -91,6 +91,14 @@ async def test_migracion_transaccional_upgrade_y_downgrade(conn):
         {"u": uid, "e": f"{uid}@test.local", "n": uid},
     )
 
+    # ORG-22: el CHECK anterior no admite 'auditor' (otras pruebas dejan filas del rol sembradas): se retiran
+    # dentro de esta transacción antes del downgrade. Sin esto, recrear el CHECK da CheckViolation.
+    await conn.execute(
+        text("INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES (:id, :u, :t, 'auditor')"),
+        {"id": f"r-{uuid.uuid4().hex[:10]}", "u": uid, "t": tid},
+    )
+    await conn.execute(text("DELETE FROM user_tenant_roles WHERE role = 'auditor'"))
+
     # 1. Probar downgrade: convierte coordinador -> encargado y restaura check
     for sql in sql_desc:
         await conn.execute(text(sql))

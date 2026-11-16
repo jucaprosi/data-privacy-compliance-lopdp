@@ -2,6 +2,11 @@ name: Deploy Backend to Google Cloud Run
 
 on:
   workflow_dispatch:
+    inputs:
+      publicar:
+        description: "true publica la revisión en Cloud Run; false solo construye la imagen y muestra su digest"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -43,15 +48,23 @@ jobs:
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
       - name: Build and Push Docker Image
+        id: imagen
         run: |
           IMAGE_TAG="${{ env.IMAGE_NAME }}:${{ github.sha }}"
           IMAGE_LATEST="${{ env.IMAGE_NAME }}:latest"
-          
+
           docker build -t "$IMAGE_TAG" -t "$IMAGE_LATEST" .
           docker push "$IMAGE_TAG"
           docker push "$IMAGE_LATEST"
 
+          DIGEST="$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE_TAG" | cut -d@ -f2)"
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          echo "### Imagen construida" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Digest: $DIGEST" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Deploy to Cloud Run
+        if: ${{ inputs.publicar }}
         run: |
           gcloud run deploy ${{ env.SERVICE_NAME }} \
             --image "${{ env.IMAGE_NAME }}:${{ github.sha }}" \
@@ -59,8 +72,8 @@ jobs:
             --platform managed \
             --service-account ${{ env.BACKEND_SERVICE_ACCOUNT }} \
             --add-cloudsql-instances ${{ env.CLOUD_SQL_INSTANCE }} \
-            --set-secrets "DATABASE_URL=DATABASE_URL_APP:latest,JWT_SECRET_KEY=JWT_SECRET_KEY:latest" \
-            --set-env-vars "APP_ENV=production,ENVIRONMENT=production,PROJECT_ID=${{ env.PROJECT_ID }},GCP_STORAGE_BUCKET=${{ env.PROJECT_ID }}" \
+            --set-secrets "DATABASE_URL=DATABASE_URL_APP:latest,JWT_SECRET=JWT_SECRET:latest,SESSION_SECRET=SESSION_SECRET:latest,INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest" \
+            --set-env-vars "APP_ENV=production,ENVIRONMENT=production,PROJECT_ID=${{ env.PROJECT_ID }},GCP_STORAGE_BUCKET=${{ env.PROJECT_ID }},PROXIES_CONFIABLES=1,CORS_ORIGINS=https://app.evydentia.com" \
             --allow-unauthenticated \
             --memory 512Mi \
             --cpu 1 \
