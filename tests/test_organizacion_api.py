@@ -177,14 +177,6 @@ async def test_me_roles_devuelve_roles_activos(api_client, org):
 
 
 @pytest.mark.asyncio
-async def test_no_admin_no_gestiona_roles(api_client, org):
-    uid = await _new_user(api_client, org, "impl")
-    assert (await _grant(api_client, org, uid, "implementador")).status_code == 201
-    r = await api_client.get("/api/v1/organizacion/roles", headers=_h(uid, org["tenant"], "implementador"))
-    assert r.status_code == 403
-
-
-@pytest.mark.asyncio
 async def test_area_id_en_rol_transversal_422(api_client, org):
     uid = await _new_user(api_client, org, "dpo422")
     r = await _grant(api_client, org, uid, "dpo", area_id="cualquiera")

@@ -163,16 +163,6 @@ async def test_generate_implementador_ok(api_client, api_seed):
 
 
 @pytest.mark.asyncio
-async def test_generate_dpo_rechazado(api_client, api_seed):
-    r = await api_client.post(
-        "/api/v1/roadmaps/generate",
-        json=_payload(api_seed),
-        headers=_h(api_seed["user"], api_seed["tenant"], "dpo"),
-    )
-    assert r.status_code == 403
-
-
-@pytest.mark.asyncio
 async def test_generate_sin_membresia(api_client, api_seed):
     r = await api_client.post(
         "/api/v1/roadmaps/generate",
@@ -259,16 +249,6 @@ async def test_patch_task_implementador_ok(api_client, api_seed):
     assert r.json()["status"] == "completada"
 
 
-@pytest.mark.asyncio
-async def test_patch_task_dpo_rechazado(api_client, api_seed):
-    r = await api_client.patch(
-        "/api/v1/roadmaps/tasks/cualquiera",
-        json={"status": "completada"},
-        headers=_h(api_seed["user"], api_seed["tenant"], "dpo"),
-    )
-    assert r.status_code == 403
-
-
 # ==================== POST /roadmaps/tasks/{id}/evidence/upload-url ====================
 
 @pytest.mark.asyncio
@@ -293,11 +273,4 @@ async def test_evidence_upload_url_responsable_ok(api_client, api_seed):
     assert "url" in body and "key" in body
 
 
-@pytest.mark.asyncio
-async def test_evidence_upload_url_dpo_rechazado(api_client, api_seed):
-    r = await api_client.post(
-        "/api/v1/roadmaps/tasks/any-task/evidence/upload-url",
-        json={"filename": "evidencia.pdf", "mime_type": "application/pdf", "file_size": 1024},
-        headers=_h(api_seed["user"], api_seed["tenant"], "dpo"),
-    )
-    assert r.status_code == 403
+

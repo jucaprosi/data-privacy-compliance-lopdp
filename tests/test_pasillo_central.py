@@ -24,12 +24,15 @@ def test_cargar_el_pasillo_no_carga_ninguna_sala():
     assert salida.stdout.strip() == "[]"
 
 
-@pytest.mark.parametrize("ruta", sorted(PASILLO.glob("*.py")), ids=lambda r: r.name)
-def test_el_pasillo_solo_importa_salas_dentro_de_funciones(ruta):
-    arbol = ast.parse(ruta.read_text(encoding="utf-8"))
-    for nodo in arbol.body:
-        if isinstance(nodo, ast.ImportFrom):
-            assert not (nodo.module or "").startswith("features"), f"{ruta.name}: import de sala al cargar"
+def test_el_pasillo_solo_importa_salas_dentro_de_funciones():
+    fallos = []
+    for ruta in sorted(PASILLO.glob("*.py")):
+        arbol = ast.parse(ruta.read_text(encoding="utf-8"))
+        for nodo in arbol.body:
+            if isinstance(nodo, ast.ImportFrom):
+                if (nodo.module or "").startswith("features"):
+                    fallos.append(f"{ruta.name}: import de sala al cargar ({nodo.module})")
+    assert not fallos, f"Fallos en pasillos ({len(fallos)}/{len(list(PASILLO.glob('*.py')))}):\n" + "\n".join(fallos)
 
 
 def test_la_sala_organizacion_conserva_los_nombres_de_sus_errores():

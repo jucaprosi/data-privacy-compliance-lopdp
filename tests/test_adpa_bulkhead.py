@@ -70,20 +70,25 @@ def test_cada_sala_tiene_su_compuerta():
         assert os.path.isfile(compuerta), f"La sala {sala} carece de la compuerta {sala}_service.py"
 
 
-@pytest.mark.parametrize("sala", SALAS)
-def test_solo_se_importa_la_compuerta_de_la_sala(sala):
+def test_solo_se_importa_la_compuerta_de_la_sala():
     """Todo import de features.<sala>.* desde fuera de la sala termina en <sala>_service."""
-    permitido = f"features.{sala}.{sala}_service"
-    violaciones = []
-    for ruta in _archivos_py():
-        if _sala_de(ruta) == sala or (_es_prueba(ruta) and sala not in MARCADORES_RESERVADOS):
-            continue
-        for modulo in _modulos_importados(ruta):
-            if modulo == f"features.{sala}" or modulo == permitido:
+    archivos = list(_archivos_py())
+    archivos_modulos = [(ruta, list(_modulos_importados(ruta))) for ruta in archivos]
+    fallos = []
+    for sala in SALAS:
+        permitido = f"features.{sala}.{sala}_service"
+        violaciones = []
+        for ruta, modulos in archivos_modulos:
+            if _sala_de(ruta) == sala or (_es_prueba(ruta) and sala not in MARCADORES_RESERVADOS):
                 continue
-            if modulo.startswith(f"features.{sala}."):
-                violaciones.append(f"{os.path.relpath(ruta, RAIZ)} importa '{modulo}'")
-    assert not violaciones, "Imports que saltan la compuerta:\n" + "\n".join(violaciones)
+            for modulo in modulos:
+                if modulo == f"features.{sala}" or modulo == permitido:
+                    continue
+                if modulo.startswith(f"features.{sala}."):
+                    violaciones.append(f"{os.path.relpath(ruta, RAIZ)} importa '{modulo}'")
+        if violaciones:
+            fallos.append(f"sala '{sala}':\n  " + "\n  ".join(violaciones))
+    assert not fallos, f"Fallos en mamparos de salas ({len(fallos)}/{len(SALAS)}):\n" + "\n".join(fallos)
 
 
 def test_ninguna_sala_importa_el_codigo_viejo_de_app_core():

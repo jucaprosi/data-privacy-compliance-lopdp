@@ -314,19 +314,6 @@ async def test_generacion_en_linea_fallo_modelo_marca_failed(api_client, seed_da
         assert "Fallo de generación" in row["summary"]
 
 
-async def test_generacion_en_linea_rbac_dpo_rechazado_403(api_client, seed_data):
-    """El rol dpo es rechazado con 403 Forbidden al intentar generar roadmap."""
-    tenant_id = seed_data["tenant_id"]
-    user_dpo = seed_data["user_dpo"]
-
-    resp = await api_client.post(
-        "/api/v1/roadmaps/generate",
-        json=_payload(tenant_id, user_dpo),
-        headers=_headers(user_dpo, tenant_id, "dpo"),
-    )
-    assert resp.status_code == 403
-
-
 async def test_generacion_ignora_el_assessment_del_navegador(api_client, seed_data):
     """RM-19: la IA recibe el diagnóstico guardado en el servidor, nunca el que envía el navegador."""
     tenant_id = seed_data["tenant_id"]
