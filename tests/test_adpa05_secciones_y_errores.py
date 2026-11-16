@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import os
 import re
 import tomllib
 from pathlib import Path
@@ -10,6 +11,8 @@ from pathlib import Path
 import pytest
 
 from app_core.errors import CATALOGO_ERRORES, CodigoErrorNegocio
+
+os.environ.setdefault("DATABASE_URL", "postgresql+psycopg://postgres:postgres@localhost:5432/evydentia_test")
 
 RAIZ = Path(__file__).resolve().parent.parent
 FICHA = RAIZ / "governance" / "tareas" / "ADPA-05.md"
@@ -49,22 +52,35 @@ def test_secciones_no_se_anidan():
 SALAS = sorted({p.split("/")[1] for p in _ficha()["propiedad"] if p.endswith("domain/errores.py") or "errores.py#" in p})
 
 
-@pytest.mark.parametrize("sala", SALAS)
-def test_registrar_por_sala(sala):
-    modulo = importlib.import_module(f"features.{sala}.domain.errores")
-    codigo = CodigoErrorNegocio(f"PRUEBA_ADPA05_{sala.upper()}", 400, "Prueba.")
-    try:
-        modulo.registrar(codigo)
-        modulo.registrar(codigo)  # idempotente
-        assert CATALOGO_ERRORES[codigo.codigo] is codigo
-        with pytest.raises(ValueError):
-            modulo.registrar(CodigoErrorNegocio(codigo.codigo, 409, "Otro."))
-    finally:
-        CATALOGO_ERRORES.pop(codigo.codigo, None)
+def test_registrar_por_sala():
+    fallos = []
+    for sala in SALAS:
+        try:
+            modulo = importlib.import_module(f"features.{sala}.domain.errores")
+            codigo = CodigoErrorNegocio(f"PRUEBA_ADPA05_{sala.upper()}", 400, "Prueba.")
+            try:
+                modulo.registrar(codigo)
+                modulo.registrar(codigo)  # idempotente
+                assert CATALOGO_ERRORES[codigo.codigo] is codigo
+                with pytest.raises(ValueError):
+                    modulo.registrar(CodigoErrorNegocio(codigo.codigo, 409, "Otro."))
+            finally:
+                CATALOGO_ERRORES.pop(codigo.codigo, None)
+        except Exception as exc:
+            fallos.append(f"sala '{sala}': {exc}")
+    assert not fallos, f"Fallos en registrar_por_sala ({len(fallos)}/{len(SALAS)}):\n" + "\n".join(fallos)
 
 
-@pytest.mark.parametrize("compuerta", [p.split("#")[0] for p in _ficha()["propiedad"] if p.endswith("_service.py#ADPA-05")])
-def test_compuerta_importa_y_carga_errores(compuerta):
-    sala = compuerta.split("/")[1]
-    importlib.import_module(compuerta[:-3].replace("/", "."))
-    assert importlib.import_module(f"features.{sala}.domain.errores")
+COMPUERTAS = [p.split("#")[0] for p in _ficha()["propiedad"] if p.endswith("_service.py#ADPA-05")]
+
+
+def test_compuerta_importa_y_carga_errores():
+    fallos = []
+    for compuerta in COMPUERTAS:
+        try:
+            sala = compuerta.split("/")[1]
+            importlib.import_module(compuerta[:-3].replace("/", "."))
+            assert importlib.import_module(f"features.{sala}.domain.errores")
+        except Exception as exc:
+            fallos.append(f"compuerta '{compuerta}': {exc}")
+    assert not fallos, f"Fallos en compuerta_importa_y_carga_errores ({len(fallos)}/{len(COMPUERTAS)}):\n" + "\n".join(fallos)

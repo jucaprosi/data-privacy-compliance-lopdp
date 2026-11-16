@@ -67,10 +67,16 @@ def test_hay_manifiestos_que_leer():
     assert len(MANIFIESTOS) >= 5
 
 
-@pytest.mark.parametrize("ruta", MANIFIESTOS, ids=lambda p: p.relative_to(OPERACIONES).as_posix())
-def test_cada_manifiesto_se_lee(ruta):
-    documento = leer_yaml(ruta.read_text(encoding="utf-8"))
-    assert isinstance(documento, (dict, list)) and documento
+def test_cada_manifiesto_se_lee():
+    fallos = []
+    for ruta in MANIFIESTOS:
+        try:
+            documento = leer_yaml(ruta.read_text(encoding="utf-8"))
+            if not (isinstance(documento, (dict, list)) and documento):
+                fallos.append(f"{ruta.relative_to(OPERACIONES).as_posix()}: documento vacio o no es dict/list")
+        except Exception as exc:
+            fallos.append(f"{ruta.relative_to(OPERACIONES).as_posix()}: {exc}")
+    assert not fallos, f"Fallos al leer manifiestos ({len(fallos)}/{len(MANIFIESTOS)}):\n" + "\n".join(fallos)
 
 
 # 3 · El subconjunto soportado.

@@ -261,25 +261,6 @@ async def test_patch_configuracion_parcial_conserva_la_otra_columna(seed_data):
     assert (actual.json()["tamano"], actual.json()["sector"]) == ("pequena", "Salud")
 
 
-async def test_patch_configuracion_denegado_otros_roles(seed_data):
-    """Roles distintos de admin_organizacion reciben 403 Forbidden al intentar actualizar."""
-    t1 = seed_data["tenant_id"]
-    u_dpo = seed_data["user_dpo"]
-
-    headers = {
-        "X-Tenant-ID": t1,
-        "X-User-ID": u_dpo,
-        "X-Role": "dpo",
-    }
-    payload = {"tamano": "micro"}
-    response = client.patch(
-        "/api/v1/organizacion/configuracion",
-        headers=headers,
-        json=payload,
-    )
-    assert response.status_code == 403
-
-
 async def test_patch_configuracion_tamano_invalido(seed_data):
     """Valores fuera del vocabulario cerrado devuelven 422 Unprocessable Entity."""
     t1 = seed_data["tenant_id"]

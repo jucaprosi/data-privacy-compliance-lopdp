@@ -30,11 +30,15 @@ def _marcas(archivo: str) -> list[tuple[str, str]]:
     return MARCA.findall((RAIZ / archivo).read_text(encoding="utf-8"))
 
 
-@pytest.mark.parametrize("archivo,ident", CASOS)
-def test_seccion_sembrada(archivo: str, ident: str) -> None:
-    marcas = _marcas(archivo)
-    assert ("INICIO", ident) in marcas, f"falta INICIO {ident} en {archivo}"
-    assert ("FIN", ident) in marcas, f"falta FIN {ident} en {archivo}"
+def test_seccion_sembrada() -> None:
+    fallos = []
+    for archivo, ident in CASOS:
+        marcas = _marcas(archivo)
+        if ("INICIO", ident) not in marcas:
+            fallos.append(f"falta INICIO {ident} en {archivo}")
+        if ("FIN", ident) not in marcas:
+            fallos.append(f"falta FIN {ident} en {archivo}")
+    assert not fallos, f"Fallos en secciones sembradas ({len(fallos)}/{len(CASOS)}):\n" + "\n".join(fallos)
 
 
 @pytest.mark.parametrize("archivo", list(ESPERADO))
