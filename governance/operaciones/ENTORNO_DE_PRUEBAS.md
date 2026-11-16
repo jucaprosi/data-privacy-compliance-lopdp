@@ -195,7 +195,7 @@ Con cualquier `FALLA`, el código es 1 y ese digest queda rechazado para la prom
 <!-- === EP-09 === -->
 ## 6. Puesta en marcha (EP-09)
 
-**Estado: documentada, pendiente de ejecución del propietario.** Esta sección fija el orden y las comprobaciones; no copia los comandos, que viven en los apartados 1 a 5. EP-09 no pasa a `hecha` hasta que `python scripts/verificar_entorno_pruebas.py` dé 0 contra el entorno desplegado y el flujo `entorno-pruebas.yml` termine en verde en GitHub: eso solo existe cuando una persona (Juan Carlos, Aleczandra o José) lo ejecuta. Ninguna sesión de IA crea, despliega ni carga secretos; de su lado, solo `gcloud` de lectura. Todo va contra el proyecto de pruebas, nunca contra producción.
+**Estado: bloqueada a la espera del propietario (diagnóstico de solo lectura del 2026-11-15, abajo).** Esta sección fija el orden y las comprobaciones; no copia los comandos, que viven en los apartados 1 a 5. EP-09 no pasa a `hecha` hasta que `python scripts/verificar_entorno_pruebas.py` dé 0 contra el entorno desplegado y el flujo `entorno-pruebas.yml` termine en verde en GitHub: eso solo existe cuando una persona (Juan Carlos, Aleczandra o José) lo ejecuta. Ninguna sesión de IA crea, despliega ni carga secretos; de su lado, solo `gcloud` de lectura. Todo va contra el proyecto de pruebas, nunca contra producción.
 
 ### Orden y precondiciones
 | # | Paso | Dónde está el procedimiento | Comprobar antes de seguir |
@@ -237,6 +237,99 @@ Se corre como en §5. La salida lleva una línea por comprobación, `OK` o `FALL
 - No se sigue al paso siguiente ni se promueve nada a producción.
 - Cada fallo se corrige en su apartado (§1 a §5); si el error está en un comando de otra tarea, se avisa al Tech Lead en vez de corregirlo aquí.
 - Un digest rechazado se repite con un digest nuevo (§3).
+
+### Diagnóstico de solo lectura (2026-11-15)
+Lo hizo una sesión de IA, solo con lecturas (`gcloud projects list`, `gcloud run services list`, `gcloud sql instances list` y `gh run list`):
+
+- La cuenta de `gcloud` ve dos proyectos: el de producción y el de demo. **No existe el proyecto de pruebas.** Tampoco existe la instancia `evydentia-pruebas` ni los servicios de pruebas.
+- `.github/workflows/entorno-pruebas.yml` **no existe en `main`**: `gh run list --workflow entorno-pruebas.yml` responde 404. El brief `BRIEF_PROPIETARIO_EP07_WORKFLOW.md` está sin aplicar.
+- Por eso no hay URL del frontend de pruebas y el verificador no se ha corrido. No se inventa ningún resultado: el registro de abajo sigue vacío.
+
+### Brief al propietario (EP-09)
+Lo ejecuta Juan Carlos, Aleczandra o José, en PowerShell, desde un worktree al día con `origin/main`, nunca desde la carpeta principal ni con su `.env`. Los valores entre `<...>` se escriben una vez en el bloque de variables, y ninguno se sube al repositorio. Cada bloque se detiene si el proyecto resulta ser el de producción.
+
+**0. Worktree y variables (se pega una vez en cada consola nueva).**
+```powershell
+cd "$env:USERPROFILE\worktrees-evydentia"
+git -C "$env:USERPROFILE\Desktop\Plataforma LOPDP 360" fetch origin
+git -C "$env:USERPROFILE\Desktop\Plataforma LOPDP 360" worktree add "$env:USERPROFILE\worktrees-evydentia\ep-09-propietario" origin/main
+cd "$env:USERPROFILE\worktrees-evydentia\ep-09-propietario"
+$PROYECTO = "<id-nuevo-del-proyecto-de-pruebas>"
+$REGION = "us-central1"
+$FACTURACION = "<id-de-la-cuenta-de-facturacion>"
+$env:HUELLA_PROYECTO_PRODUCCION = "<huella-del-proyecto-de-produccion>"
+$PY = "$env:USERPROFILE\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe"
+if (-not $env:HUELLA_PROYECTO_PRODUCCION) { throw "DETENIDO: falta la huella de produccion" }
+if ($PROYECTO.ToLower().Contains($env:HUELLA_PROYECTO_PRODUCCION.ToLower())) { throw "DETENIDO: el proyecto es el de produccion" }
+```
+Si el worktree ya existe, se omiten las dos líneas de `git` y se hace `git pull` dentro de él.
+
+**1. Proyecto, API y cuentas de servicio (EP-04, §1 pasos 1 y 2; `proyecto.yaml`).**
+```powershell
+gcloud projects create $PROYECTO
+gcloud billing projects link $PROYECTO --billing-account=$FACTURACION
+gcloud services enable run.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com sqladmin.googleapis.com vpcaccess.googleapis.com iap.googleapis.com aiplatform.googleapis.com dlp.googleapis.com storage.googleapis.com eventarc.googleapis.com billingbudgets.googleapis.com --project=$PROYECTO
+$CUENTAS = @{
+  "sa-backend-pruebas"      = @("roles/cloudsql.client", "roles/aiplatform.user", "roles/dlp.user", "roles/storage.objectAdmin")
+  "sa-frontend-pruebas"     = @()
+  "sa-vault-worker-pruebas" = @("roles/cloudsql.client", "roles/storage.objectAdmin")
+  "sa-eventarc-pruebas"     = @("roles/eventarc.eventReceiver")
+  "sa-migraciones-pruebas"  = @("roles/cloudsql.client")
+  "sa-verificador-pruebas"  = @("roles/run.viewer", "roles/iap.httpsResourceAccessor")
+}
+foreach ($sa in $CUENTAS.Keys) {
+  gcloud iam service-accounts create $sa --project=$PROYECTO
+  foreach ($rol in $CUENTAS[$sa]) {
+    gcloud projects add-iam-policy-binding $PROYECTO --member="serviceAccount:$sa@$PROYECTO.iam.gserviceaccount.com" --role=$rol --condition=None
+  }
+}
+```
+
+**2. Cloud SQL, buckets, secretos y conector de VPC (EP-05, §2; EP-04, §1 paso 3).** Se aplican `cloud_sql.yaml`, `buckets.yaml` y `secretos.yaml` con Antigravity, con la retención de los buckets en `locked: false` y sin `--lock-retention-period`. Después se crea `public.entorno_marcador` en la base de pruebas (SEC-20) y se guarda la URL de la base solo en `herramientas\url-base-pruebas.txt`.
+
+**3. Servicios, IAP y presupuestos (EP-04, §1 pasos 4 a 7).** Se aplican los tres manifiestos de Cloud Run y sus políticas IAM, se activa IAP y se crean los presupuestos. Antes de seguir, esta compuerta humana:
+```powershell
+gcloud run services describe evydentia-web --project=$PROYECTO --region=$REGION --format="yaml(metadata.annotations)"
+gcloud run services get-iam-policy evydentia-backend --project=$PROYECTO --region=$REGION
+```
+Debe aparecer `Iap Enabled: true` y, en la política del backend, solo `sa-frontend-pruebas`.
+
+**4. Primer despliegue por digest (EP-06, §3).** Primero con `-SoloMostrar` y luego sin él:
+```powershell
+$DIGEST = "sha256:<64 hexadecimales de la imagen publicada por el CI>"
+$IMAGEN = "$REGION-docker.pkg.dev/$PROYECTO/<repositorio>/<imagen>"
+$INSTANCIA = "${PROYECTO}:${REGION}:evydentia-pruebas"
+.\scripts\desplegar_entorno_pruebas.ps1 -Proyecto $PROYECTO -Digest $DIGEST -Imagen $IMAGEN -Servicios "evydentia-backend,evydentia-web,evydentia-vault-worker" -InstanciaCloudSql $INSTANCIA -SoloMostrar
+.\scripts\desplegar_entorno_pruebas.ps1 -Proyecto $PROYECTO -Digest $DIGEST -Imagen $IMAGEN -Servicios "evydentia-backend,evydentia-web,evydentia-vault-worker" -InstanciaCloudSql $INSTANCIA
+```
+
+**5. Siembra (EP-03, §4).**
+```powershell
+$env:MIGRATION_DATABASE_URL = Get-Content "herramientas\url-base-pruebas.txt" -Raw
+& $PY scripts/sembrar_entorno_pruebas.py --testers "herramientas\testers-entorno-pruebas.txt" --bucket "<bucket-de-pruebas>"
+Remove-Item Env:MIGRATION_DATABASE_URL
+```
+
+**6. Verificador (EP-07, §5): el árbitro de EP-09.**
+```powershell
+$FRONTEND = gcloud run services describe evydentia-web --project=$PROYECTO --region=$REGION --format="value(status.url)"
+$BACKEND = gcloud run services describe evydentia-backend --project=$PROYECTO --region=$REGION --format="value(status.url)"
+$env:IAP_AUDIENCIA = "<id-del-cliente-oauth-de-iap>"
+$env:VERIFICADOR_CUENTA_SERVICIO = "sa-verificador-pruebas@$PROYECTO.iam.gserviceaccount.com"
+& $PY scripts/verificar_entorno_pruebas.py $FRONTEND $BACKEND --proyecto $PROYECTO
+$CODIGO = $LASTEXITCODE
+& $PY scripts/digest_verificado.py guardar --digest $DIGEST --codigo $CODIGO
+"Codigo del verificador: $CODIGO"
+```
+Debe dar 0, con todas las líneas en `OK`. La cuenta que corre el comando necesita `roles/iam.serviceAccountTokenCreator` sobre `sa-verificador-pruebas`.
+
+**7. Flujo de GitHub.** Se aplica `governance/apoyo/BRIEF_PROPIETARIO_EP07_WORKFLOW.md` (archivo, variables del repositorio `PRUEBAS_*`, entorno `gcp-pruebas` y Workload Identity) y, ya fusionado, se lanza y se consulta:
+```powershell
+gh workflow run entorno-pruebas.yml --ref main
+gh run list --workflow entorno-pruebas.yml -L 1
+```
+
+**8. Entrega.** Se llena el registro de abajo, sin identificadores, URL ni correos, y se pasa al CTO la salida de los pasos 3, 6 y 7. EP-09 la cierra el coordinador en un PR de cierre.
 
 ### Registro de la puesta en marcha (se llena al ejecutar)
 Sin identificadores de proyecto, URL ni correos.
