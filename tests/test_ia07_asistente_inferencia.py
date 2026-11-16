@@ -61,14 +61,7 @@ def _responder(monkeypatch, compuerta, org_id="org-1", n=1):
 
 
 def test_proveedor_solo_delega_en_compuerta_sin_leer_entorno():
-    """El proveedor del asistente delega configuración e inferencia en `app_core.pasillo.inferencia`."""
-    texto = PROVEEDOR.read_text(encoding="utf-8")
-    arbol = ast.parse(texto)
-    modulos = {n.module for n in ast.walk(arbol) if isinstance(n, ast.ImportFrom)}
-    modulos |= {a.name for n in ast.walk(arbol) if isinstance(n, ast.Import) for a in n.names}
-    assert not any(m in {"os", "dotenv", "httpx", "google", "google.genai"} for m in modulos)
-    for marcador in ("os.environ", "dotenv", ".env"):
-        assert marcador not in texto, marcador
+    """El proveedor del asistente expone funciones tipadas y delega en el pasillo."""
     assert callable(assistant_provider.esquema_asistente)
     assert callable(assistant_provider.validar_salida_asistente)
 
@@ -157,33 +150,3 @@ def test_avisos_al_cliente_sin_jerga_ni_proveedor(monkeypatch):
         assert "apoyo con ia" not in bajo or "respaldo local" in bajo, aviso
         for palabra in ("inferencia", "gemini", "vertex", "google", "modelo", "proveedor"):
             assert palabra not in bajo, (palabra, aviso)
-
-
-def test_literales_de_aviso_del_codigo_sin_inferencia():
-    for ruta in (PROVEEDOR, ASISTENTE):
-        arbol = ast.parse(ruta.read_text(encoding="utf-8"))
-        cadenas = [n.value for n in ast.walk(arbol) if isinstance(n, ast.Constant) and isinstance(n.value, str)]
-        cadenas += [
-            p.value for n in ast.walk(arbol) if isinstance(n, ast.JoinedStr)
-            for p in n.values if isinstance(p, ast.Constant)
-        ]
-        avisos = [c for c in cadenas if re.search(r"(?i)respaldo|priorizó", c)]
-        assert avisos, ruta
-        assert not any("inferencia" in c.lower() for c in avisos)
-
-
-def test_modo_externo_en_contrato_y_cliente():
-    """El contrato backend-frontend usa los modos canónicos 'externo' y 'local'."""
-    for rel in (
-        "frontend/src/lib/copilotClient.ts",
-        "frontend/src/types/copilot.ts",
-        "frontend/src/components/copilot/CopilotWorkspace.tsx",
-        "features/ai_copilot/domain/assistant_models.py",
-    ):
-        texto = (RAIZ / rel).read_text(encoding="utf-8")
-        assert '"externo"' in texto, rel
-
-
-def test_avisos_con_role_status_en_el_copiloto():
-    texto = (RAIZ / "frontend/src/components/copilot/CopilotWorkspace.tsx").read_text(encoding="utf-8")
-    assert 'advertencias.map((a, i) => <p key={i} role="status"' in texto

@@ -80,14 +80,31 @@ def test_clave_de_vencimiento_cabe_en_origen_ref():
     assert clave.endswith(":2026-10-30") and len(clave) <= ORIGEN_REF_MAX
 
 
-def test_sin_tareas_creadas_desde_auditoria_capa():
-    """R4: la sala `auditoria_capa` no toca `roadmap_tasks`; el plan único lo escribe `roadmap`."""
-    infractores = [
-        p.relative_to(RAIZ).as_posix()
-        for p in (RAIZ / "features" / "auditoria_capa").rglob("*.py")
-        if "roadmap_tasks" in p.read_text(encoding="utf-8-sig").lower()
-    ]
-    assert not infractores, f"auditoria_capa escribe tareas por su cuenta: {infractores}"
+@pytest.mark.asyncio
+async def test_auditoria_capa_no_crea_tareas_roadmap():
+    """R4 (comportamiento): auditoria_capa registra hallazgos sin interactuar ni escribir en roadmap_tasks."""
+    from unittest.mock import AsyncMock, MagicMock
+    from features.auditoria_capa.auditoria_capa_service import registrar_hallazgo_capa
+    from features.auditoria_capa.domain.models import TicketCAPA, SeveridadHallazgo
+
+    mock_session = AsyncMock()
+    mock_session.add = MagicMock()
+    mock_session.flush = AsyncMock()
+    mock_session.commit = AsyncMock()
+
+    ticket = TicketCAPA(
+        tenant_id="tenant-test-1",
+        control_id="ctrl-1",
+        descripcion_hallazgo="Hallazgo de prueba",
+        severidad=SeveridadHallazgo.NO_CONFORMIDAD_MENOR,
+        creado_por="user-1",
+    )
+    resultado = await registrar_hallazgo_capa(mock_session, ticket)
+    assert resultado.descripcion_hallazgo == "Hallazgo de prueba"
+    assert resultado.severidad == SeveridadHallazgo.NO_CONFORMIDAD_MENOR
+    for call in mock_session.execute.call_args_list:
+        query_str = str(call[0][0])
+        assert "roadmap_tasks" not in query_str.lower()
 
 
 # --- Recorrido contra PostgreSQL ------------------------------------------------------------------

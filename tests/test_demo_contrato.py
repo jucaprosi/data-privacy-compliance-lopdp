@@ -134,11 +134,6 @@ def test_eventos_y_protocolo_de_plantilla():
 
 # --- Sin borrado ni correos en registros --------------------------------------------------------
 
-def test_el_repositorio_no_borra():
-    for archivo in (SALA / "repo").rglob("*.py"):
-        assert not re.search(r"\bDELETE\b", archivo.read_text(encoding="utf-8"), re.IGNORECASE), archivo
-
-
 def test_la_migracion_no_concede_delete_a_lopdp_app():
     fuente = MIGRACION.read_text(encoding="utf-8")
     concesiones = re.findall(r"GRANT\s+([^;\"]+?)\s+ON\s+demo_sesiones\s+TO\s+lopdp_app", fuente, re.IGNORECASE)

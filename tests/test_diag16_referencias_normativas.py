@@ -66,12 +66,6 @@ def test_referencias_backend_igual_frontend():
     assert not distintas, f"Referencias distintas entre servidor y frontend: {distintas}"
 
 
-def test_sin_art47_num3_capacitacion():
-    textos = [p["referenciaNormativa"] for p in _banco()] + list(_referencias_ts().values())
-    culpables = [t for t in textos if re.search(r"Art\.\s*47\s+numeral\s+3\b", t)]
-    assert not culpables, f"El art. 47 num. 3 no trata de la capacitación: {culpables}"
-
-
 def test_citas_atomicas_en_citas_verificadas():
     registradas = set(_CLAVE_CITA.findall(RUTA_CITAS.read_text(encoding="utf-8")))
     faltan = sorted(

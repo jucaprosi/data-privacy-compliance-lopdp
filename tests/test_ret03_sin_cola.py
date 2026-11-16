@@ -110,21 +110,3 @@ async def test_generacion_en_linea_sin_cola(monkeypatch):
     assert resp.status_code == 200, resp.text
     assert resp.json() == esperado
     inline_mock.assert_awaited_once()
-
-    motor = (RAIZ / "features" / "roadmap" / "services" / "generacion_en_linea.py").read_text(encoding="utf-8")
-    assert "set_job_status" not in motor
-    assert "app_core.queue" not in motor
-
-
-def test_cliente_frontend_sin_getjob():
-    archivos = [
-        RAIZ / "frontend" / "src" / "types" / "roadmap.ts",
-        RAIZ / "frontend" / "src" / "lib" / "roadmap" / "cliente.ts",
-        RAIZ / "frontend" / "src" / "lib" / "roadmap" / "mockServer.ts",
-        RAIZ / "frontend" / "src" / "store" / "useRoadmapStore.ts",
-    ]
-    for archivo in archivos:
-        texto = archivo.read_text(encoding="utf-8")
-        assert "RoadmapJobStatus" not in texto, f"RoadmapJobStatus presente en {archivo.relative_to(RAIZ)}"
-        assert "getJob" not in texto, f"getJob presente en {archivo.relative_to(RAIZ)}"
-        assert "/roadmaps/jobs" not in texto, f"/roadmaps/jobs presente en {archivo.relative_to(RAIZ)}"

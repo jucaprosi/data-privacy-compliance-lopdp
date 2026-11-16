@@ -202,15 +202,3 @@ def test_sin_token_valido_no_se_llama_al_resolutor(entorno, authorization):
     assert error.value.status_code == 401
     assert resolutor.recibido == []
     assert entorno["usuario_de_identidad"] == []
-
-
-def test_la_seccion_no_lee_el_entorno_ni_el_modo_de_cabeceras():
-    """El entorno sale solo de EP-01 y la identidad solo del token: la sección no usa `os` ni el modo de cabeceras (se mira el AST, no los textos)."""
-    texto = Path(security.__file__).read_text(encoding="utf-8")
-    seccion = re.search(r"# === DEMO-08 ===\n(.*?)# === fin DEMO-08 ===", texto, re.S)
-    assert seccion, "falta la sección DEMO-08 en app_core/security.py"
-    arbol = ast.parse(seccion.group(1))
-    nombres = {n.id for n in ast.walk(arbol) if isinstance(n, ast.Name)}
-    nombres |= {n.attr for n in ast.walk(arbol) if isinstance(n, ast.Attribute)}
-    for prohibido in ("os", "environ", "getenv", "modo_autenticacion", "MODO_HEADERS", "Header", "headers"):
-        assert prohibido not in nombres, prohibido

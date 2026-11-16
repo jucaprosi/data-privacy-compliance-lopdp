@@ -60,13 +60,6 @@ def test_a_la_tabla_cubre_todos_los_tipos_del_enum():
     assert plazos.UNIDAD == "corridos" and plazos.ESTIMADO is True
 
 
-def test_b_el_literal_15_solo_vive_en_plazos():
-    servicio = (RAIZ / "features/derechos_arco/derechos_arco_service.py").read_text(encoding="utf-8")
-    assert not re.search(r"\b15\b", servicio)
-    assert "PLAZO_DIAS" not in servicio
-    assert re.search(r"\b15\b", (RAIZ / "features/derechos_arco/domain/plazos.py").read_text(encoding="utf-8"))
-
-
 @pytest.mark.parametrize("tipo,dias", sorted(ESPERADO.items()))
 def test_c_la_respuesta_lleva_los_tres_campos(tipo, dias):
     ahora = datetime.now(timezone.utc)

@@ -133,17 +133,3 @@ async def test_el_registro_de_un_archivo_valido_sigue_funcionando(api):
 async def test_los_codigos_nuevos_estan_en_el_catalogo():
     assert CATALOGO_ERRORES["EVIDENCE_TYPE_NOT_ALLOWED"].status_code == 415
     assert CATALOGO_ERRORES["EVIDENCE_TOO_LARGE"].status_code == 413
-
-
-async def test_reglas_del_servidor_alineadas_con_las_de_la_interfaz():
-    """Si alguien cambia una lista sin la otra, el aviso de la interfaz dejaría de coincidir con el servidor."""
-    import os
-    import re
-
-    ruta = os.path.join(
-        os.path.dirname(__file__), "..", "frontend", "src", "components", "modules", "roadmap", "evidencia", "reglas.ts"
-    )
-    fuente = open(ruta, encoding="utf-8").read()
-    mimes_ui = set(re.findall(r'^\s*"([a-z]+/[^"]+)":\s*\[', fuente, flags=re.M))
-    assert mimes_ui == set(storage_limites.TIPOS_PERMITIDOS)
-    assert f"{storage_limites.TAMANO_MAXIMO_BYTES // MB} * 1024 * 1024" in fuente

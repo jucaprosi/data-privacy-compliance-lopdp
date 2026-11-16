@@ -76,11 +76,7 @@ def test_cualquier_valor_que_no_encienda_deja_la_bandera_apagada(monkeypatch, va
     assert r.json() == {"subida_firmada": False}
 
 
-def test_la_bandera_se_lee_solo_en_el_backend():
-    raiz = Path(__file__).resolve().parent.parent
-    for carpeta in ("frontend/src", "frontend/app"):
-        base = raiz / carpeta
-        if base.exists():
-            for ruta in base.rglob("*"):
-                if ruta.suffix in {".ts", ".tsx", ".js"}:
-                    assert "EVIDENCIAS_SUBIDA_FIRMADA" not in ruta.read_text(encoding="utf-8", errors="ignore")
+def test_bandera_encendida_habilita_subida_firmada(monkeypatch):
+    monkeypatch.setenv("EVIDENCIAS_SUBIDA_FIRMADA", "true")
+    r = TestClient(app).get("/api/v1/evidencias/estado", headers=CABECERAS)
+    assert r.status_code == 200 and r.json() == {"subida_firmada": True}

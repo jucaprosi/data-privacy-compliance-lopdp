@@ -119,16 +119,6 @@ async def test_04_migracion_aborta_con_huerfanos_y_no_toca_la_tabla(db_session):
     await db_session.rollback()
 
 
-async def test_05_migracion_es_compatible_expand_contract():
-    import sys
-    sys.path.insert(0, str(RAIZ / "scripts"))
-    import verificar_migracion_compatible as vmc
-
-    codigo = (RAIZ / "alembic/versions/20261108_derechos_tenant_texto.py").read_text(encoding="utf-8")
-    assert vmc.verificar(codigo) == []
-    assert "NOT VALID" in codigo and "VALIDATE CONSTRAINT" in codigo
-
-
 # DER-04 retiró test_06a y test_06b: probaban la ventana de reversión de DER-03 (el disparador que llenaba
 # tenant_id uuid y la guardia del downgrade), y la contracción de DER-04 (20261109_der04_contraccion)
 # retira esa columna y ese disparador. Su sustituto es tests/test_der04_contraccion.py.

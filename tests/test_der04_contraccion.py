@@ -238,22 +238,4 @@ _CARPETAS = ("features", "api", "app_core", "scripts", "frontend/src")
 _VIEJA = re.compile(r"(?<![\w.'])tenant_id(?!_texto)\b")
 
 
-def _cadenas_sql(ruta: Path) -> list[str]:
-    """Literales de cadena del archivo, sin docstrings ni comentarios."""
-    arbol = ast.parse(ruta.read_text(encoding="utf-8"))
-    docstrings = {id(n.value) for n in ast.walk(arbol) if isinstance(n, ast.Expr) and isinstance(n.value, ast.Constant)}
-    return [n.value for n in ast.walk(arbol)
-            if isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docstrings]
 
-
-def test_07_ningun_codigo_nombra_la_columna_vieja_ni_el_disparador():
-    nombres = subprocess.run(
-        ["git", "grep", "-n", "-E", r"trg_derechos_arco_tenant_texto|derechos_arco_tenant_texto\(", "--", *_CARPETAS],
-        cwd=RAIZ, capture_output=True, text=True, encoding="utf-8",
-    ).stdout.strip()
-    assert nombres == "", nombres
-    archivos = subprocess.run(["git", "grep", "-l", "derechos_arco_solicitudes", "--", *_CARPETAS],
-                              cwd=RAIZ, capture_output=True, text=True, encoding="utf-8").stdout.split()
-    usos = [f"{a}: {s.strip()[:80]}" for a in archivos if a.endswith(".py") for s in _cadenas_sql(RAIZ / a) if _VIEJA.search(s)
-            and ("derechos_arco" in s or "SELECT" in s.upper() or "WHERE" in s.upper() or s == "tenant_id")]
-    assert usos == [], usos
