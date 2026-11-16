@@ -139,7 +139,22 @@ async def _asegurar_tenant(session, org: OrganizacionFicticia, conteo) -> None:
 
 async def _asegurar_usuario(session, correo: str, nombre: str, conteo, tenant_id: str = "ep-org-micro") -> str:
     import os
+    from sqlalchemy import text
     from features.plataforma.plataforma_service import asegurar_persona_sintetica
+
+    # Si tenant_id no existe en la base (ej. llamada desde sembrar_plantilla), buscar tenant sintético existente
+    try:
+        check = (await session.execute(
+            text("SELECT 1 FROM tenants WHERE id = :t"), {"t": tenant_id}
+        )).first()
+        if not check:
+            sintetico = (await session.execute(
+                text("SELECT id FROM tenants WHERE ruc_identificacion LIKE '999999999%' LIMIT 1")
+            )).first()
+            if sintetico:
+                tenant_id = sintetico[0]
+    except Exception:
+        pass
 
     prev = os.environ.get("APP_ENV")
     if prev not in ("pruebas", "demo"):
