@@ -22,6 +22,7 @@ from uuid import uuid4
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app_core.pasillo import inferencia as pasillo_inferencia
 from features.roadmap.domain.models import GenerateRoadmapRequest, RoadmapDocument
 from features.roadmap.services.contexto_generacion import (
     SinDiagnosticoError,

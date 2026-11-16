@@ -8,10 +8,13 @@ from __future__ import annotations
 
 import asyncio
 import concurrent.futures
+import logging
 from typing import Any, Optional
 
 from app_core.pasillo import inferencia as pasillo_inferencia
 from features.roadmap.domain.models import RoadmapDocument
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_TOKENS = 8192
 DEFAULT_TIMEOUT_SECONDS = 60.0
@@ -143,3 +146,35 @@ def call_roadmap_llm(
         raise LLMTimeoutError(f"Tiempo límite agotado en llamada al LLM ({timeout}s): {exc}") from exc
 
     return documento.model_dump_json()
+
+
+async def generar_roadmap_con_traza(
+    prompt: Any,
+    valores: dict,
+    *,
+    org_id: str,
+    modelo: str = MODELO_POR_DEFECTO,
+    timeout: float = DEFAULT_TIMEOUT_SECONDS,
+    esquema: type[Any] = RoadmapDocument,
+) -> tuple[Any, Any]:
+    """Genera la hoja de ruta con traza auditable (IA-10) usando la compuerta de inferencia."""
+    InferenciaNoDisponible, motivo_neutro = pasillo_inferencia.errores()
+    if not isinstance(org_id, str) or not org_id.strip():
+        raise InferenciaNoDisponible(motivo_neutro)
+    if not pasillo_inferencia.estado().disponible:
+        raise InferenciaNoDisponible(motivo_neutro)
+
+    try:
+        resultado, traza = await asyncio.wait_for(
+            pasillo_inferencia.generar_trazado(
+                prompt,
+                valores,
+                esquema,
+                modelo=modelo,
+                org_id=org_id,
+            ),
+            timeout=timeout,
+        )
+        return resultado, traza
+    except TimeoutError as exc:
+        raise LLMTimeoutError(f"Tiempo límite agotado en llamada al LLM ({timeout}s): {exc}") from exc
