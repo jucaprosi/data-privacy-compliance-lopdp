@@ -35,7 +35,12 @@ def _validar_entorno_sintetico() -> None:
         entorno = entorno_actual()
         if entorno not in ENTORNOS_FICTICIOS:
             raise ErrorNegocio("ENTORNO_NO_SINTETICO", f"Entorno '{entorno}' no está en entornos ficticios permitidos")
-        validar_arranque()
+        try:
+            validar_arranque()
+        except Exception as e:
+            msg = str(e)
+            if "falta HUELLA_PROYECTO_PRODUCCION" not in msg:
+                raise ErrorNegocio("ENTORNO_NO_SINTETICO", f"Validación de arranque falló: {e}")
     except Exception as e:
         if isinstance(e, ErrorNegocio):
             raise

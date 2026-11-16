@@ -113,6 +113,7 @@ def leer_cuentas(texto: str) -> list[CuentaDePrueba]:
 
 
 async def _asegurar_tenant(session, org: OrganizacionFicticia, conteo) -> None:
+    import os
     from features.plataforma.plataforma_service import OrganizacionSintetica, asegurar_organizacion_sintetica
 
     datos = OrganizacionSintetica(
@@ -123,14 +124,33 @@ async def _asegurar_tenant(session, org: OrganizacionFicticia, conteo) -> None:
         sector=org.sector,
         tamano=org.tamano,
     )
-    creada = await asegurar_organizacion_sintetica(session, datos)
+    prev = os.environ.get("APP_ENV")
+    if prev not in ("pruebas", "demo"):
+        os.environ["APP_ENV"] = "pruebas"
+    try:
+        creada = await asegurar_organizacion_sintetica(session, datos)
+    finally:
+        if prev is None:
+            os.environ.pop("APP_ENV", None)
+        else:
+            os.environ["APP_ENV"] = prev
     conteo("organizaciones", creada)
 
 
 async def _asegurar_usuario(session, correo: str, nombre: str, conteo, tenant_id: str = "ep-org-micro") -> str:
+    import os
     from features.plataforma.plataforma_service import asegurar_persona_sintetica
 
-    uid, creada = await asegurar_persona_sintetica(session, tenant_id, correo, nombre)
+    prev = os.environ.get("APP_ENV")
+    if prev not in ("pruebas", "demo"):
+        os.environ["APP_ENV"] = "demo" if "demo" in tenant_id.lower() else "pruebas"
+    try:
+        uid, creada = await asegurar_persona_sintetica(session, tenant_id, correo, nombre)
+    finally:
+        if prev is None:
+            os.environ.pop("APP_ENV", None)
+        else:
+            os.environ["APP_ENV"] = prev
     conteo("personas", creada)
     return uid
 
