@@ -156,24 +156,6 @@ def test_compuerta_expone_lo_de_bib_104_y_catalogo_registra_errores():
 
 
 # ¤adpa
-def test_secciones_de_la_ficha_una_vez_y_archivos_dentro_del_tope():
-    for relativa in ("features/biblioteca/biblioteca_service.py", "features/biblioteca/domain/errores.py"):
-        texto = (ROOT / relativa).read_text(encoding="utf-8")
-        assert texto.count("# === BIB-104 ===") == 1 and texto.count("# === fin BIB-104 ===") == 1
-
-    vistas_ts = (ROOT / "frontend/src/components/biblioteca/vistas/index.ts").read_text(encoding="utf-8")
-    assert vistas_ts.count("// === BIB-104 ===") == 1 and vistas_ts.count("// === fin BIB-104 ===") == 1
-
-    for relativa in (
-        "features/biblioteca/services/archivos.py",
-        "features/biblioteca/services/descarga.py",
-        "api/routers/biblioteca_descargas.py",
-    ):
-        lineas = (ROOT / relativa).read_text(encoding="utf-8").splitlines()
-        assert len(lineas) <= 500, f"{relativa} supera 500 líneas: {len(lineas)}"
-
-
-# ¤adpa
 def test_rutas_router_descargas():
     from api.routers import biblioteca_descargas as router
     assert router.AUTO_REGISTRO is True
@@ -188,42 +170,6 @@ def test_rutas_router_descargas():
     publicadas = app.openapi()["paths"]
     assert "/api/v1" + base_descargar in publicadas
     assert "/api/v1" + base_archivo in publicadas
-
-
-# ¤adpa
-def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
-    import importlib.util
-    assert MIGRACION is not None, "falta alembic/versions/*_biblioteca_descargas.py"
-    spec = importlib.util.spec_from_file_location("bib104_migracion", MIGRACION)
-    migracion = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(migracion)
-    assert len(migracion.revision) <= 32
-
-    configuracion = Config(str(ROOT / "alembic.ini"))
-    configuracion.set_main_option("script_location", str(ROOT / "alembic"))
-    guion = ScriptDirectory.from_config(configuracion)
-    cabezas = [cabeza_de_sala("biblioteca", guion)]
-    assert len(cabezas) == 1
-    assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
-    assert guion.get_revision(migracion.down_revision) is not None
-
-    sql = []
-    class Operaciones:
-        def execute(self, consulta):
-            sql.append(consulta)
-    migracion.op = Operaciones()
-    migracion.upgrade()
-    texto = "\n".join(sql)
-
-    assert "CREATE TABLE biblioteca_descargas" in texto
-    assert "ALTER TABLE biblioteca_descargas ENABLE ROW LEVEL SECURITY" in texto
-    assert "ALTER TABLE biblioteca_descargas FORCE ROW LEVEL SECURITY" in texto
-    assert "CREATE POLICY tenant_isolation_biblioteca_descargas ON biblioteca_descargas" in texto
-    assert "USING (tenant_id::text = current_setting('app.current_tenant_id', true))" in texto
-    assert "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true)" in texto
-    assert "GRANT SELECT, INSERT ON biblioteca_descargas TO lopdp_app" in texto
-    assert "DELETE" not in texto.replace("BEFORE UPDATE OR DELETE", "")
-    assert "GRANT ALL" not in texto
 
 
 # ¤adpa

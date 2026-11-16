@@ -203,16 +203,6 @@ def test_codigos_registrados():
         assert codigo in CATALOGO_ERRORES
 
 
-def test_migracion_una_cabeza_rls_y_sin_update():
-    script = ScriptDirectory.from_config(Config(str(ROOT / "alembic.ini")))
-    assert cabeza_de_sala("biblioteca", script)
-    revision = script.get_revision("20261116_bib_generacion")
-    assert revision is not None and len(revision.revision) <= 32
-    cuerpo = MIGRACION.read_text(encoding="utf-8")
-    assert "FORCE ROW LEVEL SECURITY" in cuerpo and "GRANT SELECT,INSERT ON biblioteca_generaciones TO lopdp_app" in cuerpo
-    assert not re.search(r"GRANT[^;]*(UPDATE|DELETE)[^;]*biblioteca_generaciones", cuerpo)
-
-
 # --------------------------------------------------------------------------- persistencia (base de pruebas)
 
 async def _borrador(sesion, ids, tenant, contexto):

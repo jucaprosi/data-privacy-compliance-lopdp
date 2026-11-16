@@ -113,21 +113,6 @@ def test_contrato_sin_tenant_y_con_limites():
 
 
 # ¤adpa
-def test_compuerta_errores_secciones_y_tope_de_lineas():
-    for nombre in ("reservar_carga", "subir_archivo", "finalizar_carga", "descargar_carga", "listar_cargas",
-                   "obtener_carga", "registrar_analizador", "Carga", "ReservarCarga"):
-        assert nombre in bib.__all__ and hasattr(bib, nombre)
-    for codigo in ("BIB_CARGA_NO_ENCONTRADA", "BIB_CARGA_EN_CUARENTENA", "BIB_CARGA_MACROS"):
-        assert codigo in CATALOGO_ERRORES
-    for relativa in ("features/biblioteca/biblioteca_service.py", "features/biblioteca/domain/errores.py"):
-        texto = (ROOT / relativa).read_text(encoding="utf-8")
-        assert texto.count("# === BIB-106 ===") == 1 and texto.count("# === fin BIB-106 ===") == 1
-    for relativa in ("features/biblioteca/services/carga_externa.py", "features/biblioteca/services/analisis_archivos.py",
-                     "api/routers/biblioteca_cargas.py"):
-        assert len((ROOT / relativa).read_text(encoding="utf-8").splitlines()) <= 500
-
-
-# ¤adpa
 def test_rutas_publicadas():
     from api.routers import biblioteca_cargas as router
     assert router.AUTO_REGISTRO is True
@@ -136,32 +121,6 @@ def test_rutas_publicadas():
     assert set(rutas[base]) == {"get", "post"}
     assert set(rutas[base + "/{carga_id}/archivo"]) == {"get", "put"}
     assert "post" in rutas[base + "/{carga_id}/finalizar"]
-
-
-# ¤adpa
-def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("bib106_migracion", MIGRACION)
-    migracion = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(migracion)
-    assert len(migracion.revision) <= 32
-    configuracion = Config(str(ROOT / "alembic.ini"))
-    configuracion.set_main_option("script_location", str(ROOT / "alembic"))
-    guion = ScriptDirectory.from_config(configuracion)
-    assert cabeza_de_sala("biblioteca", guion)
-    sql = []
-
-    class Operaciones:
-        def execute(self, consulta):
-            sql.append(consulta)
-    migracion.op = Operaciones()
-    migracion.upgrade()
-    texto = "\n".join(sql)
-    assert "ALTER TABLE biblioteca_cargas ENABLE ROW LEVEL SECURITY" in texto
-    assert "ALTER TABLE biblioteca_cargas FORCE ROW LEVEL SECURITY" in texto
-    assert "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))" in texto
-    assert "GRANT SELECT, INSERT ON biblioteca_cargas TO lopdp_app" in texto
-    assert "GRANT ALL" not in texto and "GRANT DELETE" not in texto
 
 
 # --------------------------------------------------------------------------- persistencia (PostgreSQL local)

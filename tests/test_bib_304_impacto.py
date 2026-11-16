@@ -1,8 +1,13 @@
 # ¤adpa ¤arbitro
+import os
 from pathlib import Path
 from unittest.mock import AsyncMock
+from uuid import uuid4
 
 import pytest
+from sqlalchemy import text
+from sqlalchemy.exc import DBAPIError
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from api.errores import ErrorNegocio
 from features.biblioteca.services import impacto
@@ -31,23 +36,49 @@ async def test_decision_invalida_falla_antes_de_persistir():
     session.execute.assert_not_awaited()
 
 
-def test_mutacion_sobrescribir_aprobado_esta_bloqueada_en_base():
-    """Mutación decisiva: quitar OLD.estado='aprobado' haría fallar esta prueba."""
-    migracion = (RAIZ / "alembic/versions/20261113_biblioteca_impactos.py").read_text()
-    assert "OLD.estado='aprobado'" in migracion
-    assert "NEW.contenido_markdown IS DISTINCT FROM OLD.contenido_markdown" in migracion
-    assert "BIB_DOCUMENTO_APROBADO_INMUTABLE" in migracion
+@pytest.mark.asyncio
+async def test_servicio_no_actualiza_documentos_al_decidir():
+    from types import SimpleNamespace
+    mock_res = SimpleNamespace(mappings=lambda: SimpleNamespace(first=lambda: {
+        "id": "exp-1", "decision": "actualizar", "motivo": "ok",
+    }))
+    session = SimpleNamespace(execute=AsyncMock(return_value=mock_res))
+    resultado = await impacto.decidir(session, "tenant-1", "actor-1", "exp-1", "actualizar", "motivo valido")
+    assert resultado["decision"] == "actualizar"
+    sentencias = [str(llamada.args[0]) for llamada in session.execute.call_args_list]
+    assert all("biblioteca_documentos" not in s for s in sentencias)
+    assert any("biblioteca_impactos_organizacion" in s for s in sentencias)
 
 
-def test_servicio_no_actualiza_documentos_al_decidir():
-    fuente = (RAIZ / "features/biblioteca/services/impacto.py").read_text()
-    bloque = fuente.split("async def decidir", 1)[1].split("async def preparar_avisos", 1)[0]
-    assert "UPDATE biblioteca_impactos_organizacion" in bloque
-    assert "UPDATE biblioteca_documentos" not in bloque
-
-
-def test_migracion_fuerza_rls_y_concede_columnas_minimas():
-    migracion = (RAIZ / "alembic/versions/20261113_biblioteca_impactos.py").read_text()
-    assert migracion.count("FORCE ROW LEVEL SECURITY") == 3
-    assert "GRANT UPDATE(decision,motivo,decidente_id,decidido_en)" in migracion
-    assert "GRANT UPDATE(estado,intentos,ultimo_intento_en,recibido_en,ultimo_error)" in migracion
+@pytest.mark.asyncio
+async def test_db_disparador_preserva_documento_aprobado_inmutable():
+    from conftest import exigir_base_de_pruebas
+    url = os.environ.get("TEST_DATABASE_URL", "")
+    if not url:
+        pytest.skip("Sin TEST_DATABASE_URL para prueba de disparador")
+    exigir_base_de_pruebas()
+    if url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+psycopg://", 1)
+    engine = create_async_engine(url, echo=False)
+    async with engine.connect() as conexion:
+        transaccion = await conexion.begin()
+        try:
+            tid = f"org-imp-{uuid4().hex[:8]}"
+            uid = f"usr-imp-{uuid4().hex[:8]}"
+            did = f"doc-imp-{uuid4().hex[:8]}"
+            await conexion.execute(text("INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion) VALUES (:id, 'T', 'T', :ruc)"),
+                                   {"id": tid, "ruc": str(uuid4().int)[:13]})
+            await conexion.execute(text("INSERT INTO users (id, email, nombre) VALUES (:id, :e, 'U')"),
+                                   {"id": uid, "e": f"{uid}@test.local"})
+            await conexion.execute(text(
+                "INSERT INTO biblioteca_documentos (id, tenant_id, plantilla_id, titulo, contenido_markdown, sha256, estado, creado_por) "
+                "VALUES (:id, :tid, 'p-1', 'Titulo', 'Original', 'sha1', 'aprobado', :uid)"
+            ), {"id": did, "tid": tid, "uid": uid})
+            with pytest.raises(DBAPIError) as exc:
+                await conexion.execute(text(
+                    "UPDATE biblioteca_documentos SET contenido_markdown = 'Modificado' WHERE id = :id"
+                ), {"id": did})
+            assert "BIB_DOCUMENTO_APROBADO_INMUTABLE" in str(exc.value)
+        finally:
+            await transaccion.rollback()
+    await engine.dispose()

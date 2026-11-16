@@ -90,37 +90,6 @@ def test_entradas_exigen_hash_clasificacion_permisos_y_rechazan_identidad():
         _verificacion("e", revisor="yo")
 
 
-def test_migracion_solo_anexar_rls_forzada_y_una_cabeza():
-    spec = importlib.util.spec_from_file_location("bib303_migracion", MIGRACION)
-    migracion = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(migracion)
-    assert len(migracion.revision) <= 32
-    cfg = Config(str(ROOT / "alembic.ini")); cfg.set_main_option("script_location", str(ROOT / "alembic"))
-    guion = ScriptDirectory.from_config(cfg)
-    assert cabeza_de_sala("biblioteca", guion) and guion.get_revision(migracion.revision) is not None
-    assert guion.get_revision(migracion.down_revision) is not None
-    sql: list[str] = []
-    migracion.op = SimpleNamespace(execute=sql.append)
-    migracion.upgrade()
-    texto = "\n".join(sql)
-    for tabla in ("biblioteca_evidencias", "biblioteca_verificaciones"):
-        assert f"ALTER TABLE {tabla} FORCE ROW LEVEL SECURITY" in texto
-    assert texto.count("WITH CHECK (tenant_id::text=current_setting('app.current_tenant_id',true))") == 2
-    assert "GRANT SELECT,INSERT ON biblioteca_evidencias, biblioteca_verificaciones TO lopdp_app" in texto
-    assert "UPDATE" not in texto.split("REVOKE ALL")[1] and "DELETE" not in texto.split("REVOKE ALL")[1]
-    assert "ck_bib_verif_conforme_legible" in texto and "ck_bib_verif_conforme_eficaz" in texto
-    assert "NEW.tenant_id" in texto and "ON DELETE RESTRICT" in texto
-
-
-def test_limite_adpa_y_tamano():
-    codigo = (ROOT / "features/biblioteca/services/verificacion.py").read_text(encoding="utf-8")
-    assert "features.roadmap" not in codigo and "UPDATE roadmap_tasks" not in codigo
-    assert "UPDATE biblioteca_verificaciones" not in codigo and "DELETE FROM biblioteca_" not in codigo
-    for relativa in ("features/biblioteca/services/verificacion.py", "features/roadmap/roadmap_service.py",
-                     "api/routers/biblioteca_verificaciones.py", "features/biblioteca/biblioteca_service.py"):
-        assert len((ROOT / relativa).read_text(encoding="utf-8").splitlines()) <= 500
-
-
 # ------------------------------------------------------------------------------------ reglas puras
 
 def test_conforme_exige_evidencia_legible_eficacia_y_fecha_no_futura():

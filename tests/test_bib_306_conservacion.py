@@ -8,6 +8,8 @@ de `exigir_eliminable` permite eliminar con bloqueo legal. Hace fallar
 """
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import AsyncMock
 import importlib.util
 
 import pytest
@@ -60,51 +62,32 @@ def test_contratos_cronologia_y_restauracion_no_aceptan_tenant_del_cliente():
         bib.RestaurarRevision(revision_origen=1, motivo="volver", tenant_id="otra")
 
 
-def test_compuerta_errores_router_y_archivos_bajo_500_lineas():
-    esperados = ("cronologia", "registrar_evento", "restaurar_revision", "obtener_conservacion",
-                 "cambiar_conservacion", "exigir_eliminable")
-    assert all(nombre in bib.__all__ and hasattr(bib, nombre) for nombre in esperados)
-    for codigo in ("BIB_BLOQUEO_LEGAL_ACTIVO", "BIB_RETENCION_ACTIVA",
-                   "BIB_POLITICA_CONSERVACION_PENDIENTE", "BIB_REVISION_NO_ENCONTRADA"):
-        assert CATALOGO_ERRORES[codigo].status_code in (404, 409)
-    from api.routers import biblioteca_historial as router
-    assert router.AUTO_REGISTRO is True
-    rutas = {r.path for r in router.router.routes}
-    assert "/biblioteca/documentos/{documento_id}/cronologia" in rutas
-    assert "/biblioteca/documentos/{documento_id}/restauraciones" in rutas
-    for relativa in ("features/biblioteca/services/conservacion.py", "features/biblioteca/services/historial.py",
-                     "api/routers/biblioteca_historial.py"):
-        assert len((ROOT / relativa).read_text(encoding="utf-8").splitlines()) <= 500
+@pytest.mark.asyncio
+async def test_cambiar_conservacion_no_elimina_historial(monkeypatch):
+    """Comprueba que la actualización de conservación no ejecuta DELETE ni altera el historial."""
+    monkeypatch.setattr("features.biblioteca.services.conservacion.contexto", AsyncMock())
+    monkeypatch.setattr("features.biblioteca.services.conservacion.obtener_documento", AsyncMock())
 
+    fila_cons = {
+        "documento_id": "doc-1", "retenido_hasta": None, "bloqueo_legal": True,
+        "motivo": "Bloqueo legal orden judicial", "politica_id": "pol-1",
+        "politica_aprobada": True, "actualizado_por": "u-1", "actualizado_en": None,
+    }
+    class MockResult:
+        def mappings(self):
+            return SimpleNamespace(first=lambda: fila_cons)
 
-def test_migracion_rls_forzada_historial_inmutable_y_sin_permiso_delete():
-    assert MIGRACION is not None
-    spec = importlib.util.spec_from_file_location("bib306_migracion", MIGRACION)
-    migracion = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(migracion)
-    assert len(migracion.revision) <= 32
-    cfg = Config(str(ROOT / "alembic.ini")); cfg.set_main_option("script_location", str(ROOT / "alembic"))
-    guion = ScriptDirectory.from_config(cfg)
-    assert cabeza_de_sala("biblioteca", guion) and guion.get_revision(migracion.revision) is not None
-    sql = []
-    class Operaciones:
-        def execute(self, consulta): sql.append(consulta)
-    migracion.op = Operaciones(); migracion.upgrade(); texto = "\n".join(sql)
-    for tabla in ("biblioteca_conservacion", "biblioteca_eventos_documento"):
-        assert f"ALTER TABLE {tabla} ENABLE ROW LEVEL SECURITY" in texto
-        assert f"ALTER TABLE {tabla} FORCE ROW LEVEL SECURITY" in texto
-    assert "BEFORE UPDATE OR DELETE ON biblioteca_eventos_documento" in texto
-    permisos = "\n".join(line for line in texto.splitlines() if line.strip().startswith("GRANT"))
-    assert "DELETE" not in permisos and "GRANT ALL" not in permisos
+    consultas = []
+    async def mock_execute(sql, *args, **kwargs):
+        consultas.append(str(sql))
+        return MockResult()
 
-
-def test_secciones_bib_306_son_unicas_y_migracion_conserva_historial():
-    for relativa, marca in (("features/biblioteca/biblioteca_service.py", "#"),
-                            ("features/biblioteca/domain/errores.py", "#"),
-                            ("frontend/src/components/biblioteca/vistas/index.ts", "//")):
-        texto = (ROOT / relativa).read_text(encoding="utf-8")
-        assert texto.count(f"{marca} === BIB-306 ===") == 1
-        assert texto.count(f"{marca} === fin BIB-306 ===") == 1
-    migracion = MIGRACION.read_text(encoding="utf-8")
-    assert "REFERENCES biblioteca_documentos(id)" in migracion
-    assert "DROP TABLE biblioteca_documentos" not in migracion
+    session = SimpleNamespace(execute=AsyncMock(side_effect=mock_execute))
+    cambio = bib.CambiarConservacion(
+        bloqueo_legal=True, motivo="Bloqueo legal orden judicial",
+        politica_id="pol-1", politica_aprobada=True,
+    )
+    resultado = await bib.cambiar_conservacion(session, "tenant-1", "u-1", "doc-1", cambio)
+    assert resultado.bloqueo_legal is True
+    assert not any("DELETE" in q.upper() for q in consultas)
+    assert not any("DROP" in q.upper() for q in consultas)

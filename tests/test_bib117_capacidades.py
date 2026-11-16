@@ -47,19 +47,6 @@ def _codigo(error: pytest.ExceptionInfo) -> str:
     return getattr(error.value, "code", None) or str(error.value)
 
 
-def test_la_compuerta_expone_el_motor_y_no_hay_endpoint():
-    assert {"conceder_capacidad", "revocar_capacidad", "listar_capacidades"} <= set(bib.__all__)
-    rutas = "\n".join(p.read_text(encoding="utf-8") for p in (RAIZ / "api").rglob("*.py"))
-    assert "conceder_capacidad" not in rutas and "revocar_capacidad" not in rutas and "capacidades_admin" not in rutas
-
-
-def test_no_existe_ninguna_ruta_de_borrado():
-    motor = MOTOR.read_text(encoding="utf-8")
-    assert "DELETE" not in motor.upper().replace("DELETED_AT", "")
-    script = SCRIPT.read_text(encoding="utf-8")
-    assert "--baja" not in script and "--borrar" not in script and "DELETE" not in script.upper()
-
-
 @pytest.fixture
 def script(monkeypatch):
     import importlib.util

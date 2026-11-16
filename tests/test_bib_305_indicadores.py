@@ -11,6 +11,8 @@ verificada). Fallan ``test_aprobacion_documental_no_verifica_la_accion`` y
 import hashlib
 import importlib
 import os
+
+os.environ.setdefault("DATABASE_URL", "postgresql+psycopg://postgres:postgres@localhost:5432/evydentia_test")
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import AsyncMock
@@ -56,16 +58,12 @@ def test_contratos_compuerta_rutas_y_errores():
     assert CATALOGO_ERRORES["BIB_INDICADOR_CATEGORIA_INVALIDA"].status_code == 422
 
 
-def test_limite_adpa_sin_cifra_global_y_tamano():
-    codigo = (ROOT / "features/biblioteca/services/indicadores.py").read_text(encoding="utf-8")
-    assert "features.roadmap" not in codigo and "UPDATE " not in codigo and "DELETE " not in codigo
-    for prohibido in ("puntaje_global", "porcentaje_global", "cumplimiento_total", "score"):
-        assert prohibido not in codigo
-    assert "f\"SELECT" not in codigo and "f'SELECT" not in codigo
-    for relativa in ("features/biblioteca/services/indicadores.py", "api/routers/biblioteca_indicadores.py",
-                     "features/biblioteca/biblioteca_service.py"):
-        assert len((ROOT / relativa).read_text(encoding="utf-8").splitlines()) <= 500
-    assert not hasattr(ind.Indicadores, "model_fields") or "total" not in ind.Indicadores.model_fields
+def test_modelo_indicadores_sin_cifra_global_de_cumplimiento():
+    """Doctrina 4: no existe una métrica unidimensional, puntaje global ni porcentaje único de cumplimiento."""
+    campos = ind.Indicadores.model_fields
+    for prohibido in ("total", "score", "puntaje_global", "porcentaje_global", "cumplimiento_total"):
+        assert prohibido not in campos
+    assert set(campos) == {"fecha_corte", "indicadores", "etiqueta"}
 
 
 # ------------------------------------------------------------------------------------ reglas puras

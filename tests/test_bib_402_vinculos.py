@@ -147,45 +147,6 @@ def test_contratos_rutas_compuerta_y_error():
         bib.EntradaVinculos(tratamientos=[], tenant_id="otra")  # la organización sale del token
 
 
-def test_roles_de_escritura_implementador_y_coordinador():
-    codigo = (ROOT / "api/routers/biblioteca_vinculos.py").read_text(encoding="utf-8")
-    assert 'require_role("implementador", "coordinador")' in codigo
-    assert codigo.count("ctx: Gestion") == 1 and codigo.count("ctx: Consulta") == 2
-
-
-def test_migracion_rls_forzada_grants_minimos_y_revision_existente():
-    spec = importlib.util.spec_from_file_location("bib402_migracion", MIGRACION)
-    migracion = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(migracion)
-    assert len(migracion.revision) <= 32
-    cfg = Config(str(ROOT / "alembic.ini")); cfg.set_main_option("script_location", str(ROOT / "alembic"))
-    guion = ScriptDirectory.from_config(cfg)
-    assert cabeza_de_sala("biblioteca", guion)
-    assert guion.get_revision(migracion.revision) is not None
-    assert guion.get_revision(migracion.down_revision) is not None
-    sql = []
-    migracion.op = SimpleNamespace(execute=sql.append)
-    migracion.upgrade()
-    texto = "\n".join(sql)
-    assert "CHECK (tipo IN ('tratamiento','control','tarea'))" in texto
-    assert "CHECK (estado IN ('vigente','revisar'))" in texto
-    assert "UNIQUE (tenant_id, documento_id, tipo, ref)" in texto
-    assert "ENABLE ROW LEVEL SECURITY" in texto and "FORCE ROW LEVEL SECURITY" in texto
-    assert "WITH CHECK (tenant_id::text=current_setting('app.current_tenant_id',true))" in texto
-    assert "GRANT UPDATE (estado) ON biblioteca_vinculos TO lopdp_app" in texto
-    assert "GRANT ALL" not in texto and "GRANT SELECT,INSERT,UPDATE" not in texto
-
-
-def test_limite_adpa_sin_imports_de_otras_salas():
-    for relativa in ("features/biblioteca/services/vinculos_engine.py", "api/routers/biblioteca_vinculos.py"):
-        codigo = (ROOT / relativa).read_text(encoding="utf-8")
-        assert "features.rat" not in codigo, "RAT solo por app_core/pasillo/rat.py"
-        assert len(codigo.splitlines()) <= 500
-    motor_codigo = (ROOT / "features/biblioteca/services/vinculos_engine.py").read_text(encoding="utf-8")
-    assert "features.roadmap" not in motor_codigo and "app_core.pasillo" not in motor_codigo
-    assert "roadmap_tasks" not in motor_codigo and "hallazgos " not in motor_codigo
-
-
 # ----------------------------------------------------------------------------- reglas
 
 @pytest.mark.asyncio

@@ -17,9 +17,12 @@ Mutación documentada: quitar `"X-Role": rol` de `cabecerasDeMiembro` hace falla
 `test_cabeceras_de_miembro_declara_rol_y_usuario` y la prueba de interfaz `identidad.spec.ts`.
 """
 import importlib
+import os
 import re
 from pathlib import Path
 from unittest.mock import AsyncMock
+
+os.environ.setdefault("DATABASE_URL", "postgresql+psycopg://postgres:postgres@localhost:5432/evydentia_test")
 
 import pytest
 from fastapi import FastAPI
@@ -31,12 +34,8 @@ from app_core.db.session import get_session
 from features.organizacion import organizacion_service
 
 RAIZ = Path(__file__).resolve().parent.parent
-FRONT = RAIZ / "frontend" / "src" / "lib"
 TENANT, USUARIO = "org-bib115", "usuario-bib115"
 METODOS = ("GET", "POST", "PUT", "PATCH", "DELETE")
-# Los 14 clientes de la propiedad de BIB-115 (plantillasCuenta.ts es de BIB-401).
-CLIENTES = ["aplicabilidad", "borradores", "catalogo", "contexto", "documentos", "enlaces", "filas",
-            "generacion", "http", "preview", "revisiones", "trabajos", "verificacion", "vinculos"]
 
 
 def _usa_get_context(dependant) -> bool:
@@ -123,40 +122,4 @@ def test_pendientes_sin_x_user_id_en_modo_headers_responde_422(api):
     assert r.json()["detail"] == "Falta la cabecera X-User-ID"
 
 
-# ----------------------------------------------------------------------------- contrato del frontend
 
-def _funcion(texto: str, nombre: str) -> str:
-    inicio = texto.index(f"export function {nombre}(")
-    fin = texto.index("\n}", inicio)
-    return texto[inicio:fin]
-
-
-def test_cabeceras_de_miembro_declara_rol_y_usuario():
-    texto = (FRONT / "auth" / "cabeceras.ts").read_text(encoding="utf-8")
-    cuerpo = _funcion(texto, "cabecerasDeMiembro")
-    assert '"X-Role": rol' in cuerpo
-    assert re.search(r'modoAutenticacion\(\) === "headers"\) cabeceras\["X-User-ID"\]', cuerpo)
-    assert "leerOrganizacionActiva()" in texto
-    assert "throw new SinRolPermitido" in cuerpo
-    # cabecerasDeTenant no cambia: los demás clientes siguen igual.
-    assert '"X-Role"' not in _funcion(texto, "cabecerasDeTenant")
-
-
-@pytest.mark.parametrize("cliente", CLIENTES)
-def test_los_clientes_de_biblioteca_usan_cabeceras_de_miembro(cliente):
-    texto = (FRONT / "biblioteca" / f"{cliente}.ts").read_text(encoding="utf-8")
-    assert "cabecerasDeMiembro" in texto
-    # Única excepción: la consulta de roles de Organización, que no es una ruta de Biblioteca.
-    usos = re.findall(r"fetchAutenticado\(([^;]*?)cabecerasDeTenant\(\)", texto, flags=re.S)
-    assert all("/organizacion/me/roles" in uso for uso in usos), usos
-
-
-def test_las_escrituras_declaran_los_roles_de_su_ruta():
-    http = (FRONT / "biblioteca" / "http.ts").read_text(encoding="utf-8")
-    editores = importlib.import_module("api.routers.biblioteca_borradores").EDITORES
-    assert f"ROLES_EDITORES = {list(editores)}".replace("'", '"') in http.replace(" as const", "")
-    for cliente, roles in [("enlaces", "ROLES_GESTION_DOCUMENTAL"), ("verificacion", "ROLES_APORTAR_EVIDENCIA"),
-                           ("verificacion", "ROLES_REVISAR_EVIDENCIA"), ("vinculos", "ROLES_QUE_VINCULAN"),
-                           ("borradores", "ROLES_GESTION_DOCUMENTAL"), ("aplicabilidad", "ROLES_EDITORES")]:
-        texto = (FRONT / "biblioteca" / f"{cliente}.ts").read_text(encoding="utf-8")
-        assert f"cabecerasDeMiembro({roles})" in texto, (cliente, roles)

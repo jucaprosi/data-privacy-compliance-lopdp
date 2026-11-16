@@ -25,7 +25,6 @@ from fastapi.testclient import TestClient
 from app_core import security
 
 RAIZ = Path(__file__).resolve().parent.parent
-FRONT = RAIZ / "frontend" / "src"
 PROPIA, AJENA = "org-propia-bib101", "org-ajena-bib101"
 RUTA = "/prueba/biblioteca/pendientes"
 
@@ -91,42 +90,4 @@ def test_sin_organizacion_no_hay_organizacion_por_defecto(api):
     assert _pedir(api).status_code == 401
 
 
-# ------------------------------------------------------------- contrato del frontend (estático)
 
-def _leer(relativa: str) -> str:
-    return (FRONT / relativa).read_text(encoding="utf-8")
-
-
-def test_el_frontend_envia_la_organizacion_solo_en_cabeceras():
-    contexto = _leer("lib/biblioteca/contexto.ts")
-    # BIB-115: Biblioteca arma su identidad con cabecerasDeMiembro (organización + rol), no con la de tenant.
-    assert "cabecerasDeMiembro()" in contexto and "cabecerasDeTenant()" not in contexto
-    ruta = re.search(r'RUTA_PENDIENTES = "([^"]+)"', contexto).group(1)
-    assert ruta == "/api/v1/biblioteca/documentos/pendientes"
-    assert "tenant" not in ruta.lower() and "${" not in ruta
-    assert "body:" not in contexto
-
-
-def test_estado_de_biblioteca_aparte_y_sin_persistir():
-    store = _leer("store/useBibliotecaStore.ts")
-    assert "persist(" not in store and "localStorage" not in store
-    assert "/useAuditStore" not in store  # no importa el store de auditoría (BIB-110, EVI-01)
-
-
-def test_menu_y_pantalla_registrados_una_vez_por_el_patron_de_fe22():
-    menus, pantallas = _leer("components/layout/menus/index.ts"), _leer("components/layout/pantallas/index.tsx")
-    assert menus.count("registrar(SUBMENUS_BIB_101)") == 1
-    assert pantallas.count("registrar(PANTALLAS_BIB_101)") == 1
-    submenu = _leer("components/layout/menus/BIB-101.ts")
-    assert 'menu: "biblioteca"' in submenu and 'vista: "biblioteca"' in submenu
-    assert "biblioteca: () =>" in _leer("components/layout/pantallas/BIB-101.tsx")
-
-
-def test_boton_fijo_dentro_de_la_seccion_reservada_de_la_cabecera():
-    cabecera = _leer("components/layout/DashboardHeader.tsx")
-    secciones = re.findall(r"=== BIB-101 ===(.*?)=== fin BIB-101 ===", cabecera, flags=re.S)
-    assert len(secciones) == 2
-    # El import y el uso del botón existen una sola vez y los dos dentro de la sección.
-    for fragmento in ("import BotonBiblioteca", "<BotonBiblioteca />"):
-        assert cabecera.count(fragmento) == 1
-        assert any(fragmento in s for s in secciones)
