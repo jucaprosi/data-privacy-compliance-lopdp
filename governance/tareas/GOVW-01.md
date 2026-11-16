@@ -2,7 +2,7 @@
 id = "GOVW-01"
 titulo = "Microservicio en Go (services_go/vault_worker): receptor Eventarc, hashing SHA-256 en streaming y purga masiva en Cloud Run"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "go_vault_worker"
 depende_de = ["GCP-01", "BOV-01", "CON-01", "ADPA-09"]
 propiedad = ["services_go/vault_worker/go.mod", "services_go/vault_worker/main.go", "services_go/vault_worker/vault_worker_service.go", "services_go/vault_worker/Dockerfile", "app_core/pasillo/go_vault_worker.py#GOVW-01", "app_core/pasillo/conservacion.py#GOVW-01", "tests/test_govw01_vault_worker_contract.py"]
