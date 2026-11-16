@@ -43,6 +43,16 @@ def _cargar_indice():
 
 
 # ¤adpa
+def _cargar_git_diff():
+    """CI-26 R2: el lector común de rutas del diff (`scripts/_git_diff.py`), cargado como los módulos hermanos."""
+    ruta = Path(__file__).resolve().parent / "_git_diff.py"
+    spec = importlib.util.spec_from_file_location("_git_diff", ruta)
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return modulo
+
+
+# ¤adpa
 def id_de_rama(rama: str, ids_conocidos) -> str | None:
     """El id de la rama con la grafía de su ficha (`sec-13a` → `SEC-13a`); sin ficha → None."""
     coincidencia = _ID_EN_RAMA.match(rama)
@@ -126,9 +136,7 @@ def es_estricta(tarea_id: str) -> bool:
 
 # ¤adpa
 def _archivos_del_diff(base: str, cabeza: str) -> list[str]:
-    salida = subprocess.run(["git", "diff", "--name-only", f"{base}...{cabeza}"], cwd=RAIZ,
-                            capture_output=True, text=True, encoding="utf-8", check=True).stdout
-    return [linea.strip() for linea in salida.splitlines() if linea.strip()]
+    return _cargar_git_diff().archivos_del_diff(base, cabeza, RAIZ)
 
 
 # ¤adpa

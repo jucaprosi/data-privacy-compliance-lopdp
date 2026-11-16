@@ -99,3 +99,34 @@ def test_ninguna_tanda_supera_cuatro_bloques():
         por_tanda.setdefault(b.tanda, []).append(b.id)
     excesos = {t: bs for t, bs in por_tanda.items() if len(bs) > 4}
     assert excesos == {}, f"Tandas con más de 4 bloques en paralelo: {excesos}"
+
+def test_ci26_m2_reparto_rama_con_tilde_no_da_hallazgo_r5(tmp_path, monkeypatch):
+    import os, subprocess
+    env = dict(os.environ, GIT_AUTHOR_NAME='T', GIT_AUTHOR_EMAIL='t@e.com',
+               GIT_COMMITTER_NAME='T', GIT_COMMITTER_EMAIL='t@e.com')
+    subprocess.run(['git', 'init'], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(['git', 'checkout', '-b', 'main'], cwd=tmp_path, check=True, capture_output=True)
+    f = tmp_path / 'governance' / 'Metodología de trabajo.md'
+    f.parent.mkdir(parents=True)
+    f.write_text('v1', encoding='utf-8')
+    subprocess.run(['git', 'add', '.'], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(['git', 'commit', '-m', 'base'], cwd=tmp_path, env=env, check=True, capture_output=True)
+    subprocess.run(['git', 'checkout', '-b', 'tarea/juan-carlos/ci-26'], cwd=tmp_path, check=True, capture_output=True)
+    f.write_text('v2', encoding='utf-8')
+    subprocess.run(['git', 'commit', '-am', 'mod'], cwd=tmp_path, env=env, check=True, capture_output=True)
+
+    ruta_tilde = "governance/Metodología de trabajo.md"
+    bloque = vr.Bloque("CI-26", 77, ["CI-26"], [ruta_tilde])
+    monkeypatch.setattr(vr, "RAIZ", tmp_path)
+
+    # Con el lector real, no da hallazgo
+    archivos = vr._archivos_del_diff("tarea/juan-carlos/ci-26", "main")
+    assert vr.revisar_diff(archivos, bloque, indice) == []
+
+    # Mutación m2: lector sin core.quotepath=off deja la ruta entre comillas y R5 falla
+    salida_sin_quotepath = subprocess.run(["git", "diff", "--name-only", "main...tarea/juan-carlos/ci-26"],
+                                          cwd=tmp_path, capture_output=True, text=True, check=True).stdout
+    archivos_mutados = [l.strip() for l in salida_sin_quotepath.splitlines() if l.strip()]
+    hallazgos = vr.revisar_diff(archivos_mutados, bloque, indice)
+    assert len(hallazgos) == 1
+    assert "está fuera de su «Escribe»" in hallazgos[0]

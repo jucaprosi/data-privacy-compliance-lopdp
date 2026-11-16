@@ -254,3 +254,60 @@ def test_el_brief_propio_es_de_cierre_pero_el_ajeno_no():
     # CI-29: el brief de la ficha vive en governance/apoyo/briefs/<ID>.md
     archivos = ["governance/apoyo/briefs/ADPA-03.md", "governance/apoyo/briefs/ADPA-04.md"]
     assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == ["governance/apoyo/briefs/ADPA-04.md"]
+
+import os
+import subprocess
+
+def test_ci26_m1_ruta_con_tilde_en_repo_temporal_no_excede_alcance(tmp_path, monkeypatch):
+    # R4 y §5: repo temporal con commit que añade "governance/Metodología de trabajo.md"
+    env = dict(os.environ, GIT_AUTHOR_NAME='T', GIT_AUTHOR_EMAIL='t@e.com',
+               GIT_COMMITTER_NAME='T', GIT_COMMITTER_EMAIL='t@e.com')
+    subprocess.run(['git', 'init'], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(['git', 'checkout', '-b', 'main'], cwd=tmp_path, check=True, capture_output=True)
+    f = tmp_path / 'governance' / 'Metodología de trabajo.md'
+    f.parent.mkdir(parents=True)
+    f.write_text('v1', encoding='utf-8')
+    subprocess.run(['git', 'add', '.'], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(['git', 'commit', '-m', 'base'], cwd=tmp_path, env=env, check=True, capture_output=True)
+    subprocess.run(['git', 'checkout', '-b', 'tarea/juan-carlos/adpa-26'], cwd=tmp_path, check=True, capture_output=True)
+    f.write_text('v2', encoding='utf-8')
+    subprocess.run(['git', 'commit', '-am', 'mod'], cwd=tmp_path, env=env, check=True, capture_output=True)
+
+    ruta_tilde = "governance/Metodología de trabajo.md"
+    tarea = type("Tarea", (), {"id": "ADPA-26", "propiedad": (ruta_tilde,), "estado": "en_curso"})
+    falso = type("Indice", (), {
+        "cargar_tareas": staticmethod(lambda: ([tarea], [])),
+        "rutas_se_solapan": staticmethod(indice.rutas_se_solapan),
+    })
+    monkeypatch.setattr(vap, "_cargar_indice", lambda: falso)
+    monkeypatch.setattr(vap, "RAIZ", tmp_path)
+
+    # Con el lector real CI-26, no hay exceso de alcance
+    assert vap.main(["--rama", "tarea/juan-carlos/adpa-26", "--base", "main", "--cabeza", "tarea/juan-carlos/adpa-26"]) == 0
+
+    # Mutación m1: un lector sin core.quotepath=off produce ruta entre comillas con escapes octales y falla
+    def _lector_sin_quotepath_off(base, cabeza, raiz):
+        salida = subprocess.run(["git", "diff", "--name-only", f"{base}...{cabeza}"],
+                                cwd=raiz, capture_output=True, text=True, check=True).stdout
+        return [l.strip() for l in salida.splitlines() if l.strip()]
+
+    monkeypatch.setattr(vap, "_archivos_del_diff", lambda b, c: _lector_sin_quotepath_off(b, c, tmp_path))
+    assert vap.main(["--rama", "tarea/juan-carlos/adpa-26", "--base", "main", "--cabeza", "tarea/juan-carlos/adpa-26"]) == 1
+
+
+def test_ci26_m3_rutas_con_espacio_y_salto_de_linea(tmp_path, monkeypatch):
+    _git_diff = vap._cargar_git_diff()
+    # Simula salida en bytes de git con rutas conteniendo espacio y salto de línea separadas por NUL
+    salida_bytes = b"governance/Metodologia de trabajo.md\x00documentos/archivo\ncon\nsalto.txt\x00"
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: type("Res", (), {"stdout": salida_bytes})())
+
+    rutas = _git_diff.archivos_del_diff("base", "cabeza", tmp_path)
+    assert rutas == ["governance/Metodologia de trabajo.md", "documentos/archivo\ncon\nsalto.txt"]
+
+    # Mutación m3: si partiera por '\n' en lugar de '\0', la lista se rompe
+    rutas_partidas_por_nl = [r for r in salida_bytes.decode("utf-8").split("\n") if r]
+    assert rutas_partidas_por_nl != rutas
+
+
+
+
