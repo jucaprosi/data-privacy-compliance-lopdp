@@ -2,7 +2,7 @@
 id = "SEC-23b"
 titulo = "El asistente pasa la organización autenticada al tope de inferencia"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "ai_copilot"
 depende_de = ["SEC-23", "IA-07"]
 propiedad = ["api/routers/implementation_assistant.py", "features/ai_copilot/services/implementation_assistant.py", "tests/test_sec23b_asistente_org.py"]
