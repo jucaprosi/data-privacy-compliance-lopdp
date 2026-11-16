@@ -225,3 +225,13 @@ _seccion("CON-01", {
     "ejecutar_politica_conservacion": False,  # registrar la ejecución no es del auditor
 })
 # === fin CON-01 ===
+
+# === API-02 ===
+_seccion("API-02", {
+    "crear_clave_integracion": False,
+    "listar_claves_integracion": False,
+    "rotar_clave_integracion": False,
+    "revocar_clave_integracion": False,
+    "consultar_techos_integracion": False,
+})
+# === fin API-02 ===
