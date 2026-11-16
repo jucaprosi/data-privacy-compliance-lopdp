@@ -11,6 +11,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import type { RegistroPantallas } from "./base";
 
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    videovigilancia_cctv: true;
+  }
+}
+
 export interface ClipCCTV {
   id: string;
   tenant_id: string;
