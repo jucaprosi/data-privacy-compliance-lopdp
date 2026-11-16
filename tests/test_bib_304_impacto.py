@@ -70,11 +70,13 @@ async def test_db_disparador_preserva_documento_aprobado_inmutable():
                                    {"id": tid, "ruc": str(uuid4().int)[:13]})
             await conexion.execute(text("INSERT INTO users (id, email, nombre) VALUES (:id, :e, 'U')"),
                                    {"id": uid, "e": f"{uid}@test.local"})
+            import hashlib
+            sha_original = hashlib.sha256("Original".encode("utf-8")).hexdigest()
             await conexion.execute(text(
                 "INSERT INTO biblioteca_documentos "
                 "(id, tenant_id, codigo, nombre, origen, contenido_markdown, sha256, estado, creado_por, fecha_emision, proxima_revision) "
                 "VALUES (:id, :tid, 'DOC-001', 'Documento Aprobado', 'propio', 'Original', :sha, 'aprobado', :uid, CURRENT_DATE, CURRENT_DATE + 365)"
-            ), {"id": did, "tid": tid, "uid": uid, "sha": "a" * 64})
+            ), {"id": did, "tid": tid, "uid": uid, "sha": sha_original})
             with pytest.raises(DBAPIError) as exc:
                 await conexion.execute(text(
                     "UPDATE biblioteca_documentos SET contenido_markdown = 'Modificado' WHERE id = :id"
