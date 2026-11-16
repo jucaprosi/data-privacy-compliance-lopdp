@@ -18,6 +18,7 @@ from sqlalchemy.exc import IntegrityError
 from features.demo.demo_service import PLANTILLA_TENANT_ID
 
 from .almacen import Almacen
+from .usuarios import leer_candidatos_usuarios, purgar_usuarios_ficticios
 
 DIAS_DE_RETENCION = 90
 #: No se purgan por tenant: `tenants` se borra al final y `demo_sesiones` se conserva.
@@ -112,11 +113,13 @@ def purgar_tenant(motor: Engine, almacen: Almacen, tenant_id: str) -> tuple[int,
         raise ErrorPurga(f"quedan objetos con el prefijo del tenant {tenant_id}.")
     with motor.begin() as con:
         tablas = tablas_con_tenant(con)
+        candidatos = leer_candidatos_usuarios(con, tenant_id)
         # `users` no tiene `tenant_id`: la sesión del vendedor deja de apuntar a la persona (y al tenant).
         con.execute(text("UPDATE demo_sesiones SET persona_usuario_id = NULL, tenant_id = NULL "
                          "WHERE tenant_id = :t"), {"t": tenant_id})
         filas = _borrar_filas(con, tenant_id, tablas)
         filas += con.execute(text("DELETE FROM tenants WHERE id = :t AND es_demo"), {"t": tenant_id}).rowcount
+        filas += purgar_usuarios_ficticios(con, candidatos)
         comprobar_cero_filas(con, tenant_id, tablas)
     return len(claves), filas
 
