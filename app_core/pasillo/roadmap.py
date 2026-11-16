@@ -128,7 +128,128 @@ async def tareas_cerradas_con_evidencia_validada(session: AsyncSession, tenant_i
 
 
 # === CAPA-04 ===
-# Sección reservada para CAPA-04.
+async def registrar_hallazgo_auditoria(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    origen_ref: str,
+    severidad: str,
+    titulo: str,
+    control_ref: Optional[str] = None,
+) -> tuple[str, bool]:
+    """Registra un hallazgo de auditoría (R2)."""
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.registrar_hallazgo(
+        session,
+        tenant_id,
+        user_id,
+        origen=roadmap_service.OrigenHallazgo.auditoria.value,
+        origen_ref=origen_ref,
+        severidad=severidad,
+        titulo=titulo[:roadmap_service.TITULO_MAX],
+        control_ref=control_ref,
+    )
+
+
+async def es_ejecutor_control(session: AsyncSession, tenant_id: str, user_id: str, control_ref: str) -> bool:
+    """True si el usuario es owner de alguna tarea vinculada al control_ref (R3 SoD)."""
+    from sqlalchemy import text
+
+    row = (
+        await session.execute(
+            text("SELECT 1 FROM roadmap_tasks WHERE tenant_id = :t AND control_ref = :c AND owner = :u LIMIT 1"),
+            {"t": tenant_id, "c": control_ref, "u": user_id},
+        )
+    ).scalar_one_or_none()
+    return row is not None
+
+
+async def es_ejecutor_o_cerrador_hallazgo(session: AsyncSession, tenant_id: str, user_id: str, hallazgo_id: str) -> bool:
+    """True si el usuario cerró la acción del plan o es ejecutor del control del hallazgo (R3 SoD)."""
+    from sqlalchemy import text
+
+    row = (
+        await session.execute(
+            text(
+                """
+                SELECT 1 FROM roadmap_tasks t
+                WHERE t.tenant_id = :t AND t.hallazgo_id = :h
+                  AND (
+                    t.owner = :u
+                    OR EXISTS (
+                        SELECT 1 FROM task_audit_log al
+                        WHERE al.task_id = t.id AND al.tenant_id = :t AND al.user_id = :u
+                    )
+                  )
+                LIMIT 1
+                """
+            ),
+            {"t": tenant_id, "h": hallazgo_id, "u": user_id},
+        )
+    ).scalar_one_or_none()
+    if row is not None:
+        return True
+
+    h_row = (
+        await session.execute(
+            text("SELECT control_ref FROM hallazgos WHERE id = :h AND tenant_id = :t"),
+            {"h": hallazgo_id, "t": tenant_id},
+        )
+    ).mappings().first()
+    if h_row and h_row.get("control_ref"):
+        return await es_ejecutor_control(session, tenant_id, user_id, h_row["control_ref"])
+    return False
+
+
+async def comprobar_accion_cerrada_con_evidencia(session: AsyncSession, tenant_id: str, hallazgo_id: str) -> tuple[bool, Optional[str]]:
+    """Valida que las tareas asociadas al hallazgo estén completadas y tengan evidencia approved (R5)."""
+    from sqlalchemy import text
+
+    tasks = (
+        await session.execute(
+            text("SELECT id, status FROM roadmap_tasks WHERE tenant_id = :t AND hallazgo_id = :h"),
+            {"t": tenant_id, "h": hallazgo_id},
+        )
+    ).mappings().all()
+    if not tasks:
+        return False, "No existen tareas asociadas al hallazgo."
+    for task in tasks:
+        if task["status"] != "completada":
+            return False, f"La tarea {task['id']} no está completada."
+        ev_approved = (
+            await session.execute(
+                text(
+                    "SELECT 1 FROM task_evidence WHERE tenant_id = :t AND task_id = :tid AND validation_status = 'approved' LIMIT 1"
+                ),
+                {"t": tenant_id, "tid": task["id"]},
+            )
+        ).scalar_one_or_none()
+        if not ev_approved:
+            return False, f"La tarea {task['id']} no cuenta con evidencia aprobada."
+    return True, None
+
+
+async def listar_hallazgos_auditoria_para_verificar(session: AsyncSession, tenant_id: str) -> list[dict]:
+    """Lista los hallazgos de origen auditoria con su tarea asociada para la vista del auditor."""
+    from sqlalchemy import text
+
+    rows = (
+        await session.execute(
+            text(
+                """
+                SELECT h.id, h.titulo, h.control_ref, h.severidad, h.estado,
+                       t.id AS task_id, t.title AS task_title, t.owner AS task_owner, t.completed_at
+                FROM hallazgos h
+                LEFT JOIN roadmap_tasks t ON t.hallazgo_id = h.id AND t.tenant_id = h.tenant_id
+                WHERE h.tenant_id = :t AND h.origen = 'auditoria'
+                ORDER BY h.creado_en DESC
+                """
+            ),
+            {"t": tenant_id},
+        )
+    ).mappings().all()
+    return [dict(r) for r in rows]
 # === fin CAPA-04 ===
 
 # === MTGE-03 ===

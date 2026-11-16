@@ -2,7 +2,7 @@
 id = "CAPA-04"
 titulo = "Auditoría con grilla de verificación por dominio y acta por área, con hallazgos al plan de acción"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "auditoria_capa, frontend"
 depende_de = ["CAPA-02", "RM-21", "EVI-02", "DIAG-03", "ADPA-05", "ADPA-06", "ADPA-07", "ORG-22", "CAPA-03", "DIAG-07", "DPO-03", "RM-23"]
 propiedad = ["alembic/versions/capa04_auditoria_grilla.py", "features/auditoria_capa/domain/auditoria.py", "features/auditoria_capa/services/grilla_engine.py", "features/auditoria_capa/auditoria_capa_service.py#CAPA-04", "api/routers/auditoria_grilla.py", "tests/test_auditoria_grilla.py", "tests/matriz/CAPA-04.py", "frontend/src/components/layout/menus/CAPA-04.ts", "frontend/src/components/layout/pantallas/CAPA-04.tsx", "features/auditoria_capa/domain/errores.py#CAPA-04", "app_core/pasillo/auditoria_capa.py#CAPA-04", "frontend/src/components/layout/menus/index.ts#CAPA-04", "frontend/src/components/layout/pantallas/index.tsx#CAPA-04", "features/roadmap/services/cierre_hallazgos_engine.py#CAPA-04", "app_core/pasillo/roadmap.py#CAPA-04", "app_core/pasillo/diagnostico.py#CAPA-04", "app_core/pasillo/evidencias.py#CAPA-04", "app_core/pasillo/organizacion.py#CAPA-04", "frontend/src/components/auditoria/AuditoriasView.tsx", "frontend/src/components/auditoria/GrillaAuditoria.tsx", "frontend/src/components/auditoria/ActasPorArea.tsx", "frontend/src/components/auditoria/CierresPorVerificar.tsx", "frontend/src/lib/auditoria/auditorias.ts", "frontend/tests/auditoria/auditorias.spec.ts"]

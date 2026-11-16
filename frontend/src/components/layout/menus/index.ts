@@ -72,6 +72,8 @@ import { SUBMENUS_FIRMA_02 } from "./FIRMA-02";
 registrar(SUBMENUS_FIRMA_02);
 // === fin FIRMA-02 ===
 // --- INICIO CAPA-04 ---
+import { SUBMENUS_CAPA_04 } from "./CAPA-04";
+registrar(SUBMENUS_CAPA_04);
 // --- FIN CAPA-04 ---
 // --- INICIO DIAG-07 ---
 // Diagnóstico › Revisión del DPO: revisa lo declarado, objeta y sella.

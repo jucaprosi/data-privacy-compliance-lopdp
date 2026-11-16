@@ -137,7 +137,25 @@ async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
 
 
 # === CAPA-04 ===
-# Sección reservada para CAPA-04.
+async def tiene_rol_auditor(session: AsyncSession, tenant_id: str, user_id: str) -> bool:
+    """True si el usuario tiene el rol 'auditor' en el tenant."""
+    from features.organizacion import organizacion_service
+
+    roles = await organizacion_service.list_my_roles(session, tenant_id, user_id)
+    return any(r.get("role") == "auditor" for r in roles)
+
+
+async def listar_auditores(session: AsyncSession, tenant_id: str) -> list[dict]:
+    """Lista los usuarios del tenant que poseen rol 'auditor'."""
+    from features.organizacion import organizacion_service
+
+    usuarios = await organizacion_service.list_tenant_users(session, tenant_id)
+    auditores = []
+    for u in usuarios:
+        roles = await organizacion_service.list_my_roles(session, tenant_id, u["id"])
+        if any(r.get("role") == "auditor" for r in roles):
+            auditores.append(u)
+    return auditores
 # === fin CAPA-04 ===
 
 

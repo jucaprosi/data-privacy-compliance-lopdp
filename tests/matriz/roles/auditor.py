@@ -235,3 +235,16 @@ _seccion("API-02", {
     "consultar_techos_integracion": False,
 })
 # === fin API-02 ===
+
+# === CAPA-04 ===
+_seccion("CAPA-04", {
+    "crear_auditoria": False,
+    "listar_auditorias": True,
+    "obtener_auditoria": True,
+    "actualizar_fila_auditoria": True,
+    "levantar_acta_auditoria": True,
+    "obtener_acta_auditoria": True,
+    "verificar_cierre_hallazgo": True,
+    "listar_cierres_pendientes": True,
+})
+# === fin CAPA-04 ===
