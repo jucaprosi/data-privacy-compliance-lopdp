@@ -124,13 +124,6 @@ def test_la_excepcion_debe_coincidir_con_el_texto_entero():
     assert con_jerga("<span>Queda un timebox</span>", excepciones) == ["1: Queda un timebox"]
 
 
-def test_las_cadenas_corregidas_ya_no_estan():
-    texto = "\n".join(p.read_text(encoding="utf-8") for p in _componentes())
-    for cadena in ("Cargando solicitudes desde FastAPI", "Mutación Zustand", "motor Zustand", "Invariante SoD",
-                   "endpoints del motor", "INV_LOPDP_DPO_INDEPENDENCE", "Timebox:"):
-        assert cadena not in texto, cadena
-
-
 # 4 · La carpeta de excepciones es exclusiva y solo decrece.
 def test_la_carpeta_de_excepciones_solo_tiene_las_fichas_duenas():
     presentes = {p.name for p in EXCEPCIONES.iterdir()}

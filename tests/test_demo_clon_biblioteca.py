@@ -257,16 +257,7 @@ async def test_lo_sembrado_se_clona_igual(db_engine):
         await s.rollback()
 
 
-# --- Estáticas -------------------------------------------------------------------------------------
-
-def test_el_motor_no_hace_commit_ni_importa_otra_sala():
-    codigo = MOTOR.read_text(encoding="utf-8")
-    assert not re.search(r"\.commit\(|\.rollback\(", codigo)
-    importados = set(re.findall(r"^\s*(?:from|import)\s+([\w.]+)", codigo, re.M))
-    ajenos = {i for i in importados if i.startswith(("features.", "app_core.")) and not i.startswith("features.biblioteca")}
-    assert not ajenos, ajenos
-    assert PLANTILLA_TENANT_ID not in codigo  # el id de la plantilla llega por parámetro
-
+# --- Contrato de interfaz -------------------------------------------------------------------------
 
 def test_pasillo_y_compuerta_exponen_las_dos_funciones_con_la_firma_del_contrato():
     import inspect

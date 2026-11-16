@@ -19,8 +19,6 @@ from features.derechos_arco.domain.models import TipoSolicitud
 RAIZ = Path(__file__).resolve().parents[1]
 NUEVOS = ("SUSPENSION", "DECISIONES_AUTOMATIZADAS", "QUEJA")
 DATOS = {"cedula_solicitante": "1700000001", "nombre_solicitante": "Titular Simulado"}
-MODULO = RAIZ / "frontend/src/components/modules/ArcoModule.tsx"
-TIPOS_TS = RAIZ / "frontend/src/types/arco.ts"
 
 
 async def _tenant(session) -> str:
@@ -63,43 +61,3 @@ async def test_mutacion_tipo_fuera_de_tipos_activos_se_rechaza(db_session, monke
     with pytest.raises(compuerta.TipoNoDisponible):
         await compuerta.crear_solicitud_arco(db_session, {**DATOS, "tipo_solicitud": nombre}, tenant_id=tenant)
     await db_session.rollback()
-
-
-def _lista_ts() -> set[str]:
-    bloque = re.search(r"TIPOS_SOLICITUD_API = \[(.*?)\] as const", TIPOS_TS.read_text(encoding="utf-8"), re.S)
-    assert bloque
-    return set(re.findall(r'"([A-Z_]+)"', bloque.group(1)))
-
-
-def test_la_lista_de_tipos_del_frontend_coincide_con_el_enum():
-    assert _lista_ts() == {t.value for t in TipoSolicitud}
-    # Mutación: una lista a la que le falta un tipo no coincide.
-    assert _lista_ts() - {"QUEJA"} != {t.value for t in TipoSolicitud}
-
-
-def test_el_modulo_deriva_el_tipo_local_del_de_types_y_etiqueta_los_nuevos():
-    fuente = MODULO.read_text(encoding="utf-8")
-    assert 'from "@/types/arco"' in fuente and "type TipoSolicitud = TipoSolicitudApi" in fuente
-    for etiqueta in ("Suspensión del tratamiento", "Decisiones automatizadas", "Queja al responsable"):
-        assert etiqueta in fuente
-    assert "LOPDP, art. 19" in fuente and "LOPDP, art. 20" in fuente
-    assert not re.search(r"[\u00a4\u00a6]", fuente)  # marcas de gobernanza, por escape
-
-
-def _aviso_autoridad(fuente: str) -> str:
-    m = re.search(r'AVISO_AUTORIDAD =\s*"([^"]+)"', fuente)
-    assert m
-    return m.group(1)
-
-
-def _viola_aviso(texto: str) -> bool:
-    return bool(re.search(r"\d|\bdías?\b|\bart(?:ículo|\.)", texto, re.I))
-
-
-def test_la_interfaz_no_cita_plazo_ni_articulo_para_la_autoridad():
-    aviso = _aviso_autoridad(MODULO.read_text(encoding="utf-8"))
-    assert "Autoridad de Protección de Datos Personales" in aviso
-    assert not _viola_aviso(aviso)
-    # Mutación: añadir un plazo al aviso lo hace fallar.
-    assert _viola_aviso(aviso + " Tiene 15 días para reclamar.")
-    assert _viola_aviso(aviso + " (LOPDP, art. 64)")

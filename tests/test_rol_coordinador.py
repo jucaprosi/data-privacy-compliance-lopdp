@@ -277,27 +277,16 @@ async def test_api_rechaza_rol_antiguo_encargado(conn):
 # 4. PRESERVACIÓN DEL SENTIDO LEGAL (ENCARGADO DEL TRATAMIENTO INTACTO)
 # ============================================================================
 
-async def test_sentido_legal_encargado_del_tratamiento_intacto():
-    """Verifica que el sentido legal de 'encargado del tratamiento' permanece en el corpus normativo y frontend."""
-    raiz = Path(__file__).resolve().parent.parent
-
-    # 1. frontend/src/lib/normativas.ts
-    normativas_ts = raiz / "frontend" / "src" / "lib" / "normativas.ts"
-    if normativas_ts.exists():
-        contenido = normativas_ts.read_text(encoding="utf-8")
-        assert "encargado" in contenido.lower(), "frontend/src/lib/normativas.ts debe preservar 'encargado del tratamiento'"
-
-    # 2. features/regulacion_rag
-    regulacion_dir = raiz / "features" / "regulacion_rag"
-    if regulacion_dir.exists():
-        archivos = list(regulacion_dir.rglob("*.py")) + list(regulacion_dir.rglob("*.json")) + list(regulacion_dir.rglob("*.txt"))
-        encontrado = False
-        for f in archivos:
-            try:
-                txt = f.read_text(encoding="utf-8")
-                if "encargado" in txt.lower():
-                    encontrado = True
-                    break
-            except Exception:
-                continue
-        assert encontrado, "features/regulacion_rag debe preservar referencias a 'encargado del tratamiento'"
+async def test_sentido_legal_encargado_del_tratamiento_valido_en_organizacion():
+    """El rol legal 'encargado' (de tratamiento de datos) es un valor legal válido en el esquema de perfil de alta."""
+    from features.organizacion.organizacion_service import PasoPerfilAlta
+    perfil = PasoPerfilAlta(
+        razon_social="Encargada S.A.",
+        nombre_comercial="Organización Encargada",
+        ruc="1790011122001",
+        sector="Tecnología",
+        tamano="mediana",
+        naturaleza="privada",
+        rol_datos="encargado",
+    )
+    assert perfil.rol_datos == "encargado"

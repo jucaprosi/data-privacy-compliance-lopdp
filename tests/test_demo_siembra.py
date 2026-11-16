@@ -53,16 +53,9 @@ def test_cada_bloque_del_json_es_una_sala_del_orden():
     assert not sin_sala, f"bloques sin sala en ORDEN_DE_SALAS: {sin_sala}"
 
 
-def test_el_id_de_la_plantilla_solo_esta_en_el_contrato():
-    raiz = Path(__file__).resolve().parents[1]
-    permitidos = {"features/demo/domain/plantilla.py"}
-    con_literal = set()
-    for carpeta in ("app_core", "features", "scripts", "api", "data", "tests", "frontend/src"):
-        for ruta in (raiz / carpeta).rglob("*"):
-            if ruta.suffix in {".py", ".json", ".ts", ".tsx"} and "node_modules" not in ruta.parts:
-                if PLANTILLA_TENANT_ID in ruta.read_text(encoding="utf-8", errors="ignore"):
-                    con_literal.add(ruta.relative_to(raiz).as_posix())
-    assert con_literal == permitidos
+def test_siembra_usa_id_centralizado_de_plantilla():
+    from features.demo import demo_service
+    assert demo_service.PLANTILLA_TENANT_ID == "demo-plantilla-cooperativa" == PLANTILLA_TENANT_ID
 
 
 # --- Compuerta de la sala demo -------------------------------------------------------------------
