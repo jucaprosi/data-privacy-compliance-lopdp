@@ -2,14 +2,14 @@
 id = "DEMO-05b"
 titulo = "Purga de las personas ficticias de users"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "operaciones"
 depende_de = ["DEMO-05"]
 propiedad = ["jobs/purga_demo/usuarios.py", "jobs/purga_demo/purga.py", "tests/test_demo_purga_usuarios.py"]
 crea = ["jobs/purga_demo/usuarios.py", "tests/test_demo_purga_usuarios.py"]
 arbitro = "pytest tests/test_demo_purga_usuarios.py tests/test_demo_purga.py contra el PostgreSQL 16 del arnés; mutaciones documentadas"
 rastros = ["¤arbitro"]
-agente = "ninguno"
+agente = "juan-carlos"
 +++
 
 # DEMO-05b · Purga de las personas ficticias de users
