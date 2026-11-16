@@ -46,6 +46,7 @@ def alerta_retencion_vencida(politica) -> AlertaRetencion:
 # === fin DPO-03 ===
 
 # === FOR-01 ===
+# Capacidades de dpo_cockpit disponibles para la sala Formación.
 # === fin FOR-01 ===
 
 # === INC-02 ===

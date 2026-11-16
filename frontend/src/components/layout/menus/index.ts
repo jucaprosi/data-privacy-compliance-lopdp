@@ -103,6 +103,8 @@ import { SUBMENUS_API_02 } from "./API-02";
 registrar(SUBMENUS_API_02);
 // --- FIN API-02 ---
 // --- INICIO FOR-01 ---
+import { SUBMENUS_FOR_01 } from "./FOR-01";
+registrar(SUBMENUS_FOR_01);
 // --- FIN FOR-01 ---
 // --- INICIO INC-02 ---
 import { SUBMENUS_INC_02 } from "./INC-02";

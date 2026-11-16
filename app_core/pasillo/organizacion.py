@@ -160,7 +160,20 @@ async def listar_auditores(session: AsyncSession, tenant_id: str) -> list[dict]:
 
 
 # === FOR-01 ===
-# Sección reservada para FOR-01.
+async def persona_de_usuario(session: AsyncSession, tenant_id: str, email: str) -> dict | None:
+    """R: Obtiene la persona del inventario asociada al correo (en minúsculas y sin espacios)."""
+    from features.organizacion import organizacion_service
+
+    return await organizacion_service.persona_de_usuario(session, tenant_id, email)
+
+
+async def listar_personas_activas_inventario(
+    session: AsyncSession, tenant_id: str, ids: list[str] | None = None
+) -> list[dict]:
+    """R: Personas activas no archivadas del inventario."""
+    from features.organizacion import organizacion_service
+
+    return await organizacion_service.personas_activas(session, tenant_id, ids)
 # === fin FOR-01 ===
 
 

@@ -81,7 +81,27 @@ async def leer_contenido_acta(
 
 
 # === FOR-01 ===
-# Sección reservada para FOR-01.
+async def custodiar_constancia_formacion(
+    session,
+    tenant_id: str,
+    user_id: str,
+    *,
+    contenido: bytes,
+    nombre: str,
+) -> dict:
+    """R2: Custodia la constancia de formación vinculada al control P73."""
+    from features.evidencias import evidencias_service
+
+    return await evidencias_service.custodiar_documento_generado(
+        session,
+        tenant_id,
+        user_id,
+        contenido=contenido,
+        tipo_mime="text/plain",
+        tipo_evidencia="capacitacion",
+        control_refs=["P73"],
+        nombre=nombre,
+    )
 # === fin FOR-01 ===
 
 

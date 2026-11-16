@@ -341,3 +341,51 @@ async def editar_persona(
         raise ErrorNegocio(INVENTARIO_DUPLICADO) from exc
     await _auditar(session, tenant_id, user_id, "inventario_persona", persona_id, "editar")
     return {"id": persona_id}
+
+
+async def persona_de_usuario(session: AsyncSession, tenant_id: str, email: str) -> dict[str, Any] | None:
+    """R: Persona activa del inventario cuyo correo coincide (sin espacios y en minúsculas)."""
+    await fijar_tenant(session, tenant_id)
+    email_norm = (email or "").strip().lower()
+    if not email_norm:
+        return None
+    fila = (
+        await session.execute(
+            text(
+                "SELECT id, tenant_id, nombre, cargo, area_id, email, archivada "
+                "FROM inventario_personas "
+                "WHERE tenant_id = :t AND LOWER(TRIM(email)) = :email AND NOT archivada"
+            ),
+            {"t": tenant_id, "email": email_norm},
+        )
+    ).mappings().first()
+    return _serializar(fila) if fila else None
+
+
+async def personas_activas(session: AsyncSession, tenant_id: str, ids: list[str] | None = None) -> list[dict[str, Any]]:
+    """R: Personas activas no archivadas del inventario."""
+    await fijar_tenant(session, tenant_id)
+    if ids is not None:
+        filas = (
+            await session.execute(
+                text(
+                    "SELECT id, tenant_id, nombre, cargo, area_id, email, archivada "
+                    "FROM inventario_personas "
+                    "WHERE tenant_id = :t AND NOT archivada AND id = ANY(:ids)"
+                ),
+                {"t": tenant_id, "ids": ids},
+            )
+        ).mappings().all()
+    else:
+        filas = (
+            await session.execute(
+                text(
+                    "SELECT id, tenant_id, nombre, cargo, area_id, email, archivada "
+                    "FROM inventario_personas "
+                    "WHERE tenant_id = :t AND NOT archivada"
+                ),
+                {"t": tenant_id},
+            )
+        ).mappings().all()
+    return [_serializar(f) for f in filas]
+

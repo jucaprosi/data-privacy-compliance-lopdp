@@ -90,6 +90,8 @@ import { PANTALLAS_API_02 } from "./API-02";
 registrar(PANTALLAS_API_02);
 // --- FIN API-02 ---
 // --- INICIO FOR-01 ---
+import { PANTALLAS_FOR_01 } from "./FOR-01";
+registrar(PANTALLAS_FOR_01);
 // --- FIN FOR-01 ---
 // --- INICIO INC-02 ---
 import { PANTALLAS_INC_02 } from "./INC-02";

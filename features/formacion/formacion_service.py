@@ -11,4 +11,37 @@ from features.formacion.domain import errores as _errores_sala  # noqa: F401
 # === fin ADPA-09 ===
 
 # === FOR-01 ===
+from features.formacion.services.acciones_engine import (
+    anadir_participantes,
+    crear_accion,
+    listar_acciones,
+    listar_participaciones_accion,
+)
+from features.formacion.services.cobertura_engine import calcular_cobertura
+from features.formacion.services.contenidos_engine import (
+    crear_contenido,
+    crear_pregunta,
+    listar_contenidos,
+    listar_preguntas,
+)
+from features.formacion.services.examen_engine import (
+    calificar_y_terminar_examen,
+    iniciar_examen_participacion,
+    obtener_examen_participacion,
+)
+
+__all__ = [
+    "crear_contenido",
+    "listar_contenidos",
+    "crear_pregunta",
+    "listar_preguntas",
+    "crear_accion",
+    "listar_acciones",
+    "anadir_participantes",
+    "listar_participaciones_accion",
+    "obtener_examen_participacion",
+    "iniciar_examen_participacion",
+    "calificar_y_terminar_examen",
+    "calcular_cobertura",
+]
 # === fin FOR-01 ===

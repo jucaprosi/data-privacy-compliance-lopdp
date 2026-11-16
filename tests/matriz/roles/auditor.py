@@ -248,3 +248,17 @@ _seccion("CAPA-04", {
     "listar_cierres_pendientes": True,
 })
 # === fin CAPA-04 ===
+
+# === FOR-01 ===
+_seccion("FOR-01", {
+    "crear_contenido_formacion": False,
+    "listar_contenidos_formacion": True,
+    "crear_pregunta_formacion": False,
+    "listar_preguntas_formacion": False,
+    "crear_accion_formacion": False,
+    "listar_acciones_formacion": True,
+    "anadir_participantes_formacion": False,
+    "listar_participantes_formacion": True,
+    "obtener_cobertura_formacion": True,
+})
+# === fin FOR-01 ===

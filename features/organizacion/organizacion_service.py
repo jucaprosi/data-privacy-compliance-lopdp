@@ -408,7 +408,12 @@ __all__ += ["armar_ficha"]
 
 
 # === FOR-01 ===
-# Sección reservada para FOR-01.
+from features.organizacion.services.inventario_engine import (  # noqa: E402
+    persona_de_usuario,
+    personas_activas,
+)
+
+__all__ += ["persona_de_usuario", "personas_activas"]
 # === fin FOR-01 ===
 
 # === ORG-20 ===
