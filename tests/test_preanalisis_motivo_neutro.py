@@ -142,3 +142,31 @@ def test_proveedor_no_disponible_es_neutro(monkeypatch: pytest.MonkeyPatch) -> N
     _sin_nombres(str(exc.value), ("vertex", "gemini"))
     assert exc.value.__class__ is ProveedorNoDisponible
     inyectar_proveedor_de_prueba(None)
+
+
+# === IA-04 ===
+# La sala depende, para la IA, solo del pasillo de inferencia (y este de google-genai): ningún SDK ni cliente HTTP
+# propio, ninguna importación directa de la sala `inferencia`. Mutación: `import openai` o
+# `from features.inferencia import inferencia_service` en cualquier archivo de features/preanalisis.
+def test_preanalisis_depende_solo_del_pasillo_de_inferencia() -> None:
+    import ast
+    from pathlib import Path
+
+    sala = Path(__file__).resolve().parents[1] / "features" / "preanalisis"
+    prohibidos = ("openai", "anthropic", "google", "vertexai", "httpx", "requests", "aiohttp", "features.inferencia")
+    pasillos: set[str] = set()
+    for archivo in sala.rglob("*.py"):
+        for nodo in ast.walk(ast.parse(archivo.read_text(encoding="utf-8"))):
+            if isinstance(nodo, ast.Import):
+                modulos = [a.name for a in nodo.names]
+            elif isinstance(nodo, ast.ImportFrom):
+                modulos = [nodo.module or ""]
+                if nodo.module == "app_core.pasillo":
+                    pasillos.update(a.name for a in nodo.names)
+            else:
+                continue
+            for m in modulos:
+                assert not m.startswith(prohibidos), f"{archivo.name} importa {m}"
+                assert not (m.startswith("app_core.pasillo.") and m != "app_core.pasillo.inferencia"), m
+    assert pasillos <= {"inferencia"}, pasillos
+# === fin IA-04 ===
