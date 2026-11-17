@@ -5,7 +5,13 @@
 import React from "react";
 import { AuditoriasView } from "@/components/auditoria/AuditoriasView";
 import type { RegistroPantallas } from "./base";
+import { PANTALLAS_BASE } from "./base";
 
 export const PANTALLAS_CAPA_04: RegistroPantallas = {
-  capa04_auditorias: () => <AuditoriasView />,
+  auditoria: (contexto) => (
+    <div className="space-y-8">
+      {PANTALLAS_BASE.auditoria?.(contexto)}
+      <AuditoriasView />
+    </div>
+  ),
 };

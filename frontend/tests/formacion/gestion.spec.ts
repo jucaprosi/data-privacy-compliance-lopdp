@@ -8,10 +8,12 @@
  * 4. Doctrina 1: Prohibida la palabra "certificado" o "diploma".
  */
 import { expect, test } from "@playwright/test";
-import { configurarProyecto } from "../utiles";
+import { abrirAppLimpia, configurarProyecto, irASala } from "../utiles";
 
 test.describe("FOR-01: Gestión de Formación, Acciones y Cobertura", () => {
   test.beforeEach(async ({ page }) => {
+    await page.route("**/api/v1/**", (route) => route.fulfill({ status: 503, json: { detail: "API simulada" } }));
+    await abrirAppLimpia(page);
     await configurarProyecto(page);
   });
 
@@ -26,9 +28,9 @@ test.describe("FOR-01: Gestión de Formación, Acciones y Cobertura", () => {
           status: 200,
           contentType: "application/json",
           body: JSON.stringify({
-            total_personas_activas: 4,
-            personas_formadas: 2,
-            porcentaje: 50.0,
+            obligadas: 4,
+            formadas: 2,
+            cobertura: 0.5,
           }),
         });
       }
@@ -43,11 +45,11 @@ test.describe("FOR-01: Gestión de Formación, Acciones y Cobertura", () => {
               nombre: "Capacitación Anual LOPDP",
               contenido_id: "cont-1",
               contenido_titulo: "Guía de Seguridad",
-              fecha_inicio: "2026-01-01",
-              fecha_fin: "2026-12-31",
+              inicio: "2026-01-01",
+              fin: "2026-12-31",
               nota_minima: 75,
               total_participantes: 4,
-              terminaron: 2,
+              terminados: 2,
             },
           ]),
         });
@@ -74,7 +76,7 @@ test.describe("FOR-01: Gestión de Formación, Acciones y Cobertura", () => {
       return route.continue();
     });
 
-    await page.goto("/#formacion");
+    await irASala(page, /^Formación/);
 
     // Verificar main y tablist
     const main = page.getByRole("main", { name: "Formación" });
@@ -94,7 +96,8 @@ test.describe("FOR-01: Gestión de Formación, Acciones y Cobertura", () => {
 
     // Cobertura activa por defecto
     await expect(page.getByRole("heading", { name: "Cobertura de formación" })).toBeVisible();
-    await expect(page.getByText("2 de 4 personas formadas (50 %)")).toBeVisible();
+    await expect(page.getByText("2 de 4 personas formadas")).toBeVisible();
+    await expect(page.getByText("50 %")).toBeVisible();
 
     const progressbar = page.getByRole("progressbar", { name: "Personas formadas" });
     await expect(progressbar).toBeVisible();

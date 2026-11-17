@@ -10,7 +10,6 @@ crea = ["alembic/versions/api02_claves_integracion.py", "app_core/integraciones/
 siembra = ["app_core/integraciones/techos.py#API-02b", "frontend/src/components/integraciones/IntegracionesView.tsx#API-02b"]
 arbitro = "pytest tests/test_api02_integraciones.py + suite completa + vigilantes"
 rastros = ["¤seguridad", "¤seguridad-tenant", "¤frontend-ide"]
-agente = "ninguno"
 +++
 # API-02 · API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256
 

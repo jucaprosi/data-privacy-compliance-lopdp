@@ -22,6 +22,7 @@ from features.organizacion.domain.tamanos import TAMANOS_ORGANIZACION, TamanoOrg
 from features.organizacion.services.areas_engine import (
     allowed_area_ids,
     create_area,
+    get_area,
     list_areas,
     update_area,
 )
@@ -55,6 +56,7 @@ __all__ = [
     "check_four_eyes",
     "create_area",
     "create_or_get_user",
+    "get_area",
     "grant_role",
     "has_active_role",
     "list_areas",

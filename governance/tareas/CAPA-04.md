@@ -9,7 +9,6 @@ propiedad = ["alembic/versions/capa04_auditoria_grilla.py", "features/auditoria_
 crea = ["frontend/src/components/auditoria/AuditoriasView.tsx", "frontend/src/components/auditoria/GrillaAuditoria.tsx", "frontend/src/components/auditoria/ActasPorArea.tsx", "frontend/src/components/auditoria/CierresPorVerificar.tsx", "frontend/src/lib/auditoria/auditorias.ts", "frontend/tests/auditoria/auditorias.spec.ts"]
 arbitro = "pytest tests/test_auditoria_grilla.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/auditoria + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤auditoria-capa", "¤hallazgos"]
-agente = "ninguno"
 +++
 
 # CAPA-04 · Auditoría con grilla de verificación por dominio y acta por área, con hallazgos al plan de acción

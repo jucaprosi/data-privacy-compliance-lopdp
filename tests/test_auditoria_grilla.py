@@ -31,7 +31,7 @@ from app_core.db.session import get_session
 from app_core.errors import ErrorNegocio
 from features.auditoria_capa.domain import errores as e
 from features.auditoria_capa.services import grilla_engine
-from features.roadmap.services.cierre_hallazgos_engine import cerrar_por_tareas
+from features.roadmap.roadmap_service import cerrar_por_tareas
 from main import app
 
 
@@ -50,7 +50,7 @@ async def test_escala_unica_diagnostico():
             user_id="auditor-1",
             auditoria_id="aud-1",
             control_ref="P12",
-            verificado=0,  # INV_ESCALA_SIN_CERO
+            verificado=0,  # INV_LOPDP_SMARTCIDI_MATURITY_SCALE
             riesgo_final=15,
         )
 

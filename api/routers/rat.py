@@ -17,6 +17,8 @@ from features.rat.rat_service import CondicionHabilitante
 from features.rat.rat_service import (
     registrar_actividad_rat, listar_actividades_rat,
     editar_actividad_rat, eliminar_actividad_rat,
+    enriquecer_actividades_con_areas,
+    validar_area_o_resolver_nombre,
 )
 
 router = APIRouter(prefix="/rat", tags=["Registro de Actividades de Tratamiento (RAT)"])
@@ -144,11 +146,10 @@ async def crear_actividad(
     datos = payload.model_dump()
     # === RAT-08 ===
     if payload.area_id:
-        from app_core.pasillo.organizacion import area_del_tenant
-        area = await area_del_tenant(session, ctx["tenant_id"], payload.area_id)
-        if not area:
+        nombre_area = await validar_area_o_resolver_nombre(session, ctx["tenant_id"], payload.area_id)
+        if not nombre_area:
             raise HTTPException(422, "AREA_NO_VALIDA")
-        datos["area_responsable"] = area["nombre"]
+        datos["area_responsable"] = nombre_area
     # === fin RAT-08 ===
     actividad = ActividadRAT(tenant_id=ctx["tenant_id"], **datos)
     guardada = await registrar_actividad_rat(session, actividad, ctx["user_id"])
@@ -165,16 +166,7 @@ async def listar_actividades(
 ):
     actividades = await listar_actividades_rat(session, ctx["tenant_id"])
     # === RAT-08 ===
-    from dataclasses import asdict
-    from app_core.pasillo.organizacion import listar_areas
-    areas = await listar_areas(session, ctx["tenant_id"])
-    areas_vivas = {a["id"]: a["nombre"] for a in areas}
-    lista = []
-    for act in actividades:
-        d = asdict(act) if hasattr(act, "__dataclass_fields__") else dict(act)
-        if d.get("area_id") and d["area_id"] in areas_vivas:
-            d["area_responsable"] = areas_vivas[d["area_id"]]
-        lista.append(d)
+    lista = await enriquecer_actividades_con_areas(session, ctx["tenant_id"], actividades)
     return {"tenant_id": ctx["tenant_id"], "total": len(lista), "actividades": lista}
     # === fin RAT-08 ===
 
@@ -190,11 +182,10 @@ async def editar_actividad(
     cambios = payload.model_dump(exclude_unset=True)
     # === RAT-08 ===
     if "area_id" in cambios and cambios["area_id"] is not None:
-        from app_core.pasillo.organizacion import area_del_tenant
-        area = await area_del_tenant(session, ctx["tenant_id"], cambios["area_id"])
-        if not area:
+        nombre_area = await validar_area_o_resolver_nombre(session, ctx["tenant_id"], cambios["area_id"])
+        if not nombre_area:
             raise HTTPException(422, "AREA_NO_VALIDA")
-        cambios["area_responsable"] = area["nombre"]
+        cambios["area_responsable"] = nombre_area
     # === fin RAT-08 ===
     actividad = await editar_actividad_rat(
         session, ctx["tenant_id"], rat_id, cambios,

@@ -100,7 +100,10 @@ test.describe("FE-28 · textos sin jerga", () => {
     await textosDeLaPagina(page); // lo visto al configurar no pertenece a ninguna vista del menú
     const hallazgos: string[] = [];
     const visitadas: string[] = [];
+    const cerrarAlerta = page.getByRole("button", { name: "Cerrar alerta" });
     for (const submenu of SUBMENUS) {
+      // El diálogo de diagnóstico puede abrirse después de networkidle; ciérralo antes de cambiar de menú.
+      if (await cerrarAlerta.isVisible()) await cerrarAlerta.click();
       // El menú oculta los submenús que el rol o la edición no ofrecen: solo se recorren los visibles.
       const menu = MENUS.find((m) => m.id === submenu.menu)!;
       await barraDeMenus(page).getByRole("button", { name: menu.nombre, exact: true }).click();
@@ -112,7 +115,9 @@ test.describe("FE-28 · textos sin jerga", () => {
       await page.waitForLoadState("networkidle").catch(() => undefined);
       for (const texto of conJerga(await textosDeLaPagina(page))) hallazgos.push(`${submenu.vista} → ${texto}`);
       // El diagnóstico abre un <dialog> modal de perspectiva ejecutiva que bloquea el menú (ver utiles.ts).
-      const cerrarAlerta = page.getByRole("button", { name: "Cerrar alerta" });
+      if (submenu.vista === "diagnostico") {
+        await cerrarAlerta.waitFor({ state: "visible", timeout: 2_000 }).catch(() => undefined);
+      }
       if (await cerrarAlerta.isVisible()) await cerrarAlerta.click();
     }
     expect(visitadas.length, "el recorrido debe abrir vistas").toBeGreaterThan(10);

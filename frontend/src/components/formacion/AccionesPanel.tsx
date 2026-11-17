@@ -162,7 +162,7 @@ export const AccionesPanel: React.FC<Props> = ({ puedeGestionar }) => {
                   {a.nombre}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Del {new Date(a.inicio).toLocaleDateString()} al {new Date(a.fin).toLocaleDateString()} | Nota mínima: {a.nota_minima}
+                  Del {a.inicio.slice(0, 10)} al {a.fin.slice(0, 10)} | Nota mínima: {a.nota_minima}
                 </p>
                 <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
                   {a.terminados} de {a.total_participantes} terminaron

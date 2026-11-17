@@ -99,7 +99,7 @@ export const AuditoriasView: React.FC<Props> = ({ rolActual = "auditor", usuario
   };
 
   return (
-    <main className="p-6 max-w-7xl mx-auto space-y-6" aria-label="Auditorías">
+    <section className="p-6 max-w-7xl mx-auto space-y-6" aria-label="Auditorías">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
@@ -263,7 +263,7 @@ export const AuditoriasView: React.FC<Props> = ({ rolActual = "auditor", usuario
               <button
                 type="button"
                 onClick={cargarLista}
-                className="rounded bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-500"
+                className="rounded border border-rose-300 bg-rose-100 px-3 py-1.5 text-xs font-semibold text-rose-950 hover:bg-rose-200"
               >
                 Volver a cargar
               </button>
@@ -405,6 +405,6 @@ export const AuditoriasView: React.FC<Props> = ({ rolActual = "auditor", usuario
           </form>
         </div>
       )}
-    </main>
+    </section>
   );
 };

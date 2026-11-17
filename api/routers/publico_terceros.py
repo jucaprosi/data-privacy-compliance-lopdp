@@ -15,7 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.db.session import get_session
 from app_core.errors import ErrorNegocio
 from features.terceros import terceros_service
-from features.terceros.domain.cuestionario import CODIGO_ENLACE_NO_VALIDO
+
+CODIGO_ENLACE_NO_VALIDO = terceros_service.CODIGO_ENLACE_NO_VALIDO
 
 AUTO_REGISTRO = True
 

@@ -35,18 +35,15 @@ export const MiFormacion: React.FC = () => {
     try {
       const data = await listarMisParticipaciones();
       setParticipaciones(data);
-      if (data.length > 0 && !seleccionada) {
-        setSeleccionada(data[0]);
-      } else if (seleccionada) {
-        const actualizada = data.find((p) => p.id === seleccionada.id);
-        if (actualizada) setSeleccionada(actualizada);
-      }
+      setSeleccionada((actual) => actual
+        ? data.find((p) => p.id === actual.id) ?? null
+        : data[0] ?? null);
     } catch {
       setErrorCarga("No pudimos cargar la formación. Inténtalo de nuevo.");
     } finally {
       setCargando(false);
     }
-  }, [seleccionada]);
+  }, []);
 
   useEffect(() => {
     void cargar();

@@ -175,7 +175,7 @@ async def _hallazgo(ctx, tenant: str, estado: str = "en_tratamiento") -> str:
         await fijar_contexto_rls(s, tenant)
         await s.execute(text(
             "INSERT INTO hallazgos (id, tenant_id, origen, origen_ref, severidad, titulo, estado, creado_por) "
-            "VALUES (:i, :t, 'auditoria', :i, 'alta', 'Hallazgo', :e, 'prueba')"
+            "VALUES (:i, :t, 'diagnostico', :i, 'alta', 'Hallazgo', :e, 'prueba')"
         ), {"i": hallazgo, "t": tenant, "e": estado})
         await s.commit()
     return hallazgo

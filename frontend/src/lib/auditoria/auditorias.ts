@@ -77,7 +77,11 @@ export async function listarAuditorias(): Promise<AuditoriaResumen[]> {
   if (!res.ok) {
     throw new Error("No pudimos cargar las auditorías. Inténtalo de nuevo.");
   }
-  return res.json();
+  const datos: unknown = await res.json();
+  if (!Array.isArray(datos)) {
+    throw new Error("No pudimos cargar las auditorías. Inténtalo de nuevo.");
+  }
+  return datos as AuditoriaResumen[];
 }
 
 export async function obtenerAuditoria(id: string): Promise<AuditoriaDetalle> {

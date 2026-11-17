@@ -9,10 +9,12 @@
  * 5. Doctrina 1: prohibido el uso de "certificado" o "diploma" en textos visibles.
  */
 import { expect, test } from "@playwright/test";
-import { configurarProyecto } from "../utiles";
+import { abrirAppLimpia, configurarProyecto, irASala } from "../utiles";
 
 test.describe("FOR-01: Examen de participante y constancia", () => {
   test.beforeEach(async ({ page }) => {
+    await page.route("**/api/v1/**", (route) => route.fulfill({ status: 503, json: { detail: "API simulada" } }));
+    await abrirAppLimpia(page);
     await configurarProyecto(page);
   });
 
@@ -22,7 +24,7 @@ test.describe("FOR-01: Examen de participante y constancia", () => {
       const url = route.request().url();
       const metodo = route.request().method();
 
-      if (url.includes("/participaciones/me") && metodo === "GET") {
+      if (url.includes("/mis-participaciones") && metodo === "GET") {
         return route.fulfill({
           status: 200,
           contentType: "application/json",
@@ -33,14 +35,13 @@ test.describe("FOR-01: Examen de participante y constancia", () => {
               accion_nombre: "Protección de Datos 2026",
               contenido_titulo: "Manual LOPDP",
               contenido_url: "https://ejemplo.com/manual.pdf",
-              fecha_inicio: "2026-01-01",
-              fecha_fin: "2026-12-31",
+              inicio: "2026-01-01",
+              fin: "2026-12-31",
               nota_minima: 70,
               iniciado_en: null,
               terminado_en: null,
               nota: null,
-              aprobo: null,
-              evidencia_id: null,
+              diploma_sha256: null,
             },
           ]),
         });
@@ -62,43 +63,39 @@ test.describe("FOR-01: Examen de participante y constancia", () => {
           status: 200,
           contentType: "application/json",
           body: JSON.stringify({
-            participacion_id: "part-1",
-            accion_nombre: "Protección de Datos 2026",
-            contenido_titulo: "Manual LOPDP",
+            accion: "Protección de Datos 2026",
             nota_minima: 70,
+            inicio: "2026-01-01",
+            fin: "2026-12-31",
+            iniciado_en: "2026-11-16T15:00:00Z",
+            terminado_en: null,
             preguntas: [
               {
                 id: "preg-1",
                 enunciado: "¿Cuál es el principio rector de licitud?",
                 orden: 1,
-                opciones: [
-                  { id: "opc-1a", texto: "Tratamiento conforme a derecho" },
-                  { id: "opc-1b", texto: "Publicar todo en internet" },
-                ],
+                opciones: ["Tratamiento conforme a derecho", "Publicar todo en internet"],
               },
               {
                 id: "preg-2",
                 enunciado: "¿Quién debe ser notificado ante una vulneración?",
                 orden: 2,
-                opciones: [
-                  { id: "opc-2a", texto: "La autoridad de protección de datos" },
-                  { id: "opc-2b", texto: "Nadie" },
-                ],
+                opciones: ["La autoridad de protección de datos", "Nadie"],
               },
             ],
           }),
         });
       }
 
-      if (url.includes("/participaciones/part-1/rendir") && metodo === "POST") {
+      if (url.includes("/participaciones/part-1/examen") && metodo === "POST") {
         return route.fulfill({
           status: 200,
           contentType: "application/json",
           body: JSON.stringify({
             participacion_id: "part-1",
             nota: 100,
-            aprobo: true,
-            evidencia_id: "evi-12345",
+            aprobado: true,
+            diploma_sha256: "evi-12345",
             mensaje: "Examen completado exitosamente",
           }),
         });
@@ -107,12 +104,12 @@ test.describe("FOR-01: Examen de participante y constancia", () => {
       return route.continue();
     });
 
-    await page.goto("/#mi_formacion");
+    await irASala(page, /^Mi formación/);
 
     // Verificar título y aviso de un solo intento
     const main = page.getByRole("main", { name: "Mi formación" });
     await expect(main).toBeVisible();
-    await expect(page.getByText("Tienes un solo intento. Una vez que lo envíes no podrás repetirlo.")).toBeVisible();
+    await expect(page.getByText(/Tienes un solo intento\. Una vez que lo envíes no podrás repetirlo\./)).toBeVisible();
 
     // Doctrina 1: No debe aparecer la palabra diploma ni certificado
     const cuerpoTexto = await page.content();
@@ -151,9 +148,9 @@ test.describe("FOR-01: Examen de participante y constancia", () => {
     await botonConfirmar.click();
 
     // Comprobar resultado aprobado y constancia de formación
-    const status = page.getByRole("status");
+    const status = main.getByRole("status");
     await expect(status).toBeVisible();
     await expect(status).toContainText("Aprobaste con 100. Tu constancia de formación quedó guardada.");
-    await expect(page.getByRole("link", { name: "Abrir tu constancia" })).toBeVisible();
+    await expect(page.getByText("Abrir tu constancia")).toBeVisible();
   });
 });

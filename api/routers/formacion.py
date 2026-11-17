@@ -11,8 +11,7 @@ from app_core.db.session import get_session
 from app_core.errors import ErrorNegocio
 from app_core.pasillo import formacion as pasillo_formacion
 from app_core.pasillo import organizacion as pasillo_organizacion
-from features.formacion.domain import errores as e
-from features.formacion.schemas import (
+from features.formacion.formacion_service import (
     AccionCreate,
     AccionOut,
     CoberturaOut,
@@ -25,6 +24,7 @@ from features.formacion.schemas import (
     ParticipantesAddRequest,
     PreguntaCreate,
     PreguntaOut,
+    errores as e,
 )
 
 AUTO_REGISTRO = True

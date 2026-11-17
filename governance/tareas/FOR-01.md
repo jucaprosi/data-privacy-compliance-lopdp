@@ -9,7 +9,6 @@ propiedad = ["alembic/versions/for01_formacion.py", "features/formacion/models.p
 crea = ["alembic/versions/for01_formacion.py", "features/formacion/models.py", "features/formacion/schemas.py", "features/formacion/domain/formacion.py", "features/formacion/services/__init__.py", "features/formacion/services/contenidos_engine.py", "features/formacion/services/acciones_engine.py", "features/formacion/services/examen_engine.py", "features/formacion/services/diploma_engine.py", "features/formacion/services/cobertura_engine.py", "api/routers/formacion.py", "tests/test_formacion.py", "tests/matriz/FOR-01.py", "frontend/src/lib/formacion/formacion.ts", "frontend/src/components/formacion/ContenidosPanel.tsx", "frontend/src/components/formacion/AccionesPanel.tsx", "frontend/src/components/formacion/CoberturaTarjeta.tsx", "frontend/src/components/formacion/MiFormacion.tsx", "frontend/src/components/layout/menus/FOR-01.ts", "frontend/src/components/layout/pantallas/FOR-01.tsx", "frontend/tests/formacion/examen.spec.ts", "frontend/tests/formacion/gestion.spec.ts"]
 arbitro = "pytest tests/test_formacion.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/formacion + tsc --noEmit + npm run build; adpa_linter (sala nueva con compuerta formacion_service.py); prueba de mutación documentada"
 rastros = ["¤evidencias", "¤rbac-tenant"]
-agente = "ninguno"
 +++
 
 # FOR-01 · Formación: contenidos, acciones formativas con examen y seguimiento por persona como evidencia de capacitación

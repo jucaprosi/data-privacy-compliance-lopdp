@@ -14,6 +14,8 @@ import { abrirAppLimpia, configurarProyecto, irASala } from "../utiles";
 
 test.describe("CAPA-04: Auditorías con grilla por dominio y acta por área", () => {
   test.beforeEach(async ({ page }) => {
+    await page.route("**/api/v1/**", (route) => route.fulfill({ status: 503, json: { detail: "API simulada" } }));
+    await abrirAppLimpia(page);
     await configurarProyecto(page);
   });
 
@@ -107,7 +109,6 @@ test.describe("CAPA-04: Auditorías con grilla por dominio y acta por área", ()
       return route.continue();
     });
 
-    await abrirAppLimpia(page);
     await irASala(page, /Auditorías/i);
 
     // Verificar h1 'Auditorías'
@@ -123,7 +124,7 @@ test.describe("CAPA-04: Auditorías con grilla por dominio y acta por área", ()
     await expect(page.getByRole("table", { name: "Verificación de controles" })).toBeVisible();
 
     // Comprobar aviso 'Por debajo de lo declarado' si verificado 1 < declarado 3
-    await expect(page.getByText("Por debajo de lo declarado")).toBeVisible();
+    await expect(page.getByText("Por debajo de lo declarado").first()).toBeVisible();
 
     // Comprobar que en ninguna parte de la página aparece 'certificado'
     const bodyText = await page.textContent("body");
