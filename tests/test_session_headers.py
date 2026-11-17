@@ -5,7 +5,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app_core.db.session import get_session
+from app_core.db.session import engine, get_session
 
 
 
@@ -37,6 +37,7 @@ async def test_cabeceras_fijan_contexto():
 
 @pytest.mark.asyncio
 async def test_query_string_no_fija_contexto():
+    await engine.dispose()
     assert await _get(params={"x_tenant_id": "t-qs", "x_user_id": "u-qs"}) == {
         "tenant": None, "user": None,
     }
