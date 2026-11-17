@@ -19,6 +19,52 @@ async def reabrir_controles_por_evidencia_vencida(session, tenant_id: str, user_
 # === fin CAPA-03 ===
 
 # === CAPA-04 ===
+async def crear_auditoria(session, tenant_id: str, user_id: str, **kwargs):
+    from features.auditoria_capa import auditoria_capa_service
+
+    return await auditoria_capa_service.crear_auditoria(session, tenant_id, user_id, **kwargs)
+
+
+async def listar_auditorias(session, tenant_id: str, user_id: str):
+    from features.auditoria_capa import auditoria_capa_service
+
+    return await auditoria_capa_service.listar_auditorias(session, tenant_id, user_id)
+
+
+async def obtener_auditoria(session, tenant_id: str, user_id: str, auditoria_id: str):
+    from features.auditoria_capa import auditoria_capa_service
+
+    return await auditoria_capa_service.obtener_auditoria(session, tenant_id, user_id, auditoria_id)
+
+
+async def actualizar_fila_auditoria(session, tenant_id: str, user_id: str, **kwargs):
+    from features.auditoria_capa import auditoria_capa_service
+
+    return await auditoria_capa_service.actualizar_fila_auditoria(session, tenant_id, user_id, **kwargs)
+
+
+async def levantar_y_firmar_acta(session, tenant_id: str, user_id: str, **kwargs):
+    from features.auditoria_capa import auditoria_capa_service
+
+    return await auditoria_capa_service.levantar_y_firmar_acta(session, tenant_id, user_id, **kwargs)
+
+
+async def obtener_acta(session, tenant_id: str, user_id: str, **kwargs):
+    from features.auditoria_capa import auditoria_capa_service
+
+    return await auditoria_capa_service.obtener_acta(session, tenant_id, user_id, **kwargs)
+
+
+async def verificar_cierre_hallazgo(session, tenant_id: str, user_id: str, **kwargs):
+    from features.auditoria_capa import auditoria_capa_service
+
+    return await auditoria_capa_service.verificar_cierre_hallazgo(session, tenant_id, user_id, **kwargs)
+
+
+async def listar_cierres_pendientes(session, tenant_id: str, user_id: str):
+    from features.auditoria_capa import auditoria_capa_service
+
+    return await auditoria_capa_service.listar_cierres_pendientes(session, tenant_id, user_id)
 # === fin CAPA-04 ===
 
 # === DPO-03 ===

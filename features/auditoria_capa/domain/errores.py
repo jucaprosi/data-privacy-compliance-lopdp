@@ -22,4 +22,54 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin CAPA-03 ===
 
 # === CAPA-04 ===
+AUDITOR_EJECUTOR = CodigoErrorNegocio(
+    codigo="AUDITOR_EJECUTOR",
+    status_code=403,
+    mensaje_defecto="No puedes verificar este control porque participaste en su ejecución. Lo verifica otra persona del equipo.",
+    action_required=None,
+)
+
+AUDITORIA_INCOMPLETA = CodigoErrorNegocio(
+    codigo="AUDITORIA_INCOMPLETA",
+    status_code=409,
+    mensaje_defecto="Aún hay controles de esta área sin verificar. Complétalos antes de firmar el acta.",
+    action_required=None,
+)
+
+ACTA_YA_FIRMADA = CodigoErrorNegocio(
+    codigo="ACTA_YA_FIRMADA",
+    status_code=409,
+    mensaje_defecto="El acta de esta área ya está firmada.",
+    action_required=None,
+)
+
+ACCION_NO_CERRADA = CodigoErrorNegocio(
+    codigo="ACCION_NO_CERRADA",
+    status_code=409,
+    mensaje_defecto="La acción vinculada al hallazgo no ha sido completada o no tiene evidencia aprobada.",
+    action_required=None,
+)
+
+DIAG_SIN_RESULTADO = CodigoErrorNegocio(
+    codigo="DIAG_SIN_RESULTADO",
+    status_code=404,
+    mensaje_defecto="Aún no hay un diagnóstico sellado. Sella el diagnóstico antes de crear una auditoría.",
+    action_required=None,
+)
+
+ACTA_NO_ENCONTRADA = CodigoErrorNegocio(
+    codigo="ACTA_NO_ENCONTRADA",
+    status_code=404,
+    mensaje_defecto="No encontramos el acta de esta área.",
+    action_required=None,
+)
+
+registrar(
+    AUDITOR_EJECUTOR,
+    AUDITORIA_INCOMPLETA,
+    ACTA_YA_FIRMADA,
+    ACCION_NO_CERRADA,
+    DIAG_SIN_RESULTADO,
+    ACTA_NO_ENCONTRADA,
+)
 # === fin CAPA-04 ===

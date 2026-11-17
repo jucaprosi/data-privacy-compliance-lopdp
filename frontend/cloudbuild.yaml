@@ -1,0 +1,13 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'Dockerfile.cloudrun'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/evydentia/evydentia-containers/web:v2'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_GOOGLE_CLIENT_ID=943042355099-um6ieu8s1s8kettg253g9v5ms8ag7k4l.apps.googleusercontent.com'
+      - '.'
+images:
+  - 'us-central1-docker.pkg.dev/evydentia/evydentia-containers/web:v2'

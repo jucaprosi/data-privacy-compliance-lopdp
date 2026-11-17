@@ -449,3 +449,12 @@ COMPUERTAS_FICHA_CARGADAS = cargar_extensiones_compuerta(
 )
 # === fin ADPA-12 ===
 
+# === CAPA-04 ===
+from features.roadmap.services.cierre_hallazgos_engine import (  # noqa: E402
+    cerrar_por_tareas,
+    reabrir_por_tareas,
+)
+
+__all__.extend(["cerrar_por_tareas", "reabrir_por_tareas"])
+# === fin CAPA-04 ===
+

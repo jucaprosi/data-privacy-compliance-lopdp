@@ -225,3 +225,48 @@ _seccion("CON-01", {
     "ejecutar_politica_conservacion": False,  # registrar la ejecución no es del auditor
 })
 # === fin CON-01 ===
+
+# === API-02 ===
+_seccion("API-02", {
+    "crear_clave_integracion": False,
+    "listar_claves_integracion": False,
+    "rotar_clave_integracion": False,
+    "revocar_clave_integracion": False,
+    "consultar_techos_integracion": False,
+})
+# === fin API-02 ===
+
+# === CAPA-04 ===
+_seccion("CAPA-04", {
+    "crear_auditoria": False,
+    "listar_auditorias": True,
+    "obtener_auditoria": True,
+    "actualizar_fila_auditoria": True,
+    "levantar_acta_auditoria": True,
+    "obtener_acta_auditoria": True,
+    "verificar_cierre_hallazgo": True,
+    "listar_cierres_pendientes": True,
+})
+# === fin CAPA-04 ===
+
+# === FOR-01 ===
+_seccion("FOR-01", {
+    "crear_contenido_formacion": False,
+    "listar_contenidos_formacion": True,
+    "crear_pregunta_formacion": False,
+    "listar_preguntas_formacion": False,
+    "crear_accion_formacion": False,
+    "listar_acciones_formacion": True,
+    "anadir_participantes_formacion": False,
+    "listar_participantes_formacion": True,
+    "obtener_cobertura_formacion": True,
+})
+# === fin FOR-01 ===
+
+# === TER-02 ===
+_seccion("TER-02", {
+    "crear_enlace_cuestionario": False,
+    "listar_cuestionarios": True,
+    "revisar_cuestionario": False,
+})
+# === fin TER-02 ===

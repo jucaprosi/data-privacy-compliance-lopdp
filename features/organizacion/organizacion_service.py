@@ -22,6 +22,7 @@ from features.organizacion.domain.tamanos import TAMANOS_ORGANIZACION, TamanoOrg
 from features.organizacion.services.areas_engine import (
     allowed_area_ids,
     create_area,
+    get_area,
     list_areas,
     update_area,
 )
@@ -55,6 +56,7 @@ __all__ = [
     "check_four_eyes",
     "create_area",
     "create_or_get_user",
+    "get_area",
     "grant_role",
     "has_active_role",
     "list_areas",
@@ -408,7 +410,12 @@ __all__ += ["armar_ficha"]
 
 
 # === FOR-01 ===
-# Sección reservada para FOR-01.
+from features.organizacion.services.inventario_engine import (  # noqa: E402
+    persona_de_usuario,
+    personas_activas,
+)
+
+__all__ += ["persona_de_usuario", "personas_activas"]
 # === fin FOR-01 ===
 
 # === ORG-20 ===

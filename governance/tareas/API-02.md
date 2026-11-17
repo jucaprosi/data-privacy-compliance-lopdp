@@ -2,7 +2,7 @@
 id = "API-02"
 titulo = "Claves de integración por organización con techo del paquete"
 ola = "C"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central, frontend"
 depende_de = ["SEC-13", "OPS-07", "BOV-01"]
 propiedad = ["alembic/versions/api02_claves_integracion.py", "app_core/integraciones/__init__.py", "app_core/integraciones/claves.py", "app_core/integraciones/techos.py", "api/routers/integraciones_claves.py", "tests/test_api02_integraciones.py", "tests/matriz/API-02.py", "frontend/src/components/integraciones/IntegracionesView.tsx", "frontend/src/lib/integraciones/clavesIntegracion.ts", "frontend/src/components/layout/menus/API-02.ts", "frontend/src/components/layout/pantallas/API-02.tsx", "frontend/src/components/layout/menus/index.ts#API-02", "frontend/src/components/layout/pantallas/index.tsx#API-02", "frontend/tests/integraciones/integraciones.spec.ts"]
@@ -10,7 +10,6 @@ crea = ["alembic/versions/api02_claves_integracion.py", "app_core/integraciones/
 siembra = ["app_core/integraciones/techos.py#API-02b", "frontend/src/components/integraciones/IntegracionesView.tsx#API-02b"]
 arbitro = "pytest tests/test_api02_integraciones.py + suite completa + vigilantes"
 rastros = ["¤seguridad", "¤seguridad-tenant", "¤frontend-ide"]
-agente = "ninguno"
 +++
 # API-02 · API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256
 

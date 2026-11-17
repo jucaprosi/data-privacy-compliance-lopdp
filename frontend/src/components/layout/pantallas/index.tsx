@@ -72,6 +72,8 @@ import { PANTALLAS_FIRMA_02 } from "./FIRMA-02";
 registrar(PANTALLAS_FIRMA_02);
 // === fin FIRMA-02 ===
 // --- INICIO CAPA-04 ---
+import { PANTALLAS_CAPA_04 } from "./CAPA-04";
+registrar(PANTALLAS_CAPA_04);
 // --- FIN CAPA-04 ---
 // --- INICIO DIAG-07 ---
 import GrillaRevision from "@/components/diagnostico/GrillaRevision";
@@ -84,8 +86,12 @@ registrar(PANTALLAS_DPO_03);
 // --- INICIO FIRMA-02 ---
 // --- FIN FIRMA-02 ---
 // --- INICIO API-02 ---
+import { PANTALLAS_API_02 } from "./API-02";
+registrar(PANTALLAS_API_02);
 // --- FIN API-02 ---
 // --- INICIO FOR-01 ---
+import { PANTALLAS_FOR_01 } from "./FOR-01";
+registrar(PANTALLAS_FOR_01);
 // --- FIN FOR-01 ---
 // --- INICIO INC-02 ---
 import { PANTALLAS_INC_02 } from "./INC-02";

@@ -108,3 +108,39 @@ from features.auditoria_capa.services.reapertura_engine import (  # noqa: E402
 
 __all__.extend(["ResultadoReapertura", "reabrir_por_evidencia_vencida"])
 # === fin CAPA-03 ===
+
+
+# === CAPA-04 ===
+# ¤auditoria-capa ¤hallazgos Auditoría con grilla por dominio y acta por área.
+from features.auditoria_capa.domain.auditoria import (  # noqa: E402
+    Auditoria,
+    AuditoriaActa,
+    AuditoriaFila,
+    AuditoriaVerificacionCierre,
+)
+from features.auditoria_capa.services.grilla_engine import (  # noqa: E402
+    actualizar_fila_auditoria,
+    crear_auditoria,
+    levantar_y_firmar_acta,
+    listar_auditorias,
+    listar_cierres_pendientes,
+    obtener_acta,
+    obtener_auditoria,
+    verificar_cierre_hallazgo,
+)
+
+__all__.extend([
+    "Auditoria",
+    "AuditoriaFila",
+    "AuditoriaActa",
+    "AuditoriaVerificacionCierre",
+    "crear_auditoria",
+    "listar_auditorias",
+    "obtener_auditoria",
+    "actualizar_fila_auditoria",
+    "levantar_y_firmar_acta",
+    "obtener_acta",
+    "verificar_cierre_hallazgo",
+    "listar_cierres_pendientes",
+])
+# === fin CAPA-04 ===

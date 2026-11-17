@@ -148,5 +148,29 @@ async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
 
 
 # === CAPA-04 ===
-# Sección reservada para CAPA-04.
+def escala_madurez() -> dict[int, tuple[str, str]]:
+    """Escala de madurez SMARTCIDI leída de la compuerta de diagnóstico (R0)."""
+    from features.diagnostico import diagnostico_service
+
+    return diagnostico_service.NIVELES_ASIGNADOS
+
+
+def nivel_asignado_maximo() -> int:
+    from features.diagnostico import diagnostico_service
+
+    return diagnostico_service.NIVEL_ASIGNADO_MAX
+
+
+def nivel_asignado_minimo() -> int:
+    from features.diagnostico import diagnostico_service
+
+    return diagnostico_service.NIVEL_ASIGNADO_MIN
+
+
+async def obtener_ultimo_resultado_sellado(session, tenant_id: str, user_id: str):
+    """Devuelve el último resultado sellado de la organización, o None si no hay (R1)."""
+    from features.diagnostico import diagnostico_service
+
+    resultados = await diagnostico_service.listar_resultados(session, tenant_id, user_id)
+    return resultados[-1] if resultados else None
 # === fin CAPA-04 ===

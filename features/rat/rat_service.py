@@ -218,5 +218,39 @@ async def consentimientos_de_colectivo(session, tenant_id: str, colectivo_id: st
 # === fin RAT-07 ===
 
 # === RAT-08 ===
-# Sección reservada para RAT-08.
+async def resolver_area_responsable_viva(
+    session: AsyncSession, tenant_id: str, area_id: str | None, area_responsable_respaldo: str,
+) -> str:
+    """Resuelve el nombre actual del área viva si area_id está definida; en su defecto devuelve el texto de respaldo."""
+    if not area_id:
+        return area_responsable_respaldo
+    from app_core.pasillo.organizacion import area_del_tenant
+    area = await area_del_tenant(session, tenant_id, area_id)
+    return area["nombre"] if area else area_responsable_respaldo
+
+
+async def validar_area_o_resolver_nombre(
+    session: AsyncSession, tenant_id: str, area_id: str
+) -> str | None:
+    """Valida que el area_id pertenezca al tenant y retorna su nombre, o None si no existe o fue borrada."""
+    from app_core.pasillo.organizacion import area_del_tenant
+    area = await area_del_tenant(session, tenant_id, area_id)
+    return area["nombre"] if area else None
+
+
+async def enriquecer_actividades_con_areas(
+    session: AsyncSession, tenant_id: str, actividades: list
+) -> list[dict]:
+    """Enriquece una lista de actividades RAT con los nombres vivos de las áreas vinculadas."""
+    from dataclasses import asdict
+    from app_core.pasillo.organizacion import listar_areas
+    areas = await listar_areas(session, tenant_id)
+    areas_vivas = {a["id"]: a["nombre"] for a in areas}
+    lista = []
+    for act in actividades:
+        d = asdict(act) if hasattr(act, "__dataclass_fields__") else dict(act)
+        if d.get("area_id") and d["area_id"] in areas_vivas:
+            d["area_responsable"] = areas_vivas[d["area_id"]]
+        lista.append(d)
+    return lista
 # === fin RAT-08 ===

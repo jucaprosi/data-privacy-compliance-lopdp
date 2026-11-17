@@ -158,3 +158,35 @@ async def actualizar_garantias(
 __all__ += ["GarantiasEntrada", "TerceroGarantias", "HallazgoExistente", "actualizar_garantias",
             "evaluar_terceros", "listar_terceros_con_hallazgos", "reglas_incumplidas", "tercero_desde_fila"]
 # === fin TER-01 ===
+
+# === TER-02 ===
+from features.terceros.domain.cuestionario import (  # noqa: E402
+    CODIGO_ENLACE_NO_VALIDO,
+    PREGUNTAS_TER_02_1,
+    VERSION_CUESTIONARIO,
+    Cuestionario,
+    PreguntaCuestionario,
+)
+from features.terceros.services.cuestionario_engine import (  # noqa: E402
+    contar_pendientes_revision,
+    crear_enlace_cuestionario,
+    listar_cuestionarios_tercero,
+    obtener_por_token,
+    responder_cuestionario,
+    revisar_cuestionario,
+)
+
+__all__ += [
+    "CODIGO_ENLACE_NO_VALIDO",
+    "PREGUNTAS_TER_02_1",
+    "VERSION_CUESTIONARIO",
+    "Cuestionario",
+    "PreguntaCuestionario",
+    "crear_enlace_cuestionario",
+    "listar_cuestionarios_tercero",
+    "obtener_por_token",
+    "responder_cuestionario",
+    "revisar_cuestionario",
+    "contar_pendientes_revision",
+]
+# === fin TER-02 ===

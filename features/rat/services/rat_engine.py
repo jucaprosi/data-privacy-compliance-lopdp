@@ -127,8 +127,11 @@ async def editar_actividad(
     if actividad is None:
         return None
     editables = set(asdict(actividad)) - {"id", "tenant_id", "version"}
-    if set(cambios) - editables or any(v is None for v in cambios.values()):
+    # === RAT-08 ===
+    permiten_none = {"area_id", "condicion_habilitante"}
+    if set(cambios) - editables or any(v is None for k, v in cambios.items() if k not in permiten_none):
         raise ValueError("Campos de actividad no válidos")
+    # === fin RAT-08 ===
     for campo, valor in cambios.items():
         setattr(actividad, campo, valor)
     _normalizar(actividad)

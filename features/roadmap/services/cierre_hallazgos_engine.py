@@ -29,6 +29,7 @@ async def cerrar_por_tareas(session: AsyncSession, tenant_id: str, user_id: str)
             text(
                 "UPDATE hallazgos h SET estado = 'cerrado', actualizado_en = now() "
                 "WHERE h.tenant_id = :t AND h.estado = 'en_tratamiento' "
+                "AND h.origen <> 'auditoria' "
                 "AND EXISTS (SELECT 1 FROM roadmap_tasks t WHERE t.hallazgo_id = h.id AND t.tenant_id = h.tenant_id) "
                 "AND NOT EXISTS (SELECT 1 FROM roadmap_tasks t WHERE t.hallazgo_id = h.id "
                 f"AND t.tenant_id = h.tenant_id AND NOT ({_TAREA_CUMPLIDA})) "
@@ -70,5 +71,7 @@ async def reabrir_por_tareas(session: AsyncSession, tenant_id: str, user_id: str
 
 
 # === CAPA-04 ===
-# Sección reservada para CAPA-04.
+# R5: Los hallazgos con origen = 'auditoria' quedan excluidos de cerrar_por_tareas
+# porque su cierre exige la verificación explícita del auditor.
+ORIGEN_AUDITORIA_EXCLUIDO = "auditoria"
 # === fin CAPA-04 ===

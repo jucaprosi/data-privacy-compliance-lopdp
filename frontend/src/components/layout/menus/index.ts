@@ -72,6 +72,13 @@ import { SUBMENUS_FIRMA_02 } from "./FIRMA-02";
 registrar(SUBMENUS_FIRMA_02);
 // === fin FIRMA-02 ===
 // --- INICIO CAPA-04 ---
+import { SUBMENUS_CAPA_04 } from "./CAPA-04";
+// CAPA-04 amplía la pantalla «Auditorías» que ya existe en FE-22.
+for (const submenu of SUBMENUS_CAPA_04) {
+  const indice = registro.findIndex((actual) => actual.vista === submenu.vista);
+  if (indice >= 0) registro[indice] = submenu;
+  else registrar([submenu]);
+}
 // --- FIN CAPA-04 ---
 // --- INICIO DIAG-07 ---
 // Diagnóstico › Revisión del DPO: revisa lo declarado, objeta y sella.
@@ -97,8 +104,12 @@ registrar(SUBMENUS_DPO_03);
 // --- INICIO FIRMA-02 ---
 // --- FIN FIRMA-02 ---
 // --- INICIO API-02 ---
+import { SUBMENUS_API_02 } from "./API-02";
+registrar(SUBMENUS_API_02);
 // --- FIN API-02 ---
 // --- INICIO FOR-01 ---
+import { SUBMENUS_FOR_01 } from "./FOR-01";
+registrar(SUBMENUS_FOR_01);
 // --- FIN FOR-01 ---
 // --- INICIO INC-02 ---
 import { SUBMENUS_INC_02 } from "./INC-02";

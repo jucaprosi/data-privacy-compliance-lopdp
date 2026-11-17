@@ -17,6 +17,8 @@ from features.rat.rat_service import CondicionHabilitante
 from features.rat.rat_service import (
     registrar_actividad_rat, listar_actividades_rat,
     editar_actividad_rat, eliminar_actividad_rat,
+    enriquecer_actividades_con_areas,
+    validar_area_o_resolver_nombre,
 )
 
 router = APIRouter(prefix="/rat", tags=["Registro de Actividades de Tratamiento (RAT)"])
@@ -75,7 +77,7 @@ class CrearActividadRATRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     codigo: str
     nombre: str
-    area_responsable: str
+    area_responsable: str = ""
     finalidad: str
     base_legal: BaseLegitimacion = BaseLegitimacion.CONSENTIMIENTO
     categorias_titulares: list[CategoriaTitular] = Field(default_factory=list)
@@ -99,6 +101,15 @@ class CrearActividadRATRequest(BaseModel):
     # === RAT-05 ===
     condicion_habilitante: CondicionHabilitante | None = None
     # === fin RAT-05 ===
+    # === RAT-08 ===
+    area_id: str | None = None
+
+    @model_validator(mode="after")
+    def validar_area(self) -> "CrearActividadRATRequest":
+        if not self.area_id and not (self.area_responsable and self.area_responsable.strip()):
+            raise ValueError("area_responsable es obligatoria si no se indica area_id")
+        return self
+    # === fin RAT-08 ===
 
 
 # ¤rat
@@ -108,10 +119,10 @@ class _Parche(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def sin_nulos(cls, valores):
-        if isinstance(valores, dict) and (
-            not valores or any(v is None for v in valores.values())
-        ):
-            raise ValueError("Indique al menos un campo, sin valores nulos")
+        if isinstance(valores, dict):
+            permiten_none = {"area_id", "condicion_habilitante"}
+            if not valores or any(v is None for k, v in valores.items() if k not in permiten_none):
+                raise ValueError("Indique al menos un campo, sin valores nulos")
         return valores
 
 
@@ -132,7 +143,15 @@ async def crear_actividad(
     ctx: dict = Depends(ESCRITURA),
     session: AsyncSession = Depends(get_rat_session),
 ):
-    actividad = ActividadRAT(tenant_id=ctx["tenant_id"], **payload.model_dump())
+    datos = payload.model_dump()
+    # === RAT-08 ===
+    if payload.area_id:
+        nombre_area = await validar_area_o_resolver_nombre(session, ctx["tenant_id"], payload.area_id)
+        if not nombre_area:
+            raise HTTPException(422, "AREA_NO_VALIDA")
+        datos["area_responsable"] = nombre_area
+    # === fin RAT-08 ===
+    actividad = ActividadRAT(tenant_id=ctx["tenant_id"], **datos)
     guardada = await registrar_actividad_rat(session, actividad, ctx["user_id"])
     await registrar_evento(session, ctx["tenant_id"], "rat_actividad", guardada.id,
                            "crear", ctx["user_id"])
@@ -146,7 +165,10 @@ async def listar_actividades(
     session: AsyncSession = Depends(get_rat_session),
 ):
     actividades = await listar_actividades_rat(session, ctx["tenant_id"])
-    return {"tenant_id": ctx["tenant_id"], "total": len(actividades), "actividades": actividades}
+    # === RAT-08 ===
+    lista = await enriquecer_actividades_con_areas(session, ctx["tenant_id"], actividades)
+    return {"tenant_id": ctx["tenant_id"], "total": len(lista), "actividades": lista}
+    # === fin RAT-08 ===
 
 
 @router.patch("/actividades/{rat_id}")
@@ -157,8 +179,16 @@ async def editar_actividad(
     ctx: dict = Depends(ESCRITURA),
     session: AsyncSession = Depends(get_rat_session),
 ):
+    cambios = payload.model_dump(exclude_unset=True)
+    # === RAT-08 ===
+    if "area_id" in cambios and cambios["area_id"] is not None:
+        nombre_area = await validar_area_o_resolver_nombre(session, ctx["tenant_id"], cambios["area_id"])
+        if not nombre_area:
+            raise HTTPException(422, "AREA_NO_VALIDA")
+        cambios["area_responsable"] = nombre_area
+    # === fin RAT-08 ===
     actividad = await editar_actividad_rat(
-        session, ctx["tenant_id"], rat_id, payload.model_dump(exclude_unset=True),
+        session, ctx["tenant_id"], rat_id, cambios,
         ctx["user_id"],
     )
     if actividad is None:

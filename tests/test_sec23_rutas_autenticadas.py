@@ -35,6 +35,14 @@ VERIFICADORAS = re.compile(
 LISTA_BLANCA: dict[tuple[str, str], str] = {
     ("GET", "/api/v1/health"): "Sonda de vida del balanceador y del arnés; no lee datos ni llama al modelo.",
     ("GET", "/api/v1/entorno"): "Indica al frontend el entorno (demo, pruebas) antes de iniciar sesión; sin datos de organización.",
+    ("GET", "/api/v1/publico/solicitud/{slug}"): "DER-02: formulario público de derechos por slug, protegido por SEC-12.",
+    ("POST", "/api/v1/publico/solicitud/{slug}"): "DER-02: recepción pública con límite por IP y hora de SEC-12.",
+    ("GET", "/api/v1/publico/solicitud/seguir/{codigo}"): "DER-02: seguimiento público limitado a estado y fechas por código.",
+    ("GET", "/api/v1/solicitud/{slug}"): "DER-02: alias público del formulario por slug.",
+    ("POST", "/api/v1/solicitud/{slug}"): "DER-02: alias público de recepción con límite por IP y hora.",
+    ("GET", "/api/v1/solicitud/seguir/{codigo}"): "DER-02: alias público de seguimiento limitado a estado y fechas.",
+    ("GET", "/api/v1/publico/proveedor/{token}"): "TER-02: cuestionario público accesible solo mediante enlace con token y caducidad.",
+    ("POST", "/api/v1/publico/proveedor/{token}"): "TER-02: respuesta pública mediante token de un solo uso y límites SEC-12.",
 }
 
 # Rutas abiertas que ya estaban en main al cerrar SEC-23 (2026-11-13). No son de esta ficha: quedan
