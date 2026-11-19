@@ -2,7 +2,7 @@
 id = "PLAT-01"
 titulo = "Alta idempotente de organizaciones sintéticas en plataforma_service, sin invitación"
 ola = "indep"
-estado = "en_curso"
+estado = "hecha"
 sala = "plataforma"
 depende_de = ["EP-03", "ORG-11", "ORG-20"]
 propiedad = ["features/plataforma/plataforma_service.py", "features/plataforma/services/organizacion_sintetica_engine.py", "scripts/datos_sinteticos/organizaciones.py", "tests/test_plat01_organizacion_sintetica.py", "tests/test_ep03_sembrar_entorno.py"]
