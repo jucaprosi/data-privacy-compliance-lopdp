@@ -5,7 +5,7 @@ Arquitecto ADPA, 2026-11-15. Especificación: `governance/especificaciones/QA-09
 
 - 297 archivos `tests/**/test_*.py`, 2711 funciones de prueba.
 - Candidatos: los 139 archivos que leen `governance/`, código fuente, workflows o configuración como texto, o que no ejercitan código. Los 158 restantes ejercitan código y quedan fuera del inventario.
-- Resultado: 71 archivos con funciones afectadas, 138 funciones. En 23 de ellos la regla no tiene otra prueba de comportamiento: su ficha escribe la prueba nueva antes de borrar la textual (QA-09 R3).
+- Resultado: 70 archivos con funciones afectadas, 135 funciones. En 22 de ellos la regla no tiene otra prueba de comportamiento: su ficha escribe la prueba nueva antes de borrar la textual (QA-09 R3).
 - Fuera de alcance: las cuatro pruebas que borra RET-00 (ver su especificación).
 - Ningún archivo de `verificadores/`, `.github/workflows/`, `scripts/` ni de los `.bat` invoca un archivo con funciones afectadas. Solo citan `test_banco_preguntas.py` y `test_escala_madurez.py`, que se conservan. No hace falta brief al propietario.
 - Las celdas «propia» indican que el archivo es la prueba de comportamiento. En «BORRAR/FUSIONAR» parcial, la ficha confirma la función exacta al empezar.
@@ -17,7 +17,7 @@ Arquitecto ADPA, 2026-11-15. Especificación: `governance/especificaciones/QA-09
 | `tests/test_adpa07_secciones_frontend.py` | CONSERVAR | 0/2 | marcas equilibradas en el frontend | propia | — |
 | `tests/test_adpa08_terceros_transferencias_schema.py` | CONSERVAR | 0/4 | RLS y permisos | propia | — |
 | `tests/test_adpa09_salas_prd.py` | BORRAR | 2/2 | catálogo de salas | test_adpa_bulkhead.py::test_cada_sala_tiene_su_compuerta | QA-11 |
-| `tests/test_adpa11_seccion_solo_dpo.py` | BORRAR | 4/4 | quien no es DPO no elige nivel | equilibrio: test_adpa07_secciones_frontend.py; regla: NINGUNA — requiere prueba de comportamiento nueva | QA-11 |
+| `tests/test_adpa11_seccion_solo_dpo.py` | BORRAR | 4/4 | el DPO revisa y sella; responden el administrador y el implementador; el implementador sin dominio solo consulta (DIAG-07) | equilibrio: test_adpa07_secciones_frontend.py; regla: frontend/tests/diagnostico/solo-dpo.spec.ts (mutaciones: quitar `aria-disabled` hace fallar la prueba 1; volver a `puedeSellar(roles)` hace fallar la 2 y la 3) | QA-11 |
 | `tests/test_adpa12_compuerta_modular.py` | CONSERVAR | 0/5 | compuerta modular | propia | — |
 | `tests/test_adpa_bulkhead.py` | CONSERVAR | 0/5 | aislamiento ADPA | propia | — |
 | `tests/test_adpa_bulkheads.py` | FUSIONAR | 2/2 | compuerta por sala | test_adpa_bulkhead.py::test_cada_sala_tiene_su_compuerta | QA-11 |
@@ -146,7 +146,7 @@ Arquitecto ADPA, 2026-11-15. Especificación: `governance/especificaciones/QA-09
 | `tests/test_verificar_bom_huellas.py` | CONSERVAR (parcial BORRAR) | 2/11 | optimización del CI | no aplica | QA-11 |
 | `tests/test_verificar_despliegue.py` | CONSERVAR | 0/11 | verificación tras desplegar | propia | — |
 | `tests/test_verificar_especificaciones.py` | CONSERVAR | 0/8 | verificador de especificaciones | propia | — |
-| `tests/test_vpa_map.py` | BORRAR | 3/3 | ninguna (prosa entre fichas y VPA_MAP) | no aplica | QA-11 |
+| `tests/test_vpa_map.py` | CONSERVAR | 0/3 | todo rastro de las fichas está dado de alta en VPA_MAP (árbitro del invariante 25 del PRD) | propia | — |
 
 ## T5 · Parametrizaciones de más de 10 casos (ficha QA-09)
 
