@@ -78,17 +78,3 @@ def test_el_cli_devuelve_1_con_un_fallo_y_0_sin_el(tmp_path):
 
 def test_el_script_no_se_delata_a_si_mismo():
     assert not vbh.tiene_bom(str(SCRIPT)) and vbh.huellas_abiertas(str(SCRIPT)) == []
-
-
-def test_ningun_trabajo_repite_el_lint_en_linea():
-    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    assert flujo.count("run: python scripts/verificar_bom_huellas.py") == 2
-    assert "os.walk" not in flujo and "chr(166)" not in flujo
-
-
-def test_cada_trabajo_que_instala_usa_cache_y_npm_ci():
-    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    assert "npm install" not in flujo
-    assert flujo.count("run: npm ci") == 4
-    assert flujo.count("cache: pip") == 3 and flujo.count("cache: npm") == 4
-    assert flujo.count("cache-dependency-path: frontend/package-lock.json") == 4

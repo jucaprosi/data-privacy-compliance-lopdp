@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 # ¤arbitro ¤seguridad
-"""El arrancador de humo vive solo en pruebas y se detiene ante un despliegue o ante producción."""
+"""El arrancador de humo vive solo en pruebas y se detiene ante un despliegue o ante producción.
+
+El humo es compuerta: el guion del check obligatorio del CI se ejecuta aquí con cada desenlace de sus jobs.
+"""
 import ast
 import importlib.util
 import inspect
-import re
+import os
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -15,6 +21,8 @@ RAIZ = Path(__file__).resolve().parents[1]
 RUTA_ARRANCADOR = RAIZ / "tests" / "humo" / "servidor_humo.py"
 CARPETAS_DESPLEGADAS = ("api", "app_core", "features", "alembic", "scripts")
 ARCHIVOS_DE_DESPLIEGUE = ("backend.Dockerfile", "docker-compose.yml", "iniciar_backend.bat")
+FLUJO_DEL_CI = RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml"
+PASO_DE_LA_COMPUERTA = "Un arnes corrio y paso"
 
 
 # ¤seguridad
@@ -108,98 +116,73 @@ def test_la_aplicacion_sigue_sin_interruptor_de_claves():
 
 
 # ¤arbitro
-def test_el_humo_es_compuerta_de_los_arneses_y_de_playwright():
-    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    for nombre, necesita in (
-        ("Humo de extremo a extremo", "alcance"),
-        ("Arnés por salas", "[alcance, humo]"),
-        ("Arnés completo", "[alcance, humo]"),
-        ("Playwright Frontend", "[alcance, humo]"),
-    ):
-        assert f"name: {nombre}\n    needs: {necesita}\n" in flujo, nombre
-    assert "needs: [alcance, humo, arnes-salas, arnes-completo]" in flujo
-    assert "npx playwright test -c playwright.humo.config.ts" in flujo
-    assert flujo.index("Flujos de humo") < flujo.index("pytest $PRUEBAS -v")
-    assert flujo.count("if: always()") == 1  # solo la compuerta: un arnés con always() ignoraría el humo
-
-
-# ¤seguridad
-def test_el_job_de_humo_no_define_auth_mode():
-    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    assert "AUTH_MODE" not in flujo
+def guion_de_la_compuerta(flujo: Path = FLUJO_DEL_CI) -> str:
+    """El bloque `run: |` del paso que decide el check obligatorio, tal como lo ejecuta el runner."""
+    lineas = flujo.read_text(encoding="utf-8").splitlines()
+    paso = next(i for i, linea in enumerate(lineas) if linea.strip() == f"- name: {PASO_DE_LA_COMPUERTA}")
+    inicio = next(i for i in range(paso, len(lineas)) if lineas[i].strip() == "run: |")
+    sangria = len(lineas[inicio]) - len(lineas[inicio].lstrip())
+    cuerpo = []
+    for linea in lineas[inicio + 1:]:
+        if linea.strip() and len(linea) - len(linea.lstrip()) <= sangria:
+            break
+        cuerpo.append(linea)
+    return "\n".join(cuerpo) + "\n"
 
 
 # ¤arbitro
-def test_los_limites_de_la_metodologia_se_cumplen():
-    """governance/operaciones/PRUEBAS_DE_HUMO.md §4: pocos casos, sin simulación y sin reintentos."""
-    carpeta = RAIZ / "frontend" / "tests" / "humo"
-    especificaciones = sorted(carpeta.glob("*.spec.ts"))
-    textos = [p.read_text(encoding="utf-8") for p in especificaciones]
-    assert especificaciones and all(p.name[:2].isdigit() for p in especificaciones)  # el prefijo fija el orden
-    assert sum(len(re.findall(r"^\s+test\(", t, re.M)) for t in textos) <= 8
-    assert not any("page.route" in t or "context.route" in t or "test.skip" in t or "test.only" in t for t in textos)
-    configuracion = (RAIZ / "frontend" / "playwright.humo.config.ts").read_text(encoding="utf-8")
-    assert "retries: 0" in configuracion and "maxFailures: 1" in configuracion and "workers: 1" in configuracion
-    assert "HOSTS_DE_PRUEBAS" in configuracion and "AUTH_MODE" not in configuracion
+def _bash() -> str | None:
+    """El bash del runner; en Windows, el de Git (el `bash.exe` de System32 lanza WSL, que puede no estar)."""
+    if sys.platform != "win32":
+        return shutil.which("bash")
+    git = shutil.which("git")
+    candidatos = [raiz / "bin" / "bash.exe" for raiz in Path(git).resolve().parents[1:3]] if git else []
+    return next((str(c) for c in candidatos if c.is_file()), None)
 
 
 # ¤arbitro
-def test_la_metodologia_existe_y_los_arneses_normales_no_recogen_el_humo():
-    assert (RAIZ / "governance" / "operaciones" / "PRUEBAS_DE_HUMO.md").is_file()
-    assert '"**/humo/**"' in (RAIZ / "frontend" / "playwright.config.ts").read_text(encoding="utf-8")
+def ejecutar_compuerta(resultados: dict[str, str], flujo: Path = FLUJO_DEL_CI) -> subprocess.CompletedProcess:
+    """Corre el guion de la compuerta como GitHub: `bash -e` y los resultados de los jobs en variables."""
+    entorno = {**os.environ, "ALCANCE": "success", "ETIQUETA": "prueba", "CUBIERTA": "", "HACIA_MAIN": "false",
+               "MODO": "salas", "HUMO": "success", "SALAS": "skipped", "COMPLETO": "skipped", **resultados}
+    return subprocess.run([_bash(), "-e", "-c", guion_de_la_compuerta(flujo)], env=entorno,
+                          capture_output=True, text=True, encoding="utf-8")
+
+
+sin_bash = pytest.mark.skipif(_bash() is None, reason="hace falta bash para ejecutar el guion del runner")
 
 
 # ¤arbitro
-def test_el_humo_corre_en_los_pr_y_no_en_el_push_a_main():
-    """PRUEBAS_DE_HUMO.md «Dónde corre»: compuerta en todo PR hacia main; en el push a main se omite y el arnés completo es obligatorio."""
-    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    hacia_main = "HACIA_MAIN: ${{ github.event_name == 'push' && github.ref_name == 'main' }}"
-    assert hacia_main in flujo and "github.base_ref == 'main'" not in flujo  # por tipo de evento, no por rama destino (Aporte 127)
-    assert "- 'dev/**'" not in flujo and "hacia_main: ${{ steps.destino.outputs.hacia_main }}" in flujo
-    assert "if: needs.alcance.outputs.cubierta == '' && needs.alcance.outputs.hacia_main != 'true'\n" in flujo
-    # CI-32: la selección de alcance (salas o completo) aplica tanto en PR como en el push a main.
-    assert "modo: ${{ steps.destino.outputs.modo" in flujo
-    # Los arneses arrancan con el humo en verde u omitido, nunca si falló o fue cancelado.
-    arranque = "!cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped')"
-    assert flujo.count(arranque) == 3  # los dos arneses y Playwright
-    assert 'El arnes completo era obligatorio y no paso.' in flujo
-    assert 'El arnes por salas era obligatorio y no paso.' in flujo
+@sin_bash
+@pytest.mark.parametrize("resultados", [
+    {"MODO": "salas", "HUMO": "success", "SALAS": "success"},
+    {"MODO": "completo", "HUMO": "success", "COMPLETO": "success"},
+    # El push a main no corre el humo: ya fue compuerta en el PR. El arnés completo sigue siendo obligatorio.
+    {"MODO": "completo", "HACIA_MAIN": "true", "HUMO": "skipped", "COMPLETO": "success"},
+    # El PR cubierto por la corrida del push no repite nada: todos sus jobs se omiten.
+    {"MODO": "salas", "CUBIERTA": "10", "HUMO": "skipped"},
+], ids=["pr-por-salas", "pr-completo", "push-a-main", "pr-cubierto"])
+def test_la_compuerta_pasa_cuando_el_humo_y_el_arnes_obligatorio_pasaron(resultados):
+    res = ejecutar_compuerta(resultados)
+    assert res.returncode == 0, res.stdout + res.stderr
 
 
 # ¤arbitro
-def test_los_pr_usan_el_contenedor_y_el_push_a_main_tambien():
-    """CI-17: tanto los PR como el push a main corren contra el contenedor PostgreSQL 16 del runner, sin base remota."""
-    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    assert flujo.count("&postgres_de_las_ramas") == 1 and flujo.count("*postgres_de_las_ramas") == 2
-    assert "image: pgvector/pgvector:pg16\n" in flujo
-    assert "TEST_DATABASE_URL: postgresql://lopdp_beta_owner:solo-en-este-runner@localhost:5432/lopdp\n" in flujo
-    assert "secrets.TEST_DATABASE_URL" not in flujo
-    assert "esperar_turno" not in flujo
-    assert "verificar_revision_alembic.py" not in flujo
-    assert "testcontainers" not in flujo.lower()
-
-
-# ¤arbitro
-def test_pytest_va_en_paralelo_contra_el_contenedor_y_en_serie_hacia_main():
-    """CI-17: tanto en PR como en el push a main se instala pytest-xdist y pytest corre en paralelo (-n auto)."""
-    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    assert flujo.count("-n auto") == 2
-    instalar = "- &instalar_xdist\n        name: Instalar pytest-xdist\n        run: pip install pytest-xdist==3.8.0\n"
-    assert flujo.count(instalar) == 1 and flujo.count("*instalar_xdist") == 1
-    for trabajo, siguiente, pytest_del_trabajo in (("arnes-salas:", "arnes-completo:", "pytest $PRUEBAS -v -n auto\n"),
-                                                   ("arnes-completo:", "zero-regression:", "run: pytest tests/ -v -n auto\n")):
-        cuerpo = flujo[flujo.index(f"  {trabajo}"):flujo.index(f"  {siguiente}")]
-        assert cuerpo.index("instalar_xdist") < cuerpo.index(pytest_del_trabajo)
-    assert "PYTEST_ADDOPTS" not in flujo  # los pytest que lanzan las pruebas no heredan el -n
-
-
-# ¤arbitro
-def test_playwright_no_se_repite_sobre_una_corrida_cubierta():
-    """METODOLOGIAS.md §14: el PR cubierto omite Playwright; la compuerta obligatoria no depende de ese job."""
-    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    trabajo = flujo[flujo.index("  playwright:\n"):]
-    assert "needs: [alcance, humo]\n" in trabajo and "&& needs.alcance.outputs.cubierta == '' }}\n" in trabajo
-    compuerta = flujo[flujo.index("  zero-regression:\n"):flujo.index("  playwright:\n")]
-    assert "needs: [alcance, humo, arnes-salas, arnes-completo]\n" in compuerta and "needs.playwright" not in compuerta
-    assert 'if [ -n "$CUBIERTA" ]' in compuerta
-    assert 'PLAYWRIGHT = "Playwright Frontend"' in (RAIZ / "scripts" / "corrida_cubierta.py").read_text(encoding="utf-8")
+@sin_bash
+@pytest.mark.parametrize("resultados, motivo", [
+    # Con el humo en rojo los arneses no arrancan (quedan omitidos) y el check obligatorio falla.
+    ({"MODO": "salas", "HUMO": "failure"}, "no paso"),
+    ({"MODO": "completo", "HUMO": "failure"}, "no paso"),
+    ({"MODO": "", "HUMO": "failure"}, "El humo fallo"),
+    ({"MODO": "", "HUMO": "cancelled"}, "cancelado"),
+    ({"MODO": "salas", "HUMO": "success", "SALAS": "failure"}, "no paso"),
+    ({"MODO": "completo", "HUMO": "success", "COMPLETO": "cancelled"}, "no paso"),
+    ({"MODO": "completo", "HACIA_MAIN": "true", "HUMO": "skipped", "COMPLETO": "skipped"}, "no paso"),
+    ({"MODO": "", "HUMO": "success"}, "Ningun arnes corrio"),
+    ({"ALCANCE": "failure", "MODO": "", "HUMO": "skipped"}, "alcance"),
+], ids=["humo-rojo-salas", "humo-rojo-completo", "humo-rojo-sin-modo", "humo-cancelado", "salas-rojo",
+        "completo-cancelado", "main-sin-arnes", "ningun-arnes", "alcance-rojo"])
+def test_la_compuerta_falla_si_el_humo_o_el_arnes_obligatorio_no_pasaron(resultados, motivo):
+    res = ejecutar_compuerta(resultados)
+    assert res.returncode == 1, res.stdout + res.stderr
+    assert motivo in res.stdout

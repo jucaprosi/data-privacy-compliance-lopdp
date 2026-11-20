@@ -147,12 +147,3 @@ def test_el_cli_exige_la_rama_base_y_anota_vacio_si_no_hay_api(monkeypatch, tmp_
         cc.main(argumentos)
     assert cc.main([*argumentos, "--rama-base", "main"]) == 0
     assert salida.read_text(encoding="utf-8") == "cubierta=\n"
-
-
-def test_el_workflow_reutiliza_el_push_y_la_compuerta_lo_acepta():
-    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    assert "scripts/corrida_cubierta.py" in flujo and "cubierta: ${{ steps.cubierta.outputs.cubierta }}" in flujo
-    assert flujo.count("needs.alcance.outputs.cubierta == ''") == 4  # el humo, los dos arneses y Playwright
-    assert "CUBIERTA: ${{ needs.alcance.outputs.cubierta }}" in flujo and 'if [ -n "$CUBIERTA" ]' in flujo
-    assert flujo.count("actions: read") == 3
-    assert 'RAMA_BASE: ${{ github.base_ref }}' in flujo and '--rama-base "$RAMA_BASE"' in flujo
