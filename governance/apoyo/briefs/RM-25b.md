@@ -1,6 +1,6 @@
 ### RM-25b · evidencia-validacion-final-exige-la-primera  (tanda 81)
 
-**Contexto.** Sala: `roadmap`. Depende de: `RM-25a`, `DIAG-12`, `DIAG-07`, `ORG-22`, `RET-02`, `RET-03`. Especificaciones: `governance/tareas/RM-25b.md` y `governance/especificaciones/RM-25b.md`.
+**Contexto.** Sala: `roadmap`. Depende de: `RM-25a`, `DIAG-12`, `DIAG-07`, `ORG-22`, `RET-02`, `RET-03`, `ORG-22c`, `QA-09`, `RET-06`. Especificaciones: `governance/tareas/RM-25b.md` y `governance/especificaciones/RM-25b.md`.
 
 **Modelo:** Fable (claude-fable-5-2), por decisión del propietario.
 
@@ -30,6 +30,13 @@
   - `features/roadmap/services/tareas_validadas_engine.py`
   - `tests/test_diag12_estados.py`
   - `tests/test_rm25b_validacion_final.py`
+  - `features/roadmap/domain/errores.py#RM-25b`
+  - `tests/matriz/RM-25b.py`
+  - `tests/test_matriz_permisos.py`
+  - `tests/test_rm25a_primera_validacion.py`
+  - `tests/test_e2e_hoja_de_ruta_real.py`
+  - `tests/test_organizacion_api.py`
+  - `tests/test_roadmap_service.py`
 
 **No hagas:**
 
@@ -40,5 +47,5 @@
 
 **Hecho si** (árbitro exógeno):
 
-- `RM-25b`: pytest tests/test_rm25b_validacion_final.py tests/test_diag12_estados.py contra PostgreSQL 16 local con lopdp_app y RLS + suite completa: aprobar sin primera validación da 409 PRIMERA_VALIDACION_PENDIENTE; un implementador da 403; el mismo coordinador como validador final da 409; un INSERT o UPDATE directo a approved sin primera validación lo rechaza el CHECK; DIAG-12 no cuenta una tarea que aprobó un DPO sin primera validación; mutaciones documentadas: quitar el CHECK o quitar la condición de rol en la consulta hace fallar su prueba
+- `RM-25b`: pytest tests/test_rm25b_validacion_final.py tests/test_diag12_estados.py contra PostgreSQL 16 local con lopdp_app y RLS + suite completa: aprobar sin primera validación da 409 PRIMERA_VALIDACION_PENDIENTE; un coordinador que aprueba da 403 ROL_SIN_VALIDACION_FINAL; un implementador da 403; el mismo coordinador como validador final da 409; un INSERT o UPDATE directo a approved sin primera validación lo rechaza el CHECK; DIAG-12 no cuenta una tarea que aprobó un DPO sin primera validación; mutaciones documentadas: quitar el CHECK o quitar la condición de rol en la consulta hace fallar su prueba
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.

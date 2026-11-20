@@ -3087,3 +3087,21 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | Un script de espera que fusiona solo se salta la re-simulación si `main` cambia mientras espera. | Error de proceso propio, ya corregido: el script vuelve a simular sobre el `main` del momento antes de fusionar. |
 | Las fichas ortogonales se serializaban por la regla de una sola cabeza de Alembic. | Ya registrado como regla de reparto; su solución estructural es CI-28, que aún no está fusionada. |
 | `backend.Dockerfile` ejecutaba `alembic upgrade head` al arrancar, y habría fallado con la primera rama por sala. | Caso de inventario de consumidores ya cubierto por el Aporte 114; corregido en #793. |
+
+---
+
+### Aporte 160: La «Propiedad que Falta» que Declara una Especificación No la Exige Ningún Árbitro, y la Ficha se Lanza sin Ella
+`¤sdd` `¤arbitro`
+
+* **Descripción:** una especificación puede dejar escrito, en su trazabilidad, que la ficha necesita archivos que aún no posee («Propiedad que falta en la ficha»). Ningún árbitro compara esa línea con el `propiedad` de la ficha ni con la lista «Escribe» del brief: `verificar_especificaciones.py` da OK, `generar_indice_tareas.py` da OK y `verificar_reparto.py` da OK, porque cada uno valida la ficha contra sí misma o contra el árbol. La ficha se lanza con el hueco, y la sesión de ingeniería, que solo puede escribir su lista exclusiva, se detiene sin escribir código. Un caso más fino del mismo hueco: un árbitro con «suite completa» sobre una ficha que cambia una regla obliga a tocar las pruebas de fichas ya hechas que fijan la regla anterior, y esas pruebas tampoco figuran en la especificación.
+* **Por qué es útil aquí:** el 2026-11-19 la sesión de RM-25b y RM-27 se detuvo antes de escribir una línea por este motivo; las dos especificaciones lo decían en §6. Hoy cuatro especificaciones de `main` llevan esa línea (DIAG-15, IA-06, RM-27 y SEC-23b) y RM-25b la llevaba hasta este PR.
+* **Verificabilidad:** sea $F_e$ el conjunto de rutas citadas en la línea «Propiedad que falta en la ficha» de la especificación $e$ y $P_t$ el `propiedad` de su ficha $t$ no hecha. La ficha está lista para lanzarse solo si $F_e \subseteq P_t$. En `origin/main` 020bc051, para RM-25b y RM-27, $F_e \not\subseteq P_t$ (comprobado leyendo ambos archivos). Lo comprueba de forma exógena el informe de la sesión detenida; falta un árbitro que lo evalúe en el CI.
+* **Soporte bibliográfico:** no se cita ninguna fuente: no se verificó una que trate específicamente este hueco entre especificación y asignación de trabajo, y se prefiere omitir la cita a forzar una.
+* **Estado:** corregido para RM-25b y RM-27 en el PR de gobernanza que amplía su propiedad (2026-11-19). La regla que lo evitaría (comprobar $F_e \subseteq P_t$ antes de escribir el brief) queda propuesta, sin árbitro. No introduce token nuevo.
+
+## Candidatos descartados de esta sesión (Parte XXXIII)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| El índice rechaza que una ficha abierta posea un archivo de una ficha hecha si no depende de ella; se resuelve añadiendo la dependencia hecha. | Ya cubierto por el Aporte 134 y la descripción del índice (línea 1987). |
+| `generar_indice_tareas.py --verificar` da falso rojo de R-PROP-EXISTE mientras la marca sembrada no está en un commit. | Ya registrado como práctica: simular con commit cuando el PR siembra marcas. |

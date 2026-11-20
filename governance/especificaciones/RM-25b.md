@@ -15,17 +15,19 @@ Migración `alembic/versions/rm25b_evidencia_exigir.py`, de la sala `roadmap` (`
 
 | Método y ruta | Roles | Cambio |
 | :--- | :--- | :--- |
-| `PATCH /roadmaps/tasks/{task_id}/evidence/{evidence_id}` (aprobar) | `dpo`, `auditor` | antes `coordinador`, `dpo`, `implementador` |
+| `PATCH /roadmaps/tasks/{task_id}/evidence/{evidence_id}` (dependencia de roles y matriz) | `coordinador`, `dpo`, `auditor` | antes `coordinador`, `dpo`, `implementador`; la ruta no se parte en aprobar y rechazar, porque RM-27 consume ese contrato |
+| `PATCH …` (aprobar) | `dpo`, `auditor` | el motor (`evidencia_engine.py`) rechaza al `coordinador` |
 | `PATCH …` (rechazar) | `coordinador`, `dpo`, `auditor` | el rechazo sigue pudiendo hacerse en cualquiera de los dos pasos |
 | `POST …/primera-validacion` (RM-25a) | `coordinador` | sin cambio |
 
 | Código HTTP | `code` | Cuándo |
 | :--- | :--- | :--- |
 | 403 | (dependencia de roles) | un `implementador` intenta validar |
+| 403 | `ROL_SIN_VALIDACION_FINAL` | un `coordinador` intenta aprobar; se comprueba antes que los dos 409 |
 | 409 | `PRIMERA_VALIDACION_PENDIENTE` | aprobar una evidencia sin primera validación |
 | 409 | `VALIDADOR_REPETIDO` | quien aprueba es quien subió la evidencia o quien hizo la primera validación |
 
-Los códigos se registran en el catálogo de la sala roadmap.
+Los códigos se registran en la sección `#RM-25b` del catálogo de la sala (`features/roadmap/domain/errores.py`). Al aprobar, el motor comprueba en este orden: rol (`ROL_SIN_VALIDACION_FINAL`), primera validación (`PRIMERA_VALIDACION_PENDIENTE`) y personas distintas (`VALIDADOR_REPETIDO`). El docstring de `tests/matriz/RM-25b.py` explica que la matriz da paso al `coordinador` por el rechazo y que el motor le impide aprobar.
 
 ## 3. Reglas
 
@@ -48,6 +50,7 @@ Sin pantalla nueva en esta ficha. Las evidencias marcadas se listan como «pendi
 | :--- | :--- |
 | **Dado** una evidencia sin primera validación, **cuando** el DPO la aprueba, **entonces** 409 `PRIMERA_VALIDACION_PENDIENTE`. | `test_final_exige_primera` |
 | **Dado** un `implementador`, **cuando** valida, **entonces** 403. Mutación: devolverle el rol hace fallar la prueba. | `test_implementador_no_valida` |
+| **Dado** un `coordinador`, **cuando** aprueba, **entonces** 403 `ROL_SIN_VALIDACION_FINAL`, antes de cualquier 409. Mutación: quitar la comprobación hace fallar la prueba. | `test_coordinador_no_aprueba` |
 | **Dado** quien hizo la primera validación, o quien subió la evidencia, **cuando** hace la final, **entonces** 409 `VALIDADOR_REPETIDO`. | `test_tres_personas_distintas` |
 | **Dado** un `INSERT` o `UPDATE` directo a `approved` sin primera validación y sin la marca, **entonces** lo rechaza el CHECK. Mutación: quitar el CHECK hace fallar la prueba. | `test_check_aprobada_con_primera` |
 | **Dado** evidencias `approved` anteriores sin primera validación, **cuando** corre la migración, **entonces** quedan con `requiere_revalidacion`, su estado no cambia y el recuento impreso coincide. Mutación: promoverlas hace fallar la prueba. | `test_migracion_marca_sin_promover` |
@@ -61,5 +64,4 @@ En `tests/test_rm25b_validacion_final.py` y `tests/test_diag12_estados.py`, cont
 - Ficha: `governance/tareas/RM-25b.md`. Especificación de referencia: `governance/especificaciones/README.md`.
 - Diseño del Arquitecto ADPA del 2026-11-11 y decisiones del CTO del mismo día. Invariante 14 de EVYDENTIA.
 - Depende de RM-25a y DIAG-12 (hechas) y de ORG-22 (en curso), que crea el rol `auditor`. Orden con RET-02, que también posee `api/routers/roadmaps.py` y `features/roadmap/services/evidencia_engine.py`: RM-25b va después.
-- **Propiedad que falta en la ficha**, medida en `origin/main` 4eca5af2: el archivo del catálogo de errores de la sala (`features/roadmap/domain/errores.py#RM-25b`, por sembrar) y `tests/matriz/RM-25b.py` (crea), porque cambian los roles de una ruta. La migración cambia de nombre: hay que actualizar `propiedad` y `crea`.
-- **Bloqueo del árbitro:** `scripts/verificar_especificaciones.py` rechaza el sufijo «b». Esta especificación no pasa hasta que el árbitro admita sufijos.
+- **Propiedad**, medida en `origin/main` 020bc051: la sección `features/roadmap/domain/errores.py#RM-25b`, `tests/matriz/RM-25b.py` y la migración `alembic/versions/rm25b_evidencia_exigir.py` (las dos últimas también en `crea`), más las pruebas de fichas hechas que fijan la regla anterior.
