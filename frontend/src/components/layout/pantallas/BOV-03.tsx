@@ -1,9 +1,9 @@
 ﻿// ¤boveda-cloud ¤evidencias ¤adpa
 import React, { useState } from "react";
-import type { Pantalla, RegistroPantallas } from "./base";
+import type { Pantalla } from "./base";
 
 export function PantallaBov03() {
-  const [verificado, setVerificado] = useState(true);
+  const [verificado] = useState(true);
 
   return (
     <div className="p-6 space-y-6">

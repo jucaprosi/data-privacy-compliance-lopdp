@@ -6,7 +6,7 @@
  * Prueba la sección de plantillas recomendadas en la pestaña «Plantillas», el triestado
  * (Aplica, No aplica, Información insuficiente), los filtros y la corrección humana explicable.
  */
-import { expect, test, type Page, type Route } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { abrirAppLimpia, barraDeMenus, configurarProyecto } from "../utiles";
 
 const ORGANIZACION = "org-prueba-bib204";

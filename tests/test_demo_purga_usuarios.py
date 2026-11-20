@@ -24,6 +24,7 @@ from __future__ import annotations
 import os
 import uuid
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import pytest
 from sqlalchemy import create_engine, text
@@ -443,3 +444,107 @@ def test_mutacion_sin_filtro_candidatos_detectada(motor, ambiente, monkeypatch):
     with motor.begin() as con:
         borrados_mut = con.execute(text(sql_mutada)).rowcount
     assert borrados_mut >= 1, "la mutación borró al huérfano ajeno (demuestra que el paso 1 es crítico)"
+
+
+# --- DEMO-05c: casos añadidos; las pruebas de DEMO-05b de arriba no cambian ------------------------------
+
+_SQL_POLITICAS = (Path(__file__).resolve().parent.parent / "jobs" / "purga_demo" / "politicas_purga.sql").read_text(
+    encoding="utf-8")
+
+
+def _definicion_persona_ficticia() -> str:
+    """El `CREATE OR REPLACE FUNCTION` de politicas_purga.sql, sin los GRANT al rol (que es global)."""
+    return _SQL_POLITICAS.split("-- [es_persona_ficticia]", 1)[1].split("-- [/es_persona_ficticia]", 1)[0]
+
+
+def _ejecutar_sql(con, sql: str) -> None:
+    with con.connection.dbapi_connection.cursor() as cursor:
+        cursor.execute(sql)
+
+
+@pytest.fixture(autouse=True)
+def persona_ficticia_instalada():
+    """DEMO-05c: `usuarios.py` pregunta a `es_persona_ficticia`, que exige el marcador `demo`.
+
+    Las pruebas de DEMO-05b confirman sus transacciones, así que esta base de pruebas recibe la función (sin
+    permisos para el rol, que es global) y el marcador `demo`, y se le quitan al terminar si no estaban.
+    Si la base ya tiene otro marcador, lo sustituye temporalmente por `demo` y lo restaura al terminar.
+    """
+    url = os.environ.get("TEST_DATABASE_URL")
+    if not url:
+        yield
+        return
+    engine = create_engine(url.replace("postgresql://", "postgresql+psycopg://", 1))
+    with engine.begin() as con:
+        marcador_creado = con.execute(text("SELECT to_regclass('public.entorno_marcador')")).scalar() is None
+        if marcador_creado:
+            valores_previos = []
+            con.execute(text("CREATE TABLE public.entorno_marcador (valor text NOT NULL)"))
+        else:
+            valores_previos = [v for (v,) in con.execute(text("SELECT valor FROM public.entorno_marcador")).all()]
+            con.execute(text("DELETE FROM public.entorno_marcador"))
+        con.execute(text("INSERT INTO public.entorno_marcador VALUES ('demo')"))
+        funcion_creada = con.execute(text(
+            "SELECT to_regprocedure('public.es_persona_ficticia(character varying)')")).scalar() is None
+        if funcion_creada:
+            _ejecutar_sql(con, _definicion_persona_ficticia())
+            con.execute(text("REVOKE ALL ON FUNCTION public.es_persona_ficticia(character varying) FROM PUBLIC"))
+    try:
+        yield
+    finally:
+        with engine.begin() as con:
+            if funcion_creada:
+                con.execute(text("DROP FUNCTION IF EXISTS public.es_persona_ficticia(character varying)"))
+            if marcador_creado:
+                con.execute(text("DROP TABLE IF EXISTS public.entorno_marcador"))
+            else:
+                con.execute(text("DELETE FROM public.entorno_marcador"))
+                for valor in valores_previos:
+                    con.execute(text("INSERT INTO public.entorno_marcador VALUES (:v)"), {"v": valor})
+        engine.dispose()
+
+
+def test_persona_ficticia_se_borra_sin_update():
+    """DEMO-05c §5: la persona ficticia de una demo vencida se borra como `purga_demo`, sin UPDATE.
+
+    Su sesión sigue nombrándola con `tenant_id` nulo hasta que el borrado de la persona la vacía por
+    `ON DELETE SET NULL`. Todo en una transacción revertida: el rol `purga_demo` es global (R11).
+    Mutación m9: sin `AND ds.tenant_id IS NOT NULL` en `usuarios.py`, la sesión ya sin organización protege a
+    la persona y falla `test_se_borra_el_usuario_invalid_cuyos_roles_eran_solo_de_demos_vencidas`.
+    """
+    engine = create_engine(_url())
+    con = engine.connect()
+    transaccion = con.begin()
+    try:
+        s = uuid.uuid4().hex[:8]
+        tid, uid, sid = f"zz-c5-demo-{s}", f"zz-c5-persona-{s}", f"zz-c5-ses-{s}"
+        if not con.execute(text("SELECT 1 FROM pg_roles WHERE rolname = 'purga_demo'")).first():
+            con.execute(text("CREATE ROLE purga_demo NOLOGIN"))
+        con.execute(text("DELETE FROM public.entorno_marcador"))
+        con.execute(text("INSERT INTO public.entorno_marcador VALUES ('demo')"))
+        _ejecutar_sql(con, _SQL_POLITICAS)
+        con.execute(text("INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion, es_demo) "
+                         "VALUES (:i, 'Demo', 'Demo', :r, true)"), {"i": tid, "r": f"{uuid.uuid4().int % 10**13:013d}"})
+        con.execute(text("INSERT INTO users (id, email, nombre) VALUES (:i, :e, 'Persona Demo')"),
+                    {"i": uid, "e": f"persona-{s}@cooperativa-demo.invalid"})
+        con.execute(text("INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) "
+                         "VALUES (:i, :u, :t, 'coordinador')"), {"i": f"zz-c5-utr-{s}", "u": uid, "t": tid})
+        con.execute(text(
+            "INSERT INTO demo_sesiones (id, vendedor_sub, vendedor_email, tenant_id, persona_usuario_id, estado, "
+            "iniciada_en, ultima_actividad, terminada_en, motivo_fin) "
+            "VALUES (:i, :sub, :e, :t, :p, 'vencida', :ini, :ini, :fin, 'terminar')"),
+            {"i": sid, "sub": f"sub-{s}", "e": f"vendedor-{s}@vendedores.invalid", "t": tid, "p": uid,
+             "ini": AHORA - timedelta(days=10), "fin": AHORA - timedelta(days=1)})
+
+        con.execute(text("SET ROLE purga_demo"))
+        assert not con.execute(text("SELECT has_table_privilege('purga_demo', 'demo_sesiones', 'UPDATE')")).scalar()
+        purgar_tenant(con, AlmacenVacio(), tid)
+        con.execute(text("RESET ROLE"))
+
+        assert con.execute(text("SELECT count(*) FROM users WHERE id = :u"), {"u": uid}).scalar_one() == 0
+        assert con.execute(text("SELECT tenant_id, persona_usuario_id FROM demo_sesiones WHERE id = :i"),
+                           {"i": sid}).one() == (None, None)
+    finally:
+        transaccion.rollback()
+        con.close()
+        engine.dispose()

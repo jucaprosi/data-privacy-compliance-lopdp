@@ -11,7 +11,7 @@
  * console.log(sentinel.report());
  * ```
  */
-import { expect, type Page } from "@playwright/test";
+import { type Page } from "@playwright/test";
 
 export class ConsoleSentinel {
   private errors: string[] = [];

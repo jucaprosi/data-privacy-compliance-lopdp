@@ -17,7 +17,6 @@ import { expect, type Page } from "@playwright/test";
 import {
   abrirAppLimpia,
   barraDeMenus,
-  configurarProyecto,
   irASala,
   responderControlActual,
 } from "./utiles";
@@ -71,7 +70,6 @@ export async function createTestProject(
   const {
     name = "Entidad de Prueba S.A.",
     normativa = "LOPDP",
-    industria = "Finance",
   } = config;
 
   // Abrir app limpia
@@ -123,7 +121,7 @@ export async function createTestAssessment(
       } else {
         break;
       }
-    } catch (error) {
+    } catch {
       console.log(`No hay más controles (respondidos: ${i})`);
       break;
     }

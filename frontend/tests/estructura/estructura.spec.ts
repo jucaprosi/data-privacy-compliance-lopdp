@@ -21,20 +21,71 @@ import {
   sembrarSesion,
 } from "../auth/utilesAuth";
 
+interface CargoSimulado {
+  id: string;
+  tenant_id: string;
+  area_id: string;
+  nombre: string;
+  tipo_cargo: string;
+  es_jefatura: boolean;
+  reporta_a_cargo_id: string | null;
+  titular_user_id: string | null;
+  titular_nombre: string | null;
+  titular_email: string | null;
+  valid_to: string | null;
+}
+
+interface AreaSimulada {
+  id: string;
+  tenant_id: string;
+  nombre: string;
+  codigo: string | null;
+  nivel: string;
+  parent_area_id: string | null;
+  responsable_user_id: string | null;
+  deleted_at: string | null;
+  cargos: CargoSimulado[];
+  subareas: AreaSimulada[];
+}
+
+interface UnidadSinJefatura {
+  area_id: string;
+  nombre_area: string;
+  nivel: string;
+}
+
+interface JefaturaVacante {
+  area_id: string;
+  nombre_area: string;
+  cargo_id: string;
+  nombre_cargo: string;
+}
+
+interface ResponsablePorDesignar {
+  area_id: string;
+  nombre_area: string;
+  cargo_id: string;
+  nombre_cargo: string;
+  candidato_user_id: string;
+  candidato_nombre: string;
+  candidato_email: string;
+  motivo: string;
+}
+
 interface DatosEstructuraSimulada {
-  arbol: any[];
+  arbol: AreaSimulada[];
   cobertura: {
     tenant_id: string;
     total_unidades: number;
-    unidades_sin_jefatura: any[];
-    jefaturas_vacantes: any[];
-    responsables_por_designar: any[];
+    unidades_sin_jefatura: UnidadSinJefatura[];
+    jefaturas_vacantes: JefaturaVacante[];
+    responsables_por_designar: ResponsablePorDesignar[];
   };
   fallo?: string;
 }
 
 function inicializarDatos(): DatosEstructuraSimulada {
-  const cargoGerente = {
+  const cargoGerente: CargoSimulado = {
     id: "cargo-001",
     tenant_id: "tenant-de-prueba",
     area_id: "area-alta-dir",
@@ -48,7 +99,7 @@ function inicializarDatos(): DatosEstructuraSimulada {
     valid_to: null,
   };
 
-  const cargoCiso = {
+  const cargoCiso: CargoSimulado = {
     id: "cargo-002",
     tenant_id: "tenant-de-prueba",
     area_id: "area-tecnologia",
@@ -62,7 +113,7 @@ function inicializarDatos(): DatosEstructuraSimulada {
     valid_to: null,
   };
 
-  const cargoDpo = {
+  const cargoDpo: CargoSimulado = {
     id: "cargo-003",
     tenant_id: "tenant-de-prueba",
     area_id: "area-cumplimiento",
@@ -76,7 +127,7 @@ function inicializarDatos(): DatosEstructuraSimulada {
     valid_to: null,
   };
 
-  const areaTecnologia = {
+  const areaTecnologia: AreaSimulada = {
     id: "area-tecnologia",
     tenant_id: "tenant-de-prueba",
     nombre: "Dirección de Tecnología",
@@ -89,7 +140,7 @@ function inicializarDatos(): DatosEstructuraSimulada {
     subareas: [],
   };
 
-  const areaCumplimiento = {
+  const areaCumplimiento: AreaSimulada = {
     id: "area-cumplimiento",
     tenant_id: "tenant-de-prueba",
     nombre: "Unidad de Cumplimiento Normativo",
@@ -102,7 +153,7 @@ function inicializarDatos(): DatosEstructuraSimulada {
     subareas: [],
   };
 
-  const areaAltaDireccion = {
+  const areaAltaDireccion: AreaSimulada = {
     id: "area-alta-dir",
     tenant_id: "tenant-de-prueba",
     nombre: "Alta Dirección Ejecutiva",
@@ -245,7 +296,7 @@ async function simularApiEstructura(
       if (datos.fallo === "crear_area_ciclo") {
         return responder(400, { detail: "La jerarquía de áreas contiene un ciclo.", code: "CYCLE_DETECTED" });
       }
-      const nueva = {
+      const nueva: AreaSimulada = {
         id: `area-${Date.now()}`,
         tenant_id: "tenant-de-prueba",
         nombre: payload.nombre,
@@ -297,7 +348,7 @@ async function simularApiEstructura(
       const cargoId = match ? match[1] : "";
 
       // Actualizar en el árbol simulado
-      function actualizarTitular(nodos: any[]) {
+      function actualizarTitular(nodos: AreaSimulada[]) {
         for (const n of nodos) {
           if (n.cargos) {
             for (const c of n.cargos) {

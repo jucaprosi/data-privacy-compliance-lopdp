@@ -28,6 +28,7 @@ import os
 import uuid
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import pytest
 from sqlalchemy import DDL, String, cast, column, create_engine, func, literal_column, select, table, text
@@ -112,7 +113,8 @@ class Mundo:
                          "VALUES (:i, :t, 'demo', 'y', 'ver_como', CAST(:p AS json))"),
                     {"i": f"zz-aud-v-{self.s}", "t": self.vencido, "p": f'{{"vendedor": "{self.email}"}}'})
         self.sesion(con, self.sesion_v, self.sub_v, self.vencido, "vencida", dias_desde_fin=1)
-        self.sesion(con, self.sesion_a, self.sub_a, self.activo, "activa")
+        # `self.persona` pertenece solo a `self.vencido`; si la sesión activa la apuntara, usuarios.py la conservaría.
+        self.sesion(con, self.sesion_a, self.sub_a, self.activo, "activa", persona=False)
 
     def sesion(self, con, id_, sub, tenant, estado, dias_desde_fin=None, persona=True):
         fin = None if estado == "activa" else AHORA - timedelta(days=dias_desde_fin)
@@ -140,17 +142,38 @@ class Mundo:
 @pytest.fixture
 def motor():
     motor = create_engine(_url())
-    with motor.begin() as con:  # marcador de entorno que exige la guardia (SEC-20); solo si falta
-        creado = con.execute(text("SELECT to_regclass('public.entorno_marcador')")).scalar() is None
-        if creado:
+    sql_politicas = (
+        Path(__file__).resolve().parent.parent / "jobs" / "purga_demo" / "politicas_purga.sql"
+    ).read_text(encoding="utf-8")
+    sql_funcion = sql_politicas.split("-- [es_persona_ficticia]", 1)[1].split("-- [/es_persona_ficticia]", 1)[0]
+    with motor.begin() as con:  # marcador 'demo' y es_persona_ficticia que exige la purga (SEC-20 / DEMO-05c)
+        marcador_creado = con.execute(text("SELECT to_regclass('public.entorno_marcador')")).scalar() is None
+        if marcador_creado:
+            valores_previos = []
             con.execute(text("CREATE TABLE public.entorno_marcador (valor text NOT NULL)"))
-        if not con.execute(text("SELECT count(*) FROM public.entorno_marcador")).scalar():
-            con.execute(text("INSERT INTO public.entorno_marcador VALUES ('pruebas')"))
-    yield motor
-    if creado:
+        else:
+            valores_previos = [v for (v,) in con.execute(text("SELECT valor FROM public.entorno_marcador")).all()]
+            con.execute(text("DELETE FROM public.entorno_marcador"))
+        con.execute(text("INSERT INTO public.entorno_marcador VALUES ('demo')"))
+        funcion_creada = con.execute(text(
+            "SELECT to_regprocedure('public.es_persona_ficticia(character varying)')")).scalar() is None
+        if funcion_creada:
+            with con.connection.dbapi_connection.cursor() as cur:
+                cur.execute(sql_funcion)
+            con.execute(text("REVOKE ALL ON FUNCTION public.es_persona_ficticia(character varying) FROM PUBLIC"))
+    try:
+        yield motor
+    finally:
         with motor.begin() as con:
-            con.execute(text("DROP TABLE public.entorno_marcador"))
-    motor.dispose()
+            if funcion_creada:
+                con.execute(text("DROP FUNCTION IF EXISTS public.es_persona_ficticia(character varying)"))
+            if marcador_creado:
+                con.execute(text("DROP TABLE IF EXISTS public.entorno_marcador"))
+            else:
+                con.execute(text("DELETE FROM public.entorno_marcador"))
+                for valor in valores_previos:
+                    con.execute(text("INSERT INTO public.entorno_marcador VALUES (:v)"), {"v": valor})
+        motor.dispose()
 
 
 @pytest.fixture

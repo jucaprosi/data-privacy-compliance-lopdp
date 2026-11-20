@@ -32,6 +32,9 @@ export interface ClickEntry {
   xpath?: string;
 }
 
+/** Ventana del navegador con el registro de clics inyectado por el tracker. */
+type VentanaConAuditoria = Window & { auditLog?: ClickEntry[] };
+
 export interface SnapshotMetadata {
   timestamp: string;
   path: string;
@@ -47,13 +50,14 @@ export class AuditTrail {
    */
   static async injectTracker(page: Page): Promise<void> {
     await page.evaluate(() => {
-      if (!(window as any).auditLog) {
-        (window as any).auditLog = [];
+      const ventana = window as VentanaConAuditoria;
+      if (!ventana.auditLog) {
+        ventana.auditLog = [];
 
         // Helper para calcular XPath
         function getXPath(el: Element): string {
           if (!el || el.nodeType !== 1) return "";
-          if ((el as any).id) return `//*[@id="${(el as any).id}"]`;
+          if (el.id) return `//*[@id="${el.id}"]`;
 
           const parts: string[] = [];
           let current: Element | null = el;
@@ -81,7 +85,7 @@ export class AuditTrail {
             const target = clickEvent.target as HTMLElement;
             const rect = target.getBoundingClientRect();
 
-            (window as any).auditLog.push({
+            (window as VentanaConAuditoria).auditLog?.push({
               timestamp: new Date().toISOString(),
               tag: target.tagName.toLowerCase(),
               id: target.id || "",
@@ -106,7 +110,7 @@ export class AuditTrail {
    */
   static async getClickLog(page: Page): Promise<ClickEntry[]> {
     try {
-      return await page.evaluate(() => (window as any).auditLog || []);
+      return await page.evaluate(() => (window as VentanaConAuditoria).auditLog || []);
     } catch {
       return [];
     }
@@ -117,7 +121,7 @@ export class AuditTrail {
    */
   static async clearClickLog(page: Page): Promise<void> {
     await page.evaluate(() => {
-      (window as any).auditLog = [];
+      (window as VentanaConAuditoria).auditLog = [];
     });
   }
 

@@ -21,12 +21,86 @@ import {
   sembrarSesion,
 } from "../auth/utilesAuth";
 
+interface UsuarioSimulado {
+  id: string;
+  email: string;
+  nombre: string;
+}
+
+interface AreaSimulada {
+  id: string;
+  nombre: string;
+  codigo: string;
+  tenant_id: string;
+}
+
+interface RolSimulado {
+  id: string;
+  user_id: string;
+  role: string;
+  area_id: string | null;
+  granted_at: string;
+  granted_by: string;
+}
+
+interface DesignacionSimulada {
+  id: string;
+  tenant_id: string;
+  tipo: string;
+  user_id: string;
+  representante_nombre: string;
+  representante_identificacion: string;
+  representante_cargo: string;
+  fecha_designacion: string;
+  doc_referencia: string;
+  valid_from?: string;
+  valid_to: string | null;
+  vinculo: string | null;
+  aceptacion_at: string | null;
+  declaracion_at: string | null;
+  declaracion_texto: string | null;
+  declaracion_tiene_conflicto: boolean;
+  declaracion_es_socio_accionista: boolean;
+  declaracion_es_pariente_admin: boolean;
+  inscripcion_spdp_fecha: string | null;
+  inscripcion_spdp_ref: string | null;
+  revocada_at: string | null;
+  revocada_motivo: string | null;
+  created_at: string;
+  updated_at: string;
+  usuario_nombre: string;
+  usuario_email: string;
+}
+
+interface EstadoDpdSimulado {
+  designado: boolean;
+  designacion: DesignacionSimulada | null;
+  declaracion_completada: boolean;
+  inscrito_spdp: boolean;
+  conflicto_sobrevenido: boolean;
+  cargos_incompatibles: string[];
+  alertas: string[];
+}
+
+interface EstadoCoordinadorSimulado {
+  designado: boolean;
+  designacion: DesignacionSimulada | null;
+  tiene_mandato_escrito: boolean;
+  alertas: string[];
+}
+
+interface EstadoDesignacionesSimulado {
+  tenant_id: string;
+  dpd: EstadoDpdSimulado;
+  coordinador: EstadoCoordinadorSimulado;
+}
+
 interface DatosDesignacionesSimuladas {
-  designaciones: any[];
-  estado: any;
-  usuarios: any[];
-  areas: any[];
-  roles: any[];
+  designaciones: DesignacionSimulada[];
+  estado: EstadoDesignacionesSimulado;
+  usuarios: UsuarioSimulado[];
+  areas: AreaSimulada[];
+  roles: RolSimulado[];
   falloCrearDpd?: boolean;
 }
 
@@ -77,7 +151,7 @@ function inicializarDatos(): DatosDesignacionesSimuladas {
     },
   ];
 
-  const designacionDpd = {
+  const designacionDpd: DesignacionSimulada = {
     id: "desig-dpd-001",
     tenant_id: "tenant-de-prueba",
     tipo: "dpd",
@@ -106,7 +180,7 @@ function inicializarDatos(): DatosDesignacionesSimuladas {
     usuario_email: "david.dpd@empresa.test",
   };
 
-  const estadoInicial = {
+  const estadoInicial: EstadoDesignacionesSimulado = {
     tenant_id: "tenant-de-prueba",
     dpd: {
       designado: true,
@@ -268,7 +342,7 @@ async function simularApiDesignaciones(
         }
 
         const u = datos.usuarios.find((usr) => usr.id === payload.user_id);
-        const nueva = {
+        const nueva: DesignacionSimulada = {
           id: `desig-${payload.tipo}-${Date.now()}`,
           tenant_id: "tenant-de-prueba",
           tipo: payload.tipo,

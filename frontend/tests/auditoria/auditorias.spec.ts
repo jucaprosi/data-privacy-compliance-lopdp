@@ -9,7 +9,7 @@
  * 5. En ninguna pantalla ni acta aparece la palabra prohibida 'certificado'.
  * 6. En 'Cierres por verificar', el motivo exige al menos 10 caracteres.
  */
-import { expect, test, type Page, type Request } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { abrirAppLimpia, configurarProyecto, irASala } from "../utiles";
 
 test.describe("CAPA-04: Auditorías con grilla por dominio y acta por área", () => {
