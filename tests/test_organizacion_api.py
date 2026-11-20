@@ -313,9 +313,18 @@ async def test_quien_sube_evidencia_no_la_valida(api_client, factory, org):
     ev = r.json()["id"]
 
     url = f"/api/v1/roadmaps/tasks/{tk}/evidence/{ev}"
-    body = {"validation_status": "approved", "notes": "ok"}
-    r = await api_client.patch(url, json=body, headers=_h(enc, org["tenant"], "coordinador"))
+    body = {"validation_status": "approved", "notes": "ok", "nivel_acreditado": 2}
+    # Cuatro ojos: quien subió la evidencia no la resuelve. Y un coordinador no aprueba (RM-25b).
+    rechazo = {"validation_status": "rejected", "notes": "no"}
+    r = await api_client.patch(url, json=rechazo, headers=_h(enc, org["tenant"], "coordinador"))
     assert r.status_code == 409
+    r = await api_client.patch(url, json=body, headers=_h(enc, org["tenant"], "coordinador"))
+    assert r.status_code == 403 and r.json()["code"] == "ROL_SIN_VALIDACION_FINAL"
+    # RM-25b: la validación final del DPO exige la primera, de otro coordinador.
+    enc2 = await _new_user(api_client, org, "enc2")
+    assert (await _grant(api_client, org, enc2, "coordinador")).status_code == 201
+    r = await api_client.post(f"{url}/primera-validacion", headers=_h(enc2, org["tenant"], "coordinador"))
+    assert r.status_code == 200, r.text
     r = await api_client.patch(url, json=body, headers=_h(dpo, org["tenant"], "dpo"))
     assert r.status_code == 200, r.text
     assert r.json()["validated_by"] == dpo

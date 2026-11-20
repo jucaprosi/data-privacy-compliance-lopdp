@@ -190,7 +190,8 @@ async def _completar(ctx, tenant: str, tarea: str, *, evidencia: str | None = "a
         if evidencia:
             await s.execute(text(
                 "INSERT INTO task_evidence (id, task_id, tenant_id, clave_objeto, mime_type, file_size, uploaded_by, "
-                "validation_status) VALUES (:i, :task, :t, 'k', 'application/pdf', 1, :autor, :v)"
+                "validation_status, requiere_revalidacion) "
+                "VALUES (:i, :task, :t, 'k', 'application/pdf', 1, :autor, :v, CAST(:v AS varchar) = 'approved')"
             ), {"i": str(uuid.uuid4()), "task": tarea, "t": tenant, "autor": ctx["u"]["resp"][0], "v": evidencia})
         await s.commit()
 

@@ -286,7 +286,7 @@ _seccion("API-02b", {
 
 # === RM-25b ===
 _seccion("RM-25b", {
-    "validar_rechazar_evidencia": False,
+    "validar_rechazar_evidencia": True,  # validación final de la evidencia: dpo o auditor
 })
 # === fin RM-25b ===
 

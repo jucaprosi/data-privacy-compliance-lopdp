@@ -192,17 +192,32 @@ async def test_validate_evidence(db_session, seed_tenants):
     )
     await db_session.commit()
 
-    # Cuatro ojos: quien sube no valida.
+    # Cuatro ojos: quien sube no resuelve su evidencia.
     with pytest.raises(SoDViolation):
         await roadmap_service.validate_evidence(
-            db_session, tenant, user, ev["id"], "approved", "OK"
+            db_session, tenant, user, ev["id"], "rejected", "OK"
         )
     await db_session.rollback()
 
-    validator = seed_tenants["user_b"]
+    # RM-25b: la validación final exige la primera (coordinador) y una tercera persona con rol dpo o auditor.
+    primero = seed_tenants["user_b"]
+    await roadmap_service.registrar_primera_validacion(
+        db_session, tenant, primero, "coordinador", tk_id, ev["id"]
+    )
+    validator = f"test-uc-{uuid.uuid4().hex[:8]}"
+    await db_session.execute(
+        text("INSERT INTO users (id, email, nombre) VALUES (:id, :e, :n)"),
+        {"id": validator, "e": f"{validator}@test.local", "n": "Validador final"},
+    )
+    await db_session.commit()
     result = await roadmap_service.validate_evidence(
-        db_session, tenant, validator, ev["id"], "approved", "OK"
+        db_session, tenant, validator, ev["id"], "approved", "OK", rol="dpo", nivel_acreditado=2
     )
     await db_session.commit()
     assert result is not None
     assert result["validation_status"] == "approved"
+
+    await db_session.execute(text("DELETE FROM task_audit_log WHERE task_id = :t"), {"t": tk_id})
+    await db_session.execute(text("DELETE FROM task_evidence WHERE task_id = :t"), {"t": tk_id})
+    await db_session.execute(text("DELETE FROM users WHERE id = :id"), {"id": validator})
+    await db_session.commit()

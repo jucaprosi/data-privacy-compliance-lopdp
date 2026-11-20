@@ -45,6 +45,27 @@ registrar(RM_ALMACEN_NO_DISPONIBLE, RM_CLAVE_OBJETO_INVALIDA)
 # === fin RET-02 ===
 
 # === RM-25b ===
+ROL_SIN_VALIDACION_FINAL = CodigoErrorNegocio(
+    "ROL_SIN_VALIDACION_FINAL",
+    403,
+    "La validación final de la evidencia corresponde al DPO o al auditor.",
+)
+PRIMERA_VALIDACION_PENDIENTE = CodigoErrorNegocio(
+    "PRIMERA_VALIDACION_PENDIENTE",
+    409,
+    "La evidencia todavía no tiene la primera validación del coordinador.",
+)
+VALIDADOR_REPETIDO = CodigoErrorNegocio(
+    "VALIDADOR_REPETIDO",
+    409,
+    "Quien sube la evidencia, quien hace la primera validación y quien hace la final son personas distintas.",
+)
+NIVEL_ACREDITADO_REQUERIDO = CodigoErrorNegocio(
+    "NIVEL_ACREDITADO_REQUERIDO",
+    422,
+    "La validación final indica el nivel de evidencia que acredita, de 0 a 4.",
+)
+registrar(ROL_SIN_VALIDACION_FINAL, PRIMERA_VALIDACION_PENDIENTE, VALIDADOR_REPETIDO, NIVEL_ACREDITADO_REQUERIDO)
 # === fin RM-25b ===
 
 # === RM-27 ===

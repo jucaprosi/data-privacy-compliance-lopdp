@@ -2,7 +2,7 @@
 id = "RM-25b"
 titulo = "Evidencia: la validación final exige la primera, un rol dpo o auditor y dos personas distintas (contraer)"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "roadmap"
 depende_de = ["RM-25a", "DIAG-12", "DIAG-07", "ORG-22", "RET-02", "RET-03", "ORG-22c", "QA-09", "RET-06"]
 propiedad = ["alembic/versions/rm25b_evidencia_exigir.py", "features/roadmap/services/evidencia_engine.py", "api/routers/roadmaps.py", "features/roadmap/services/tareas_validadas_engine.py", "tests/test_diag12_estados.py", "tests/test_rm25b_validacion_final.py", "features/roadmap/domain/errores.py#RM-25b", "tests/matriz/RM-25b.py", "tests/test_matriz_permisos.py", "tests/test_rm25a_primera_validacion.py", "tests/test_e2e_hoja_de_ruta_real.py", "tests/test_organizacion_api.py", "tests/test_roadmap_service.py", "tests/matriz/roles/auditor.py#RM-25b", "tests/test_roadmap_cierre_recordatorios.py", "tests/test_bib_208_fichas.py", "features/roadmap/services/evidencia_doble_validacion_engine.py", "features/roadmap/domain/models.py"]
