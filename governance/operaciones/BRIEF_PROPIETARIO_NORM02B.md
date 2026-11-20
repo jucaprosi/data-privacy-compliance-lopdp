@@ -3,7 +3,7 @@
 Fecha: 2026-11-19. Redactado con la ficha NORM-02b. Lo ejecuta el propietario. El resto del equipo no ejecuta nada de esto. Todas las consultas son de solo lectura y devuelven solo números: ningún correo, nombre ni dato de una organización.
 
 ## Qué comprueba este brief y por qué
-NORM-02b avisa a cada organización cuando la vigilancia normativa encuentra resoluciones nuevas o con una versión nueva. Los destinatarios (administradores y DPO vigentes) salen de la función `fn_destinatarios_normativos()`, que crea la migración `norm02b_destinatarios_normativos` (primera de la sala `organizacion`). La función es `SECURITY DEFINER`: lee `user_tenant_roles` con los permisos de su dueño, que es el rol que migra (`lopdp_beta_owner`).
+NORM-02b avisa a cada organización cuando la vigilancia normativa encuentra resoluciones nuevas o con una versión nueva. Los destinatarios (administradores y DPO vigentes) salen de la función `fn_destinatarios_normativos()`, que crea la migración `norm02b_destinatarios_normativos` (primera de la sala `plataforma`). La función es `SECURITY DEFINER`: lee `user_tenant_roles` con los permisos de su dueño, que es el rol que migra (`lopdp_beta_owner`).
 
 En Cloud SQL ese rol no es un superusuario de verdad y la tabla tiene `FORCE ROW LEVEL SECURITY`. Si la RLS le oculta las filas, la función devuelve vacío **en silencio** y ninguna organización recibe el aviso. En el PostgreSQL local no se puede ver, porque allí el dueño es superusuario. Por eso se comprueba en cada base de Cloud SQL (regla R2b de `governance/especificaciones/NORM-02b.md`).
 
