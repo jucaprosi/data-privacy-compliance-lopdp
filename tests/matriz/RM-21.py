@@ -2,7 +2,7 @@
 """Filas de la matriz de permisos de RM-21 (hallazgos y conversión en tareas).
 
 Contrato: governance/especificaciones/RM-21.md §2. Formato documentado en tests/matriz/__init__.py.
-Registra y convierte quien gestiona la hoja de ruta; el `dpo` consulta y no convierte (ORG-13, D-2).
+Registra y convierte quien gestiona la hoja de ruta; el `dpo` y el `auditor` consultan y no convierten (ORG-13, D-2; ORG-23).
 """
 
 FILAS: list[tuple[str, str, str, set[str]]] = [
@@ -10,7 +10,7 @@ FILAS: list[tuple[str, str, str, set[str]]] = [
         "listar_hallazgos",
         "GET",
         "/api/v1/roadmaps/hallazgos",
-        {"implementador", "coordinador", "dpo", "admin_organizacion"},
+        {"implementador", "coordinador", "dpo", "admin_organizacion", "auditor"},
     ),
     (
         "registrar_hallazgos_desde_diagnostico",

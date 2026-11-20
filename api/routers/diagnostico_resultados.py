@@ -23,7 +23,7 @@ AUTO_REGISTRO = True
 router = APIRouter(prefix="/diagnostico", tags=["Diagnóstico"])
 
 ROLES_SELLO = ("dpo",)
-ROLES_CONSULTA = ("dpo", "implementador", "coordinador", "admin_organizacion")
+ROLES_CONSULTA = ("dpo", "implementador", "coordinador", "admin_organizacion", "auditor")
 
 _sello = require_role(*ROLES_SELLO)
 _consulta = require_role(*ROLES_CONSULTA)
