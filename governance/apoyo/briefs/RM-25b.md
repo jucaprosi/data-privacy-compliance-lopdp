@@ -1,4 +1,4 @@
-### RM-25b · evidencia-la-validaci-n-final-exige-la-primera-un-rol-dpo-o-  (tanda 81)
+### RM-25b · evidencia-validacion-final-exige-la-primera  (tanda 81)
 
 **Contexto.** Sala: `roadmap`. Depende de: `RM-25a`, `DIAG-12`, `DIAG-07`, `ORG-22`, `RET-02`, `RET-03`. Especificaciones: `governance/tareas/RM-25b.md` y `governance/especificaciones/RM-25b.md`.
 
