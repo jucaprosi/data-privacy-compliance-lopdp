@@ -28,15 +28,19 @@
   - `governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md`
   - `tests/test_demo05c_politicas_purga.py`
   - `jobs/purga_demo/purga.py`
+  - `jobs/purga_demo/usuarios.py`
+  - `tests/test_demo_purga_usuarios.py`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior.
 - Cumple el contrato de `governance/especificaciones/DEMO-05c.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
-- No toques producción ni una base compartida; el SQL se valida solo en la PostgreSQL efímera.
+- No toques producción ni una base compartida; el SQL se valida solo en la PostgreSQL local, dentro de una transacción revertida (el rol `purga_demo` es global en el servidor).
+- No reescribas las pruebas de DEMO-05b en `tests/test_demo_purga_usuarios.py`: solo añade casos.
+- `purga_demo` no lee el correo: si para decidir a quién borrar hiciera falta leerlo fuera de `es_persona_ficticia`, detente e infórmalo. No actives la RLS de ninguna tabla.
 - No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
 
 **Hecho si** (árbitro exógeno):
 
-- `DEMO-05c`: pytest tests/test_demo05c_politicas_purga.py con TEST_DATABASE_URL de PostgreSQL 16; mutaciones m1 a m5.
+- `DEMO-05c`: pytest tests/test_demo05c_politicas_purga.py tests/test_demo_purga_usuarios.py con TEST_DATABASE_URL de PostgreSQL 16, en transacción revertida; las pruebas de DEMO-05b pasan sin cambiarlas; mutaciones m1 a m9.
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
