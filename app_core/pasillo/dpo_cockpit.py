@@ -10,6 +10,44 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin ADPA-06 ===
 
 # === BOV-04 ===
+# --- INICIO BOV-04 ---
+async def _contar_politicas_vencidas_dpo(session, tenant_id: str) -> int | None:
+    if session is None or not hasattr(session, "begin_nested"):
+        return None
+    try:
+        from app_core.pasillo import conservacion as pasillo_con
+
+        async with session.begin_nested():
+            return len(await pasillo_con.listar_politicas_vencidas(session, tenant_id))
+    except Exception:
+        return None
+
+
+async def obtener_resumen_orquestador_10d(session, tenant_id: str, *, incluir_metrica_global: bool = False):
+    """Resumen multidimensional de las 10 dimensiones LOPDP y Bóveda Cloud para el DPO Cockpit."""
+    from features.boveda_cloud import boveda_cloud_service as svc
+
+    vencidas = await _contar_politicas_vencidas_dpo(session, tenant_id)
+    return await svc.obtener_resumen_orquestador_10d(
+        session,
+        tenant_id,
+        incluir_metrica_global=incluir_metrica_global,
+        politicas_conservacion_vencidas=vencidas,
+    )
+
+
+async def consultar_orquestador_boveda_dpo(session=None, tenant_id: str = "", *, incluir_metrica_global: bool = False):
+    """Vista en modo solo lectura para el DPO con actas SHA-256 y clips bajo Hold Legal."""
+    from features.boveda_cloud import boveda_cloud_service as svc
+
+    vencidas = await _contar_politicas_vencidas_dpo(session, tenant_id)
+    return await svc.consultar_orquestador_boveda_dpo(
+        session,
+        tenant_id,
+        incluir_metrica_global=incluir_metrica_global,
+        politicas_conservacion_vencidas=vencidas,
+    )
+# --- FIN BOV-04 ---
 # === fin BOV-04 ===
 
 # === CAPA-03 ===

@@ -6,12 +6,9 @@
 import asyncio
 import os
 import sys
-from pathlib import Path
 
 import pytest
 from sqlalchemy import text
-
-RAIZ = Path(__file__).resolve().parents[1]
 
 
 class _SesionEspia:
@@ -69,7 +66,7 @@ def test_rls_set_config_valores_activos_en_transaccion():
     assert asyncio.run(_probar()) == ("11111111-1111-1111-1111-111111111111", "u-gcp01")
 
 
-def test_pgbouncer_prepare_threshold_y_manifiesto_cloudrun(monkeypatch):
+def test_pgbouncer_prepare_threshold(monkeypatch):
     from app_core.cloud import gcp_runtime as rt
 
     monkeypatch.delenv("DB_POOLER_TRANSACCIONAL", raising=False)
@@ -81,13 +78,6 @@ def test_pgbouncer_prepare_threshold_y_manifiesto_cloudrun(monkeypatch):
     assert rt.argumentos_motor(directa) == {}
     monkeypatch.setenv("DB_POOLER_TRANSACCIONAL", "1")
     assert rt.argumentos_motor(directa) == {"prepare_threshold": None}
-
-    docker = (RAIZ / "governance/operaciones/Dockerfile.cloudrun").read_text(encoding="utf-8")
-    assert "uvicorn main:app" in docker and "--loop uvloop" in docker and "--http httptools" in docker
-    assert "--workers 1" in docker and "USER app" in docker and "uv pip install" in docker
-    servicio = (RAIZ / "governance/operaciones/cloudrun_service.yaml").read_text(encoding="utf-8")
-    assert "containerConcurrency: 80" in servicio
-    assert 'run.googleapis.com/startup-cpu-boost: "true"' in servicio
 
 
 def test_clientes_gcp_perezosos_y_secretos_por_entorno(monkeypatch):

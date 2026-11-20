@@ -265,3 +265,33 @@ def generar_preview_forense(objeto: ObjetoCustodia, formato: str = "WEBP", desti
 def verificar_integridad_forense(objeto: ObjetoCustodia):
     return forensic_engine.verificar_integridad(objeto)
 # --- FIN BOV-03 ---
+
+# --- INICIO BOV-04 ---
+from features.boveda_cloud.services.orquestador_diez_dimensiones import (  # noqa: E402
+    ActaDestruccionCertificada,
+    EstadoDimensionCloud,
+    ResumenOrquestadorDiezDimensiones,
+    consultar_orquestador_boveda_dpo,
+    limpiar_registro_orquestador,
+    obtener_resumen_orquestador_10d,
+    registrar_estado_orquestador_tenant,
+)
+
+__all__ += [
+    "ActaDestruccionCertificada",
+    "EstadoDimensionCloud",
+    "ResumenOrquestadorDiezDimensiones",
+    "consultar_orquestador_boveda_dpo",
+    "limpiar_registro_orquestador",
+    "obtener_resumen_orquestador_10d",
+    "registrar_estado_orquestador_tenant",
+    "router_orquestador",
+]
+
+
+def router_orquestador():
+    """Router del Orquestador de las 10 Dimensiones (BOV-04); se carga al pedirlo para evitar ciclo."""
+    from features.boveda_cloud.routes.orquestador_routes import router
+
+    return router
+# --- FIN BOV-04 ---

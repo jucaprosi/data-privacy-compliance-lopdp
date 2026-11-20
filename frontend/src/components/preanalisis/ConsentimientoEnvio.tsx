@@ -71,6 +71,7 @@ export default function ConsentimientoEnvio({
   const totalFragmentos = grupos.reduce((suma, g) => suma + g.fragmentos.length, 0);
   const totalPii = grupos.reduce((suma, g) => suma + g.piiEnmascarada, 0);
   const plegable = modoLote || grupos.length > 1;
+  const sinDestino = estadoServicio === null || estadoServicio.disponible === false;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
@@ -118,11 +119,23 @@ export default function ConsentimientoEnvio({
             parcial: no detecta todos los nombres propios. Si un fragmento contiene datos que no deban salir, cancela.
           </div>
 
-          <div className="text-[11px] text-[var(--ui-texto-suave)]">
-            Proveedor:{" "}
-            <span className="font-mono text-white">{estadoServicio?.proveedor ?? "no informado"}</span> · Modelo:{" "}
-            <span className="font-mono text-white">{estadoServicio?.modelo ?? "no informado"}</span>
-          </div>
+          <p data-testid="consentimiento-destino" className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed">
+            {sinDestino ? (
+              "No podemos mostrar a quién se enviarían los datos. Por eso no los enviamos."
+            ) : !estadoServicio.proveedor || !estadoServicio.modelo ? (
+              "Estos fragmentos se envían al servicio de IA configurado."
+            ) : estadoServicio.ubicacion ? (
+              <>
+                Estos fragmentos se envían a <strong className="text-white">{estadoServicio.proveedor}</strong> (modelo{" "}
+                {estadoServicio.modelo}), que los procesa en {estadoServicio.ubicacion}.
+              </>
+            ) : (
+              <>
+                Estos fragmentos se envían a <strong className="text-white">{estadoServicio.proveedor}</strong> (modelo{" "}
+                {estadoServicio.modelo}).
+              </>
+            )}
+          </p>
 
           {plegable && (
             <div className="flex items-center justify-between gap-3 text-[11px] text-[var(--ui-texto-suave)]">
@@ -199,14 +212,16 @@ export default function ConsentimientoEnvio({
           >
             Cancelar
           </button>
-          <button
-            type="button"
-            onClick={onConfirmar}
-            disabled={totalFragmentos === 0}
-            className="px-3 py-1.5 rounded-md bg-[#9a3bf1] text-white text-xs font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-          >
-            Enviar y analizar
-          </button>
+          {!sinDestino && (
+            <button
+              type="button"
+              onClick={onConfirmar}
+              disabled={totalFragmentos === 0}
+              className="px-3 py-1.5 rounded-md bg-[#9a3bf1] text-white text-xs font-semibold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              Enviar y analizar
+            </button>
+          )}
         </div>
       </div>
     </div>

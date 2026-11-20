@@ -1,7 +1,2 @@
 # Exenciones de R-PROP-EXISTE (ADPA-10), medidas una sola vez sobre HEAD 2f4ab07.
 # Formato: ficha|entrada|motivo. Solo puede decrecer: corrija la ficha y retire su línea.
-BOV-04|app_core/pasillo/boveda_cloud.py#BOV-04|sección en un archivo que no existe y que no crea ninguna ancestro
-BOV-04|features/boveda_cloud/boveda_cloud_service.py#BOV-04|sección en un archivo que no existe y que no crea ninguna ancestro
-BOV-04|features/boveda_cloud/domain/errores.py#BOV-04|sección en un archivo que no existe y que no crea ninguna ancestro
-BOV-04|frontend/src/components/layout/menus/index.ts#BOV-04|sección sin marca ni siembra de una ancestro
-BOV-04|frontend/src/components/layout/pantallas/index.tsx#BOV-04|sección sin marca ni siembra de una ancestro

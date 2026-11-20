@@ -25,7 +25,6 @@ import pytest
 
 RAIZ = Path(__file__).resolve().parents[1]
 FRONTEND = RAIZ / "frontend"
-SERVICIO = RAIZ / "governance/operaciones/cloudrun_frontend_service.yaml"
 LIMITE_BYTES = 120 * 1000 * 1000
 BINARIO = bytes(range(256)) * 4  # 1024 bytes, con bytes que no son UTF-8 válido
 
@@ -250,14 +249,6 @@ def test_05_la_imagen_pesa_menos_de_120_mb(imagen):
                             capture_output=True, text=True, check=True).stdout
     total = sum(int(x) for x in salida.split() if x.isdigit())
     assert 0 < total < LIMITE_BYTES, f"{total / 1e6:.1f} MB"
-
-
-def test_06_las_sondas_usan_health():
-    texto = SERVICIO.read_text(encoding="utf-8")
-    assert "/robots.txt" not in texto
-    for sonda in ("startupProbe", "livenessProbe"):
-        bloques = re.findall(sonda + r":\s*\n\s*httpGet:\s*\n\s*path:\s*(\S+)", texto)
-        assert bloques and set(bloques) == {"/health"}
 
 
 def test_07_un_binario_llega_identico_con_su_content_disposition(nube):

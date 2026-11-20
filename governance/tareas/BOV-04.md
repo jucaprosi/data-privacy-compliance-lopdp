@@ -2,7 +2,7 @@
 id = "BOV-04"
 titulo = "Orquestador Comercial de las 10 Dimensiones y Bóveda Cloud: centro de mando de automatizaciones, retenciones, actas SHA-256 y telemetría de paquete"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "boveda_cloud"
 depende_de = ["BOV-03", "CCTV-02", "GOVW-01", "GOCA-01", "DLP-01", "VTX-01"]
 propiedad = ["features/boveda_cloud/services/orquestador_diez_dimensiones.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-04", "features/boveda_cloud/domain/errores.py#BOV-04", "features/boveda_cloud/routes/orquestador_routes.py", "app_core/pasillo/boveda_cloud.py#BOV-04", "app_core/pasillo/dpo_cockpit.py#BOV-04", "frontend/src/components/layout/menus/index.ts#BOV-04", "frontend/src/components/layout/pantallas/index.tsx#BOV-04", "frontend/src/components/layout/pantallas/BOV-04.tsx", "tests/test_bov04_orquestador_diez_dimensiones.py"]

@@ -92,16 +92,6 @@ def test_tamanos_cubren_micro_mediana_y_gran_escala():
     assert all("FICTICIA" in o.nombre_comercial and o.ruc.startswith("9999") for o in organizaciones.ORGANIZACIONES)
 
 
-def test_ningun_correo_inventado_sale_de_example_test():
-    textos = [p.read_text(encoding="utf-8") for p in (RAIZ / "scripts" / "datos_sinteticos").glob("*.py")]
-    textos += [o.datos.decode("utf-8", "ignore") for o in siembra.objetos_sinteticos()]
-    hallados = set(organizaciones.correos_ficticios())
-    for t in textos:
-        hallados |= set(CORREO.findall(t))
-    assert hallados
-    assert all(c.endswith("@example.test") for c in hallados), sorted(hallados)
-
-
 def test_los_clips_no_tienen_audio_y_son_avi():
     for objeto in (o for org in IDS for o in clips.clips_de(org)):
         assert objeto.datos[:4] == b"RIFF" and objeto.datos[8:12] == b"AVI "

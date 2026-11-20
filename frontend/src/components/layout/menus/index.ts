@@ -202,3 +202,21 @@ SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMEN
 import { SUBMENUS_BOV_01 } from "./BOV-01";
 SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMENUS_BOV_01]));
 // === fin BOV-01 ===
+
+// --- INICIO BOV-04 ---
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    bov04_orquestador: true;
+  }
+}
+const SUBMENUS_BOV_04: Submenu[] = [
+  {
+    vista: "bov04_orquestador",
+    menu: "inicio",
+    nombre: "Orquestador 10 Dimensiones",
+    subtitulo: "Diez dimensiones, bóveda y actas",
+    orden: 3,
+  },
+];
+SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMENUS_BOV_04]));
+// --- FIN BOV-04 ---
