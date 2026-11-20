@@ -237,7 +237,7 @@ Responder por escrito:
 2. ¿Tiene marcha atrás (`downgrade`)? ¿Se probó? ¿**Qué se pierde** al deshacer?
 3. ¿Qué otros PR o CI usan esa base y se verán afectados?
 4. ¿Está permitido por las reglas (p. ej. «las bases compartidas solo reciben migraciones ya fusionadas») o es una excepción registrada?
-5. ¿Hay una sola cabeza de migraciones tras aplicarla?
+5. ¿Hay una cabeza de migraciones por sala tras aplicarla?
 
 ### 3. Registro de estado compartido tocado (propuesta)
 Una lista corta con fecha. Una línea por cambio:

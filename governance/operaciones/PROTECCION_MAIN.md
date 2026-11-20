@@ -144,20 +144,20 @@ Bajo la arquitectura ADPA:
 - El aislamiento de desarrollo descansa en la **propiedad exclusiva de archivos**. Los agentes trabajan en archivos disjuntos, eliminando prácticamente a cero el riesgo de conflictos de merge en código fuente.
 - El único punto de convergencia relacional son las revisiones de Alembic (`alembic/versions/*.py`).
 
-### 4.2. Resolución de Conflictos con `alembic merge heads`
-> El procedimiento vigente (cuándo reencadenar y cuándo fusionar, y quién ajusta) está en [`FUSION_ALEMBIC.md`](FUSION_ALEMBIC.md). Lo que sigue es el caso en que ya llegaron a `main` dos cabezas.
+### 4.2. Dos cabezas dentro de una misma sala
+> Cada sala tiene su propia rama de Alembic y su cabeza (CI-28); el procedimiento está en [`FUSION_ALEMBIC.md`](FUSION_ALEMBIC.md). Lo que sigue es el único caso que queda: ya llegaron a `main` dos cabezas dentro de una misma sala.
 
-Si dos ramas crean una migración al mismo tiempo con la misma `down_revision` y ambas se fusionan en `main`, se generan dos cabezas (`two heads`), lo que provoca que `pytest tests/test_alembic_una_cabeza.py` falle.
+Si dos ramas crean una migración al mismo tiempo con la misma `down_revision` y ambas se fusionan en `main`, se generan dos cabezas en la rama de esa sala, lo que provoca que `pytest tests/test_alembic_cabeza_por_sala.py` falle.
 
 Mientras `strict = false` permanezca como política:
 1. El incidente **no** requiere bloquear a todos los agentes ni cambiar la protección de GitHub de emergencia.
 2. El desarrollador o coordinador resuelve la bifurcación directamente ejecutando:
    ```bash
-   alembic merge heads -m "merge multiple heads from parallel waves"
+   alembic merge <cabeza_a> <cabeza_b> -m "merge heads de la sala <sala>"
    ```
-3. Se verifica que exista una sola cabeza:
+3. Se verifica que haya una cabeza por sala:
    ```bash
-   pytest tests/test_alembic_una_cabeza.py
+   pytest tests/test_alembic_cabeza_por_sala.py
    ```
 4. Se integra el commit de unión de cabezas a `main`.
 
@@ -188,4 +188,4 @@ Solo si este escenario o conflictos de fusión se vuelven **repetidos y costosos
 3. **Por qué (Justificación de Ingeniería)**:
    - **Paralelismo de desarrollo**: Exigir ramas al día en un equipo o enjambre de agentes que trabajan por propiedad exclusiva de archivos serializa las fusiones. Cada PR obligaría a sincronizar y volver a ejecutar CI en los demás, desperdiciando minutos de cómputo y tiempo humano.
    - **Flexibilidad operativa del coordinador**: El coordinador del repositorio necesita asentar cierres de lotes, actualización de veredictos (`.test_verdict.json`) y ajustes de briefs documentales de forma ágil sin demoras de pipelines.
-   - **Resiliencia controlada**: El arnés existente (`test_alembic_una_cabeza.py`) detecta inmediatamente cualquier choque relacional en el commit de `main`, permitiendo resolverlo limpiamente con `alembic merge heads` sin penalizar la velocidad de entrega de las tareas independientes.
+   - **Resiliencia controlada**: El arnés existente (`test_alembic_cabeza_por_sala.py`) detecta inmediatamente cualquier choque relacional en el commit de `main`, permitiendo resolverlo limpiamente con una migración de fusión dentro de la sala sin penalizar la velocidad de entrega de las tareas independientes.
