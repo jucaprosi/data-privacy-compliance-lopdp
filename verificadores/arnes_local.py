@@ -166,7 +166,7 @@ def main(argv: list[str] | None = None) -> int:
     preparar_xdist()
     if "ARNES_PRUEBAS" not in entorno or "test_banco_preguntas" in entorno["ARNES_PRUEBAS"]:
         preparar_frontend()
-    migracion = subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], cwd=RAIZ, env=entorno)
+    migracion = subprocess.run([sys.executable, "-m", "alembic", "upgrade", "heads"], cwd=RAIZ, env=entorno)
     if migracion.returncode != 0:
         return migracion.returncode
     return subprocess.run([sys.executable, str(RAIZ / "verificadores" / "arnes_cero_regresiones.py")], cwd=RAIZ, env=entorno).returncode
