@@ -65,9 +65,9 @@ Textos cerrados por UX/UI (2026-11-19). Van en `WebhooksPanel.tsx`, dentro de la
 | `webhook.prueba` | Aviso de prueba |
 | `incidente.registrado` | Incidente registrado |
 | `derecho.solicitud_recibida` | Solicitud de un titular recibida |
-| `tarea.validada` | Tarea de la hoja de ruta validada |
+| `tarea.validada` | Tarea de la hoja de ruta con validación final |
 
-El selector solo ofrece los eventos que ya tienen una sala emisora. Con esta ficha sale únicamente «Aviso de prueba», que se envía desde «Probar»; los demás se añaden al selector en la ficha de la sala que los emite.
+El selector solo ofrece los eventos que ya tienen una sala emisora. `tarea.validada` se emite solo en la validación final del DPO (RM-25b), nunca en la primera validación. Con esta ficha sale únicamente «Aviso de prueba», que se envía desde «Probar»; los demás se añaden al selector en la ficha de la sala que los emite.
 
 **Añadir webhook.** Botón «Añadir webhook». Con el techo alcanzado lleva `aria-disabled` y la línea «Alcanzaste el máximo de webhooks de tu plan ({M}). Desactiva uno para añadir otro.»
 
