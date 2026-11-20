@@ -10,8 +10,9 @@ La aplicación nunca borra (invariante 63). La purga física de las demos vencid
 - la URL de la base no nombra la instancia ni la huella de producción;
 - la base tiene `public.entorno_marcador` con **exactamente** una fila `demo` (no `pruebas`);
 - los buckets de `PURGA_BUCKETS` no tienen política de retención ni bloqueo.
+- el rol de purga tiene los permisos y las políticas de `politicas_purga.sql` en todas las tablas que purga, `es_persona_ficticia` es `SECURITY DEFINER` sin `EXECUTE` para `PUBLIC`, y el rol no lee `users.email` (DEMO-05c).
 
-**Qué no hace este brief:** no usa el proyecto de producción, no crea claves de cuentas de servicio, no toca la RLS ni la base de producción, y no despliega la aplicación.
+**Qué no hace este brief:** no usa el proyecto de producción, no crea claves de cuentas de servicio, no activa la RLS de ninguna tabla, no toca la base de producción y no despliega la aplicación.
 
 ## Valores (parámetros; sustituye por los tuyos antes de pegar)
 - `$PROYECTO_DEMO`: ID del proyecto de la demo. **No es `evydentia`.**
@@ -61,28 +62,35 @@ Es el único secreto del Job. **No hay claves de almacén:** el Job usa las cred
 ### 4. Permiso sobre el bucket de la demo
 Se da en el paso 3b de `BRIEF_PROPIETARIO_BUCKET_DEMO.md` (`roles/storage.objectAdmin` solo sobre ese bucket). Si prefieres un rol personalizado, necesita exactamente `storage.buckets.get`, `storage.objects.list` y `storage.objects.delete` sobre esos buckets.
 
-### 5. Rol de purga en la base de la demo
-Conéctate a la base de la demo con tu usuario administrador y ejecuta (sustituye la contraseña por una nueva, que solo irá en el secreto del paso 3):
+### 5. Rol de purga en la base de la demo (DEMO-05c: políticas explícitas, sin BYPASSRLS)
+Decisión del CTO: el rol de purga **no** tiene `BYPASSRLS` ni `SUPERUSER`. Purga con permisos y políticas `TO purga_demo` que solo valen con el marcador `demo`, y nunca lee correos: `users` solo `SELECT (id)` y `demo_sesiones` sin `vendedor_sub` ni `vendedor_email`. Todo eso lo deja `jobs/purga_demo/politicas_purga.sql`, que **no** entra en Alembic.
+
+**5a. Crear el rol (una sola vez).** Conéctate a la base **de la demo** con tu usuario administrador (el mismo que migra) y ejecuta, con una contraseña nueva que solo irá en el secreto del paso 3:
 ```sql
-CREATE ROLE purga_demo LOGIN PASSWORD '<contraseña-nueva>';
-GRANT SELECT, DELETE ON tenants TO purga_demo;
-GRANT SELECT, UPDATE, DELETE ON demo_sesiones TO purga_demo;
-DO $$
-DECLARE t text;
-BEGIN
-  FOR t IN SELECT c.table_name FROM information_schema.columns c
-           JOIN information_schema.tables x ON x.table_schema = c.table_schema AND x.table_name = c.table_name
-           WHERE c.table_schema = 'public' AND c.column_name = 'tenant_id' AND x.table_type = 'BASE TABLE'
-  LOOP
-    EXECUTE format('GRANT SELECT, DELETE ON public.%I TO purga_demo', t);
-  END LOOP;
-END $$;
+CREATE ROLE purga_demo LOGIN PASSWORD '<contraseña-nueva>' NOSUPERUSER NOBYPASSRLS NOCREATEROLE NOCREATEDB;
 ```
-Las tablas con `tenant_id` que se creen después necesitan el mismo `GRANT`: repite el bloque `DO` tras cada migración que añada una.
+Si el rol ya existía de una versión anterior de este brief, quítale lo que ya no necesita (la purga nunca hace `UPDATE`):
+```sql
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM purga_demo;
+```
 
-Cuando la ficha DEMO-05b esté hecha (borra las personas ficticias de `users`), el rol también necesitará `GRANT SELECT, DELETE ON users TO purga_demo;` y `SELECT` en `user_tenant_roles`. Hasta entonces no se concede.
+**5b. Permisos y políticas: tras CADA migración de la base de la demo.** Desde un checkout actualizado de `main`, en la raíz del repositorio, con `psql` conectado a la base de la demo con tu usuario administrador (por el proxy de Cloud SQL; no pegues la contraseña en el comando):
+```powershell
+$PSQL_DEMO = "<cadena de conexión psql a la base de la DEMO con tu usuario administrador, sin contraseña>"
+psql $PSQL_DEMO --single-transaction -v ON_ERROR_STOP=1 -f jobs/purga_demo/politicas_purga.sql
+```
+Es idempotente: repetirlo deja lo mismo. Se niega si falta el rol o `public.entorno_marcador`. No activa la RLS de ninguna tabla ni cambia las políticas de otros roles. Una tabla nueva con `tenant_id` queda sin permisos hasta que lo vuelvas a ejecutar, y mientras tanto el Job sale con 1 y la nombra («faltan políticas de purga en: …; ejecuta politicas_purga.sql»).
 
-**Decisión tuya, antes de lanzar el Job:** las tablas tienen RLS forzada, y el rol de purga tiene que poder borrar filas de todos los tenants. Las dos salidas son un rol con `BYPASSRLS` o una política de purga explícita para este rol. **Este brief no fija cuál**: no se ha comprobado que Cloud SQL permita `BYPASSRLS` a tu usuario administrador. Consúltalo con el Arquitecto y el CTO. Esta ficha no toca `roles.py`, `fn_utr_dpo_sod` ni la RLS.
+**5c. Comprobaciones de solo lectura (con la credencial del Job; tras crear el Job en el paso 8).** Ejecuta el Job en modo comprobación: no borra filas ni objetos y solo imprime números y nombres de tablas.
+```powershell
+$PROYECTO_DEMO = "<id-del-proyecto-de-la-demo>"
+$REGION = "us-central1"
+gcloud run jobs execute purga-demo --project=$PROYECTO_DEMO --region=$REGION --wait --command=python --args="-m,jobs.purga_demo,--comprobar"
+gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=purga-demo AND textPayload:comprobacion" --project=$PROYECTO_DEMO --limit=1 --format="value(textPayload)"
+```
+Resultado esperado: la ejecución termina bien y la línea dice `faltan=0` y `personas_ficticias=` con un número **mayor que 0** (la plantilla y las demos tienen personas `.invalid`). `tablas_sin_rls` cuenta las tablas que aún no tienen RLS (hoy cinco); las protegen los permisos y los filtros del código hasta que la ficha de seguridad les active la RLS.
+
+**Si `faltan` no es 0 o `personas_ficticias=0`: detente y avisa al CTO.** No lances la purga nocturna: en la nube podría no borrar a nadie sin que se note (por ejemplo, si una tabla que lee `es_persona_ficticia` tuviera la RLS forzada y tu usuario no la salta). No des `BYPASSRLS` ni `SUPERUSER` al rol para arreglarlo.
 
 ### 6. Marcador de entorno de la base
 ```sql
@@ -137,14 +145,15 @@ Resultado esperado: la cuenta `purga-demo`, `maxRetries: 0`, `taskCount: 1`, la 
 
 ## Qué le dices al CTO
 - Que el Job, el Scheduler y la cuenta de servicio están creados, la salida del paso 10 y la del paso 4 del brief del bucket, sin secretos ni la URL de conexión.
-- Tu decisión sobre la RLS del paso 5.
+- La línea de la comprobación del paso 5c (`faltan=…`, `tablas_sin_rls=…`, `personas_ficticias=…`).
 - Con eso queda cumplida la condición de que DEMO-05 pase a hecha.
 
 ## Si algo sale mal
 - El Job sale con 1 y dice «la base no tiene el marcador de entorno exacto 'demo'»: repite el paso 6.
 - Sale con 1 y dice que el bucket tiene retención u objetos bloqueados: es el comportamiento esperado; repite el paso 4 del brief del bucket y no desbloquees nada tú: avisa al CTO.
 - Sale con 1 y dice que falta `PURGA_BUCKETS`: repite el paso 8.
-- Un error de claves foráneas o de permisos de la base: repite los `GRANT` del paso 5; no des `SUPERUSER` al rol de purga.
+- Sale con 1 y dice «faltan políticas de purga en: …»: repite el paso 5b (y el 5c).
+- Un error de claves foráneas o de permisos de la base: repite el paso 5b; no des `SUPERUSER` ni `BYPASSRLS` al rol de purga.
 
 ## Reversión
 ```powershell

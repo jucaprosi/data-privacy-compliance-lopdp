@@ -2,7 +2,7 @@
 id = "DEMO-05c"
 titulo = "Purga de la demo con políticas explícitas por rol, sin BYPASSRLS, y guardia que falla cerrada si falta alguna"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "demo"
 depende_de = ["DEMO-05", "SEC-20", "DEMO-05b"]
 propiedad = ["jobs/purga_demo/politicas_purga.sql", "jobs/purga_demo/guardias.py", "jobs/purga_demo/__main__.py", "governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md", "tests/test_demo05c_politicas_purga.py", "jobs/purga_demo/purga.py", "jobs/purga_demo/usuarios.py", "tests/test_demo_purga_usuarios.py", "tests/test_demo_purga.py"]

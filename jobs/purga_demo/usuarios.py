@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 # ¤demo
-"""Purga de personas ficticias de users huérfanas de demos vencidas (DEMO-05b).
+"""Purga de personas ficticias de users huérfanas de demos vencidas (DEMO-05b, DEMO-05c).
 
 Reglas en una sola transacción:
 1. Antes de borrar filas de roles, el job lee los user_id con algún rol en user_tenant_roles
    de un tenant es_demo vencido que se está purgando.
 2. Tras purgar las filas del tenant, borra de ese conjunto SOLO a quien cumpla las cuatro:
    - ningún rol restante en ningún tenant (plantilla, demo activa ni real);
-   - ninguna fila de demo_sesiones lo apunta (la purga deja persona_usuario_id en nulo);
-   - el correo termina en .invalid (segunda guarda, no la regla);
+   - ninguna sesión con organización lo apunta: la de una demo ya purgada (tenant_id nulo por
+     `ON DELETE SET NULL`) no protege a nadie, y la purga no hace UPDATE de demo_sesiones;
+   - `es_persona_ficticia(users.id)` es verdadera (segunda guarda, no la regla): la función de
+     politicas_purga.sql mira el correo `.invalid` y el marcador `demo`; `purga_demo` solo lee `users.id`;
    - y su única pertenencia fue a esos tenants vencidos.
 3. Un .invalid sin ningún rol en el conjunto del paso 1 no se toca.
 """
@@ -29,9 +31,10 @@ _SQL_CANDIDATOS = (
 _SQL_PURGAR_USUARIOS = (
     "DELETE FROM users "
     "WHERE id IN :candidatos "
-    "AND email LIKE '%.invalid' "
+    "AND public.es_persona_ficticia(users.id) "
     "AND NOT EXISTS (SELECT 1 FROM user_tenant_roles utr WHERE utr.user_id = users.id) "
-    "AND NOT EXISTS (SELECT 1 FROM demo_sesiones ds WHERE ds.persona_usuario_id = users.id)"
+    "AND NOT EXISTS (SELECT 1 FROM demo_sesiones ds WHERE ds.persona_usuario_id = users.id "
+    "AND ds.tenant_id IS NOT NULL)"
 )
 
 
@@ -42,7 +45,7 @@ def leer_candidatos_usuarios(con: Connection, tenant_id: str) -> list[str]:
 
 
 def purgar_usuarios_ficticios(con: Connection, candidatos: Collection[str]) -> int:
-    """Borra de los candidatos SOLO a quienes no tengan roles restantes, ni sesiones, y correo .invalid."""
+    """Borra de los candidatos SOLO a personas ficticias sin roles restantes ni sesiones con organización."""
     lista = list(candidatos)
     if not lista:
         return 0
