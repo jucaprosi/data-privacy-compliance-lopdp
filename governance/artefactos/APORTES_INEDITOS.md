@@ -3090,7 +3090,7 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 
 ---
 
-### Aporte 160: La «Propiedad que Falta» que Declara una Especificación No la Exige Ningún Árbitro, y la Ficha se Lanza sin Ella
+### Aporte 162: La «Propiedad que Falta» que Declara una Especificación No la Exige Ningún Árbitro, y la Ficha se Lanza sin Ella
 `¤sdd` `¤arbitro`
 
 * **Descripción:** una especificación puede dejar escrito, en su trazabilidad, que la ficha necesita archivos que aún no posee («Propiedad que falta en la ficha»). Ningún árbitro compara esa línea con el `propiedad` de la ficha ni con la lista «Escribe» del brief: `verificar_especificaciones.py` da OK, `generar_indice_tareas.py` da OK y `verificar_reparto.py` da OK, porque cada uno valida la ficha contra sí misma o contra el árbol. La ficha se lanza con el hueco, y la sesión de ingeniería, que solo puede escribir su lista exclusiva, se detiene sin escribir código. Un caso más fino del mismo hueco: un árbitro con «suite completa» sobre una ficha que cambia una regla obliga a tocar las pruebas de fichas ya hechas que fijan la regla anterior, y esas pruebas tampoco figuran en la especificación.
@@ -3099,7 +3099,7 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 * **Soporte bibliográfico:** no se cita ninguna fuente: no se verificó una que trate específicamente este hueco entre especificación y asignación de trabajo, y se prefiere omitir la cita a forzar una.
 * **Estado:** corregido para RM-25b y RM-27 en el PR de gobernanza que amplía su propiedad (2026-11-19). La regla que lo evitaría (comprobar $F_e \subseteq P_t$ antes de escribir el brief) queda propuesta, sin árbitro. No introduce token nuevo.
 
-## Candidatos descartados de esta sesión (Parte XXXIII)
+## Candidatos descartados de esta sesión (Parte XXXIV)
 
 | Candidato | Motivo |
 | :--- | :--- |
