@@ -11,7 +11,9 @@ import { KpiBar } from "./KpiBar";
 import { accionesPermitidas, areasVisibles, filtrarTareas } from "./permisos";
 import { ESTADOS, PRIORIDADES, TareaCard, type ErrorAccion } from "./TareaCard";
 import { DescargarInforme } from "../informe/DescargarInforme";
+import { RevisionHoja } from "../revision/RevisionHoja";
 import { useEvidenciaFisica } from "@/lib/config/evidenciaFisica";
+import type { EstadoRevision } from "@/lib/roadmap/revision";
 
 export interface OlasViewProps {
   roadmapId: string;
@@ -60,6 +62,7 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
   const [acciones, setAcciones] = useState<Record<string, EstadoAccion>>({});
   const [auditoriaAbierta, setAuditoriaAbierta] = useState<string | null>(null);
   const [cargaInicial, setCargaInicial] = useState(true);
+  const [estadoRevision, setEstadoRevision] = useState<EstadoRevision | null>(null);
 
   const permisos = useMemo(() => accionesPermitidas(rol), [rol]);
 
@@ -185,7 +188,8 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
         <h2 className="text-sm font-bold uppercase tracking-wider text-white">Hoja de ruta</h2>
         {roadmap.summary && <p className="text-xs text-zinc-400">{roadmap.summary}</p>}
       </header>
-      <DescargarInforme roadmapId={roadmapId} />
+      <RevisionHoja roadmapId={roadmapId} onEstadoCambio={setEstadoRevision} />
+      <DescargarInforme roadmapId={roadmapId} revision={estadoRevision} sincronizado />
 
       <KpiBar kpis={kpis} />
 

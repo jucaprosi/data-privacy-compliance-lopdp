@@ -34,6 +34,44 @@ from features.roadmap.services.generacion_engine import generate_roadmap_documen
 logger = logging.getLogger(__name__)
 
 
+async def registrar_regeneracion_hoja(
+    session: AsyncSession,
+    tenant_id: str,
+    roadmap_id: str,
+    user_id: str,
+    *,
+    summary: Optional[str] = None,
+    score_objetivo: Optional[float] = None,
+    variables_json: Optional[str] = None,
+) -> Optional[dict[str, Any]]:
+    """Registra una regeneración directa de la hoja de ruta: fija `generado_por`, limpia revisión previa y deja estado `generated`."""
+    await set_session_context(session, tenant_id, user_id)
+    fila = (await session.execute(
+        text("""
+            UPDATE roadmaps
+            SET status = 'generated',
+                generado_por = :generado_por,
+                revisado_por = NULL,
+                revisado_en = NULL,
+                summary = COALESCE(:summary, summary),
+                score_objetivo = COALESCE(:score, score_objetivo),
+                variables_json = COALESCE(CAST(:vars AS JSON), variables_json),
+                updated_at = now()
+            WHERE id = :rid AND tenant_id = :tid
+            RETURNING id, tenant_id, status, generado_por, revisado_por, revisado_en, updated_at
+        """),
+        {
+            "generado_por": user_id,
+            "summary": summary,
+            "score": score_objetivo,
+            "vars": variables_json,
+            "rid": roadmap_id,
+            "tid": tenant_id,
+        },
+    )).mappings().first()
+    return dict(fila) if fila else None
+
+
 async def generate_roadmap_inline(
     session: AsyncSession,
     tenant_id: str,
@@ -41,6 +79,7 @@ async def generate_roadmap_inline(
     request: GenerateRoadmapRequest,
     *,
     llm_caller: Optional[Callable[[str, str], str]] = None,
+    roadmap_id: Optional[str] = None,
 ) -> dict[str, Any]:
     """Ejecuta la generación de hoja de ruta en línea y persiste olas y tareas.
 
@@ -53,22 +92,54 @@ async def generate_roadmap_inline(
     # sin diagnóstico guardado se levanta SinDiagnosticoError y no se genera a ciegas.
     contexto_real = await armar_contexto_generacion(session, tenant_id, user_id)
 
-    roadmap_id = str(uuid4())
+    es_regeneracion = roadmap_id is not None
+    if roadmap_id is None:
+        roadmap_id = str(uuid4())
     job_id = str(uuid4())
 
-    # 2. Crear registro inicial en estado draft
-    await session.execute(
-        text("""
-            INSERT INTO roadmaps (id, tenant_id, status, variables_json, summary)
-            VALUES (:id, :tenant_id, 'draft', CAST(:vars AS JSON), :summary)
-        """),
-        {
-            "id": roadmap_id,
-            "tenant_id": tenant_id,
-            "vars": request.variables.model_dump_json(),
-            "summary": "Roadmap en generación en línea",
-        },
-    )
+    # 2. Crear o reiniciar registro inicial en estado draft con generado_por (RM-27 R1/R5b)
+    if es_regeneracion:
+        actualizada = (await session.execute(
+            text("""
+                UPDATE roadmaps
+                SET status = 'draft',
+                    variables_json = CAST(:vars AS JSON),
+                    summary = :summary,
+                    generado_por = :generado_por,
+                    revisado_por = NULL,
+                    revisado_en = NULL,
+                    updated_at = now()
+                WHERE id = :rid AND tenant_id = :tid
+                RETURNING id
+            """),
+            {
+                "rid": roadmap_id,
+                "tid": tenant_id,
+                "vars": request.variables.model_dump_json(),
+                "summary": "Roadmap en generación en línea",
+                "generado_por": user_id,
+            },
+        )).first()
+        if not actualizada:
+            raise LookupError("Hoja de ruta no encontrada")
+        await session.execute(
+            text("DELETE FROM roadmap_waves WHERE roadmap_id = :rid AND tenant_id = :tid"),
+            {"rid": roadmap_id, "tid": tenant_id},
+        )
+    else:
+        await session.execute(
+            text("""
+                INSERT INTO roadmaps (id, tenant_id, status, variables_json, summary, generado_por)
+                VALUES (:id, :tenant_id, 'draft', CAST(:vars AS JSON), :summary, :generado_por)
+            """),
+            {
+                "id": roadmap_id,
+                "tenant_id": tenant_id,
+                "vars": request.variables.model_dump_json(),
+                "summary": "Roadmap en generación en línea",
+                "generado_por": user_id,
+            },
+        )
     await session.commit()
 
     # 3. Generar documento con IA en un hilo aparte (asyncio.to_thread)
@@ -128,12 +199,16 @@ async def generate_roadmap_inline(
                 SET status = 'generated',
                     summary = :summary,
                     score_objetivo = :score,
+                    generado_por = :generado_por,
+                    revisado_por = NULL,
+                    revisado_en = NULL,
                     updated_at = now()
                 WHERE id = :rid AND tenant_id = :tid
             """),
             {
                 "summary": doc.resumen_ejecutivo,
                 "score": doc.kpis_globales.score_objetivo,
+                "generado_por": user_id,
                 "rid": roadmap_id,
                 "tid": tenant_id,
             },

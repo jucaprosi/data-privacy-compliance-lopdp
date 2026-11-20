@@ -225,9 +225,9 @@ async def test_patch_task_implementador_ok(api_client, api_seed):
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     async with factory() as s:
         await s.execute(text(
-            "INSERT INTO roadmaps (id, tenant_id, status, variables_json) "
-            "VALUES (:id, :t, 'generated', '{}')"
-        ), {"id": rm_id, "t": api_seed["tenant"]})
+            "INSERT INTO roadmaps (id, tenant_id, status, variables_json, generado_por) "
+            "VALUES (:id, :t, 'generated', '{}', :u)"
+        ), {"id": rm_id, "t": api_seed["tenant"], "u": api_seed["user"]})
         await s.execute(text(
             "INSERT INTO roadmap_waves (id, roadmap_id, tenant_id, name) "
             "VALUES (:id, :r, :t, 'Ola 1')"
