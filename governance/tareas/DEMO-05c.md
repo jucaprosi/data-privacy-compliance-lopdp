@@ -5,9 +5,9 @@ ola = "backlog"
 estado = "pendiente"
 sala = "demo"
 depende_de = ["DEMO-05", "SEC-20", "DEMO-05b"]
-propiedad = ["jobs/purga_demo/politicas_purga.sql", "jobs/purga_demo/guardias.py", "jobs/purga_demo/__main__.py", "governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md", "tests/test_demo05c_politicas_purga.py", "jobs/purga_demo/purga.py", "jobs/purga_demo/usuarios.py", "tests/test_demo_purga_usuarios.py"]
+propiedad = ["jobs/purga_demo/politicas_purga.sql", "jobs/purga_demo/guardias.py", "jobs/purga_demo/__main__.py", "governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md", "tests/test_demo05c_politicas_purga.py", "jobs/purga_demo/purga.py", "jobs/purga_demo/usuarios.py", "tests/test_demo_purga_usuarios.py", "tests/test_demo_purga.py"]
 crea = ["jobs/purga_demo/politicas_purga.sql", "tests/test_demo05c_politicas_purga.py"]
-arbitro = "pytest tests/test_demo05c_politicas_purga.py tests/test_demo_purga_usuarios.py con TEST_DATABASE_URL de PostgreSQL 16, en transacción revertida; las pruebas de DEMO-05b pasan sin cambiarlas; mutaciones m1 a m9."
+arbitro = "pytest tests/test_demo05c_politicas_purga.py tests/test_demo_purga_usuarios.py tests/test_demo_purga.py con TEST_DATABASE_URL de PostgreSQL 16, en transacción revertida; las pruebas de DEMO-05b pasan sin cambiarlas; mutaciones m1 a m9."
 rastros = ["¤demo"]
 +++
 
