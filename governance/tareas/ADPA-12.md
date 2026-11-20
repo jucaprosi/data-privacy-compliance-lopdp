@@ -15,7 +15,7 @@ propiedad = [
     "tests/test_adpa12_compuerta_modular.py",
 ]
 crea = []
-arbitro = "python -m pytest tests/test_adpa12_compuerta_modular.py tests/test_adpa_bulkhead.py tests/test_adpa_bulkheads.py tests/test_adpa_dependencias.py tests/test_adpa06_pasillos_secciones.py; mutaciones M1 a M4 documentadas"
+arbitro = "python -m pytest tests/test_adpa12_compuerta_modular.py tests/test_adpa_bulkhead.py tests/test_adpa_dependencias.py tests/test_adpa06_pasillos_secciones.py; mutaciones M1 a M4 documentadas"
 rastros = ["¤adpa", "¤arbitro"]
 +++
 

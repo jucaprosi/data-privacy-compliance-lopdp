@@ -22,7 +22,7 @@ Sin interfaz propia.
 
 | Escenario | Prueba |
 | :--- | :--- |
-| **Dado** el catálogo de 22 salas en `PRD.md` §7.1, **cuando** corre `test_adpa09_salas_prd.py`, **entonces** las 22 carpetas `features/<sala>/` y sus compuertas existen en el repositorio. | `test_todas_las_salas_del_prd_existen_con_compuerta` |
+| **Dado** el catálogo de 22 salas en `PRD.md` §7.1, **cuando** corre `tests/test_adpa_bulkhead.py`, **entonces** las 22 carpetas `features/<sala>/` y sus compuertas existen en el repositorio. | `test_todas_las_salas_del_prd_existen_con_compuerta` |
 
 ## 6. Trazabilidad
 
