@@ -97,7 +97,8 @@ async def escenario(monkeypatch):
             ), {"i": eid, "tk": task, "t": tenant, "k": f"{tenant}/{task}/{eid}.pdf", "u": subida_por, "e": estado})
 
         await evidencia(ev["pendiente"], ta, tarea, u["coord_sube"])
-        await evidencia(ev["resuelta"], ta, tarea, u["coord_sube"], "approved")
+        # RM-25b: una `approved` sin primera validación ya no existe en la base; la resuelta es una rechazada.
+        await evidencia(ev["resuelta"], ta, tarea, u["coord_sube"], "rejected")
         await evidencia(ev["subida_por_resp"], ta, tarea, u["resp"])
         await evidencia(ev["otro_tenant"], tb, tarea_b, u["coord_b"])
         await s.commit()
@@ -213,26 +214,29 @@ async def test_la_evidencia_de_otra_organizacion_o_de_otra_tarea_no_existe(escen
 
 
 async def test_la_validacion_final_guarda_el_rol_de_quien_valida(escenario):
-    """El motor acepta `rol` opcional; el PATCH actual aún no lo pasa (lo conecta RM-25b): queda NULL."""
+    """El motor guarda el rol de la validación final; desde RM-25b el PATCH lo pasa y exige la primera."""
     from features.roadmap import roadmap_service
 
     e = escenario
+    # RM-25b: la validación final exige la primera, que registra el coordinador.
+    for evidencia in ("pendiente", "subida_por_resp"):
+        assert (await e["c"].post(_ruta(e, evidencia), headers=_como(e, "coord"))).status_code == 200
     async with e["factory"]() as s:
         valor = await roadmap_service.validate_evidence(
-            s, e["ta"], e["u"]["dpo"], e["ev"]["pendiente"], "approved", "conforme", rol="dpo"
+            s, e["ta"], e["u"]["dpo"], e["ev"]["pendiente"], "approved", "conforme", rol="dpo", nivel_acreditado=2
         )
         await s.commit()
     assert valor is not None
     fila = await _fila(e)
     assert fila["validated_by"] == e["u"]["dpo"] and fila["validado_rol"] == "dpo"
-    # Sin `rol` (PATCH viejo): la validación sigue funcionando y la columna queda nula.
+    # El PATCH pasa el rol de quien valida (RM-25b): la columna queda con él.
     r = await e["c"].patch(
         f"/api/v1/roadmaps/tasks/{e['tarea']}/evidence/{e['ev']['subida_por_resp']}",
-        headers=_como(e, "dpo"), json={"validation_status": "approved", "notes": "ok"},
+        headers=_como(e, "dpo"), json={"validation_status": "approved", "notes": "ok", "nivel_acreditado": 2},
     )
     assert r.status_code == 200, r.text
     viejo = await _fila(e, "subida_por_resp")
-    assert viejo["validated_by"] == e["u"]["dpo"] and viejo["validado_rol"] is None
+    assert viejo["validated_by"] == e["u"]["dpo"] and viejo["validado_rol"] == "dpo"
 
 
 async def test_nivel_acreditado_solo_admite_de_0_a_4(escenario):
