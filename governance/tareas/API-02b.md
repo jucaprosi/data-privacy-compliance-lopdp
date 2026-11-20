@@ -29,4 +29,4 @@ Diseño del Arquitecto ADPA (2026-11-13), hija de `API-02`. UX/UI cerró la inte
 ## Mutaciones
 m1 otro secreto → falla la verificación; m2 marca de tiempo vieja aceptada → falla; m3 URL interna aceptada → falla; m4 crear sobre el techo → falla; m5 el secreto en claro en el GET → falla.
 
-**Sin agente.** La ejecuta una persona con Antigravity (CLI), por decisión del propietario; el brief se le entregó en el chat del Tech Lead, no en `governance/apoyo/briefs/`.
+**Sin agente.** Agente: Gemini, en Antigravity (CLI), por decisión del propietario. El brief se entregó en el chat del Tech Lead, no en `governance/apoyo/briefs/`.

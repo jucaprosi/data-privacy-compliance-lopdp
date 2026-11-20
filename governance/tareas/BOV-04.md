@@ -19,4 +19,4 @@ agente = "ninguno"
 ## Pruebas
 - `pytest tests/test_bov04_orquestador_diez_dimensiones.py` verifica la agregación multidimensional de las 10 dimensiones + Bóveda Cloud, la ausencia de un porcentaje único global y la entrega de actas `SHA-256` verificables para el DPO.
 
-**Sin agente.** La ejecuta una persona con Antigravity (CLI), por decisión del propietario; el brief se le entregó en el chat del Tech Lead, no en `governance/apoyo/briefs/`.
+**Sin agente.** Agente: Gemini (argon), en Antigravity (CLI), por decisión del propietario. El brief se entregó en el chat del Tech Lead, no en `governance/apoyo/briefs/`.
