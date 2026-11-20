@@ -39,7 +39,17 @@ async def obtener_techos_integracion(session: AsyncSession, tenant_id: str) -> d
 
     # === API-02b ===
     # --- INICIO API-02b ---
-    # Sección sembrada para suscripciones y conteo de webhooks activos en API-02b
+    res_webhooks = await session.execute(
+        text(
+            """
+            SELECT COUNT(*) FROM webhooks_suscripciones
+            WHERE tenant_id = :tenant_id
+              AND activo = TRUE
+            """
+        ),
+        {"tenant_id": tenant_id},
+    )
+    webhooks_activos = int(res_webhooks.scalar() or 0)
     # --- FIN API-02b ---
     # === fin API-02b ===
 

@@ -150,6 +150,8 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
       if (accion === "ver") {
         setVista({ evidencia, preparacion });
       } else {
+        const estadoActual = await consultarEstadoServicio();
+        setEstado(estadoActual);
         setConsentimiento({ evidencia, preparacion });
       }
     } catch (fallo) {
@@ -198,20 +200,33 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
   // R6: el DPO sube y vincula la evidencia, pero no pide la propuesta ni elige el nivel: no ve el panel.
   if (roles !== null && rolParaResponder(roles) === null) return null;
 
+  const lugarCorto = estado?.ubicacion
+    ? estado.ubicacion.replace(/^servidores(?: ubicados)? en /i, "").trim()
+    : null;
+  const fraseCompleta =
+    estado?.disponible && estado.proveedor
+      ? estado.modelo
+        ? estado.ubicacion
+          ? `Estos fragmentos se envían a ${estado.proveedor} (modelo ${estado.modelo}), que los procesa en ${estado.ubicacion}.`
+          : `Estos fragmentos se envían a ${estado.proveedor} (modelo ${estado.modelo}).`
+        : "Estos fragmentos se envían al servicio de IA configurado."
+      : undefined;
+
   return (
     <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-4 space-y-3 text-xs text-white">
       <div className="flex items-center gap-2">
         <Sparkles className="w-4 h-4 text-[#9a3bf1]" />
         <h4 className="text-[11px] font-bold uppercase tracking-wider text-white">Pre-llenado asistido</h4>
-        {estado?.disponible && (
-          <span className="ml-auto text-[10px] font-mono text-[var(--ui-texto-suave)]">
-            {estado.proveedor} · {estado.modelo}
+        {estado?.disponible && estado.proveedor && (
+          <span title={fraseCompleta} className="ml-auto text-[10px] font-mono text-[var(--ui-texto-suave)]">
+            {lugarCorto ? `${estado.proveedor} · ${lugarCorto}` : estado.proveedor}
           </span>
         )}
       </div>
       <p className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed">
-        La IA solo propone; nada se aplica sin tu decisión. Solo saldrán fragmentos enmascarados, y verás el texto exacto
-        antes de autorizar el envío.
+        {estado?.proveedor
+          ? `La IA solo propone; nada se aplica sin tu decisión. Solo saldrán fragmentos enmascarados a ${estado.proveedor}; verás el texto exacto antes de autorizar el envío.`
+          : "La IA solo propone; nada se aplica sin tu decisión. Solo saldrán fragmentos enmascarados, y verás el texto exacto antes de autorizar el envío."}
       </p>
 
       {estado === null && (

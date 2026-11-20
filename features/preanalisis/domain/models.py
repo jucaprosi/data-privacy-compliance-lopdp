@@ -136,3 +136,4 @@ class EstadoProveedor:
     proveedor: str | None
     modelo: str | None
     motivo: str | None
+    ubicacion: str | None = None

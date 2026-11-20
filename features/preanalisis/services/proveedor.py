@@ -42,7 +42,7 @@ class ProveedorVertex:
         sistema: str,
         usuario: str,
         *,
-        org_id: str = "preanalisis",
+        org_id: str | None = "preanalisis",
     ) -> PropuestaModelo:
         if not isinstance(org_id, str) or not org_id.strip():
             raise ProveedorNoDisponible(MOTIVO_NO_DISPONIBLE)
@@ -92,9 +92,31 @@ def obtener_proveedor() -> ProveedorIA | None:
     return ProveedorVertex(modelo=MODELO_POR_DEFECTO)
 
 
+def _formatear_ubicacion(cruda: object) -> str | None:
+    if not isinstance(cruda, str):
+        return None
+    limpia = cruda.strip()
+    if not limpia:
+        return None
+    return limpia if limpia.startswith("servidores ") else f"servidores en {limpia}"
+
+
 def estado_proveedor() -> EstadoProveedor:
     if _proveedor_de_prueba is not None:
-        return EstadoProveedor(True, _proveedor_de_prueba.nombre, _proveedor_de_prueba.modelo, None)
-    if not pasillo_inferencia.estado().disponible:
-        return EstadoProveedor(False, None, None, MOTIVO_NO_DISPONIBLE)
-    return EstadoProveedor(True, PROVEEDOR_NOMBRE, MODELO_POR_DEFECTO, None)
+        return EstadoProveedor(
+            True,
+            _proveedor_de_prueba.nombre,
+            _proveedor_de_prueba.modelo,
+            None,
+            getattr(_proveedor_de_prueba, "ubicacion", None),
+        )
+    est = pasillo_inferencia.estado()
+    if not est.disponible:
+        return EstadoProveedor(False, None, None, MOTIVO_NO_DISPONIBLE, None)
+    return EstadoProveedor(
+        True,
+        PROVEEDOR_NOMBRE,
+        MODELO_POR_DEFECTO,
+        None,
+        _formatear_ubicacion(getattr(est, "ubicacion", None)),
+    )

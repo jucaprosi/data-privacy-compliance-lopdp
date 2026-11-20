@@ -273,3 +273,13 @@ _seccion("TER-02", {
 
 # === ORG-23 ===
 # === fin ORG-23 ===
+
+# === API-02b ===
+_seccion("API-02b", {
+    "crear_webhook_integracion": False,
+    "listar_webhooks_integracion": False,
+    "rotar_secreto_webhook": False,
+    "desactivar_webhook": False,
+    "probar_webhook": False,
+})
+# === fin API-02b ===

@@ -48,3 +48,17 @@ BOVEDA_OBJETO_NO_ENCONTRADO = "BOVEDA_OBJETO_NO_ENCONTRADO"
 _ESTADOS[BOVEDA_ALTERACION_ORIGINAL_PROHIBIDA] = (409, "Prohibido alterar o sobrescribir el archivo original intacto con un derivado comprimido.")
 _ESTADOS[BOVEDA_OBJETO_NO_ENCONTRADO] = (404, "El objeto bajo custodia no fue encontrado.")
 # --- FIN BOV-03 ---
+
+# --- INICIO BOV-04 ---
+BOVEDA_METRICA_GLOBAL_PROHIBIDA = "BOVEDA_METRICA_GLOBAL_PROHIBIDA"
+BOVEDA_ACTA_SHA256_INVALIDA = "BOVEDA_ACTA_SHA256_INVALIDA"
+
+_ESTADOS[BOVEDA_METRICA_GLOBAL_PROHIBIDA] = (
+    422,
+    "Prohibido unificar las 10 dimensiones LOPDP en un porcentaje único global.",
+)
+_ESTADOS[BOVEDA_ACTA_SHA256_INVALIDA] = (
+    422,
+    "El acta de destrucción requiere un certificado SHA-256 hexadecimal de 64 caracteres.",
+)
+# --- FIN BOV-04 ---

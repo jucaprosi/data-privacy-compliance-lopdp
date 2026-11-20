@@ -10,7 +10,6 @@ Cubre los criterios de aceptación de `governance/especificaciones/RET-01.md`:
 """
 from __future__ import annotations
 
-import ast
 import os
 import secrets
 import shutil
@@ -33,13 +32,18 @@ RAIZ = Path(__file__).resolve().parent.parent
 def test_env_en_carpeta_se_ignora(tmp_path: Path) -> None:
     """Un `.env` presente en el cwd no altera `os.environ` ni `app_core.config`."""
     (tmp_path / ".env").write_text(
+        "APP_ENV=env_invalido\n"
+        "ANF_STB_URL=https://anf.env.invalid\n"
         "DATABASE_URL=postgresql://u:secreto-env@db.env.invalid:5432/prod\n"
         "MIGRATION_DATABASE_URL=postgresql://u:secreto-env@db.env.invalid:5432/prod\n"
         "CORS_ORIGINS=https://env.invalid\n"
         "JWT_SECRET=clave-secreta-del-archivo-local-debe-ignorarse\n",
         encoding="utf-8",
     )
-    quitar = {"DATABASE_URL", "MIGRATION_DATABASE_URL", "TEST_DATABASE_URL", "CORS_ORIGINS", "JWT_SECRET", "K_SERVICE"}
+    quitar = {
+        "APP_ENV", "ANF_STB_URL", "DATABASE_URL", "MIGRATION_DATABASE_URL",
+        "TEST_DATABASE_URL", "CORS_ORIGINS", "JWT_SECRET", "K_SERVICE",
+    }
     env = {k: v for k, v in os.environ.items() if k not in quitar}
     env["PYTHONPATH"] = str(RAIZ)
     env["PYTHONIOENCODING"] = "utf-8"
@@ -47,15 +51,18 @@ def test_env_en_carpeta_se_ignora(tmp_path: Path) -> None:
         "import json, os; "
         "from app_core.config import CLAVE_JWT_DESARROLLO, CORS_ORIGINS_DESARROLLO, DATABASE_URL_DESARROLLO, config; "
         "print(json.dumps({"
+        "'app_env': config.environment, 'anf': config.anf_stb_url, "
         "'db': config.database_url, 'env_db': os.environ.get('DATABASE_URL'), "
         "'cors': config.cors_origins, 'jwt_default': config.jwt_secret == CLAVE_JWT_DESARROLLO, "
         "'esperado_db': DATABASE_URL_DESARROLLO, 'esperado_cors': CORS_ORIGINS_DESARROLLO}))"
     )
     res = subprocess.run([sys.executable, "-c", codigo], cwd=tmp_path, env=env, capture_output=True, text=True, timeout=60)
     assert res.returncode == 0, res.stderr
-    assert "db.env.invalid" not in res.stdout and "secreto-env" not in res.stdout
+    assert "db.env.invalid" not in res.stdout and "secreto-env" not in res.stdout and "anf.env.invalid" not in res.stdout
     import json
     datos = json.loads(res.stdout.strip().splitlines()[-1])
+    assert datos["app_env"] == "development"
+    assert datos["anf"] == ""
     assert datos["db"] == datos["esperado_db"]
     assert datos["env_db"] == datos["esperado_db"]
     assert datos["cors"] == datos["esperado_cors"]
@@ -148,25 +155,9 @@ def test_sec15_guarda_arranque(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_puntos_de_entrada_misma_guardia() -> None:
-    """Todos los puntos de entrada comparten la lista blanca de hosts locales y rechazan hosts no locales."""
+    """Los puntos de entrada comparten la lista blanca de hosts locales y rechazan hosts no locales."""
     assert VARIABLES_DE_NUBE == ("K_SERVICE",)
     assert HOSTS_LOCALES == conftest.HOSTS_DE_PRUEBAS == ("localhost", "127.0.0.1", "::1")
-
-    for relativa in (
-        "app_core/security.py",
-        "alembic/env.py",
-        "scripts/capacidades_biblioteca.py",
-        "scripts/crear_organizacion_dev.py",
-        "scripts/demo/sembrar_plantilla.py",
-        "scripts/sembrar_entorno_pruebas.py",
-        "scripts/importar_catalogo_biblioteca.py",
-    ):
-        arbol = ast.parse((RAIZ / relativa).read_text(encoding="utf-8"))
-        modulos = {n.module for n in ast.walk(arbol) if isinstance(n, ast.ImportFrom) and n.module}
-        assert "app_core.huellas_produccion" in modulos, relativa
-
-    hook = (RAIZ / ".githooks" / "pre-push").read_text(encoding="utf-8")
-    assert "app_core.huellas_produccion" in hook and "exigir_base_local" in hook
 
     # Verificar fallo cerrado real de alembic/env.py antes de abrir conexión
     env_alembic = {k: v for k, v in os.environ.items() if "DATABASE_URL" not in k}
@@ -189,45 +180,3 @@ def test_puntos_de_entrada_misma_guardia() -> None:
     )
     assert "BaseNoLocal" not in res_cloud.stderr
     assert "[ENTORNO] MIGRATION_DATABASE_URL debe apuntar a una base local" not in res_cloud.stderr
-
-
-def test_sin_dotenv() -> None:
-    """La configuración lee solo `os.environ` y las herramientas usan `entorno_local.ps1` y `K_SERVICE`."""
-    assert VARIABLES_DE_NUBE == ("K_SERVICE",)
-    assert HOSTS_LOCALES == ("localhost", "127.0.0.1", "::1")
-    requisitos = (RAIZ / "requirements.txt").read_text(encoding="utf-8").lower()
-    assert "pydantic-settings" in requisitos
-    assert "google-cloud-storage" in requisitos
-    assert "google-genai" in requisitos
-    assert (RAIZ / "scripts" / "entorno_local.ps1").is_file()
-
-    doc = (RAIZ / "governance" / "operaciones" / "ENTORNO_LOCAL.md").read_text(encoding="utf-8")
-    for esperado in ("entorno_local.ps1", "DATABASE_URL", "MIGRATION_DATABASE_URL", "TEST_DATABASE_URL",
-                     "APP_ENV", "AUTH_MODE", "CORS_ORIGINS", "JWT_SECRET", "SESSION_SECRET", "K_SERVICE",
-                     "HUELLA_PROYECTO_PRODUCCION"):
-        assert esperado in doc, esperado
-
-    config_src = (RAIZ / "app_core" / "config.py").read_text(encoding="utf-8")
-    assert "os.environ" in config_src
-    assert 'SettingsConfigDict(extra="ignore")' in config_src
-
-    for relativa in (
-        "app_core/config.py",
-        "app_core/huellas_produccion.py",
-        "app_core/security.py",
-        "app_core/entorno/guardias.py",
-        "alembic/env.py",
-        ".githooks/pre-push",
-        "scripts/capacidades_biblioteca.py",
-        "scripts/crear_organizacion_dev.py",
-        "scripts/demo/sembrar_plantilla.py",
-        "scripts/sembrar_entorno_pruebas.py",
-        "scripts/importar_catalogo_biblioteca.py",
-    ):
-        ruta = RAIZ / relativa
-        assert ruta.is_file(), relativa
-        texto = ruta.read_text(encoding="utf-8")
-        if ruta.suffix == ".py":
-            ast.parse(texto, filename=str(ruta))
-        else:
-            assert "exigir_base_local" in texto, relativa

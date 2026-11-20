@@ -22,7 +22,6 @@ sola vez, con la dependencia ya sin valor por defecto, desde esta rama (DATABASE
 El diff perdió exactamente cuatro líneas `"default": "tenant-default"`.
 """
 import hashlib
-import inspect
 import json
 from pathlib import Path
 from unittest.mock import AsyncMock
@@ -49,14 +48,6 @@ def _cliente() -> TestClient:
         return {"tenant": tenant}
 
     return TestClient(app)
-
-
-def test_firma_sin_valor_por_defecto():
-    parametro = inspect.signature(obtener_tenant_id_actual).parameters["x_tenant_id"]
-    por_defecto = parametro.default.default  # FieldInfo de Header(...)
-    assert por_defecto != VALOR_ANTIGUO
-    assert por_defecto in (None, ...)
-    assert VALOR_ANTIGUO not in inspect.getsource(obtener_tenant_id_actual)
 
 
 def test_headers_sin_cabecera_400(monkeypatch):

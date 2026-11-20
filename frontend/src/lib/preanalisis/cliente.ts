@@ -80,10 +80,11 @@ async function solicitar<T>(ruta: string, init: RequestInit, identidad?: Record<
 
 export async function consultarEstadoServicio(): Promise<EstadoServicioIA> {
   try {
-    return await solicitar<EstadoServicioIA>("/preanalisis/estado", { method: "GET" });
+    const estado = await solicitar<EstadoServicioIA>("/preanalisis/estado", { method: "GET" });
+    return { ...estado, ubicacion: estado.ubicacion ?? null };
   } catch (error) {
     const motivo = error instanceof ErrorPreanalisis && error.status !== 0 ? error.message : MENSAJE_SIN_CONEXION;
-    return { disponible: false, proveedor: null, modelo: null, motivo };
+    return { disponible: false, proveedor: null, modelo: null, motivo, ubicacion: null };
   }
 }
 

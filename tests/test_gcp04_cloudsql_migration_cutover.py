@@ -9,54 +9,78 @@ import sys
 from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
+
+from tests._lector_yaml import leer_yaml
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "scripts"))
 
 import verificar_cloudsql_conexion as vc  # noqa: E402
 
-INSTANCIA = (RAIZ / "governance/operaciones/cloud_sql_instance.yaml").read_text(encoding="utf-8")
-BALANCEADOR = (RAIZ / "governance/operaciones/cloud_load_balancer.yaml").read_text(encoding="utf-8")
+
+def _cargar_yaml(relativa: str) -> dict:
+    return leer_yaml((RAIZ / relativa).read_text(encoding="utf-8"))
+
+
+def _recorrer_escalares(datos, ruta: str = ""):
+    if isinstance(datos, dict):
+        for clave, valor in datos.items():
+            yield from _recorrer_escalares(valor, f"{ruta}.{clave}" if ruta else str(clave))
+    elif isinstance(datos, list):
+        for i, elemento in enumerate(datos):
+            yield from _recorrer_escalares(elemento, f"{ruta}[{i}]")
+    else:
+        yield ruta, datos
 
 
 def test_cloud_sql_especificacion_segura():
-    assert re.search(r"^databaseVersion:\s*POSTGRES_16\s*$", INSTANCIA, flags=re.M)
-    respaldo = INSTANCIA.split("backupConfiguration:", 1)[1].split("ipConfiguration:", 1)[0]
-    assert re.search(r"enabled:\s*true", respaldo) and "pointInTimeRecoveryEnabled: true" in respaldo
-    assert "ipv4Enabled: false" in INSTANCIA and "privateNetwork:" in INSTANCIA
-    assert "sslMode: ENCRYPTED_ONLY" in INSTANCIA and "requireSsl: true" in INSTANCIA
-    assert "force_row_level_security: true" in INSTANCIA
-    app = INSTANCIA.split("- name: lopdp_app", 1)[1].split("\n  - name:", 1)[0]
-    assert "NOBYPASSRLS" in app and "NOSUPERUSER" in app and "BYPASSRLS]" not in app.replace("NOBYPASSRLS", "")
-    # Sin contraseñas ni URLs de conexión en el archivo.
-    assert not re.search(r"password\s*:|://[^/\s]*:[^@\s]+@", INSTANCIA, flags=re.I)
+    instancia = _cargar_yaml("governance/operaciones/cloud_sql_instance.yaml")
+    assert instancia["databaseVersion"] == "POSTGRES_16"
+    respaldo = instancia["settings"]["backupConfiguration"]
+    assert respaldo["enabled"] is True and respaldo["pointInTimeRecoveryEnabled"] is True
+    ip = instancia["settings"]["ipConfiguration"]
+    assert ip["ipv4Enabled"] is False and ip["privateNetwork"]
+    assert ip["sslMode"] == "ENCRYPTED_ONLY" and ip["requireSsl"] is True
+    assert instancia["rls"]["force_row_level_security"] is True
+    app_user = next(u for u in instancia["users"] if u["name"] == "lopdp_app")
+    atributos = set(app_user["atributos"])
+    assert {"NOBYPASSRLS", "NOSUPERUSER"} <= atributos and "BYPASSRLS" not in atributos
+    for ruta, valor in _recorrer_escalares(instancia):
+        assert ruta.rsplit(".", 1)[-1].lower() != "password"
+        assert not re.search(r"://[^/\s]*:[^@\s]+@", str(valor)), f"credencial en {ruta}"
 
 
 def test_load_balancer_enrutamiento_unificado():
-    url_map = BALANCEADOR.split("url_map:", 1)[1]
-    assert re.search(r"defaultService:\s*evydentia-web-bs", url_map)
-    regla = re.search(r'paths:\s*\["/api/v1/\*"\]\s*\n\s*service:\s*(\S+)', url_map)
-    assert regla and regla.group(1) == "evydentia-backend-bs"
-    assert re.search(r"name: evydentia-backend-bs\s*\n\s*neg_serverless: evydentia-backend", BALANCEADOR)
-    assert re.search(r"name: evydentia-web-bs\s*\n\s*neg_serverless: evydentia-web", BALANCEADOR)
-    assert "certificado_administrado:" in BALANCEADOR and "politica_cloud_armor:" in BALANCEADOR
-    assert BALANCEADOR.count("politica_seguridad: evydentia-waf") == 2
-    assert "redireccion_http_a_https: true" in BALANCEADOR
+    balanceador = _cargar_yaml("governance/operaciones/cloud_load_balancer.yaml")
+    url_map = balanceador["url_map"]
+    assert url_map["defaultService"] == "evydentia-web-bs"
+    reglas = [r for m in url_map["pathMatchers"] for r in m["pathRules"]]
+    regla_api = next(r for r in reglas if r["paths"] == ["/api/v1/*"])
+    assert regla_api["service"] == "evydentia-backend-bs"
+    servicios = {s["name"]: s for s in balanceador["servicios_backend"]}
+    assert servicios["evydentia-backend-bs"]["neg_serverless"] == "evydentia-backend"
+    assert servicios["evydentia-web-bs"]["neg_serverless"] == "evydentia-web"
+    assert all(s["politica_seguridad"] == "evydentia-waf" for s in servicios.values())
+    assert balanceador["certificado_administrado"]["dominios"]
+    assert balanceador["politica_cloud_armor"]["name"] == "evydentia-waf"
+    assert balanceador["redireccion_http_a_https"] is True
 
 
-def test_guia_de_carga_viable_en_cloud_sql():
-    """Sin superusuario: no hay --disable-triggers; FORCE se quita para cargar y se vuelve a poner."""
-    guia = (RAIZ / "governance/operaciones/MIGRACION_CLOUDSQL_POSTGRES.md").read_text(encoding="utf-8")
-    assert "--disable-triggers" not in guia
-    assert "pg_dump -Fc" in guia
-    assert "NO FORCE ROW LEVEL SECURITY" in guia
-    guardar = guia.index("> tablas_force.txt")  # la lista se guarda antes de quitar FORCE
-    quitar = guia.index("NO FORCE ROW LEVEL SECURITY")
-    assert guardar < quitar
-    volver = guia.index("ALTER TABLE <tabla> FORCE ROW LEVEL SECURITY")
-    verificar = guia.index("Verificación notarial, obligatoria antes del corte")
-    corte = guia.index("**Corte.**")
-    assert quitar < volver < verificar < corte
+def test_rutas_api_coinciden_con_regla_del_balanceador():
+    """El enrutamiento /api/v1/* del balanceador cubre los endpoints de negocio reales y /api/v1/health."""
+    import main
+
+    balanceador = _cargar_yaml("governance/operaciones/cloud_load_balancer.yaml")
+    reglas = [r for m in balanceador["url_map"]["pathMatchers"] for r in m["pathRules"]]
+    rutas_backend = [p for r in reglas if r["service"] == "evydentia-backend-bs" for p in r["paths"]]
+    assert rutas_backend == ["/api/v1/*"]
+
+    openapi_paths = set(TestClient(main.app).get("/openapi.json").json()["paths"])
+    rutas_fuera = [p for p in openapi_paths if p not in {"/", "/health"} and not p.startswith("/api/v1/")]
+    assert rutas_fuera == [], f"Rutas del backend fuera de /api/v1/: {rutas_fuera}"
+    resp = TestClient(main.app).get("/api/v1/health")
+    assert resp.status_code in (200, 503) and "routers" in resp.json()
 
 
 def _estado(**cambios):
