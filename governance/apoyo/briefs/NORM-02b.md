@@ -1,6 +1,6 @@
 ### NORM-02b · aviso-a-las-organizaciones-de-resoluciones-nuevas  (tanda 79)
 
-**Contexto.** Sala: `inteligencia_normativa`. Depende de: `NORM-02`, `BOV-01`, `NOTIF-01`. Especificaciones: `governance/especificaciones/NORM-02b.md` (manda), `governance/tareas/NORM-02b.md`.
+**Contexto.** Sala: `inteligencia_normativa`. Depende de: `NORM-02`, `BOV-01`, `NOTIF-01`, `PLAT-01`. Especificaciones: `governance/especificaciones/NORM-02b.md` (manda), `governance/tareas/NORM-02b.md`.
 
 **Cómo se ejecuta** (esta sesión no tiene el contexto del equipo; todo lo necesario está aquí y en la ficha).
 
