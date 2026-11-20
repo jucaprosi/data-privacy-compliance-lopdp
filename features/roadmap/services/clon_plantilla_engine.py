@@ -24,7 +24,8 @@ _ESPACIO = uuid.UUID("5f0c7a52-3d0e-4b57-9c53-0d3a6c1b7d03")
 # Columnas por tabla, sin tenant_id (lo fija el destino).
 _HALLAZGOS = ("id", "origen", "origen_ref", "control_ref", "dimension", "severidad", "titulo",
               "descripcion", "estado", "creado_por", "creado_en", "actualizado_en")
-_ROADMAPS = ("id", "created_at", "updated_at", "status", "variables_json", "summary", "score_objetivo")
+_ROADMAPS = ("id", "created_at", "updated_at", "status", "variables_json", "summary", "score_objetivo",
+             "generado_por", "revisado_por", "revisado_en")
 _OLAS = ("id", "roadmap_id", "name", "start_date", "end_date", "objective", "sort_order")
 _TAREAS = ("id", "wave_id", "area_id", "control_ref", "dimension", "title", "description", "owner", "priority",
            "effort_hours", "start_date", "end_date", "status", "completed_at", "kpi", "deliverable",
@@ -106,7 +107,15 @@ async def clonar_desde_plantilla(session: AsyncSession, origen: str, destino: st
         await _insertar(session, "hallazgos", _HALLAZGOS, destino, {
             **h, "id": mapa[h["id"]], "creado_por": mapa_ids.get(h["creado_por"], admin_destino)})
     for r in roadmaps:
-        await _insertar(session, "roadmaps", _ROADMAPS, destino, {**r, "id": mapa[r["id"]]})
+        gen_dest = mapa_ids.get(r["generado_por"], admin_destino) if r["generado_por"] else None
+        if r["revisado_por"]:
+            rev_dest = mapa_ids.get(r["revisado_por"], admin_destino)
+            if gen_dest is not None and rev_dest == gen_dest:
+                rev_dest = f"{admin_destino}-revisor"
+        else:
+            rev_dest = None
+        await _insertar(session, "roadmaps", _ROADMAPS, destino, {
+            **r, "id": mapa[r["id"]], "generado_por": gen_dest, "revisado_por": rev_dest})
     for o in olas:
         await _insertar(session, "roadmap_waves", _OLAS, destino, {
             **o, "id": mapa[o["id"]], "roadmap_id": mapa[o["roadmap_id"]]})
@@ -136,7 +145,8 @@ async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: 
         "id": id_ruta, "created_at": None, "updated_at": None, "status": "active",
         "variables_json": {"plazo_meses": 3, "presupuesto": 0, "moneda": "USD", "equipo": ["Equipo ficticio"],
                            "dpo": "DPO ficticio", "idioma": "ES"},
-        "summary": "Hoja de ruta ficticia de la demo", "score_objetivo": None})
+        "summary": "Hoja de ruta ficticia de la demo", "score_objetivo": None,
+        "generado_por": None, "revisado_por": None, "revisado_en": None})
     await _insertar(session, "roadmap_waves", _OLAS, plantilla_id, {
         "id": id_ola, "roadmap_id": id_ruta, "name": "Ola 1 (ficticia)", "start_date": _INICIO,
         "end_date": _FIN, "objective": "Poner en marcha las acciones de la demo", "sort_order": 1})

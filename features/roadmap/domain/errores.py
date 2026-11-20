@@ -69,4 +69,20 @@ registrar(ROL_SIN_VALIDACION_FINAL, PRIMERA_VALIDACION_PENDIENTE, VALIDADOR_REPE
 # === fin RM-25b ===
 
 # === RM-27 ===
+REVISION_MISMA_PERSONA = CodigoErrorNegocio(
+    "REVISION_MISMA_PERSONA",
+    409,
+    "Quien generó la hoja de ruta no puede activarla; debe revisarla otra persona.",
+)
+HOJA_YA_ACTIVA = CodigoErrorNegocio(
+    "HOJA_YA_ACTIVA",
+    409,
+    "Esta hoja de ruta ya fue activada.",
+)
+HOJA_PENDIENTE_DE_REVISION = CodigoErrorNegocio(
+    "HOJA_PENDIENTE_DE_REVISION",
+    409,
+    "Esta hoja de ruta está pendiente de revisión antes de poder emitir el informe.",
+)
+registrar(REVISION_MISMA_PERSONA, HOJA_YA_ACTIVA, HOJA_PENDIENTE_DE_REVISION)
 # === fin RM-27 ===

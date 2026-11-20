@@ -4,9 +4,11 @@ Los datos salen de la base de la organización del usuario, nunca del navegador.
 del rol: la organización completa para admin_organizacion, coordinador, dpo e implementador; solo
 sus áreas para responsable_area. Cada descarga deja en audit_events el SHA-256 del PDF entregado.
 """
+import sys
 from datetime import datetime, timezone
 from hashlib import sha256
 from io import BytesIO
+from typing import Optional
 from uuid import uuid4
 
 from reportlab.lib import colors
@@ -19,10 +21,16 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
+from app_core.errors import ErrorNegocio
 # --- INICIO ADPA-04 ---
 from app_core.pasillo import organizacion as pasillo_organizacion
 # --- FIN ADPA-04 ---
+from features.roadmap.domain.errores import HOJA_PENDIENTE_DE_REVISION
 from features.roadmap.services.contexto_tenant import set_session_context
+from features.roadmap.services.revision_engine import (
+    ETIQUETA_SIN_REVISION,
+    registrar_en_compuerta,
+)
 
 ROLES_ORGANIZACION = {"admin_organizacion", "coordinador", "dpo", "implementador"}
 
@@ -91,15 +99,25 @@ def _crear_pdf(constancia: list[tuple[str, str]], tareas: list[dict]) -> bytes:
     return salida.getvalue()
 
 
-async def generar_informe_estado(
+async def generar_informe_estado_con_revision(
     session: AsyncSession, tenant_id: str, roadmap_id: str, user_id: str, rol: str,
-) -> tuple[bytes, str]:
-    await set_session_context(session, tenant_id)
-    existe = await session.execute(
-        text("SELECT 1 FROM roadmaps WHERE id = :r AND tenant_id = :t"), {"r": roadmap_id, "t": tenant_id}
-    )
-    if not existe.first():
+) -> tuple[bytes, str, Optional[str]]:
+    await set_session_context(session, tenant_id, user_id)
+    rm = (await session.execute(
+        text("SELECT status, generado_por, revisado_por, revisado_en FROM roadmaps WHERE id = :r AND tenant_id = :t"),
+        {"r": roadmap_id, "t": tenant_id},
+    )).mappings().first()
+    if not rm:
         raise LookupError("roadmap no encontrado")
+
+    if rm["status"] == "generated" and rm["generado_por"] is not None:
+        raise ErrorNegocio(HOJA_PENDIENTE_DE_REVISION)
+
+    etiqueta_revision = (
+        ETIQUETA_SIN_REVISION
+        if (rm["generado_por"] is None and rm["revisado_por"] is None)
+        else None
+    )
 
     areas = None if rol in ROLES_ORGANIZACION else list(await pasillo_organizacion.areas_permitidas(session, tenant_id, user_id))
     consulta = TAREAS_ORGANIZACION if areas is None else TAREAS_AREAS
@@ -123,17 +141,50 @@ async def generar_informe_estado(
         alcance = "Áreas: " + (", ".join(nombres) if nombres else "ninguna asignada")
 
     informe_id = str(uuid4())
-    pdf = _crear_pdf([
+    constancia = [
         ("Organización", organizacion),
         ("Solicitante", solicitante),
         ("Rol", rol),
         ("Alcance", alcance),
         ("Fecha y hora de corte (UTC)", datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")),
         ("Identificador del informe", informe_id),
-    ], [dict(t) for t in tareas])
+    ]
+    if etiqueta_revision:
+        constancia.append(("Revisión", etiqueta_revision))
+
+    pdf = _crear_pdf(constancia, [dict(t) for t in tareas])
     await registrar_evento(
         session, tenant_id, "roadmap", roadmap_id, "roadmap_report_downloaded", user_id,
-        {"rol": rol, "alcance": alcance, "informe_id": informe_id, "sha256": sha256(pdf).hexdigest()},
+        {
+            "rol": rol,
+            "alcance": alcance,
+            "informe_id": informe_id,
+            "sha256": sha256(pdf).hexdigest(),
+            "revision": etiqueta_revision,
+        },
     )
     await session.commit()
+    return pdf, informe_id, etiqueta_revision
+
+
+async def generar_informe_estado(
+    session: AsyncSession, tenant_id: str, roadmap_id: str, user_id: str, rol: str,
+) -> tuple[bytes, str]:
+    pdf, informe_id, _ = await generar_informe_estado_con_revision(
+        session, tenant_id, roadmap_id, user_id, rol
+    )
     return pdf, informe_id
+
+
+def _registrar_informe_en_compuerta() -> None:
+    registrar_en_compuerta()
+    compuerta = sys.modules.get("features.roadmap.roadmap_service")
+    if compuerta is None:
+        return
+    setattr(compuerta, "generar_informe_pdf_con_revision", generar_informe_estado_con_revision)
+    publicos = getattr(compuerta, "__all__", None)
+    if isinstance(publicos, list) and "generar_informe_pdf_con_revision" not in publicos:
+        publicos.append("generar_informe_pdf_con_revision")
+
+
+_registrar_informe_en_compuerta()

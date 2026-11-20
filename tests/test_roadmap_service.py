@@ -48,9 +48,9 @@ async def test_update_task_status_y_audit_log(db_session, seed_tenants):
     tk_id = f"tk-{uuid.uuid4().hex[:8]}"
 
     await db_session.execute(
-        text("INSERT INTO roadmaps (id, tenant_id, status, variables_json) "
-             "VALUES (:id, :t, 'generated', '{}')"),
-        {"id": rm_id, "t": tenant},
+        text("INSERT INTO roadmaps (id, tenant_id, status, variables_json, generado_por) "
+             "VALUES (:id, :t, 'generated', '{}', :u)"),
+        {"id": rm_id, "t": tenant, "u": user},
     )
     await db_session.execute(
         text("INSERT INTO roadmap_waves (id, roadmap_id, tenant_id, name) "
@@ -124,9 +124,9 @@ async def test_register_evidence_y_list(db_session, seed_tenants):
     tk_id = f"tk-{uuid.uuid4().hex[:8]}"
 
     await db_session.execute(
-        text("INSERT INTO roadmaps (id, tenant_id, status, variables_json) "
-             "VALUES (:id, :t, 'generated', '{}')"),
-        {"id": rm_id, "t": tenant},
+        text("INSERT INTO roadmaps (id, tenant_id, status, variables_json, generado_por) "
+             "VALUES (:id, :t, 'generated', '{}', :u)"),
+        {"id": rm_id, "t": tenant, "u": user},
     )
     await db_session.execute(
         text("INSERT INTO roadmap_waves (id, roadmap_id, tenant_id, name) "
@@ -167,9 +167,9 @@ async def test_validate_evidence(db_session, seed_tenants):
     tk_id = f"tk-{uuid.uuid4().hex[:8]}"
 
     await db_session.execute(
-        text("INSERT INTO roadmaps (id, tenant_id, status, variables_json) "
-             "VALUES (:id, :t, 'generated', '{}')"),
-        {"id": rm_id, "t": tenant},
+        text("INSERT INTO roadmaps (id, tenant_id, status, variables_json, generado_por) "
+             "VALUES (:id, :t, 'generated', '{}', :u)"),
+        {"id": rm_id, "t": tenant, "u": user},
     )
     await db_session.execute(
         text("INSERT INTO roadmap_waves (id, roadmap_id, tenant_id, name) "

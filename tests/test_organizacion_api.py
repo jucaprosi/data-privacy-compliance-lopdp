@@ -155,8 +155,8 @@ async def _grant(client, org, user_id: str, role: str, area_id: str | None = Non
 async def _seed_task(factory, tenant: str, area_id: str | None) -> str:
     rm, wv, tk = (f"{p}-{uuid.uuid4().hex[:8]}" for p in ("rm", "wv", "tk"))
     async with factory() as s:
-        await s.execute(text("INSERT INTO roadmaps (id, tenant_id, status, variables_json) "
-                             "VALUES (:id, :t, 'generated', '{}')"), {"id": rm, "t": tenant})
+        await s.execute(text("INSERT INTO roadmaps (id, tenant_id, status, variables_json, generado_por) "
+                             "VALUES (:id, :t, 'generated', '{}', 'seed-org-api')"), {"id": rm, "t": tenant})
         await s.execute(text("INSERT INTO roadmap_waves (id, roadmap_id, tenant_id, name) "
                              "VALUES (:id, :r, :t, 'Ola 1')"), {"id": wv, "r": rm, "t": tenant})
         await s.execute(text(

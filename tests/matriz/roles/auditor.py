@@ -291,4 +291,8 @@ _seccion("RM-25b", {
 # === fin RM-25b ===
 
 # === RM-27 ===
+_seccion("RM-27", {
+    "consultar_revision_hoja_ruta": True,
+    "activar_hoja_ruta": False,
+})
 # === fin RM-27 ===

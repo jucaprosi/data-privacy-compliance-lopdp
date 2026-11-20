@@ -16,16 +16,19 @@ async def descargar_informe(
 ):
     """Los cinco roles lo descargan, cada uno con su alcance; queda constancia en audit_events."""
     try:
-        pdf, informe_id = await roadmap_service.generar_informe_pdf(
+        pdf, informe_id, etiqueta_revision = await roadmap_service.generar_informe_pdf_con_revision(
             session, ctx["tenant_id"], roadmap_id, ctx["user_id"], ctx["role"]
         )
     except LookupError:
         raise HTTPException(404, "Hoja de ruta no encontrada")
+    headers = {
+        "Content-Disposition": f'attachment; filename="informe-{roadmap_id}.pdf"',
+        "X-Report-ID": informe_id,
+    }
+    if etiqueta_revision:
+        headers["X-Roadmap-Revision"] = etiqueta_revision
     return Response(
         pdf,
         media_type="application/pdf",
-        headers={
-            "Content-Disposition": f'attachment; filename="informe-{roadmap_id}.pdf"',
-            "X-Report-ID": informe_id,
-        },
+        headers=headers,
     )
