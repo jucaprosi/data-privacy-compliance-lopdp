@@ -103,7 +103,6 @@ PERMITIDO: dict[str, bool] = {
     "listar_versiones_rat": False,
     "leer_version_rat": False,
     "exportar_rat": False,
-    "listar_hallazgos": False,
     "registrar_hallazgos_desde_diagnostico": False,
     "convertir_hallazgos_en_tareas": False,
     "ejecutar_recordatorios": False,
@@ -272,4 +271,6 @@ _seccion("TER-02", {
 # === fin TER-02 ===
 
 # === ORG-23 ===
+# El auditor lee los hallazgos de la hoja de ruta de su tenant; no los registra ni los convierte.
+_seccion("ORG-23", {"listar_hallazgos": True})
 # === fin ORG-23 ===

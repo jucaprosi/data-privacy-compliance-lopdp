@@ -2,7 +2,7 @@
 id = "ORG-23"
 titulo = "Lectura del auditor en diagnóstico, incidentes y hoja de ruta: auditor en ROLES_CONSULTA"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "diagnostico, incidentes, roadmap"
 depende_de = ["ORG-22", "DIAG-11", "DIAG-07", "EVI-01", "INC-03"]
 propiedad = ["api/routers/diagnostico_resultados.py", "features/incidentes/domain/models.py", "api/routers/roadmaps_hallazgos.py", "tests/matriz/RM-21.py", "tests/matriz/roles/auditor.py#ORG-22", "tests/matriz/roles/auditor.py#ORG-23", "tests/test_org23_auditor_lectura.py"]

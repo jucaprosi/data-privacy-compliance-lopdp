@@ -20,7 +20,7 @@ SEVERIDADES: tuple[str, ...] = ("Baja", "Media", "Alta", "Crítica")
 # es del responsable del tratamiento (art. 43 LOPDP), así que registran los roles de la
 # organización; el DPO supervisa y asesora (art. 49) y consulta, sin funciones operativas (ORG-01).
 ROLES_REGISTRO: tuple[str, ...] = ("admin_organizacion", "coordinador", "responsable_area", "implementador")
-ROLES_CONSULTA: tuple[str, ...] = ROLES_REGISTRO + ("dpo",)
+ROLES_CONSULTA: tuple[str, ...] = ROLES_REGISTRO + ("dpo", "auditor")
 
 
 class FechaDeteccionFutura(ValueError):

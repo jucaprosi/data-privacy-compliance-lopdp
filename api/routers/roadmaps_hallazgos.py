@@ -17,7 +17,7 @@ from features.roadmap import roadmap_service
 AUTO_REGISTRO = True
 router = APIRouter(prefix="/roadmaps", tags=["Hoja de Ruta - Hallazgos"])
 
-ROLES_CONSULTA = ("implementador", "coordinador", "dpo", "admin_organizacion")
+ROLES_CONSULTA = ("implementador", "coordinador", "dpo", "admin_organizacion", "auditor")
 ROLES_GESTION = ("implementador",)
 
 _consulta = require_role(*ROLES_CONSULTA)
