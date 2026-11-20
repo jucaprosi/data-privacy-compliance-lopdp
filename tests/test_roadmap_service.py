@@ -211,7 +211,7 @@ async def test_validate_evidence(db_session, seed_tenants):
     )
     await db_session.commit()
     result = await roadmap_service.validate_evidence(
-        db_session, tenant, validator, ev["id"], "approved", "OK", rol="dpo"
+        db_session, tenant, validator, ev["id"], "approved", "OK", rol="dpo", nivel_acreditado=2
     )
     await db_session.commit()
     assert result is not None

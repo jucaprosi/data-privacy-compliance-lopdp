@@ -313,7 +313,7 @@ async def test_quien_sube_evidencia_no_la_valida(api_client, factory, org):
     ev = r.json()["id"]
 
     url = f"/api/v1/roadmaps/tasks/{tk}/evidence/{ev}"
-    body = {"validation_status": "approved", "notes": "ok"}
+    body = {"validation_status": "approved", "notes": "ok", "nivel_acreditado": 2}
     # Cuatro ojos: quien subió la evidencia no la resuelve. Y un coordinador no aprueba (RM-25b).
     rechazo = {"validation_status": "rejected", "notes": "no"}
     r = await api_client.patch(url, json=rechazo, headers=_h(enc, org["tenant"], "coordinador"))

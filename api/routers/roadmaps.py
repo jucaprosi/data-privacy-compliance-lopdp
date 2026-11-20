@@ -199,7 +199,7 @@ async def validate_evidence(
     """Aprueba o rechaza una evidencia. Solo coordinador/dpo/auditor.
 
     Aprobar es la validación final (RM-25b): del DPO o del auditor, con la primera validación registrada y
-    tres personas distintas; el coordinador solo rechaza. Quien subió la evidencia no puede resolverla (409).
+    tres personas distintas, y fija `nivel_acreditado` (0 a 4; sin él, 422); el coordinador solo rechaza. Quien subió la evidencia no puede resolverla (409).
     """
     try:
         value = await roadmap_service.validate_evidence(
@@ -210,6 +210,7 @@ async def validate_evidence(
             payload.validation_status.value,
             payload.notes,
             rol=ctx["role"],
+            nivel_acreditado=payload.nivel_acreditado,
         )
     except RbacError as exc:
         raise http_error(exc) from exc

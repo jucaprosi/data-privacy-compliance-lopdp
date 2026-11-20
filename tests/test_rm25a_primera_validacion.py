@@ -223,7 +223,7 @@ async def test_la_validacion_final_guarda_el_rol_de_quien_valida(escenario):
         assert (await e["c"].post(_ruta(e, evidencia), headers=_como(e, "coord"))).status_code == 200
     async with e["factory"]() as s:
         valor = await roadmap_service.validate_evidence(
-            s, e["ta"], e["u"]["dpo"], e["ev"]["pendiente"], "approved", "conforme", rol="dpo"
+            s, e["ta"], e["u"]["dpo"], e["ev"]["pendiente"], "approved", "conforme", rol="dpo", nivel_acreditado=2
         )
         await s.commit()
     assert valor is not None
@@ -232,7 +232,7 @@ async def test_la_validacion_final_guarda_el_rol_de_quien_valida(escenario):
     # El PATCH pasa el rol de quien valida (RM-25b): la columna queda con él.
     r = await e["c"].patch(
         f"/api/v1/roadmaps/tasks/{e['tarea']}/evidence/{e['ev']['subida_por_resp']}",
-        headers=_como(e, "dpo"), json={"validation_status": "approved", "notes": "ok"},
+        headers=_como(e, "dpo"), json={"validation_status": "approved", "notes": "ok", "nivel_acreditado": 2},
     )
     assert r.status_code == 200, r.text
     viejo = await _fila(e, "subida_por_resp")

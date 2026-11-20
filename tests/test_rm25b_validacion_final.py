@@ -10,6 +10,9 @@ Mutaciones documentadas (cada una deja en rojo la prueba que se nombra):
 - `roadmaps.validate_evidence`: devolver `implementador` a `require_role` -> test_implementador_no_valida.
 - Migración: quitar `ck_evidence_aprobada_con_primera` -> test_check_aprobada_con_primera.
 - Migración: que `SQL_MARCA` promueva (rellene la primera validación) -> test_migracion_marca_sin_promover.
+- `evidencia_doble_validacion_engine.registrar_primera_validacion`: volver a `if actual[1] != "pending"` a secas
+  (rechazar la primera validación sobre `approved`) -> test_revalidar_aprobada_marcada.
+- `evidencia_engine.validate_evidence`: quitar la comprobación de `nivel_acreditado` -> test_final_exige_nivel_acreditado.
 - `tareas_validadas_engine`: quitar la condición de rol -> test_diag12_solo_doble_validacion (tests/test_diag12_estados.py).
 """
 import importlib.util
@@ -176,10 +179,15 @@ def _ruta(e, evidencia):
     return f"/api/v1/roadmaps/tasks/{e['tarea']}/evidence/{e['ev'][evidencia]}"
 
 
-async def _resolver(e, evidencia, clave, estado="approved"):
-    return await e["c"].patch(
-        _ruta(e, evidencia), headers=_como(e, clave), json={"validation_status": estado, "notes": "nota"}
-    )
+_SIN_NIVEL = object()
+
+
+async def _resolver(e, evidencia, clave, estado="approved", nivel=3):
+    """PATCH de la ruta; la aprobación lleva `nivel_acreditado` (R6) salvo que se pida sin él."""
+    cuerpo = {"validation_status": estado, "notes": "nota"}
+    if estado == "approved" and nivel is not _SIN_NIVEL:
+        cuerpo["nivel_acreditado"] = nivel
+    return await e["c"].patch(_ruta(e, evidencia), headers=_como(e, clave), json=cuerpo)
 
 
 async def _fila(e, evidencia, tenant=None):
@@ -352,6 +360,72 @@ async def test_la_validacion_final_quita_la_marca(escenario):
         await s.commit()
     assert (await _resolver(e, "con_primera", "dpo")).status_code == 200
     assert (await _fila(e, "con_primera"))["requiere_revalidacion"] is False
+
+
+async def test_revalidar_aprobada_marcada(escenario):
+    """R4b: una `approved` anterior (marcada, sin primera validación) se revalida por los dos pasos."""
+    e = escenario
+    from app_core.db.session import fijar_contexto_rls
+
+    # La aprobó en su día `antes_coord`, con la regla anterior: una sola validación.
+    async with e["factory"]() as s:
+        await fijar_contexto_rls(s, e["ta"])
+        await s.execute(text(
+            "UPDATE task_evidence SET validation_status = 'approved', validated_by = :v, validated_at = now(), "
+            "requiere_revalidacion = true WHERE id = :i"
+        ), {"i": e["ev"]["sin_primera"], "v": e["u"]["antes_coord"]})
+        await s.commit()
+    primera = f"{_ruta(e, 'sin_primera')}/primera-validacion"
+
+    # Sin la primera validación nueva, la final sigue sin proceder.
+    r = await _resolver(e, "sin_primera", "dpo")
+    assert r.status_code == 409 and r.json()["code"] == "PRIMERA_VALIDACION_PENDIENTE", r.text
+    r = await e["c"].post(primera, headers=_como(e, "coord"))
+    assert r.status_code == 200, r.text
+    fila = await _fila(e, "sin_primera")
+    assert (fila["validation_status"], fila["primera_validacion_por"], fila["requiere_revalidacion"]) == (
+        "approved", e["u"]["coord"], True)  # sin promoción: sigue marcada hasta la validación final
+    assert (await e["c"].post(primera, headers=_como(e, "coord"))).status_code == 409  # una sola primera validación
+    r = await _resolver(e, "sin_primera", "dpo", nivel=4)
+    assert r.status_code == 200, r.text
+    fila = await _fila(e, "sin_primera")
+    assert (fila["validation_status"], fila["validated_by"], fila["validado_rol"], fila["requiere_revalidacion"],
+            fila["nivel_acreditado"]) == ("approved", e["u"]["dpo"], "dpo", False, 4)
+    # Una `approved` sin la marca (ya con sus dos validaciones) no admite otra primera validación.
+    assert (await _resolver(e, "con_primera", "dpo")).status_code == 200
+    r = await e["c"].post(f"{_ruta(e, 'con_primera')}/primera-validacion", headers=_como(e, "coord"))
+    assert r.status_code == 409, r.text
+
+
+async def test_final_exige_nivel_acreditado(escenario):
+    """R6: la validación final fija `nivel_acreditado` (0 a 4); sin él o fuera de rango, 422. DIAG-12 lo devuelve."""
+    e = escenario
+    from app_core.db.session import fijar_contexto_rls
+    from features.roadmap import roadmap_service
+
+    for nivel in (_SIN_NIVEL, None, 5, -1):
+        r = await _resolver(e, "con_primera", "dpo", nivel=nivel)
+        assert r.status_code == 422, (nivel, r.text)
+    fila = await _fila(e, "con_primera")
+    assert fila["validation_status"] == "pending" and fila["nivel_acreditado"] is None
+    # El rechazo no lo necesita y lo ignora.
+    r = await e["c"].patch(_ruta(e, "para_auditor"), headers=_como(e, "dpo"),
+                           json={"validation_status": "rejected", "notes": "no", "nivel_acreditado": 4})
+    assert r.status_code == 200, r.text
+    assert (await _fila(e, "para_auditor"))["nivel_acreditado"] is None
+
+    r = await _resolver(e, "con_primera", "dpo", nivel=4)
+    assert r.status_code == 200, r.text
+    assert (await _fila(e, "con_primera"))["nivel_acreditado"] == 4
+    async with e["factory"]() as s:
+        await fijar_contexto_rls(s, e["ta"])
+        await s.execute(text("UPDATE roadmap_tasks SET status = 'completada', completed_at = now() WHERE id = :i"),
+                        {"i": e["tarea"]})
+        await s.commit()
+    async with e["factory"]() as s:
+        tareas = await roadmap_service.tareas_cerradas_con_evidencia_validada(s, e["ta"], e["u"]["dpo"])
+        await s.rollback()
+    assert [(t["tarea_id"], t["nivel_acreditado"]) for t in tareas] == [(e["tarea"], 4)]
 
 
 async def test_rls_evidencia_exigir(escenario):

@@ -20,6 +20,7 @@ from app_core.storage.limites import (  # noqa: E402
     motivo_de_rechazo,
 )
 from features.roadmap.domain.errores import (  # noqa: E402
+    NIVEL_ACREDITADO_REQUERIDO,
     PRIMERA_VALIDACION_PENDIENTE,
     RM_ALMACEN_NO_DISPONIBLE,
     RM_CLAVE_OBJETO_INVALIDA,
@@ -137,6 +138,7 @@ async def list_evidence(
 
 
 ROLES_VALIDACION_FINAL = ("dpo", "auditor")  # RM-25b: la validación final es del DPO o del auditor
+NIVEL_ACREDITADO_MINIMO, NIVEL_ACREDITADO_MAXIMO = 0, 4
 
 
 async def validate_evidence(
@@ -147,13 +149,15 @@ async def validate_evidence(
     validation_status: str,
     notes: str = "",
     rol: Optional[str] = None,  # rol con el que valida (lo guarda `validado_rol`)
+    nivel_acreditado: Optional[int] = None,  # RM-25b (R6): obligatorio al aprobar, de 0 a 4
 ) -> Optional[dict]:
     """Cambia el estado de validación de una evidencia.
 
     Aprobar es la validación final (RM-25b) y se comprueba en este orden: el rol es `dpo` o `auditor`
-    (403 ROL_SIN_VALIDACION_FINAL), la evidencia tiene primera validación (409 PRIMERA_VALIDACION_PENDIENTE) y
-    quien aprueba no es quien la subió ni quien hizo la primera (409 VALIDADOR_REPETIDO). Al aprobar se quita
-    la marca `requiere_revalidacion`. El rechazo sigue pudiendo hacerse en cualquiera de los dos pasos, con
+    (403 ROL_SIN_VALIDACION_FINAL), trae `nivel_acreditado` de 0 a 4 (422 NIVEL_ACREDITADO_REQUERIDO), la
+    evidencia tiene primera validación (409 PRIMERA_VALIDACION_PENDIENTE) y quien aprueba no es quien la subió
+    ni quien hizo la primera (409 VALIDADOR_REPETIDO). Al aprobar se guarda el nivel y se quita la marca
+    `requiere_revalidacion`. El rechazo ignora el nivel y sigue pudiendo hacerse en cualquiera de los dos pasos, con
     cuatro ojos: quien subió la evidencia no puede resolverla (SoDViolation).
     """
     await set_session_context(session, tenant_id, user_id)
@@ -168,6 +172,8 @@ async def validate_evidence(
     if aprueba:
         if rol not in ROLES_VALIDACION_FINAL:
             raise ErrorNegocio(ROL_SIN_VALIDACION_FINAL)
+        if nivel_acreditado is None or not NIVEL_ACREDITADO_MINIMO <= nivel_acreditado <= NIVEL_ACREDITADO_MAXIMO:
+            raise ErrorNegocio(NIVEL_ACREDITADO_REQUERIDO)
         if current[1] is None:
             raise ErrorNegocio(PRIMERA_VALIDACION_PENDIENTE)
         if user_id in (current[0], current[1]):
@@ -185,11 +191,13 @@ async def validate_evidence(
                 validated_at = now(),
                 validado_rol = :rol,
                 requiere_revalidacion = (requiere_revalidacion AND NOT CAST(:aprueba AS boolean)),
+                nivel_acreditado = CASE WHEN CAST(:aprueba AS boolean) THEN CAST(:nivel AS smallint)
+                                        ELSE nivel_acreditado END,
                 notes = :notes
             WHERE id = :id AND tenant_id = :tid
             RETURNING *
         """),
-        {"vs": validation_status, "uid": user_id, "rol": rol, "aprueba": aprueba, "notes": notes,
+        {"vs": validation_status, "uid": user_id, "rol": rol, "aprueba": aprueba, "nivel": nivel_acreditado, "notes": notes,
          "id": evidence_id, "tid": tenant_id},
     )
     row = result.mappings().first()

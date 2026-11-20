@@ -434,8 +434,8 @@ async def test_db_instantanea_lee_solo_el_plan_del_tenant_sin_escribir():
                     await _x(conexion, "INSERT INTO roadmap_tasks(id, wave_id, tenant_id, control_ref, dimension, title, "
                              "priority, status, end_date) VALUES (:k,:w,:t,'P7','D01','Acción',:p,:s,:f)",
                              k=k, w=ola, t=tid, p=prioridad, s=estado, f=date(2026, 12, 1))
-                await _x(conexion, "INSERT INTO task_evidence(id, task_id, tenant_id, clave_objeto, validation_status) "
-                         "VALUES (:id,:k,:t,'sintetico/acta.pdf','approved')", id=str(uuid4()), k=tareas[tid][2], t=tid)
+                await _x(conexion, "INSERT INTO task_evidence(id, task_id, tenant_id, clave_objeto, validation_status, "
+                         "requiere_revalidacion) VALUES (:id,:k,:t,'sintetico/acta.pdf','approved',true)", id=str(uuid4()), k=tareas[tid][2], t=tid)
                 planes[tid] = hoja
             ta, tb = list(planes)
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))

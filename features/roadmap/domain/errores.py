@@ -60,7 +60,12 @@ VALIDADOR_REPETIDO = CodigoErrorNegocio(
     409,
     "Quien sube la evidencia, quien hace la primera validación y quien hace la final son personas distintas.",
 )
-registrar(ROL_SIN_VALIDACION_FINAL, PRIMERA_VALIDACION_PENDIENTE, VALIDADOR_REPETIDO)
+NIVEL_ACREDITADO_REQUERIDO = CodigoErrorNegocio(
+    "NIVEL_ACREDITADO_REQUERIDO",
+    422,
+    "La validación final indica el nivel de evidencia que acredita, de 0 a 4.",
+)
+registrar(ROL_SIN_VALIDACION_FINAL, PRIMERA_VALIDACION_PENDIENTE, VALIDADOR_REPETIDO, NIVEL_ACREDITADO_REQUERIDO)
 # === fin RM-25b ===
 
 # === RM-27 ===

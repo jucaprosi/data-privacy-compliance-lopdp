@@ -240,7 +240,8 @@ async def test_recorrido_por_roles_contra_el_backend_real(cliente, factory, org)
                            headers=_h(org, "coordinador"))
     assert r.status_code == 200, r.text
     r = await cliente.patch(f"/api/v1/roadmaps/tasks/{tid}/evidence/{evidencia}",
-                            json={"validation_status": "approved", "notes": "Conforme"}, headers=_h(org, "dpo"))
+                            json={"validation_status": "approved", "notes": "Conforme", "nivel_acreditado": 2},
+                            headers=_h(org, "dpo"))
     assert r.status_code == 200, r.text
 
     # 6. El implementador marca la tarea completada.
