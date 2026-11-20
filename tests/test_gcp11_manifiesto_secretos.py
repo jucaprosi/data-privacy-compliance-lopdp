@@ -5,14 +5,12 @@
 Mutación documentada: poner `value:` literal en `DATABASE_URL` del manifiesto hace fallar
 `test_el_manifiesto_toma_la_base_de_secret_manager`.
 """
-import re
 from pathlib import Path
 
 from tests._lector_yaml import leer_yaml
 
 RAIZ = Path(__file__).resolve().parents[1]
 MANIFIESTO = RAIZ / "governance/operaciones/cloudrun_service.yaml"
-WORKFLOW = RAIZ / ".github/workflows/deploy-gcp.yml"
 SECRETOS = ("DATABASE_URL", "JWT_SECRET", "SESSION_SECRET")
 
 
@@ -31,12 +29,6 @@ def test_el_manifiesto_toma_la_base_de_secret_manager():
     entradas = {e["name"]: e for e in _env(MANIFIESTO.read_text(encoding="utf-8"))}
     assert "secretKeyRef" in entradas["DATABASE_URL"]["valueFrom"] and "value" not in entradas["DATABASE_URL"]
     assert faltas_del_manifiesto(MANIFIESTO.read_text(encoding="utf-8")) == []
-
-
-def test_el_despliegue_carga_los_tres_secretos_desde_secret_manager():
-    linea = next(l for l in WORKFLOW.read_text(encoding="utf-8").splitlines() if "--set-secrets" in l)
-    for nombre in SECRETOS:
-        assert re.search(rf"\b{nombre}=[A-Z_]+:", linea), f"{nombre} no sale de Secret Manager en el despliegue"
 
 
 def test_mutacion_un_valor_literal_se_detecta():

@@ -10,7 +10,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from api.middleware.correlacion import CorrelacionMiddleware
-from app_core.observabilidad import configurar_registro, registrar_error
+from app_core.observabilidad import configurar_registro, registrar_error, request_id_actual
 
 CEDULA = "1710034065"
 CORREO = "persona@ejemplo.invalid"
@@ -104,7 +104,29 @@ def test_alertas_declaradas():
     assert politicas["presupuesto"]["umbrales_porcentaje"] == [50, 90, 100]
 
 
-def test_main_registra_correlacion():
-    texto = (Path(__file__).resolve().parents[1] / "main.py").read_text(encoding="utf-8")
-    inicio, fin = texto.index("# --- INICIO OPS-07 ---"), texto.index("# --- FIN OPS-07 ---")
-    assert "CorrelacionMiddleware" in texto[inicio:fin]
+def test_main_app_correlacion_en_respuesta_y_contexto():
+    import main
+
+    flujo = io.StringIO()
+    configurar_registro(flujo=flujo)
+    try:
+        cliente = TestClient(main.app, raise_server_exceptions=False)
+        r_auto = cliente.get("/health")
+        rid_auto = r_auto.headers.get("X-Request-ID")
+        assert rid_auto is not None
+        uuid.UUID(rid_auto)
+
+        propio = str(uuid.uuid4())
+        r_propio = cliente.get("/health", headers={"X-Request-ID": propio})
+        assert r_propio.headers.get("X-Request-ID") == propio
+        assert request_id_actual() is None
+
+        lineas = _lineas(flujo)
+        ids_registrados = [l.get("request_id") for l in lineas]
+        assert rid_auto in ids_registrados
+        assert propio in ids_registrados
+        ultima = lineas[-1]
+        assert ultima["request_id"] == propio
+        assert ultima["method"] == "GET" and ultima["path"] == "/health"
+    finally:
+        configurar_registro()

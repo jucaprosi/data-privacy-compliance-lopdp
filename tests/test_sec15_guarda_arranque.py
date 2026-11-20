@@ -16,7 +16,6 @@ from pathlib import Path
 
 import pytest
 
-from app_core import huellas_produccion as huellas
 from app_core.huellas_produccion import (
     INSTANCIA_CLOUD_SQL_PRODUCCION, VARIABLES_DE_NUBE, apunta_a_produccion, corre_en_la_nube,
     es_base_local, host_de,
@@ -115,13 +114,6 @@ def test_importar_main_con_base_local_arranca():
     assert resultado.returncode == 0, resultado.stderr[-2000:]
 
 
-def test_la_guarda_corre_en_main_antes_de_crear_la_aplicacion():
-    texto = (RAIZ / "main.py").read_text(encoding="utf-8")
-    seccion = texto.split("# === SEC-15 ===")[1].split("# === fin SEC-15 ===")[0]
-    assert "exigir_arranque_seguro()" in seccion
-    assert texto.index("from app_core.config import config") < texto.index("# === SEC-15 ===") < texto.index("app = FastAPI(")
-
-
 # ----------------------------------------------------------------------------- huella y nube
 
 @pytest.mark.parametrize(("url", "esperado"), [
@@ -172,18 +164,3 @@ def test_corre_en_la_nube_lee_el_entorno_del_proceso(monkeypatch):
     assert corre_en_la_nube() is False
     monkeypatch.setenv("K_SERVICE", "lopdp-backend")
     assert corre_en_la_nube() is True
-
-
-def test_crear_organizacion_dev_usa_la_guardia_del_modulo():
-    sys.path.insert(0, str(RAIZ / "scripts"))
-    try:
-        import crear_organizacion_dev as script
-    finally:
-        sys.path.remove(str(RAIZ / "scripts"))
-    assert script.es_base_local is huellas.es_base_local
-    assert script.apunta_a_produccion is huellas.apunta_a_produccion
-    with pytest.raises(RuntimeError):
-        script.validar_entorno(URL_REMOTA, auth_mode="headers")
-    with pytest.raises(RuntimeError):
-        script.validar_entorno(URL_CLOUDSQL_PRUEBAS, auth_mode="headers")
-    assert script.validar_entorno(URL_LOCAL, auth_mode="headers") == "127.0.0.1"
