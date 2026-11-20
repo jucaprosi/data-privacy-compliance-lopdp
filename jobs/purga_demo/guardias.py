@@ -68,3 +68,106 @@ def exigir_demo(
         raise PurgaRechazada("la base es la de producción.")
     if comprobar_base(url):
         raise PurgaRechazada("la base no tiene el marcador de entorno exacto 'demo'.")
+
+
+# --- DEMO-05c: políticas del rol de purga, sin BYPASSRLS --------------------------------------------------
+
+ROL_PURGA = "purga_demo"
+FUNCION_PERSONA = "es_persona_ficticia"
+#: Tablas que la purga toca sin ser «tablas con tenant_id» de la lista general.
+TABLAS_FIJAS = ("tenants", "demo_sesiones", "users")
+#: Permisos por columnas (R5 y R6): `vendedor_sub`, `vendedor_email` y `users.email` quedan fuera.
+COLUMNAS_PERMITIDAS = {
+    "demo_sesiones": ("id", "tenant_id", "estado", "terminada_en", "persona_usuario_id"),
+    "users": ("id",),
+}
+
+_SQL_ROL = (
+    "SELECT rolsuper OR rolbypassrls OR rolcreaterole OR rolcreatedb FROM pg_catalog.pg_roles "
+    "WHERE rolname = :rol"
+)
+_SQL_ESTADO_TABLAS = (
+    "SELECT c.relname, c.relrowsecurity, "
+    "has_table_privilege(:rol, c.oid, 'SELECT') AS lee, has_table_privilege(:rol, c.oid, 'DELETE') AS borra, "
+    "EXISTS (SELECT 1 FROM pg_catalog.pg_policies p WHERE p.schemaname = 'public' AND p.tablename = c.relname "
+    "        AND CAST(:rol AS name) = ANY (p.roles) AND p.cmd = 'SELECT') AS politica_lee, "
+    "EXISTS (SELECT 1 FROM pg_catalog.pg_policies p WHERE p.schemaname = 'public' AND p.tablename = c.relname "
+    "        AND CAST(:rol AS name) = ANY (p.roles) AND p.cmd = 'DELETE') AS politica_borra "
+    "FROM pg_catalog.pg_class c WHERE c.relnamespace = 'public'::regnamespace AND c.relname = ANY (:tablas)"
+)
+_SQL_COLUMNA = "SELECT has_column_privilege(:rol, CAST(:tabla AS regclass), :columna, 'SELECT')"
+_SQL_FUNCION = (
+    "SELECT p.prosecdef, p.proconfig, "
+    "(p.proacl IS NULL OR EXISTS (SELECT 1 FROM aclexplode(p.proacl) a "
+    "                             WHERE a.grantee = 0 AND a.privilege_type = 'EXECUTE')) AS publica, "
+    "has_function_privilege(:rol, p.oid, 'EXECUTE') AS ejecuta "
+    "FROM pg_catalog.pg_proc p WHERE p.pronamespace = 'public'::regnamespace AND p.proname = :funcion"
+)
+#: Funciones que llaman las políticas que alcanzan a `purga_demo` (las suyas y las `TO public`) en las tablas
+#: que purga y sobre las que no tiene EXECUTE: PostgreSQL rechazaría la sentencia entera.
+_SQL_FUNCIONES_DE_POLITICAS = (
+    "SELECT DISTINCT p.oid::regprocedure::text FROM pg_catalog.pg_policy pol "
+    "JOIN pg_catalog.pg_depend d ON d.classid = 'pg_catalog.pg_policy'::regclass AND d.objid = pol.oid "
+    "     AND d.refclassid = 'pg_catalog.pg_proc'::regclass "
+    "JOIN pg_catalog.pg_proc p ON p.oid = d.refobjid "
+    "JOIN pg_catalog.pg_class c ON c.oid = pol.polrelid AND c.relnamespace = 'public'::regnamespace "
+    "WHERE pol.polcmd IN ('r', 'd', '*') AND c.relname = ANY (:tablas) "
+    "AND (0 = ANY (pol.polroles) OR (SELECT oid FROM pg_catalog.pg_roles WHERE rolname = :rol) = ANY (pol.polroles)) "
+    "AND NOT has_function_privilege(:rol, p.oid, 'EXECUTE') ORDER BY 1"
+)
+
+
+def _tablas_vigiladas(con) -> list[str]:
+    from .purga import tablas_con_tenant  # import tardío: purga no depende de las guardias
+
+    return sorted(set(tablas_con_tenant(con)) | set(TABLAS_FIJAS))
+
+
+def tablas_sin_rls(con) -> list[str]:
+    """Tablas que toca la purga y no tienen RLS: las protegen los permisos y el filtro del código (R3, R4)."""
+    filas = con.execute(text(_SQL_ESTADO_TABLAS), {"rol": ROL_PURGA, "tablas": _tablas_vigiladas(con)}).all()
+    return sorted(f.relname for f in filas if not f.relrowsecurity)
+
+
+def faltan_politicas(con) -> list[str]:
+    """Lo que le falta a la base para que `purga_demo` purgue sin BYPASSRLS (R9). Vacío si está completa.
+
+    Solo lee el catálogo; no confirma nada. Falla cerrada: cada carencia sale con su nombre.
+    """
+    if con.execute(text(_SQL_ROL), {"rol": ROL_PURGA}).first() is None:
+        return [f"rol {ROL_PURGA}"]
+    faltan: list[str] = []
+    if con.execute(text(_SQL_ROL), {"rol": ROL_PURGA}).scalar_one():
+        faltan.append(f"rol {ROL_PURGA} con privilegios especiales")
+    vigiladas = _tablas_vigiladas(con)
+    filas = {f.relname: f for f in con.execute(text(_SQL_ESTADO_TABLAS), {"rol": ROL_PURGA, "tablas": vigiladas})}
+    for tabla in vigiladas:
+        fila = filas.get(tabla)
+        if fila is None:
+            faltan.append(tabla)
+            continue
+        columnas = COLUMNAS_PERMITIDAS.get(tabla)
+        if columnas is None:
+            lee = fila.lee
+        else:
+            lee = all(con.execute(text(_SQL_COLUMNA), {"rol": ROL_PURGA, "tabla": f"public.{tabla}",
+                                                       "columna": c}).scalar_one() for c in columnas)
+        con_politicas = fila.politica_lee and fila.politica_borra
+        if not (lee and fila.borra) or (fila.relrowsecurity and not con_politicas):
+            faltan.append(tabla)
+    funcion = con.execute(text(_SQL_FUNCION), {"rol": ROL_PURGA, "funcion": FUNCION_PERSONA}).all()
+    if len(funcion) != 1:
+        faltan.append(FUNCION_PERSONA)
+    else:
+        f = funcion[0]
+        if not f.prosecdef or not any(str(o).startswith("search_path=") for o in (f.proconfig or [])):
+            faltan.append(f"{FUNCION_PERSONA} (SECURITY DEFINER y search_path fijo)")
+        if f.publica:
+            faltan.append(f"{FUNCION_PERSONA} (EXECUTE para PUBLIC)")
+        if not f.ejecuta:
+            faltan.append(f"{FUNCION_PERSONA} (EXECUTE para {ROL_PURGA})")
+    if con.execute(text(_SQL_COLUMNA), {"rol": ROL_PURGA, "tabla": "public.users", "columna": "email"}).scalar_one():
+        faltan.append("users.email (SELECT para purga_demo)")
+    for (firma,) in con.execute(text(_SQL_FUNCIONES_DE_POLITICAS), {"rol": ROL_PURGA, "tablas": vigiladas}):
+        faltan.append(f"{firma} (EXECUTE para {ROL_PURGA}, la llama una política)")
+    return faltan
