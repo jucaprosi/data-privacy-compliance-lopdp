@@ -463,7 +463,6 @@ export default function IncidentPlaybook() {
               {(() => {
                 const inc = i as IncidenteConEstado;
                 const ins = insigniaDe(inc);
-                const estadoActual = inc.estado ?? inc.estado_detalle?.estado ?? "abierto";
                 return (
                   <>
                     <div className="flex flex-wrap items-center justify-between gap-2">

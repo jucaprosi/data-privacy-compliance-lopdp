@@ -3,7 +3,7 @@
  * Ejecuta comandos SQL de forma determinista usando el Python del sistema con psycopg.
  */
 import { spawnSync } from "child_process";
-import * as path from "path";
+import * as fs from "fs";
 
 const SCRIPT_PYTHON = `
 import sys, json, psycopg
@@ -25,7 +25,6 @@ export function resolverTestDatabaseUrl(): string {
   if (process.env.TEST_DATABASE_URL && process.env.TEST_DATABASE_URL.trim()) {
     return process.env.TEST_DATABASE_URL.trim();
   }
-  const fs = require("fs");
   const archivoRama = "C:\\Users\\Juan Carlos\\Desktop\\herramientas\\rama-test-rm07.txt";
   if (fs.existsSync(archivoRama)) {
     const contenido = fs.readFileSync(archivoRama, "utf-8");
@@ -39,7 +38,7 @@ export function resolverTestDatabaseUrl(): string {
   return "";
 }
 
-export function ejecutarSql(queries: Array<[string, Record<string, any> | Array<any>]>): void {
+export function ejecutarSql(queries: Array<[string, Record<string, unknown> | unknown[]]>): void {
   const dbUrl = resolverTestDatabaseUrl();
   if (!dbUrl) {
     throw new Error("TEST_DATABASE_URL no está configurada");

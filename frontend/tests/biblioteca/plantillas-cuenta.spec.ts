@@ -10,7 +10,7 @@
  * 4. Al pulsar «Aplicar», se actualiza la copia a estado vigente.
  * 5. Si el usuario no tiene rol 'implementador' (ej. 'dpo'), la sección de cuenta profesional no se muestra.
  */
-import { expect, test, type Page, type Route } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { abrirAppLimpia, barraDeMenus, configurarProyecto } from "../utiles";
 
 const ORGANIZACION = "org-prueba-bib401";
