@@ -3138,3 +3138,14 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | :--- | :--- |
 | El índice rechaza que una ficha abierta posea un archivo de una ficha hecha si no depende de ella; se resuelve añadiendo la dependencia hecha. | Ya cubierto por el Aporte 134 y la descripción del índice (línea 1987). |
 | `generar_indice_tareas.py --verificar` da falso rojo de R-PROP-EXISTE mientras la marca sembrada no está en un commit. | Ya registrado como práctica: simular con commit cuando el PR siembra marcas. |
+
+---
+
+### Aporte 163: Una Compuerta de CI se Prueba Ejecutando su Guion, no Leyendo su Texto
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** la lógica que decide un check obligatorio suele vivir en un bloque `run:` del workflow, que combina los resultados de otros jobs. Una prueba que solo busca cadenas en el YAML («contiene `exit 1`», «nombra el job de humo») sigue en verde aunque la lógica se invierta. La alternativa es extraer ese bloque tal como lo ejecuta el runner y correrlo con `bash -e`, con los resultados de los jobs en variables de entorno, sobre una tabla de combinaciones (pasa, falla, se omite).
+* **Por qué es útil aquí:** QA-11 (#891) borró ocho funciones textuales de `tests/test_servidor_humo.py` y las sustituyó por `test_la_compuerta_pasa_cuando_el_humo_y_el_arnes_obligatorio_pasaron` y `test_la_compuerta_falla_si_el_humo_o_el_arnes_obligatorio_no_pasaron` (`tests/test_servidor_humo.py:120-171`). En Windows hace falta el bash de Git: el `bash.exe` de System32 lanza WSL (`_bash()`, línea 134).
+* **Verificabilidad:** sea $g$ el guion extraído y $r$ una combinación de resultados de jobs. La prueba exige $\text{salida}(g, r) = 0 \iff r \in \text{Aprobadas}$. Mutación M7 de #891: cambiar `exit 1` por `exit 0` en el guion hace fallar 9 casos; la prueba textual anterior seguía en verde con ese cambio.
+* **Soporte bibliográfico:** no se cita ninguna fuente; no se verificó una que trate específicamente las pruebas de guiones de workflow.
+* **Estado:** aplicado en `tests/test_servidor_humo.py` (QA-11). Lo que la prueba no cubre son las condiciones `if:` y `needs:`, que solo evalúa GitHub. No introduce token nuevo.

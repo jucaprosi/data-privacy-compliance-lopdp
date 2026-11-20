@@ -5,10 +5,10 @@ ola = "C"
 estado = "hecha"
 sala = "diagnostico"
 depende_de = ["ADPA-07", "DIAG-03", "DIAG-05", "DIAG-09", "FE-16", "FE-26"]
-propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "tests/test_adpa11_seccion_solo_dpo.py"]
-crea = ["tests/test_adpa11_seccion_solo_dpo.py"]
+propiedad = ["frontend/src/components/DiagnosticCanvas.tsx"]
+crea = []
 siembra = ["frontend/src/components/DiagnosticCanvas.tsx#DIAG-14"]
-arbitro = "pytest tests/test_adpa11_seccion_solo_dpo.py + tsc --noEmit + npx playwright test tests/diagnostico/escala.spec.ts; mutación documentada"
+arbitro = "tsc --noEmit + npx playwright test tests/diagnostico/escala.spec.ts tests/diagnostico/solo-dpo.spec.ts + pytest tests/test_diagnostico_quien_responde.py"
 rastros = ["¤adpa", "¤frontend-ide"]
 +++
 
@@ -19,12 +19,7 @@ rastros = ["¤adpa", "¤frontend-ide"]
 ## Entrega
 - Bloques `// --- INICIO DIAG-14 ---` / `// --- FIN DIAG-14 ---` alrededor de los dos grupos de botones (nivel y evidencia), sin cambiar su comportamiento.
 
-## Pruebas (`tests/test_adpa11_seccion_solo_dpo.py`)
-1. Los bloques `#DIAG-14` existen, están balanceados y contienen los dos grupos de botones.
-2. El diff contra main solo añade líneas de comentario.
-3. Las marcas `#EVI-01`, `#DIAG-05`, `#DIAG-07` y `#DIAG-11` quedan intactas.
-- `tsc --noEmit` y `escala.spec.ts` en verde.
-
-**Mutación:** cambiar una línea de código hace fallar la prueba 2.
+## Pruebas
+- `tsc --noEmit`, `escala.spec.ts` y `solo-dpo.spec.ts` en verde; `tests/test_diagnostico_quien_responde.py::test_dpo_no_responde` cubre la regla en el servidor.
 
 **Orden (Arquitecto, 2026-11-08).** Va primero, porque solo añade comentarios. EVI-01, DIAG-07 y DIAG-11 dependen de ADPA-11. **Validada por el Arquitecto ADPA (2026-11-08).**

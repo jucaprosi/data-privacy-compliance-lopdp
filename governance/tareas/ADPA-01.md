@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "derechos_arco, terceros, transferencias"
 depende_de = ["RM-02"]
 propiedad = ["features/derechos_arco/**", "features/terceros/**", "features/transferencias/**", "api/routers/arco_router.py", "api/routers/terceros_router.py", "tests/test_compuertas_arco_terceros_transferencias.py"]
-arbitro = "pytest tests/test_compuertas_arco_terceros_transferencias.py tests/test_adpa_bulkheads.py + suite completa"
+arbitro = "pytest tests/test_compuertas_arco_terceros_transferencias.py tests/test_adpa_bulkhead.py + suite completa"
 rastros = ["¤adpa", "¤derechos", "¤transferencias"]
 +++
 
