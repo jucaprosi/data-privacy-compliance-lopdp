@@ -37,6 +37,11 @@
   - `tests/test_e2e_hoja_de_ruta_real.py`
   - `tests/test_organizacion_api.py`
   - `tests/test_roadmap_service.py`
+  - `tests/matriz/roles/auditor.py#RM-25b`
+  - `tests/test_roadmap_cierre_recordatorios.py`
+  - `tests/test_bib_208_fichas.py`
+  - `features/roadmap/services/evidencia_doble_validacion_engine.py`
+  - `features/roadmap/domain/models.py`
 
 **No hagas:**
 

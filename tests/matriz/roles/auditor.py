@@ -21,7 +21,6 @@ PERMITIDO: dict[str, bool] = {
     "distribuir_tareas": False,
     "subir_evidencia_url": False,
     "subir_evidencia_reg": False,
-    "validar_rechazar_evidencia": False,
     "ver_evidencia": True,
     "listar_atributos_evidencias": True,
     "definir_atributos_evidencia": False,
@@ -284,3 +283,12 @@ _seccion("API-02b", {
     "probar_webhook": False,
 })
 # === fin API-02b ===
+
+# === RM-25b ===
+_seccion("RM-25b", {
+    "validar_rechazar_evidencia": False,
+})
+# === fin RM-25b ===
+
+# === RM-27 ===
+# === fin RM-27 ===
