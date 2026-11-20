@@ -118,9 +118,11 @@ _SQL_FUNCIONES_DE_POLITICAS = (
 
 
 def _tablas_vigiladas(con) -> list[str]:
-    from .purga import tablas_con_tenant  # import tardío: purga no depende de las guardias
+    from .purga import TABLAS_INMUTABLES, tablas_con_tenant  # import tardío: purga no depende de las guardias
 
-    return sorted(set(tablas_con_tenant(con)) | set(TABLAS_FIJAS))
+    # Las inmutables las borra la función (DEMO-05d), pero `purga_demo` sigue necesitando SELECT y sus políticas
+    # para comprobar que quedan con 0 filas.
+    return sorted(set(tablas_con_tenant(con)) | set(TABLAS_FIJAS) | set(TABLAS_INMUTABLES))
 
 
 def tablas_sin_rls(con) -> list[str]:
@@ -170,4 +172,56 @@ def faltan_politicas(con) -> list[str]:
         faltan.append("users.email (SELECT para purga_demo)")
     for (firma,) in con.execute(text(_SQL_FUNCIONES_DE_POLITICAS), {"rol": ROL_PURGA, "tablas": vigiladas}):
         faltan.append(f"{firma} (EXECUTE para {ROL_PURGA}, la llama una política)")
+    return faltan
+
+
+# --- DEMO-05d: función de las tablas inmutables ------------------------------------------------------------
+
+#: (tabla, trigger) que la función desactiva y rehabilita: la lista literal y cerrada de DEMO-05d §1.
+TRIGGERS_INMUTABLES = frozenset({
+    ("biblioteca_documentos_historial", "biblioteca_documento_historial_inmutable"),
+    ("biblioteca_descargas", "biblioteca_descargas_inmutable"),
+    ("biblioteca_eventos_documento", "biblioteca_evento_inmutable"),
+    ("dpo_consultas_mensajes", "trg_dpo_consultas_mensajes_solo_agrega"),
+    ("dpo_consultas", "trg_dpo_consultas_inmutable_tras_cierre"),
+})
+#: (tabla, trigger) de DELETE sobre una tabla con `tenant_id` que se sabe que no lanzan. Medido en la
+#: PostgreSQL 16 con todas las migraciones de `origin/main` 3f0d147f: ninguno.
+TRIGGERS_DELETE_SIN_EXCEPCION: frozenset[tuple[str, str]] = frozenset()
+
+#: Triggers de usuario que se disparan en DELETE (bit 8 de `tgtype`) sobre tablas con `tenant_id`.
+_SQL_TRIGGERS_DELETE = (
+    "SELECT c.relname, t.tgname FROM pg_catalog.pg_trigger t "
+    "JOIN pg_catalog.pg_class c ON c.oid = t.tgrelid "
+    "WHERE NOT t.tgisinternal AND (t.tgtype & 8) <> 0 AND c.relnamespace = 'public'::regnamespace "
+    "AND EXISTS (SELECT 1 FROM pg_catalog.pg_attribute a WHERE a.attrelid = c.oid AND a.attname = 'tenant_id' "
+    "            AND a.attnum > 0 AND NOT a.attisdropped) "
+    "ORDER BY 1, 2"
+)
+
+
+def falta_funcion_inmutables(con) -> list[str]:
+    """Lo que impide borrar las tablas inmutables con la función de DEMO-05d (R6). Vacío si está completa.
+
+    Solo lee el catálogo. Un trigger de DELETE desconocido sobre una tabla con `tenant_id` cuenta como falta:
+    la función no lo desactiva y la purga fallaría a mitad, o dejaría filas que la lista no cubre.
+    """
+    from .purga import FUNCION_INMUTABLES  # import tardío: purga no depende de las guardias
+
+    faltan: list[str] = []
+    funcion = con.execute(text(_SQL_FUNCION), {"rol": ROL_PURGA, "funcion": FUNCION_INMUTABLES}).all()
+    if len(funcion) != 1:
+        faltan.append(FUNCION_INMUTABLES)
+    else:
+        f = funcion[0]
+        if not f.prosecdef or not any(str(o).startswith("search_path=") for o in (f.proconfig or [])):
+            faltan.append(f"{FUNCION_INMUTABLES} (SECURITY DEFINER y search_path fijo)")
+        if f.publica:
+            faltan.append(f"{FUNCION_INMUTABLES} (EXECUTE para PUBLIC)")
+        if not f.ejecuta:
+            faltan.append(f"{FUNCION_INMUTABLES} (EXECUTE para {ROL_PURGA})")
+    conocidos = TRIGGERS_INMUTABLES | TRIGGERS_DELETE_SIN_EXCEPCION
+    for tabla, trigger in con.execute(text(_SQL_TRIGGERS_DELETE)):
+        if (tabla, trigger) not in conocidos:
+            faltan.append(f"trigger {trigger} en {tabla} (lanza en DELETE y no está en TRIGGERS_INMUTABLES)")
     return faltan

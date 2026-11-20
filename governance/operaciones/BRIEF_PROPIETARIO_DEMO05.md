@@ -11,6 +11,7 @@ La aplicación nunca borra (invariante 63). La purga física de las demos vencid
 - la base tiene `public.entorno_marcador` con **exactamente** una fila `demo` (no `pruebas`);
 - los buckets de `PURGA_BUCKETS` no tienen política de retención ni bloqueo.
 - el rol de purga tiene los permisos y las políticas de `politicas_purga.sql` en todas las tablas que purga, `es_persona_ficticia` es `SECURITY DEFINER` sin `EXECUTE` para `PUBLIC`, y el rol no lee `users.email` (DEMO-05c).
+- existe `purga_demo_borrar_inmutables`, `SECURITY DEFINER` con `search_path` fijo y `EXECUTE` solo para el rol de purga, y no hay en la base ningún trigger que impida borrar en una tabla con `tenant_id` fuera de su lista (DEMO-05d).
 
 **Qué no hace este brief:** no usa el proyecto de producción, no crea claves de cuentas de servicio, no activa la RLS de ninguna tabla, no toca la base de producción y no despliega la aplicación.
 
@@ -77,8 +78,9 @@ REVOKE ALL ON ALL TABLES IN SCHEMA public FROM purga_demo;
 **5b. Permisos y políticas: tras CADA migración de la base de la demo.** Desde un checkout actualizado de `main`, en la raíz del repositorio, con `psql` conectado a la base de la demo con tu usuario administrador (por el proxy de Cloud SQL; no pegues la contraseña en el comando):
 ```powershell
 $PSQL_DEMO = "<cadena de conexión psql a la base de la DEMO con tu usuario administrador, sin contraseña>"
-psql $PSQL_DEMO --single-transaction -v ON_ERROR_STOP=1 -f jobs/purga_demo/politicas_purga.sql
+psql --single-transaction -v ON_ERROR_STOP=1 -f jobs/purga_demo/politicas_purga.sql $PSQL_DEMO
 ```
+Las opciones van **antes** de la cadena de conexión: el `psql` de Windows ignora, con un simple aviso, todo lo que viene detrás (y sin `-f` abre una sesión interactiva).
 Es idempotente: repetirlo deja lo mismo. Se niega si falta el rol o `public.entorno_marcador`. No activa la RLS de ninguna tabla ni cambia las políticas de otros roles. Una tabla nueva con `tenant_id` queda sin permisos hasta que lo vuelvas a ejecutar, y mientras tanto el Job sale con 1 y la nombra («faltan políticas de purga en: …; ejecuta politicas_purga.sql»).
 
 **5c. Comprobaciones de solo lectura (con la credencial del Job; tras crear el Job en el paso 8).** Ejecuta el Job en modo comprobación: no borra filas ni objetos y solo imprime números y nombres de tablas.
@@ -91,6 +93,64 @@ gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=pu
 Resultado esperado: la ejecución termina bien y la línea dice `faltan=0` y `personas_ficticias=` con un número **mayor que 0** (la plantilla y las demos tienen personas `.invalid`). `tablas_sin_rls` cuenta las tablas que aún no tienen RLS (hoy cinco); las protegen los permisos y los filtros del código hasta que la ficha de seguridad les active la RLS.
 
 **Si `faltan` no es 0 o `personas_ficticias=0`: detente y avisa al CTO.** No lances la purga nocturna: en la nube podría no borrar a nadie sin que se note (por ejemplo, si una tabla que lee `es_persona_ficticia` tuviera la RLS forzada y tu usuario no la salta). No des `BYPASSRLS` ni `SUPERUSER` al rol para arreglarlo.
+
+**5d. Tablas inmutables (DEMO-05d): dueño y prueba sin confirmar nada, tras el 5b.** Las tablas de historial de la biblioteca y de consultas al DPO tienen triggers que impiden borrar. Las borra la función `purga_demo_borrar_inmutables`, que crea el 5b: apaga cada trigger, borra el tenant y lo vuelve a encender, todo en la transacción del Job. La función corre como su dueño, que tiene que ser el dueño de las tablas. Desde la raíz del repositorio, con `psql` conectado a la base **de la demo** con tu usuario administrador (el mismo del 5b):
+```powershell
+$PSQL_DEMO = "<cadena de conexión psql a la base de la DEMO con tu usuario administrador, sin contraseña>"
+$ARCHIVO = Join-Path $env:TEMP "demo05d_comprobacion.sql"
+@'
+-- 1. Duenos: la funcion y las cinco tablas, el mismo rol, sin rolsuper ni rolbypassrls.
+SELECT 'funcion' AS objeto, r.rolname AS dueno, r.rolsuper, r.rolbypassrls
+  FROM pg_proc p JOIN pg_roles r ON r.oid = p.proowner
+ WHERE p.oid = 'public.purga_demo_borrar_inmutables(character varying)'::regprocedure
+UNION ALL
+SELECT c.relname, r.rolname, r.rolsuper, r.rolbypassrls
+  FROM pg_class c JOIN pg_roles r ON r.oid = c.relowner
+ WHERE c.oid IN ('public.biblioteca_documentos_historial'::regclass, 'public.biblioteca_descargas'::regclass,
+                 'public.biblioteca_eventos_documento'::regclass, 'public.dpo_consultas_mensajes'::regclass,
+                 'public.dpo_consultas'::regclass);
+
+-- 2. Prueba como purga_demo dentro de BEGIN ... ROLLBACK: nada se confirma.
+BEGIN;
+GRANT purga_demo TO CURRENT_USER;
+SET LOCAL ROLE purga_demo;
+SELECT t.id AS tenant FROM public.tenants t
+ WHERE t.es_demo AND t.id <> 'demo-plantilla-cooperativa'
+   AND EXISTS (SELECT 1 FROM public.demo_sesiones s WHERE s.tenant_id = t.id AND s.estado = 'vencida')
+   AND NOT EXISTS (SELECT 1 FROM public.demo_sesiones s WHERE s.tenant_id = t.id AND s.estado = 'activa')
+   AND (EXISTS (SELECT 1 FROM public.biblioteca_documentos_historial h WHERE h.tenant_id = t.id)
+        OR EXISTS (SELECT 1 FROM public.biblioteca_eventos_documento e WHERE e.tenant_id = t.id))
+ ORDER BY t.id LIMIT 1 \gset
+SELECT 'antes' AS momento,
+       (SELECT count(*) FROM public.biblioteca_documentos_historial WHERE tenant_id = :'tenant') AS historial,
+       (SELECT count(*) FROM public.biblioteca_descargas WHERE tenant_id = :'tenant') AS descargas,
+       (SELECT count(*) FROM public.biblioteca_eventos_documento WHERE tenant_id = :'tenant') AS eventos,
+       (SELECT count(*) FROM public.dpo_consultas_mensajes WHERE tenant_id = :'tenant') AS mensajes,
+       (SELECT count(*) FROM public.dpo_consultas WHERE tenant_id = :'tenant') AS consultas;
+SELECT public.purga_demo_borrar_inmutables(:'tenant') AS borradas;
+SELECT 'despues' AS momento,
+       (SELECT count(*) FROM public.biblioteca_documentos_historial WHERE tenant_id = :'tenant') AS historial,
+       (SELECT count(*) FROM public.biblioteca_descargas WHERE tenant_id = :'tenant') AS descargas,
+       (SELECT count(*) FROM public.biblioteca_eventos_documento WHERE tenant_id = :'tenant') AS eventos,
+       (SELECT count(*) FROM public.dpo_consultas_mensajes WHERE tenant_id = :'tenant') AS mensajes,
+       (SELECT count(*) FROM public.dpo_consultas WHERE tenant_id = :'tenant') AS consultas;
+RESET ROLE;
+SELECT c.relname, t.tgname, t.tgenabled FROM pg_trigger t JOIN pg_class c ON c.oid = t.tgrelid
+ WHERE t.tgname IN ('biblioteca_documento_historial_inmutable', 'biblioteca_descargas_inmutable',
+                    'biblioteca_evento_inmutable', 'trg_dpo_consultas_mensajes_solo_agrega',
+                    'trg_dpo_consultas_inmutable_tras_cierre')
+ ORDER BY 1;
+ROLLBACK;
+'@ | Set-Content -Path $ARCHIVO -Encoding ascii
+psql -v ON_ERROR_STOP=1 -f $ARCHIVO $PSQL_DEMO
+Remove-Item $ARCHIVO
+```
+Resultado esperado:
+- **Dueños:** seis filas con el **mismo** `dueno`, y `rolsuper` y `rolbypassrls` en `f` (en Cloud SQL, `postgres` no tiene `BYPASSRLS`). Si los dueños difieren o alguno es `t`, detente y avisa al CTO: no cambies dueños ni des `BYPASSRLS`.
+- **Prueba:** un `tenant` de demo vencida; en `antes`, los recuentos de las cinco tablas; `borradas` igual a su suma; en `despues`, todo en `0`; y los cinco triggers con `tgenabled = O`. Termina en `ROLLBACK`: **no se confirma nada**. Si la primera consulta no devuelve ningún tenant (no hay una demo vencida con historial de biblioteca), `psql` se detiene; díselo al Tech Lead y repite el 5d cuando la haya.
+- **Horario:** mientras purga, la función bloquea la escritura en esas cinco tablas para **todas** las demos. El Job corre a las 03:00 de `America/Guayaquil` (paso 9); confirma que esa hora queda fuera de las horas de demostración y, si no, cambia la programación.
+
+Pega al Tech Lead las tres salidas (dueños, prueba y la hora del paso 9), sin la cadena de conexión.
 
 ### 6. Marcador de entorno de la base
 ```sql
@@ -146,6 +206,7 @@ Resultado esperado: la cuenta `purga-demo`, `maxRetries: 0`, `taskCount: 1`, la 
 ## Qué le dices al CTO
 - Que el Job, el Scheduler y la cuenta de servicio están creados, la salida del paso 10 y la del paso 4 del brief del bucket, sin secretos ni la URL de conexión.
 - La línea de la comprobación del paso 5c (`faltan=…`, `tablas_sin_rls=…`, `personas_ficticias=…`).
+- Al Tech Lead, las tres salidas del paso 5d (dueños, prueba con `ROLLBACK` y hora del Job).
 - Con eso queda cumplida la condición de que DEMO-05 pase a hecha.
 
 ## Si algo sale mal
@@ -153,6 +214,8 @@ Resultado esperado: la cuenta `purga-demo`, `maxRetries: 0`, `taskCount: 1`, la 
 - Sale con 1 y dice que el bucket tiene retención u objetos bloqueados: es el comportamiento esperado; repite el paso 4 del brief del bucket y no desbloquees nada tú: avisa al CTO.
 - Sale con 1 y dice que falta `PURGA_BUCKETS`: repite el paso 8.
 - Sale con 1 y dice «faltan políticas de purga en: …»: repite el paso 5b (y el 5c).
+- Sale con 1 y nombra un `trigger … (lanza en DELETE y no está en TRIGGERS_INMUTABLES)`: una migración añadió un trigger que impide borrar; no borres nada a mano y avisa al CTO (hace falta ampliar la lista de DEMO-05d).
+- Sale con 1 y dice «la base rechazó la purga»: si fue la función de las tablas inmutables, revisa el marcador (paso 6) y el 5d; no la ejecutes a mano fuera de una transacción revertida.
 - Un error de claves foráneas o de permisos de la base: repite el paso 5b; no des `SUPERUSER` ni `BYPASSRLS` al rol de purga.
 
 ## Reversión

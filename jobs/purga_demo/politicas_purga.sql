@@ -1,5 +1,6 @@
 -- ¤demo ¤seguridad
 -- DEMO-05c · Permisos y políticas del rol `purga_demo`, sin BYPASSRLS (PRD EVYDENTIA §5.6.4, invariantes 60 a 63).
+-- DEMO-05d · Función `purga_demo_borrar_inmutables` para las tablas con trigger de inmutabilidad (invariante 63).
 --
 -- Lo ejecuta el propietario en la base de la DEMO tras cada migración (paso 5 de
 -- governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md):
@@ -41,6 +42,100 @@ $fn$;
 -- [/es_persona_ficticia]
 REVOKE ALL ON FUNCTION public.es_persona_ficticia(character varying) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.es_persona_ficticia(character varying) TO purga_demo;
+
+-- DEMO-05d · Borrado de las tablas con trigger de inmutabilidad para un tenant demo vencido
+-- (governance/especificaciones/DEMO-05d.md §3). Solo existe donde se ejecuta este archivo, nunca en una
+-- migración (R2). La lista de triggers es literal y cerrada (R4): una tabla nueva con un trigger que lance en
+-- DELETE la nombra la guardia del Job (`falta_funcion_inmutables`) y el Job no borra hasta añadirla aquí.
+-- Su dueño tiene que ser el dueño de las cinco tablas, sin rolsuper ni rolbypassrls (R3, comprobación R7).
+-- [purga_demo_borrar_inmutables]
+CREATE OR REPLACE FUNCTION public.purga_demo_borrar_inmutables(p_tenant character varying)
+  RETURNS integer
+  LANGUAGE plpgsql VOLATILE SECURITY DEFINER
+  SET search_path = pg_catalog, public
+AS $fn$
+DECLARE
+  v_total integer := 0;
+  v_filas integer;
+  v_tenant_previo text := current_setting('app.current_tenant_id', true);
+BEGIN
+  -- R1 · Falla cerrada antes de tocar nada; ningún trigger cambia si falla una condición.
+  IF to_regclass('public.entorno_marcador') IS NULL THEN
+    RAISE EXCEPTION 'purga_demo_borrar_inmutables: la base no tiene marcador de entorno' USING ERRCODE = '42501';
+  END IF;
+  IF (SELECT count(*) FROM public.entorno_marcador) <> 1
+     OR NOT EXISTS (SELECT 1 FROM public.entorno_marcador WHERE valor = 'demo') THEN
+    RAISE EXCEPTION 'purga_demo_borrar_inmutables: la base no tiene el marcador exacto demo' USING ERRCODE = '42501';
+  END IF;
+  IF p_tenant IS NULL OR p_tenant = 'demo-plantilla-cooperativa' THEN
+    RAISE EXCEPTION 'purga_demo_borrar_inmutables: la plantilla nunca se purga' USING ERRCODE = '42501';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.tenants t WHERE t.id = p_tenant AND t.es_demo) THEN
+    RAISE EXCEPTION 'purga_demo_borrar_inmutables: el tenant no es una demo' USING ERRCODE = '42501';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.demo_sesiones s WHERE s.tenant_id = p_tenant AND s.estado = 'vencida')
+     OR EXISTS (SELECT 1 FROM public.demo_sesiones s WHERE s.tenant_id = p_tenant AND s.estado = 'activa') THEN
+    RAISE EXCEPTION 'purga_demo_borrar_inmutables: la demo no está vencida' USING ERRCODE = '42501';
+  END IF;
+
+  -- R5 · FORCE RLS: el dueño también pasa por las políticas de la sala; se fija el tenant, local a la transacción.
+  PERFORM set_config('app.current_tenant_id', p_tenant, true);
+
+  -- R4 · Por tabla: DISABLE, DELETE y ENABLE, en la transacción del Job. Un rollback deja cada trigger como estaba.
+  -- Hijas antes que madres: dpo_consultas_mensajes referencia a dpo_consultas.
+  ALTER TABLE public.biblioteca_documentos_historial DISABLE TRIGGER biblioteca_documento_historial_inmutable;
+  DELETE FROM public.biblioteca_documentos_historial WHERE tenant_id::text = p_tenant;
+  GET DIAGNOSTICS v_filas = ROW_COUNT;
+  v_total := v_total + v_filas;
+  ALTER TABLE public.biblioteca_documentos_historial ENABLE TRIGGER biblioteca_documento_historial_inmutable;
+
+  ALTER TABLE public.biblioteca_descargas DISABLE TRIGGER biblioteca_descargas_inmutable;
+  DELETE FROM public.biblioteca_descargas WHERE tenant_id::text = p_tenant;
+  GET DIAGNOSTICS v_filas = ROW_COUNT;
+  v_total := v_total + v_filas;
+  ALTER TABLE public.biblioteca_descargas ENABLE TRIGGER biblioteca_descargas_inmutable;
+
+  ALTER TABLE public.biblioteca_eventos_documento DISABLE TRIGGER biblioteca_evento_inmutable;
+  DELETE FROM public.biblioteca_eventos_documento WHERE tenant_id::text = p_tenant;
+  GET DIAGNOSTICS v_filas = ROW_COUNT;
+  v_total := v_total + v_filas;
+  ALTER TABLE public.biblioteca_eventos_documento ENABLE TRIGGER biblioteca_evento_inmutable;
+
+  ALTER TABLE public.dpo_consultas_mensajes DISABLE TRIGGER trg_dpo_consultas_mensajes_solo_agrega;
+  DELETE FROM public.dpo_consultas_mensajes WHERE tenant_id::text = p_tenant;
+  GET DIAGNOSTICS v_filas = ROW_COUNT;
+  v_total := v_total + v_filas;
+  ALTER TABLE public.dpo_consultas_mensajes ENABLE TRIGGER trg_dpo_consultas_mensajes_solo_agrega;
+
+  ALTER TABLE public.dpo_consultas DISABLE TRIGGER trg_dpo_consultas_inmutable_tras_cierre;
+  DELETE FROM public.dpo_consultas WHERE tenant_id::text = p_tenant;
+  GET DIAGNOSTICS v_filas = ROW_COUNT;
+  v_total := v_total + v_filas;
+  ALTER TABLE public.dpo_consultas ENABLE TRIGGER trg_dpo_consultas_inmutable_tras_cierre;
+
+  PERFORM set_config('app.current_tenant_id', coalesce(v_tenant_previo, ''), true);
+  RETURN v_total;
+END
+$fn$;
+-- [/purga_demo_borrar_inmutables]
+
+-- R3 · EXECUTE solo para purga_demo: fuera PUBLIC y cualquier otro rol al que se le hubiera concedido.
+DO $$
+DECLARE
+  g record;
+BEGIN
+  FOR g IN
+    SELECT DISTINCT a.grantee::regrole::text AS rol
+      FROM pg_proc p, aclexplode(p.proacl) a
+     WHERE p.oid = 'public.purga_demo_borrar_inmutables(character varying)'::regprocedure
+       AND a.grantee <> 0 AND a.grantee <> p.proowner
+       AND a.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'purga_demo')
+  LOOP
+    EXECUTE format('REVOKE ALL ON FUNCTION public.purga_demo_borrar_inmutables(character varying) FROM %s', g.rol);
+  END LOOP;
+END $$;
+REVOKE ALL ON FUNCTION public.purga_demo_borrar_inmutables(character varying) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.purga_demo_borrar_inmutables(character varying) TO purga_demo;
 
 DO $$
 DECLARE

@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 # ¤demo
-"""Purga física de las demos vencidas (DEMO-05, DEMO-05c).
+"""Purga física de las demos vencidas (DEMO-05, DEMO-05c, DEMO-05d).
 
 Orden: objetos del tenant, filas de todas las tablas con `tenant_id`, fila del tenant y comprobación de
 0 filas. Nunca toca la plantilla. La fila de `demo_sesiones` se conserva hasta 90 días después de vencer:
 `ON DELETE SET NULL` vacía su `tenant_id` al borrar el tenant y su persona al borrar la persona ficticia.
 La purga nunca hace UPDATE ni INSERT (DEMO-05c R5): corre como `purga_demo`, con solo SELECT y DELETE.
+Las tablas con trigger de inmutabilidad las borra `purga_demo_borrar_inmutables`, que solo existe en la base
+de la demo (DEMO-05d): `purga_demo` no es dueño de nada y no puede desactivar un trigger.
 """
 from __future__ import annotations
 
@@ -24,8 +26,18 @@ from .almacen import Almacen
 from .usuarios import leer_candidatos_usuarios, purgar_usuarios_ficticios
 
 DIAS_DE_RETENCION = 90
-#: No se purgan por tenant: `tenants` se borra al final y `demo_sesiones` se conserva.
-TABLAS_EXENTAS = frozenset({"demo_sesiones", "tenants"})
+#: Tablas con un trigger que lanza en DELETE (DEMO-05d §1), en el orden en que las borra la función.
+TABLAS_INMUTABLES = (
+    "biblioteca_documentos_historial",
+    "biblioteca_descargas",
+    "biblioteca_eventos_documento",
+    "dpo_consultas_mensajes",
+    "dpo_consultas",
+)
+FUNCION_INMUTABLES = "purga_demo_borrar_inmutables"
+#: No se purgan con `_borrar_filas`: `tenants` se borra al final, `demo_sesiones` se conserva y las
+#: inmutables las borra la función antes que el resto.
+TABLAS_EXENTAS = frozenset({"demo_sesiones", "tenants", *TABLAS_INMUTABLES})
 
 Destino = Union[Engine, Connection]
 
@@ -100,6 +112,22 @@ def _borrar_filas(con: Connection, tenant_id: str, tablas: list[str]) -> int:
     return total
 
 
+_SQL_HAY_FUNCION = f"SELECT to_regprocedure('public.{FUNCION_INMUTABLES}(character varying)') IS NOT NULL"
+
+
+def _borrar_inmutables(con: Connection, tenant_id: str) -> int:
+    """Borra las tablas inmutables del tenant con la función de DEMO-05d, que solo existe en la base de la demo.
+
+    En el Job, la guardia (`falta_funcion_inmutables`) exige la función antes de borrar nada. En una base sin
+    `politicas_purga.sql` no se toca ninguna de esas tablas: si el tenant tuviera filas en ellas,
+    `comprobar_cero_filas` lo detecta y la transacción revierte. Nunca hay un borrado a medias.
+    """
+    if not con.execute(text(_SQL_HAY_FUNCION)).scalar_one():
+        return 0
+    return con.execute(text(f"SELECT public.{FUNCION_INMUTABLES}(CAST(:t AS character varying))"),
+                       {"t": tenant_id}).scalar_one()
+
+
 def comprobar_cero_filas(con: Connection, tenant_id: str, tablas: list[str]) -> None:
     """Falla si queda alguna fila del tenant en una tabla con `tenant_id`, en `tenants` o en `demo_sesiones`."""
     restos = {}
@@ -132,10 +160,11 @@ def purgar_tenant(destino: Destino, almacen: Almacen, tenant_id: str) -> tuple[i
     with transaccion(destino) as con:
         tablas = tablas_con_tenant(con)
         candidatos = leer_candidatos_usuarios(con, tenant_id)
-        filas = _borrar_filas(con, tenant_id, tablas)
+        filas = _borrar_inmutables(con, tenant_id)
+        filas += _borrar_filas(con, tenant_id, tablas)
         filas += con.execute(text("DELETE FROM tenants WHERE id = :t AND es_demo"), {"t": tenant_id}).rowcount
         filas += purgar_usuarios_ficticios(con, candidatos)
-        comprobar_cero_filas(con, tenant_id, tablas)
+        comprobar_cero_filas(con, tenant_id, [*tablas, *TABLAS_INMUTABLES])
     return len(claves), filas
 
 
