@@ -124,19 +124,24 @@ async def test_auditor_lee_las_tres_apis(ctx, ruta):
     assert r.status_code == 200, r.text
 
 
+# Identificadores fijos: con uuid4() en la colección, cada trabajador de xdist ve ids de prueba distintos y la
+#   corrida en paralelo aborta («Different tests were collected»). El 403 llega antes de buscar el recurso.
+_INEXISTENTE = "00000000-0000-4000-8000-000000000023"
+
 ESCRITURAS = (
     ("POST", "/api/v1/diagnostico/resultados", {}),
     ("POST", "/api/v1/incidentes", _incidente()),
-    ("POST", f"/api/v1/incidentes/{uuid.uuid4()}/cerrar", {"motivo": "Se contuvo la vulneración y se documentó."}),
-    ("POST", f"/api/v1/incidentes/{uuid.uuid4()}/reabrir", {"motivo": "Apareció un acceso nuevo de la misma cuenta."}),
+    ("POST", f"/api/v1/incidentes/{_INEXISTENTE}/cerrar", {"motivo": "Se contuvo la vulneración y se documentó."}),
+    ("POST", f"/api/v1/incidentes/{_INEXISTENTE}/reabrir", {"motivo": "Apareció un acceso nuevo de la misma cuenta."}),
     ("POST", "/api/v1/roadmaps/hallazgos/desde-diagnostico", None),
-    ("POST", f"/api/v1/roadmaps/{uuid.uuid4()}/hallazgos/convertir",
-     {"hallazgo_ids": [str(uuid.uuid4())], "wave_id": str(uuid.uuid4())}),
+    ("POST", f"/api/v1/roadmaps/{_INEXISTENTE}/hallazgos/convertir",
+     {"hallazgo_ids": [_INEXISTENTE], "wave_id": _INEXISTENTE}),
 )
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(("metodo", "ruta", "cuerpo"), ESCRITURAS)
+@pytest.mark.parametrize(("metodo", "ruta", "cuerpo"), ESCRITURAS,
+                         ids=("sellar", "registrar", "cerrar", "reabrir", "hallazgos", "convertir"))
 async def test_auditor_no_escribe(ctx, metodo, ruta, cuerpo):
     r = await ctx["client"].request(metodo, ruta, headers=ctx["h"], json=cuerpo)
     assert r.status_code == 403, r.text
