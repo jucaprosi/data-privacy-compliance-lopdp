@@ -235,7 +235,10 @@ async def test_recorrido_por_roles_contra_el_backend_real(cliente, factory, org)
                             json={"validation_status": "approved", "notes": ""}, headers=_h(org, "responsable_area"))
     assert r.status_code == 403, r.text
 
-    # 5. El DPO la valida.
+    # 5. Doble validación (RM-25b): el coordinador hace la primera y el DPO, la final.
+    r = await cliente.post(f"/api/v1/roadmaps/tasks/{tid}/evidence/{evidencia}/primera-validacion",
+                           headers=_h(org, "coordinador"))
+    assert r.status_code == 200, r.text
     r = await cliente.patch(f"/api/v1/roadmaps/tasks/{tid}/evidence/{evidencia}",
                             json={"validation_status": "approved", "notes": "Conforme"}, headers=_h(org, "dpo"))
     assert r.status_code == 200, r.text

@@ -13,6 +13,9 @@ Pruebas de mutación documentadas:
 - En `sumar_tareas` se cambió `max(r.nivel_declarado, acreditado...)` por el acreditado a secas:
   `test_la_evidencia_acreditada_sube_el_nivel_de_evidencia_nunca_la_madurez` devolvió FAILED (el nivel de evidencia
   bajó de 2 a 1). Se restauró; sin las mutaciones pasan.
+- RM-25b: en `tareas_validadas_engine.py` se quitó la condición de rol de la consulta
+  (`e.primera_validacion_rol = 'coordinador' AND e.validado_rol IN ('dpo', 'auditor')`):
+  `test_diag12_solo_doble_validacion` devolvió FAILED (contó la evidencia que aprobó un implementador). Se restauró.
 """
 import os
 import uuid
@@ -127,6 +130,7 @@ async def ctx(monkeypatch):
         "impl": (f"diag12-impl-{sufijo}", a, "implementador"),
         "coord": (f"diag12-coord-{sufijo}", a, "coordinador"),
         "resp": (f"diag12-resp-{sufijo}", a, "responsable_area"),
+        "auditor": (f"diag12-audi-{sufijo}", a, "auditor"),
         "dpo_b": (f"diag12-dpob-{sufijo}", b, "dpo"),
     }
     async with factory() as s:
@@ -194,8 +198,17 @@ async def _responder_y_sellar(ctx, *respuestas):
     assert r.status_code == 201, r.text
 
 
-async def _sembrar_tarea(ctx, control_ref, *, estado="completada", evidencia=None):
-    """Tarea de la hoja de ruta de la organización A; `evidencia` es (estado, sube, valida) o None."""
+_SIN_DECLARAR = "sin-declarar"
+
+
+async def _sembrar_tarea(ctx, control_ref, *, estado="completada", evidencia=None, primera="coord",
+                         primera_rol="coordinador", validado_rol=_SIN_DECLARAR, marca=False, nivel=None):
+    """Tarea de la hoja de ruta de la organización A; `evidencia` es (estado, sube, valida) o None.
+
+    RM-25b: una evidencia `approved` lleva la primera validación de `primera` (con `primera_rol` guardado) y el
+    rol guardado de quien hizo la final (`validado_rol`; por defecto, el de `valida`). Con `primera=None` la
+    base solo la admite con la marca `requiere_revalidacion` (`marca=True`): es la aprobada anterior a RM-25b.
+    """
     from app_core.db.session import fijar_contexto_rls
 
     a = ctx["a"]
@@ -217,11 +230,19 @@ async def _sembrar_tarea(ctx, control_ref, *, estado="completada", evidencia=Non
         ), {"i": tarea, "w": raiz["w"], "t": a, "c": control_ref, "e": estado})
         if evidencia:
             validacion, sube, valida = evidencia
+            aprobada = validacion == "approved"
+            quien_primera = ctx["u"][primera][0] if aprobada and primera else None
+            if validado_rol == _SIN_DECLARAR:
+                validado_rol = ctx["u"][valida][2] if valida else None
             await s.execute(text(
                 "INSERT INTO task_evidence (id, task_id, tenant_id, clave_objeto, uploaded_by, validation_status, "
-                "validated_by) VALUES (:i, :tk, :t, 'simulada/clave', :u, :v, :vb)"
+                "validated_by, validado_rol, primera_validacion_por, primera_validacion_en, primera_validacion_rol, "
+                "requiere_revalidacion, nivel_acreditado) VALUES (:i, :tk, :t, 'simulada/clave', :u, :v, :vb, :vr, "
+                ":pp, CASE WHEN CAST(:pp AS varchar) IS NOT NULL THEN now() END, "
+                "CASE WHEN CAST(:pp AS varchar) IS NOT NULL THEN CAST(:pr AS varchar) END, :m, :n)"
             ), {"i": str(uuid.uuid4()), "tk": tarea, "t": a, "u": ctx["u"][sube][0], "v": validacion,
-                "vb": ctx["u"][valida][0] if valida else None})
+                "vb": ctx["u"][valida][0] if valida else None, "vr": validado_rol, "pp": quien_primera,
+                "pr": primera_rol, "m": marca, "n": nivel})
         await s.commit()
     return tarea
 
@@ -255,6 +276,44 @@ async def test_un_estado_suma_solo_tareas_con_evidencia_validada(ctx):
     assert niveles == {1: 1, 2: 1, 3: 1, 6: 1, 5: 1, 7: 1}  # la madurez es la del real
     assert [t["control_ref"] for t in estado["tareas"]] == ["P1"]
     assert estado["secuencia"] == 1 and estado["emitido_por"] == ctx["u"]["dpo"][0]
+
+
+@pytest.mark.asyncio
+async def test_diag12_solo_doble_validacion(ctx):
+    """RM-25b: cuenta la tarea cuya evidencia validó primero un coordinador y al final un DPO o un auditor."""
+    c = ctx["client"]
+    preguntas = (1, 2, 3, 5, 6, 7, 8, 9)
+    for _ in range(2):
+        await _responder_y_sellar(ctx, *[_respuesta(p, 1) for p in preguntas])
+    aprobada = ("approved", "resp", "dpo")
+    await _sembrar_tarea(ctx, "P1", evidencia=aprobada, nivel=3)                        # doble validación: cuenta
+    await _sembrar_tarea(ctx, "P2", evidencia=("approved", "resp", "auditor"))          # la final de un auditor: cuenta
+    await _sembrar_tarea(ctx, "P3", evidencia=aprobada, primera=None, marca=True)       # la aprobó un DPO sin primera
+    await _sembrar_tarea(ctx, "P5", evidencia=aprobada, marca=True)                     # tiene la marca
+    await _sembrar_tarea(ctx, "P6", evidencia=("approved", "resp", "impl"))             # la final la guardó un implementador
+    await _sembrar_tarea(ctx, "P7", evidencia=aprobada, primera_rol="implementador")    # la primera no fue de un coordinador
+    await _sembrar_tarea(ctx, "P8", evidencia=aprobada, validado_rol=None)              # final sin rol guardado
+    # Roles guardados, no vigentes: la validó quien hoy es implementador, pero entonces era DPO.
+    await _sembrar_tarea(ctx, "P9", evidencia=("approved", "resp", "impl"), validado_rol="dpo", nivel=2)
+
+    r = await c.post(ESTADOS, headers=_como(ctx, "dpo"))
+    assert r.status_code == 201, r.text
+    estado = r.json()
+    assert [t["control_ref"] for t in estado["tareas"]] == ["P1", "P2", "P9"]
+    # El control toma el máximo entre el nivel de evidencia del diagnóstico real (2) y el `nivel_acreditado`.
+    evidencia = {x["pregunta_id"]: x["nivel_declarado"] for x in estado["respuestas"]}
+    assert (evidencia[1], evidencia[2], evidencia[9], evidencia[3]) == (3, 2, 2, 2)
+
+    # La lectura de la sala devuelve el `nivel_acreditado` de cada tarea que cuenta.
+    from app_core.db.session import fijar_contexto_rls
+    from features.roadmap import roadmap_service
+
+    async with ctx["factory"]() as s:
+        await s.execute(text("SET LOCAL ROLE lopdp_app"))
+        await fijar_contexto_rls(s, ctx["a"], ctx["u"]["dpo"][0])
+        tareas = await roadmap_service.tareas_cerradas_con_evidencia_validada(s, ctx["a"], ctx["u"]["dpo"][0])
+        await s.rollback()
+    assert {t["control_ref"]: t["nivel_acreditado"] for t in tareas} == {"P1": 3, "P2": None, "P9": 2}
 
 
 @pytest.mark.asyncio

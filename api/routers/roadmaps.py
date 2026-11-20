@@ -193,12 +193,13 @@ async def validate_evidence(
     task_id: str,
     evidence_id: str,
     payload: TaskEvidenceValidationRequest,
-    ctx: dict = Depends(require_role("coordinador", "dpo", "implementador")),
+    ctx: dict = Depends(require_role("coordinador", "dpo", "auditor")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Valida o rechaza una evidencia. Solo coordinador/dpo/implementador.
+    """Aprueba o rechaza una evidencia. Solo coordinador/dpo/auditor.
 
-    Cuatro ojos: quien subió la evidencia no puede validarla (409).
+    Aprobar es la validación final (RM-25b): del DPO o del auditor, con la primera validación registrada y
+    tres personas distintas; el coordinador solo rechaza. Quien subió la evidencia no puede resolverla (409).
     """
     try:
         value = await roadmap_service.validate_evidence(
@@ -208,6 +209,7 @@ async def validate_evidence(
             evidence_id,
             payload.validation_status.value,
             payload.notes,
+            rol=ctx["role"],
         )
     except RbacError as exc:
         raise http_error(exc) from exc

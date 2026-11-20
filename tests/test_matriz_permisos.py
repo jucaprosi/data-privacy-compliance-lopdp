@@ -124,7 +124,7 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
         "validar_rechazar_evidencia",
         "PATCH",
         "/api/v1/roadmaps/tasks/{task_id}/evidence/{evidence_id}",
-        {"coordinador", "dpo", "implementador"},
+        {"coordinador", "dpo", "auditor"},
     ),
     (
         "ver_evidencia",
