@@ -3087,3 +3087,36 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | Un script de espera que fusiona solo se salta la re-simulación si `main` cambia mientras espera. | Error de proceso propio, ya corregido: el script vuelve a simular sobre el `main` del momento antes de fusionar. |
 | Las fichas ortogonales se serializaban por la regla de una sola cabeza de Alembic. | Ya registrado como regla de reparto; su solución estructural es CI-28, que aún no está fusionada. |
 | `backend.Dockerfile` ejecutaba `alembic upgrade head` al arrancar, y habría fallado con la primera rama por sala. | Caso de inventario de consumidores ya cubierto por el Aporte 114; corregido en #793. |
+
+---
+
+### Aporte 160: El Digest que Migra la Base Debe Ser el que se Publica: Reconstruir el Mismo Commit Da Otra Imagen
+`¤ci-cd`
+
+* **Descripción:** cuando el despliegue separa la migración de la base de la publicación del servicio y ambas parten del mismo commit, es fácil suponer que «mismo commit» equivale a «misma imagen». No es así. Una construcción de contenedores no es reproducible por defecto: marcas de tiempo, capas y metadatos cambian, y cada construcción da un digest distinto. Si el paso de publicar vuelve a construir, el servicio que corre contra el esquema migrado no es el binario que se probó contra esa migración.
+* **Por qué es útil aquí:** la migración completa de Cloud SQL del 2026-11-15 migró con la imagen `sha256:fbda494a…`. Después, `deploy-gcp.yml` con `publicar=true` (corrida 43777871302) construyó otra imagen del mismo commit, con un digest distinto, y publicó esa. Así consta en `REGISTRO_MIGRACIONES_MANUALES.md`. Funcionó porque el código era el mismo, pero la garantía «se publica lo que migró» no existe. Se repetirá en cada migración, y la próxima ya está pendiente: seis revisiones de #872 y anteriores, más RM-25b y RM-27.
+* **Verificabilidad:** el predicado que debe cumplirse es $	ext{digest}(	ext{imagen del job de migración}) = 	ext{digest}(	ext{imagen de la revisión publicada})$. Se comprueba con `gcloud run jobs describe evydentia-migrate … containers[0].image` frente a `gcloud run revisions describe <revisión> … containers[0].image`. El 2026-11-15 dio `False`.
+* **Soporte bibliográfico:**
+  - Humble, J. y Farley, D. (2010). *Continuous Delivery*. Addison-Wesley, cap. 5, «Only Build Your Binaries Once». — Se construye una sola vez y se promueve ese mismo binario por las etapas hasta producción; reconstruir en una etapa posterior introduce un binario no probado.
+* **Estado:** observado y registrado. La corrección es que el paso de publicar acepte un digest ya construido y lo despliegue sin reconstruir. Toca `.github/workflows/deploy-gcp.yml`, que es del propietario: va por brief, no por una sesión de IA. No introduce token nuevo.
+
+### Aporte 161: Un Marcador de Ejemplo en un Comando para Pegar se Ejecuta Tal Cual: la Validación Va Dentro del Comando
+`¤ci-cd`
+
+* **Descripción:** un comando operativo que se entrega para pegar y lleva un marcador de ejemplo (`<digest>`, `TU_VALOR`) se ejecuta tarde o temprano sin sustituir. La instrucción en prosa («sustituye el valor») no lo impide. Lo impide una comprobación dentro del propio bloque, que valida la forma del valor antes del primer comando con efectos y aborta si no la cumple. Es el principio *poka-yoke*: el error se detecta en la fuente, sin depender de la atención de quien ejecuta.
+* **Por qué es útil aquí:** el propietario ejecuta los comandos tal cual se le entregan (regla de comandos pegables). El 2026-11-15 pegó `gcloud run jobs update … @<digest>` sin sustituir, y el comando falló sin cambiar nada. El brief de migración se rehízo con `if ($DIGEST -notmatch '^sha256:[0-9a-f]{64}$') { throw … }` antes de `gcloud run jobs update`. Aplica a todo brief que pida un valor variable: digest, id de ejecución, nombre de rama de copia.
+* **Verificabilidad:** con el marcador que trae el brief, `"sha256:PEGA_AQUI_EL_DIGEST_DE_64_CARACTERES" -notmatch '^sha256:[0-9a-f]{64}$'` da `True` y el bloque aborta antes de cualquier `gcloud`. Con un digest real da `False` y el bloque continúa. Se comprueba en `governance/operaciones/BRIEF_PROPIETARIO_MIGRACION_COMPLETA.md`, paso 4.
+* **Soporte bibliográfico:**
+  - Shingo, S. (1986). *Zero Quality Control: Source Inspection and the Poka-yoke System*. Productivity Press. — Los dispositivos *poka-yoke* detectan el error en el punto donde se produce y detienen la operación, en vez de confiar en la inspección posterior o en la atención del operario.
+* **Estado:** aplicado en el brief de migración. Queda como criterio para los briefs del propietario: todo valor variable lleva su validación de forma en el mismo bloque. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXXIII)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Una prueba de reparto (`test_ci29`) que recorre los briefs pasaba sin comprobar nada (#818). | La corrección está en la propia prueba (`assert archivos`, línea 57), pero el mecanismo exacto del fallo no se volvió a medir para esta entrada. Sin esa medición no se registra. |
+| Los checks de Vercel bloqueaban la fusión después de desinstalar la integración. | No eran checks requeridos del conjunto de reglas; es configuración, no un hallazgo inédito. |
+| Error 500 del preanálisis en local. | Causa sin diagnosticar: falta el log del backend local. |
+| `alembic/env.py` aplicaba la guardia de base local dentro de Cloud Run (#847). | Corregido y anotado en el registro de migraciones; es un caso del inventario de consumidores ya cubierto por el Aporte 114. |
