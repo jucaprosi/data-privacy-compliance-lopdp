@@ -1,18 +1,20 @@
 +++
 id = "DEMO-05d"
-titulo = "Purga de la demo frente a los triggers de inmutabilidad de la biblioteca: función SECURITY DEFINER solo en la base de la demo"
+titulo = "Purga de la demo frente a los triggers de inmutabilidad de biblioteca y consultas al DPO"
 ola = "backlog"
 estado = "pendiente"
 sala = "demo"
 depende_de = ["DEMO-05", "DEMO-05b", "DEMO-05c", "SEC-20"]
-propiedad = ["jobs/purga_demo/politicas_purga.sql", "jobs/purga_demo/purga.py", "jobs/purga_demo/guardias.py", "tests/test_demo05d_purga_inmutables.py"]
+propiedad = ["jobs/purga_demo/politicas_purga.sql", "jobs/purga_demo/purga.py", "jobs/purga_demo/guardias.py", "jobs/purga_demo/__main__.py", "governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md", "tests/test_demo05d_purga_inmutables.py"]
 crea = ["tests/test_demo05d_purga_inmutables.py"]
-arbitro = "pytest tests/test_demo05d_purga_inmutables.py contra la PostgreSQL efímera del CI (sin producción ni Cloud SQL): una demo con biblioteca queda con 0 filas tras la purga; al terminar tgenabled = 'O' en los triggers de inmutabilidad; la función falla sin marcador, con la plantilla y con un tenant que no es demo; lopdp_app no puede ejecutarla; ninguna migración define la función; la guardia del Job sale con 1 sin borrar nada si falta la función o su lista no cubre todo trigger que lance excepción en DELETE sobre una tabla con tenant_id; mutaciones documentadas, una por prueba"
+arbitro = "pytest tests/test_demo05d_purga_inmutables.py con TEST_DATABASE_URL de PostgreSQL 16; mutaciones m1 a m6."
 rastros = ["¤demo"]
 agente = "ninguno"
 +++
 
 # DEMO-05d · Purga de la demo frente a los triggers de inmutabilidad
+
+**Contrato:** `governance/especificaciones/DEMO-05d.md` (manda sobre esta ficha).
 
 Diseño del Arquitecto ADPA (2026-11-12) a petición del CTO, a partir del hallazgo de la sesión de DEMO-02: con datos reales de biblioteca la purga falla con `no se pudo vaciar por claves foráneas: biblioteca_documentos, biblioteca_documentos_historial`. Medido leyendo el código; **no se ejecutó nada**. Diseño completo en la conversación del Arquitecto; lo que sigue es la entrega.
 
