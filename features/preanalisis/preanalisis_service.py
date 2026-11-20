@@ -1,6 +1,7 @@
 """Compuerta ADPA de la sala Pre-análisis. Único punto de entrada para routers y otras salas."""
 from __future__ import annotations
 
+import inspect
 import re
 from collections.abc import Sequence
 
@@ -151,7 +152,11 @@ def _construir_usuario(control: ControlContexto, fragmentos: Sequence[Fragmento]
     return "\n".join(partes)
 
 
-async def analizar_control(control: ControlContexto, fragmentos: Sequence[Fragmento]) -> PropuestaValidada:
+async def analizar_control(
+    control: ControlContexto,
+    fragmentos: Sequence[Fragmento],
+    tenant_id: str | None = None,
+) -> PropuestaValidada:
     """Pide una PROPUESTA al modelo y la somete a las reglas deterministas 2-4."""
     proveedor = obtener_proveedor()
     if proveedor is None:
@@ -170,5 +175,9 @@ async def analizar_control(control: ControlContexto, fragmentos: Sequence[Fragme
             limitaciones=list(LIMITACIONES),
             modelo=proveedor.modelo,
         )
-    propuesta = await proveedor.proponer(PROMPT_SISTEMA, _construir_usuario(control, enviados))
+    usuario = _construir_usuario(control, enviados)
+    if "org_id" in inspect.signature(proveedor.proponer).parameters:
+        propuesta = await proveedor.proponer(PROMPT_SISTEMA, usuario, org_id=tenant_id)
+    else:
+        propuesta = await proveedor.proponer(PROMPT_SISTEMA, usuario)
     return validar_propuesta(propuesta, enviados, proveedor.modelo)
