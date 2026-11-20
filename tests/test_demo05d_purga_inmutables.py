@@ -32,7 +32,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
-from sqlalchemy import create_engine, text
+from sqlalchemy import String, cast, column, create_engine, func, select, table, text
 from sqlalchemy.exc import DBAPIError
 
 from features.demo.demo_service import PLANTILLA_TENANT_ID
@@ -44,7 +44,20 @@ RAIZ = Path(__file__).resolve().parent.parent
 SQL_POLITICAS = (RAIZ / "jobs" / "purga_demo" / "politicas_purga.sql").read_text(encoding="utf-8")
 AHORA = datetime.now(timezone.utc)
 FUNCION = "public.purga_demo_borrar_inmutables"
-FIRMA = f"{FUNCION}(character varying)"
+FIRMA = "public.purga_demo_borrar_inmutables(character varying)"
+#: SQL literal por rol (sin interpolar identificadores: tests/test_sin_sql_interpolado.py).
+_SQL_CREAR_ROL = {
+    "purga_demo": "CREATE ROLE purga_demo NOLOGIN",
+    "lopdp_app": "CREATE ROLE lopdp_app NOLOGIN",
+    "zz_d_dueno": "CREATE ROLE zz_d_dueno NOLOGIN",
+}
+#: Las cinco tablas y las tres que lee R1 pasan a un dueño sin BYPASSRLS (como en Cloud SQL).
+_SQL_TRASPASAR_DUENO = (
+    "DO $$ DECLARE t text; BEGIN "
+    "FOREACH t IN ARRAY ARRAY['biblioteca_documentos_historial', 'biblioteca_descargas', "
+    "'biblioteca_eventos_documento', 'dpo_consultas_mensajes', 'dpo_consultas', 'tenants', 'demo_sesiones', "
+    "'entorno_marcador'] LOOP EXECUTE format('ALTER TABLE public.%I OWNER TO zz_d_dueno', t); END LOOP; END $$"
+)
 #: Las cinco tablas de §1 y el resto de tablas de la demo que la prueba siembra.
 INMUTABLES = modulo_purga.TABLAS_INMUTABLES
 SEMBRADAS = (*INMUTABLES, "biblioteca_documentos", "audit_events")
@@ -77,7 +90,7 @@ def ejecutar_sql(con, sql: str = SQL_POLITICAS) -> None:
 
 def asegurar_rol(con, rol: str) -> None:
     if not con.execute(text("SELECT 1 FROM pg_roles WHERE rolname = :r"), {"r": rol}).first():
-        con.execute(text(f"CREATE ROLE {rol} NOLOGIN"))
+        con.execute(text(_SQL_CREAR_ROL[rol]))
 
 
 def poner_marcador(con, marcador: str | None) -> None:
@@ -211,7 +224,9 @@ class Mundo:
             self.biblioteca_y_consultas(tid)
 
     def filas(self, tabla: str, tid: str) -> int:
-        return self.con.execute(text(f"SELECT count(*) FROM {tabla} WHERE tenant_id::text = :t"), {"t": tid}
+        """SQLAlchemy cita el identificador; el tenant va como parámetro enlazado."""
+        condicion = cast(column("tenant_id"), String) == tid
+        return self.con.execute(select(func.count()).select_from(table(tabla, column("tenant_id"))).where(condicion)
                                 ).scalar_one()
 
     def recuento(self, tid: str) -> dict[str, int]:
@@ -315,8 +330,7 @@ def test_dueno_sin_bypassrls_borra_con_force_rls(con, mundo):
     asegurar_rol(con, "zz_d_dueno")
     if not con.execute(text("SELECT rolsuper FROM pg_roles WHERE rolname = current_user")).scalar_one():
         con.execute(text("GRANT zz_d_dueno TO CURRENT_USER"))
-    for tabla in (*INMUTABLES, "tenants", "demo_sesiones", "entorno_marcador"):
-        con.execute(text(f"ALTER TABLE public.{tabla} OWNER TO zz_d_dueno"))
+    con.execute(text(_SQL_TRASPASAR_DUENO))
     con.execute(text(f"ALTER FUNCTION {FIRMA} OWNER TO zz_d_dueno"))
     dueno = con.execute(text("SELECT rolsuper, rolbypassrls FROM pg_roles WHERE rolname = 'zz_d_dueno'")).one()
     assert tuple(dueno) == (False, False)
