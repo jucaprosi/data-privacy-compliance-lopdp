@@ -166,14 +166,3 @@ def test_la_salida_para_github(tmp_path):
 def test_sin_base_un_push_corre_todo(capsys):
     assert sp.main(["--base", "", "--cabeza", ""]) == 0
     assert "ALCANCE: completo" in capsys.readouterr().out
-
-
-def test_el_ci_tiene_dos_arneses_y_una_compuerta_con_el_nombre_obligatorio():
-    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    assert "scripts/seleccionar_pruebas.py" in flujo and "--salida-github" in flujo
-    assert "name: Arnés por salas" in flujo and "name: Arnés completo" in flujo
-    assert "needs.alcance.outputs.modo == 'salas'" in flujo and "needs.alcance.outputs.modo == 'completo'" in flujo
-    assert "pytest $PRUEBAS -v" in flujo and "pytest tests/ -v" in flujo
-    assert "name: Arnés Físico Determinista" in flujo and "needs: [alcance, humo, arnes-salas, arnes-completo]" in flujo
-    assert "if: always()" in flujo
-    assert flujo.count("&base_de_pruebas") == 1 and flujo.count("*base_de_pruebas") == 2

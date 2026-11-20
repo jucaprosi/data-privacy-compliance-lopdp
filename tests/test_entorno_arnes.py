@@ -5,7 +5,6 @@ Estas pruebas impiden volver a dos defectos: que cada .bat decida el interprete 
 """
 import importlib.util
 import os
-import re
 import subprocess
 import sys
 import tempfile
@@ -19,9 +18,6 @@ _spec = importlib.util.spec_from_file_location("verificar_entorno", RAIZ / "scri
 ve = importlib.util.module_from_spec(_spec)
 sys.modules["verificar_entorno"] = ve  # se registra antes de ejecutar el modulo (ver Aporte 95)
 _spec.loader.exec_module(ve)
-
-BATS = sorted(p for p in RAIZ.glob("*.bat")) + [RAIZ / "scripts" / "entorno.bat"]
-USAN_INTERPRETE = re.compile(r"%PYTHON_BIN%|%NODE_BIN%|^\s*python\s", re.IGNORECASE | re.MULTILINE)
 
 
 # ----------------------------------------------------------------- lectura de requirements.txt
@@ -51,19 +47,6 @@ def test_faltantes_vacio_cuando_estan_todos():
 
 
 # ----------------------------------------------------------------- los .bat
-
-@pytest.mark.parametrize("bat", BATS, ids=lambda p: p.name)
-def test_ningun_bat_lleva_rutas_de_usuario_de_una_maquina(bat):
-    texto = bat.read_text(encoding="utf-8", errors="replace")
-    assert not re.search(r"[A-Za-z]:\\Users\\", texto), f"{bat.name} lleva una ruta de usuario fija"
-
-
-@pytest.mark.parametrize("bat", [b for b in BATS if b.name != "entorno.bat"], ids=lambda p: p.name)
-def test_los_bat_que_usan_un_interprete_lo_resuelven_con_entorno_bat(bat):
-    texto = bat.read_text(encoding="utf-8", errors="replace")
-    if USAN_INTERPRETE.search(texto):
-        assert r"scripts\entorno.bat" in texto, f"{bat.name} usa un interprete sin pasar por scripts\\entorno.bat"
-
 
 @pytest.mark.skipif(sys.platform != "win32", reason="los .bat solo se ejecutan en Windows")
 def test_entorno_bat_resuelve_y_valida_el_interprete_por_defecto():

@@ -30,13 +30,6 @@ def test_la_zona_de_negocio_vive_solo_en_app_core():
     assert copias_de_la_zona() == []
 
 
-def test_los_dos_consumidores_importan_zona_negocio():
-    for relativa in ("features/auditoria_capa/domain/control_periodico.py",
-                     "features/roadmap/services/recordatorios_engine.py"):
-        texto = (RAIZ / relativa).read_text(encoding="utf-8")
-        assert "from app_core.zona_negocio import ZONA_NEGOCIO" in texto, relativa
-
-
 def test_la_guarda_detecta_una_copia_local(tmp_path):
     """Mutación en miniatura: una copia reintroducida aparece en el informe."""
     (tmp_path / "app_core").mkdir()

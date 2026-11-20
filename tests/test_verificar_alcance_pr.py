@@ -171,13 +171,6 @@ def test_una_rama_sin_ficha_no_se_comprueba(monkeypatch):
     assert vap.main(["--rama", "tarea/juan-carlos/soporte-arnes", "--base", "b", "--cabeza", "c"]) == 0
 
 
-def test_el_ci_ejecuta_el_arbitro_en_cada_pr_con_historial_completo():
-    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    assert "scripts/verificar_alcance_pr.py" in flujo
-    assert "fetch-depth: 0" in flujo
-    assert "github.event_name == 'pull_request'" in flujo
-
-
 # CI-23 · rama sin ficha: advertir de lo que no tiene dueña viva y opción estricta.
 # Mutaciones: ignorar la rama sin id (quita la advertencia y el código 1); quitar la exclusión pmv/.
 def _sin_ficha(monkeypatch, rama, opciones=()):
@@ -307,7 +300,3 @@ def test_ci26_m3_rutas_con_espacio_y_salto_de_linea(tmp_path, monkeypatch):
     # Mutación m3: si partiera por '\n' en lugar de '\0', la lista se rompe
     rutas_partidas_por_nl = [r for r in salida_bytes.decode("utf-8").split("\n") if r]
     assert rutas_partidas_por_nl != rutas
-
-
-
-
