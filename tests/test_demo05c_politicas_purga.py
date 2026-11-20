@@ -384,7 +384,10 @@ def test_guardia_vigila_las_funciones_de_otras_politicas(con):
         assert con.execute(text("SELECT has_function_privilege('purga_demo', CAST(:f AS regprocedure), 'EXECUTE')"),
                            {"f": firma}).scalar_one(), firma
     punto = con.begin_nested()
-    con.execute(text(f"REVOKE EXECUTE ON FUNCTION {funciones[0]} FROM purga_demo"))
+    con.execute(text("SELECT set_config('purga.fn', :f, true)"), {"f": funciones[0]})
+    con.execute(text(
+        "DO $$ BEGIN EXECUTE 'REVOKE EXECUTE ON FUNCTION ' || current_setting('purga.fn') || ' FROM purga_demo'; END $$"
+    ))
     faltan = faltan_politicas(con)
     punto.rollback()
     assert any(funciones[0] in f for f in faltan), faltan

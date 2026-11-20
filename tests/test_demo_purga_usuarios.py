@@ -468,7 +468,7 @@ def persona_ficticia_instalada():
 
     Las pruebas de DEMO-05b confirman sus transacciones, así que esta base de pruebas recibe la función (sin
     permisos para el rol, que es global) y el marcador `demo`, y se le quitan al terminar si no estaban.
-    Si la base ya tiene otro marcador, no se cambia: las pruebas se saltan.
+    Si la base ya tiene otro marcador, lo sustituye temporalmente por `demo` y lo restaura al terminar.
     """
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
@@ -478,24 +478,29 @@ def persona_ficticia_instalada():
     with engine.begin() as con:
         marcador_creado = con.execute(text("SELECT to_regclass('public.entorno_marcador')")).scalar() is None
         if marcador_creado:
+            valores_previos = []
             con.execute(text("CREATE TABLE public.entorno_marcador (valor text NOT NULL)"))
-            con.execute(text("INSERT INTO public.entorno_marcador VALUES ('demo')"))
-        valores = [v for (v,) in con.execute(text("SELECT valor FROM public.entorno_marcador"))]
+        else:
+            valores_previos = [v for (v,) in con.execute(text("SELECT valor FROM public.entorno_marcador")).all()]
+            con.execute(text("DELETE FROM public.entorno_marcador"))
+        con.execute(text("INSERT INTO public.entorno_marcador VALUES ('demo')"))
         funcion_creada = con.execute(text(
             "SELECT to_regprocedure('public.es_persona_ficticia(character varying)')")).scalar() is None
-        if valores == ["demo"] and funcion_creada:
+        if funcion_creada:
             _ejecutar_sql(con, _definicion_persona_ficticia())
             con.execute(text("REVOKE ALL ON FUNCTION public.es_persona_ficticia(character varying) FROM PUBLIC"))
     try:
-        if valores != ["demo"]:
-            pytest.skip("la base de pruebas tiene un marcador distinto de 'demo'; no se cambia")
         yield
     finally:
         with engine.begin() as con:
-            if funcion_creada and valores == ["demo"]:
+            if funcion_creada:
                 con.execute(text("DROP FUNCTION IF EXISTS public.es_persona_ficticia(character varying)"))
             if marcador_creado:
                 con.execute(text("DROP TABLE IF EXISTS public.entorno_marcador"))
+            else:
+                con.execute(text("DELETE FROM public.entorno_marcador"))
+                for valor in valores_previos:
+                    con.execute(text("INSERT INTO public.entorno_marcador VALUES (:v)"), {"v": valor})
         engine.dispose()
 
 
