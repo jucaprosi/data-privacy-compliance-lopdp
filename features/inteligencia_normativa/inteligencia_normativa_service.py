@@ -323,3 +323,108 @@ async def revisar_estado(id_resolucion: str, estado: str, nota: str, usuario_id:
         )
     return resultado
 # === fin NORM-03 ===
+
+
+# === NORM-02b ===
+# ¤seguridad-tenant Aviso a las organizaciones de resoluciones nuevas o con versión nueva, al final de una corrida.
+import logging  # noqa: E402
+
+_registro_norm02b = logging.getLogger(__name__)
+_disparar_monitoreo_norm02 = disparar_monitoreo
+_sesion_destinatarios_de_prueba: Callable[[], Any] | None = None
+
+__all__.extend(["inyectar_destinatarios_de_prueba"])
+
+
+def inyectar_destinatarios_de_prueba(sesion_factory: Callable[[], Any] | None = None) -> None:
+    """SOLO PARA PRUEBAS: fábrica de sesiones (con `lopdp_app`) para leer los destinatarios por el pasillo."""
+    global _sesion_destinatarios_de_prueba
+    _sesion_destinatarios_de_prueba = sesion_factory
+
+
+async def _conocidas(sesion) -> tuple[list[str], list[str]]:
+    """Identificadores de resoluciones y versiones ya registradas antes de la corrida (R5)."""
+    resoluciones = (await sesion.execute(text("SELECT id::text FROM normativa_resoluciones"))).scalars().all()
+    versiones = (await sesion.execute(text("SELECT id::text FROM normativa_versiones"))).scalars().all()
+    return list(resoluciones), list(versiones)
+
+
+async def _novedades_de_la_corrida(sesion, conocidas: tuple[list[str], list[str]]) -> list[dict]:
+    """Resoluciones nuevas o con versión nueva desde la foto previa: número, título e id. Corpus público."""
+    resoluciones, versiones = conocidas
+    filas = (await sesion.execute(
+        text("SELECT r.id::text AS id, r.numero_resolucion, r.titulo FROM normativa_resoluciones r "
+             "WHERE NOT (r.id = ANY(CAST(:r AS uuid[]))) "
+             "OR EXISTS (SELECT 1 FROM normativa_versiones v WHERE v.resolucion_id = r.id "
+             "AND NOT (v.id = ANY(CAST(:v AS uuid[])))) "
+             "ORDER BY r.anio_emision, r.numero_resolucion, r.id"),
+        {"r": resoluciones, "v": versiones},
+    )).all()
+    return [{"id": f.id, "numero_resolucion": f.numero_resolucion, "titulo": f.titulo} for f in filas]
+
+
+def _sesion_destinatarios():
+    return _sesion_destinatarios_de_prueba() if _sesion_destinatarios_de_prueba is not None else _sesion()
+
+
+async def _anotar_avisos(id_corrida: str, cuentas: dict) -> None:
+    """Cuentas de avisos en la bitácora de la corrida, sin correos (R6, R7, R8)."""
+    from features.inteligencia_normativa.services.monitoreo import _como_normativa
+
+    codigos = [f"NORMATIVA_AVISOS_ENVIADOS={cuentas['enviados']}",
+               f"NORMATIVA_AVISOS_FALLIDOS={cuentas['fallidos']}",
+               f"NORMATIVA_ORGANIZACIONES_SIN_DESTINATARIOS={cuentas['sin_destinatarios']}"]
+    async with _sesion() as sesion:
+        await _como_normativa(sesion)
+        await sesion.execute(
+            text("UPDATE normativa_monitoreo_logs SET codigos_error = codigos_error || CAST(:c AS jsonb) "
+                 "WHERE id = CAST(:i AS uuid)"),
+            {"c": _json_lista(codigos), "i": id_corrida},
+        )
+        await sesion.commit()
+
+
+def _json_lista(valor: list[str]) -> str:
+    import json
+
+    return json.dumps(valor)
+
+
+async def _avisar_organizaciones(resumen: ResumenCorrida, conocidas: tuple[list[str], list[str]]) -> dict:
+    from app_core.pasillo import notificaciones as pasillo_notificaciones
+    from app_core.pasillo import plataforma as pasillo_plataforma
+
+    async with _sesion() as sesion:
+        novedades = await _novedades_de_la_corrida(sesion, conocidas)
+    if not novedades:
+        return {"enviados": 0, "fallidos": 0, "sin_destinatarios": 0}
+    async with _sesion_destinatarios() as sesion:
+        destinatarios = await pasillo_plataforma.destinatarios_normativos(sesion)
+        activas = await pasillo_plataforma.contar_organizaciones_activas(sesion)
+    cuentas = await pasillo_notificaciones.avisar_novedades_normativas(
+        destinatarios=destinatarios, novedades=novedades, app_base_url=os.environ.get("APP_BASE_URL", ""),
+    )
+    cuentas["sin_destinatarios"] = max(activas - len(destinatarios), 0)
+    await _anotar_avisos(resumen.id, cuentas)
+    return cuentas
+
+
+async def disparar_monitoreo(origen: str = "manual") -> ResumenCorrida:
+    """Corrida y aviso al operador de NORM-02; si la corrida no falló y trajo novedades, aviso a cada organización (R4).
+
+    El aviso nunca tumba la corrida ya registrada (R6) y el registro no lleva correos (R8).
+    """
+    try:
+        async with _sesion() as sesion:
+            conocidas = await _conocidas(sesion)
+    except Exception:  # sin la foto previa no se sabe qué es nuevo: no se avisa antes que repetir (R5)
+        _registro_norm02b.warning("NORM-02b: sin foto previa del corpus; la corrida no avisará a las organizaciones")
+        conocidas = None
+    resumen = await _disparar_monitoreo_norm02(origen)
+    if conocidas is not None and resumen.estado != "fallida" and (resumen.nuevos or resumen.versiones_nuevas):
+        try:
+            await _avisar_organizaciones(resumen, conocidas)
+        except Exception as exc:  # el aviso nunca tumba la corrida ya registrada (R6)
+            _registro_norm02b.warning("NORM-02b: el aviso a las organizaciones falló (%s)", type(exc).__name__)
+    return resumen
+# === fin NORM-02b ===
