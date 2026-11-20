@@ -1,13 +1,13 @@
 +++
 id = "DEMO-05d"
-titulo = "Purga de la demo frente a los triggers de inmutabilidad de la biblioteca: función SECURITY DEFINER solo en la base de la demo"
+titulo = "Purga de la demo frente a los triggers de inmutabilidad de biblioteca y consultas al DPO"
 ola = "backlog"
 estado = "pendiente"
 sala = "demo"
 depende_de = ["DEMO-05", "DEMO-05b", "DEMO-05c", "SEC-20"]
 propiedad = ["jobs/purga_demo/politicas_purga.sql", "jobs/purga_demo/purga.py", "jobs/purga_demo/guardias.py", "jobs/purga_demo/__main__.py", "governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md", "tests/test_demo05d_purga_inmutables.py"]
 crea = ["tests/test_demo05d_purga_inmutables.py"]
-arbitro = "pytest tests/test_demo05d_purga_inmutables.py con TEST_DATABASE_URL de PostgreSQL 16; mutaciones m1 a m5."
+arbitro = "pytest tests/test_demo05d_purga_inmutables.py con TEST_DATABASE_URL de PostgreSQL 16; mutaciones m1 a m6."
 rastros = ["¤demo"]
 agente = "ninguno"
 +++
