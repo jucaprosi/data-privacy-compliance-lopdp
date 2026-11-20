@@ -4,12 +4,11 @@ titulo = "Aviso a las organizaciones de resoluciones nuevas o modificadas"
 ola = "D"
 estado = "pendiente"
 sala = "inteligencia_normativa"
-depende_de = ["NORM-02"]
-propiedad = ["tests/test_norm02b_avisos_organizaciones.py"]
-crea = []
+depende_de = ["NORM-02", "BOV-01", "NOTIF-01"]
+propiedad = ["features/plataforma/services/destinatarios_normativos_engine.py", "tests/test_norm02b_avisos_organizaciones.py"]
+crea = ["features/plataforma/services/destinatarios_normativos_engine.py", "tests/test_norm02b_avisos_organizaciones.py"]
 arbitro = "pytest tests/test_norm02b_avisos_organizaciones.py contra un PostgreSQL 16 local en contenedor"
 rastros = ["¤inteligencia-normativa", "¤vigilancia-spdp"]
-agente = "ninguno"
 +++
 
 # NORM-02b · Aviso a las organizaciones de resoluciones nuevas o modificadas
@@ -21,6 +20,4 @@ agente = "ninguno"
 - Aviso por la compuerta de notificaciones (NOTIF-01) cuando una corrida encuentra resoluciones nuevas o modificadas.
 - Prueba de que cada organización recibe un aviso y ninguna recibe datos de otra.
 
-**Propiedad por concretar:** el Arquitecto fija el pasillo y las secciones antes de repartirla. Hasta entonces, la ficha queda en «Sin agente».
-
-**Sin agente.** Normativa: `NORM-02b` (aviso a las organizaciones; separado de NORM-02 el 2026-11-13; el Arquitecto fija el pasillo antes de repartirla).
+**Propiedad.** Fijada por la especificación (§6): secciones `#NORM-02b` en `app_core/pasillo/plataforma.py`, `app_core/pasillo/notificaciones.py`, `features/plataforma/plataforma_service.py` y `features/inteligencia_normativa/inteligencia_normativa_service.py`, más el motor y la prueba nuevos. Las secciones no pueden declararse en la propiedad mientras sus archivos no tengan la marca `# === NORM-02b ===` (R-PROP-EXISTE): el PR de implementación abre las cuatro marcas y amplía en él la propiedad de esta ficha con las secciones, como hace DER-01 con la matriz.
