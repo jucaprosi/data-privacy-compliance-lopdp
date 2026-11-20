@@ -419,7 +419,25 @@ export default function IntegracionesView() {
 
       {/* === API-02b === */}
       {/* --- INICIO API-02b --- */}
-      {/* Sección sembrada para suscripción y gestión de webhooks en API-02b */}
+      {(() => {
+        type PropsPanel = { techoMaximo: number | null; onCambioActivos: () => void };
+        type TipoPanel = React.LazyExoticComponent<React.ComponentType<PropsPanel>>;
+        const clave = Symbol.for("evydentia.api02b.webhooksPanel");
+        const almacen = globalThis as unknown as Record<symbol, TipoPanel | undefined>;
+        const PanelWebhooks =
+          almacen[clave] ??
+          (almacen[clave] = React.lazy(() => import("@/components/integraciones/WebhooksPanel")));
+        return (
+          <React.Suspense fallback={null}>
+            <PanelWebhooks
+              techoMaximo={techos?.webhooks.maximo ?? null}
+              onCambioActivos={() => {
+                void cargarDatos();
+              }}
+            />
+          </React.Suspense>
+        );
+      })()}
       {/* --- FIN API-02b --- */}
       {/* === fin API-02b === */}
     </div>
