@@ -43,3 +43,9 @@ RM_CLAVE_OBJETO_INVALIDA = CodigoErrorNegocio(
 )
 registrar(RM_ALMACEN_NO_DISPONIBLE, RM_CLAVE_OBJETO_INVALIDA)
 # === fin RET-02 ===
+
+# === RM-25b ===
+# === fin RM-25b ===
+
+# === RM-27 ===
+# === fin RM-27 ===
