@@ -33,7 +33,7 @@ La primera versión de estos documentos afirmaba que las tareas eran «totalment
 | Problema detectado | Corrección |
 | :--- | :--- |
 | `ROUTERS_MAP`, las compuertas y dos archivos de pruebas los tocaban varias tareas a la vez. | Autoregistro de routers (RM-00), **secciones reservadas** en las compuertas (RM-01), `xfail` dinámico en la matriz (RM-03) y pruebas propias en cada tarea. |
-| Cinco tareas crearían una migración en paralelo: dos cabezas de Alembic al fusionar. | Prueba de una sola cabeza (RM-00). La CI de cada PR prueba su fusión con `main` y la de `main` corre tras cada fusión; si dos migraciones se integran casi a la vez, se resuelve con `alembic merge heads`. Exigir ramas al día queda como plan de reserva (CI-01). |
+| Cinco tareas crearían una migración en paralelo: dos cabezas de Alembic al fusionar. | Prueba de una cabeza por sala (CI-28). La CI de cada PR prueba su fusión con `main` y la de `main` corre tras cada fusión; el procedimiento está en `governance/operaciones/FUSION_ALEMBIC.md`. Exigir ramas al día queda como plan de reserva (CI-01). |
 | Todos los agentes de desarrollo probarían contra la misma base compartida, pisándose al migrar y limpiar. | Una base local de pruebas por agente de desarrollo (contenedor PostgreSQL 16 del arnés). |
 | Hacían falta dos tareas en cadena para mover el mismo código (RBAC y roadmap). | Una sola tarea de reestructuración (RM-01): menos olas y sin edición cruzada de imports. |
 | El PRD llevaba rutas de archivos y columnas «pendiente/implementado» que caducan; `TASKS.md` (que el servidor también modifica) llevaba 30 tareas. | PRD solo de producto; arquitectura aparte; **una especificación por tarea** con cabecera legible por máquina y estado propio. |
@@ -113,7 +113,7 @@ El procedimiento completo está en `governance/operaciones/BRIEF_PROPIETARIO_DES
 | R5 | Colisiones entre agentes de desarrollo | Medio | Propiedad exclusiva **verificada** por prueba; secciones reservadas; árbol de trabajo y base local por agente de desarrollo. |
 | R6 | La matriz de permisos y el código divergen | Medio | RM-03 la convierte en prueba. |
 | R7 | Clave del MCP expuesta | Medio | Acción 6 del usuario. |
-| R8 | Dos cabezas de Alembic al integrar migraciones casi a la vez | Bajo | Prueba de una cabeza (RM-00); la CI prueba la fusión con `main`; `alembic merge heads` si ocurre. Plan de reserva: CI-01. |
+| R8 | Dos cabezas de Alembic al integrar migraciones casi a la vez | Bajo | Prueba de una cabeza por sala (CI-28); la CI prueba la fusión con `main`; una migración de fusión dentro de la sala si ocurre. Plan de reserva: CI-01. |
 | R9 | El SSO no funciona en las vistas previas | Medio | Probarlo en local y en producción. |
 | R10 | `task_audit_log` borra registros en cascada con la tarea | Bajo (latente) | Los eventos nuevos van a `audit_events`; evaluar `RESTRICT`. |
 | R11 | Tres vocabularios de tamaño y dos fuentes (ficha del navegador y base) | Medio | RM-15. |

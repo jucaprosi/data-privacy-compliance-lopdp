@@ -20,7 +20,7 @@ Cada sala sigue la forma ya usada por las demás: `domain/` (tipos), `services/`
 1. **Secciones reservadas en las compuertas.** La compuerta nace con una sección vacía por tarea que la ampliará (`# === RM-07 ===` … `# === fin RM-07 ===`); cada tarea edita solo la suya. Así varias tareas comparten un archivo sin conflictos.
 2. **Autoregistro de routers.** Un módulo de `api/routers/` con `AUTO_REGISTRO = True` se incluye solo bajo `/api/v1`; los routers existentes siguen en `ROUTERS_MAP`. `main.py` no se vuelve a editar.
 3. **Errores de negocio con catálogo.** `ErrorNegocio` lleva un código de `app_core/errors.py`; el manejador responde `detail` (texto, como hoy) más `code` y `action_required`, de modo que los clientes actuales no cambian.
-4. **Una sola cabeza de migraciones.** `tests/test_alembic_una_cabeza.py` falla si hay dos cabezas. La CI de cada PR prueba su fusión con `main` y la de `main` corre tras cada fusión; si dos migraciones se integran casi a la vez, se resuelve con `alembic merge heads`. Exigir ramas al día queda como plan de reserva (CI-01).
+4. **Una cabeza de migraciones por sala.** `tests/test_alembic_cabeza_por_sala.py` falla si una sala tiene dos cabezas. La CI de cada PR prueba su fusión con `main` y la de `main` corre tras cada fusión; el procedimiento está en `governance/operaciones/FUSION_ALEMBIC.md`. Exigir ramas al día queda como plan de reserva (CI-01).
 5. **Pruebas propias y base por agente de desarrollo.** Cada tarea crea su archivo de pruebas y prueba en su propia base local (PostgreSQL 16 del arnés), nunca en una base compartida.
 
 La independencia se **comprueba**, no se afirma: `tests/test_indice_tareas.py` falla si dos tareas que pueden ejecutarse a la vez poseen el mismo archivo.
