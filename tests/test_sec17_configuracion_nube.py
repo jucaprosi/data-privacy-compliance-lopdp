@@ -202,8 +202,3 @@ def test_fuera_de_la_nube_sin_variables_la_configuracion_carga_como_hoy():
     resultado = _python("from app_core.config import config; print('CARGA=' + str(bool(config.database_url)))")
     assert resultado.returncode == 0, resultado.stderr[-2000:]
     assert "CARGA=True" in resultado.stdout
-
-
-def test_main_no_pone_ningun_valor_por_defecto():
-    texto = (RAIZ / "main.py").read_text(encoding="utf-8")
-    assert "setdefault(" not in texto

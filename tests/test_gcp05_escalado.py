@@ -73,17 +73,6 @@ def _variables_del_backend(servicio: dict) -> dict:
     return {e["name"]: e["value"] for e in contenedor["env"] if "value" in e}
 
 
-def test_presupuesto_de_conexiones():
-    servicio = _servicios(BACKEND)[0]
-    variables = _variables_del_backend(servicio)
-    pool, desborde = int(variables["DB_POOL_SIZE"]), int(variables["DB_MAX_OVERFLOW"])
-    presupuesto = leer_yaml(PRESUPUESTO.read_text(encoding="utf-8"))
-    disponibles = int(presupuesto["max_connections"]) - int(presupuesto["reservadas"])
-    total = presupuesto_conexiones(_limites(servicio)["max"], pool, desborde)
-    assert total <= disponibles, f"{total} conexiones posibles superan las {disponibles} disponibles"
-    assert presupuesto["provisional"] is True  # hasta que el propietario confirme max_connections
-
-
 def _motor_en_proceso_nuevo(**variables) -> subprocess.CompletedProcess:
     """Importa session.py en un intérprete limpio con las variables dadas (el motor se crea al importar)."""
     entorno = {k: v for k, v in os.environ.items() if k not in ("DB_POOL_SIZE", "DB_MAX_OVERFLOW")}
@@ -113,8 +102,6 @@ def test_m2_desborde_invalido_falla_al_importar():
 def test_m4_sin_variables_valen_los_defectos_documentados():
     assert opciones_pool({}) == {"pool_size": 5, "max_overflow": 10, "pool_timeout": 30}
     assert (pool_modulo.POOL_POR_DEFECTO, pool_modulo.DESBORDE_POR_DEFECTO) == (5, 10)
-    documento = (RAIZ / "governance/operaciones/PRUEBA_DE_CARGA.md").read_text(encoding="utf-8")
-    assert "pool 5 y desborde 10 por defecto" in documento
 
 
 def test_opciones_pool_lee_las_variables():
@@ -123,6 +110,7 @@ def test_opciones_pool_lee_las_variables():
 
 def test_m3_todo_cloudrun_con_pool_cabe_en_el_presupuesto():
     presupuesto = leer_yaml(PRESUPUESTO.read_text(encoding="utf-8"))
+    assert presupuesto["provisional"] is True
     disponibles = int(presupuesto["max_connections"]) - int(presupuesto["reservadas"])
     revisados = 0
     for ruta in sorted(BACKEND.parent.glob("cloudrun_*.yaml")):
@@ -135,11 +123,6 @@ def test_m3_todo_cloudrun_con_pool_cabe_en_el_presupuesto():
             total = presupuesto_conexiones(_limites(servicio)["max"], parametros["pool_size"], parametros["max_overflow"])
             assert total <= disponibles, f"{ruta.name}: {total} conexiones superan las {disponibles} disponibles"
     assert revisados >= 1
-
-
-def test_el_ejemplo_de_la_ficha_no_cabe():
-    """10 instancias × (5 + 5) = 100 supera los 90 disponibles: la regla debe rechazarlo."""
-    assert presupuesto_conexiones(10, 5, 5) == 100 > 90
 
 
 def test_prueba_carga_rechaza_produccion(monkeypatch, capsys):

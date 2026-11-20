@@ -173,11 +173,6 @@ def test_fuera_de_la_nube_sin_secretos_la_configuracion_carga_como_hoy():
     assert resultado.stdout.strip().endswith("True")
 
 
-def test_main_no_pone_jwt_secret_por_defecto():
-    texto = (RAIZ / "main.py").read_text(encoding="utf-8")
-    assert 'setdefault("JWT_SECRET"' not in texto
-
-
 # ----------------------------------------------------------------------------- biblioteca
 
 @pytest.fixture

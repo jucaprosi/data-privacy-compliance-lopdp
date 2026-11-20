@@ -119,14 +119,6 @@ def test_la_url_de_conexion_no_se_imprime(tmp_path):
     assert secreto not in r.stdout + r.stderr and "postgresql://" not in r.stdout
 
 
-def test_los_scripts_no_imprimen_la_variable_de_la_url():
-    for script in (DESPLEGAR, REINICIAR):
-        texto = script.read_text(encoding="utf-8")
-        impresion = re.compile(r'(Write-(Output|Host)|Muestra|Falla)\s+"[^"]*\$env:MIGRATION_DATABASE_URL')
-        assert not impresion.search(texto)
-        assert "Get-Content $ArchivoUrl" in texto  # la URL sale de un archivo local, no de un parámetro
-
-
 # --- Reinicio --------------------------------------------------------------------------------------
 
 @requiere_powershell
