@@ -61,6 +61,7 @@ export interface EstadoServicioIA {
   proveedor: string | null;
   modelo: string | null;
   motivo: string | null;
+  ubicacion: string | null;
 }
 
 /** Datos de un control que se envían al servicio junto con los fragmentos. */

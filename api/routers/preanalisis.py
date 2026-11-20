@@ -5,6 +5,7 @@ Contrato con el frontend: nombres de campo y formas JSON fijos. No se persiste n
 from __future__ import annotations
 
 import asyncio
+import inspect
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
@@ -75,6 +76,7 @@ class EstadoResponse(BaseModel):
     proveedor: Optional[str] = None
     modelo: Optional[str] = None
     motivo: Optional[str] = None
+    ubicacion: Optional[str] = None
 
 
 class FragmentoRelevanteOut(BaseModel):
@@ -131,7 +133,13 @@ class AnalizarResponse(BaseModel):
 @router.get("/estado", response_model=EstadoResponse)
 def obtener_estado(tenant_id: str = Depends(obtener_tenant_id_actual)) -> EstadoResponse:
     e = estado_servicio()
-    return EstadoResponse(disponible=e.disponible, proveedor=e.proveedor, modelo=e.modelo, motivo=e.motivo)
+    return EstadoResponse(
+        disponible=e.disponible,
+        proveedor=e.proveedor,
+        modelo=e.modelo,
+        motivo=e.motivo,
+        ubicacion=e.ubicacion,
+    )
 
 
 @router.post("/preparar", response_model=PrepararResponse)
@@ -186,7 +194,7 @@ async def analizar(
         await _controles_vinculados(session, ctx["tenant_id"]),
     )
     # === fin DIAG-07 ===
-    ctx = ControlContexto(
+    ctx_control = ControlContexto(
         control_id=cuerpo.control_id,
         control=cuerpo.control,
         enunciado=cuerpo.enunciado,
@@ -195,7 +203,10 @@ async def analizar(
     )
     fragmentos = [Fragmento(texto=f.texto, origen=f.origen) for f in cuerpo.fragmentos]
     try:
-        p = await analizar_control(ctx, fragmentos)
+        if len(inspect.signature(analizar_control).parameters) >= 3:
+            p = await analizar_control(ctx_control, fragmentos, tenant_id)
+        else:
+            p = await analizar_control(ctx_control, fragmentos)
     except ProveedorNoDisponible as exc:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, str(exc)) from exc
     except ProveedorFallo as exc:
