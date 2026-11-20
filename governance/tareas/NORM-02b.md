@@ -2,10 +2,10 @@
 id = "NORM-02b"
 titulo = "Aviso a las organizaciones de resoluciones nuevas o modificadas"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "inteligencia_normativa"
 depende_de = ["NORM-02", "BOV-01", "NOTIF-01"]
-propiedad = ["features/plataforma/services/destinatarios_normativos_engine.py", "tests/test_norm02b_avisos_organizaciones.py", "alembic/versions/norm02b_destinatarios_normativos.py", "governance/operaciones/BRIEF_PROPIETARIO_NORM02B.md"]
+propiedad = ["features/plataforma/services/destinatarios_normativos_engine.py", "tests/test_norm02b_avisos_organizaciones.py", "alembic/versions/norm02b_destinatarios_normativos.py", "governance/operaciones/BRIEF_PROPIETARIO_NORM02B.md", "app_core/pasillo/plataforma.py#NORM-02b", "features/plataforma/plataforma_service.py#NORM-02b", "app_core/pasillo/notificaciones.py#NORM-02b", "features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-02b"]
 crea = ["features/plataforma/services/destinatarios_normativos_engine.py", "tests/test_norm02b_avisos_organizaciones.py", "alembic/versions/norm02b_destinatarios_normativos.py", "governance/operaciones/BRIEF_PROPIETARIO_NORM02B.md"]
 arbitro = "pytest tests/test_norm02b_avisos_organizaciones.py contra un PostgreSQL 16 local con lopdp_app, y tests/test_alembic_cabeza_por_sala.py; mutaciones: un solo correo con todos los destinatarios, GRANT EXECUTE TO PUBLIC sobre fn_destinatarios_normativos, añadir una columna a la función y quitar la condición de valid_to"
 rastros = ["¤inteligencia-normativa", "¤vigilancia-spdp"]
