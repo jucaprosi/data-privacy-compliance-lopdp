@@ -9,6 +9,7 @@ propiedad = ["alembic/versions/api02b_webhooks_suscripciones.py", "app_core/inte
 crea = ["alembic/versions/api02b_webhooks_suscripciones.py", "app_core/integraciones/webhooks.py", "api/routers/integraciones_webhooks.py", "tests/test_api02b_webhooks.py", "tests/matriz/API-02b.py", "frontend/src/components/integraciones/WebhooksPanel.tsx", "frontend/src/lib/integraciones/webhooks.ts", "frontend/tests/integraciones/webhooks.spec.ts", "governance/operaciones/BRIEF_PROPIETARIO_SECRETO_WEBHOOKS.md"]
 arbitro = "pytest tests/test_api02b_webhooks.py + test_matriz_permisos.py + Playwright frontend/tests/integraciones/webhooks.spec.ts + tsc --noEmit + build; mutaciones m1 a m5"
 rastros = ["¤seguridad", "¤seguridad-tenant", "¤frontend-ide"]
+agente = "ninguno"
 +++
 
 # API-02b · Webhooks firmados HMAC-SHA256 con techo del paquete
@@ -28,3 +29,4 @@ Diseño del Arquitecto ADPA (2026-11-13), hija de `API-02`. UX/UI cerró la inte
 ## Mutaciones
 m1 otro secreto → falla la verificación; m2 marca de tiempo vieja aceptada → falla; m3 URL interna aceptada → falla; m4 crear sobre el techo → falla; m5 el secreto en claro en el GET → falla.
 
+**Sin agente.** Agente: Gemini, en Antigravity (CLI), por decisión del propietario. El brief se entregó en el chat del Tech Lead, no en `governance/apoyo/briefs/`.
