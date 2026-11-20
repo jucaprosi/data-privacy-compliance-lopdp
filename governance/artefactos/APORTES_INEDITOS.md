@@ -3149,3 +3149,22 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 * **Verificabilidad:** sea $g$ el guion extraído y $r$ una combinación de resultados de jobs. La prueba exige $\text{salida}(g, r) = 0 \iff r \in \text{Aprobadas}$. Mutación M7 de #891: cambiar `exit 1` por `exit 0` en el guion hace fallar 9 casos; la prueba textual anterior seguía en verde con ese cambio.
 * **Soporte bibliográfico:** no se cita ninguna fuente; no se verificó una que trate específicamente las pruebas de guiones de workflow.
 * **Estado:** aplicado en `tests/test_servidor_humo.py` (QA-11). Lo que la prueba no cubre son las condiciones `if:` y `needs:`, que solo evalúa GitHub. No introduce token nuevo.
+
+---
+
+### Aporte 164: Un Aviso en el Cuerpo de un PR Apilado no Impide Fusionarlo contra su Rama Base; el Borrador Sí
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** un PR apilado tiene como base la rama de otro PR sin fusionar. GitHub lo muestra como un PR normal: «sin conflictos», CI en verde y el botón de fusionar activo. Al pulsarlo, los commits van a la rama base y no a `main`. Avisar en el cuerpo del PR que hay que cambiar la base antes de fusionar no detiene a nadie, porque el botón no lee el cuerpo. Lo que sí lo detiene es la plataforma: un PR en borrador no se puede fusionar.
+* **Por qué es útil aquí:** pasó dos veces seguidas, las dos con el aviso en mayúsculas en el cuerpo:
+  - **#894** (NORM-02b), con base `tarea/juan-carlos/espec-norm02b-r2`. El código no llegó a `main` y hubo que abrir el #898.
+  - **#904** (RM-25b), con base `tarea/juan-carlos/propiedad-rm25b-rm27-2`. El código entró en el PR de gobernanza #902, que ahora lleva 24 archivos y llegará a `main` con una decisión de frontend todavía abierta.
+  - En los dos casos `main` no cambió y no se perdió nada. El coste es un PR más, o que el código se fusione dentro de otro PR.
+* **Verificabilidad:** el predicado es $\text{fusionable}(p) \Rightarrow \lnot\,\text{borrador}(p)$, y lo hace cumplir GitHub, no quien fusiona. La prueba observable está en el historial: `gh pr view 894 --json baseRefName` y `gh pr view 904 --json baseRefName` no dan `main`, y los dos están `MERGED`. La práctica queda así:
+  - todo PR apilado se abre con `gh pr create --draft`;
+  - cuando se fusiona su base, se hace `gh pr edit <n> --base main` y después `gh pr ready <n>`;
+  - mejor aún, no se apila sobre una rama de gobernanza sin fusionar: se espera a que se fusione y se abre contra `main`.
+* **Soporte bibliográfico:**
+  - GitHub (documentación oficial), *«About pull requests»*, sección «Draft pull requests» (docs.github.com): un PR en borrador no se puede fusionar hasta marcarlo como listo para revisión.
+  - Shigeo Shingo (1986), *«Zero Quality Control: Source Inspection and the Poka-yoke System»* (ya citado en el registro de fuentes): un aviso depende de que alguien lo atienda; un dispositivo que impide el paso, no.
+* **Estado:** práctica para los briefs y las instrucciones de las sesiones de implementación. No tiene árbitro en el repositorio, porque lo hace cumplir la plataforma. Un árbitro de CI que rechace PR con base distinta de `main` tocaría `.github/workflows/`, y eso es del propietario. No introduce token nuevo.
