@@ -150,3 +150,8 @@ import { PANTALLAS_BOV_03 } from "./BOV-03";
 registrar(PANTALLAS_BOV_03 as unknown as RegistroPantallas);
 // === fin BOV-03 ===
 
+// --- INICIO BOV-04 ---
+import { PANTALLAS_BOV_04 } from "./BOV-04";
+registrar(PANTALLAS_BOV_04);
+// --- FIN BOV-04 ---
+
