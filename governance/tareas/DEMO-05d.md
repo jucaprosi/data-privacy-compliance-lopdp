@@ -9,7 +9,6 @@ propiedad = ["jobs/purga_demo/politicas_purga.sql", "jobs/purga_demo/purga.py", 
 crea = ["tests/test_demo05d_purga_inmutables.py"]
 arbitro = "pytest tests/test_demo05d_purga_inmutables.py con TEST_DATABASE_URL de PostgreSQL 16; mutaciones m1 a m6."
 rastros = ["¤demo"]
-agente = "ninguno"
 +++
 
 # DEMO-05d · Purga de la demo frente a los triggers de inmutabilidad
@@ -49,4 +48,3 @@ Depende de DEMO-05c (el SQL y la guardia de políticas) y, como esa, de que se d
 5. Pruebas: con marcador `pruebas` o `produccion` falla; con la plantilla falla; con una demo real lo borra todo y deja intactas las demás. Mutación: quitar la comprobación del marcador deja una prueba en rojo.
 6. La ficha cita el invariante 63 de EVY y **no toca la inmutabilidad de producción**.
 
-**Sin agente.** Demo, purga frente a los triggers de inmutabilidad de la biblioteca (diseño del Arquitecto, 2026-11-12): `DEMO-05d` (función SECURITY DEFINER solo en la base de la demo; depende de DEMO-05c; el CTO confirma antes el modelo de apagar triggers dentro de la transacción).

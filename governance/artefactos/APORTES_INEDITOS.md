@@ -3152,31 +3152,19 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 
 ---
 
-### Aporte 164: Una Guardia que Recorre `information_schema` con el Rol Restringido No Ve Justo las Tablas que Debe Denunciar
-`¤seguridad` `¤demo`
+### Aporte 164: Un Aviso en el Cuerpo de un PR Apilado no Impide Fusionarlo contra su Rama Base; el Borrador Sí
+`¤arbitro` `¤ci-cd`
 
-* **Descripción:** `information_schema.columns` solo enseña las columnas sobre las que el rol actual tiene algún privilegio o de las que es dueño. Una guardia de «toda tabla con `tenant_id` tiene permisos para el rol X», ejecutada con el propio rol X, recorre ese catálogo y nunca encuentra la tabla nueva sin `GRANT`: el caso que debe denunciar es exactamente el que no ve, y la guardia sale vacía. La enumeración debe hacerse sobre `pg_catalog` (`pg_class` y `pg_attribute`), que cualquier rol lee entero, y la comprobación de permisos con `has_table_privilege`/`has_column_privilege`.
-* **Por qué es útil aquí:** DEMO-05c: el Job corre como `purga_demo` y `tablas_con_tenant` leía `information_schema`. Con una tabla nueva sin permisos, la purga la habría saltado en silencio y la guardia habría dado vacío. `jobs/purga_demo/purga.py` (`_SQL_TABLAS`) pasa a `pg_catalog`. El patrón se repite en cualquier guardia o inventario que corra con un rol mínimo.
-* **Verificabilidad:** con `T` = tabla nueva con `tenant_id` sin `GRANT` y `SET ROLE purga_demo`: `T ∈ tablas(pg_catalog) = True` y `T ∈ tablas(information_schema) = False`. Lo fija `test_guardia_nombra_la_tabla_sin_politicas` (`tests/test_demo05c_politicas_purga.py`): con `_SQL_TABLAS` vuelto a `information_schema` (mutación m1b) la prueba falla; con `pg_catalog` pasa.
+* **Descripción:** un PR apilado tiene como base la rama de otro PR sin fusionar. GitHub lo muestra como un PR normal: «sin conflictos», CI en verde y el botón de fusionar activo. Al pulsarlo, los commits van a la rama base y no a `main`. Avisar en el cuerpo del PR que hay que cambiar la base antes de fusionar no detiene a nadie, porque el botón no lee el cuerpo. Lo que sí lo detiene es la plataforma: un PR en borrador no se puede fusionar.
+* **Por qué es útil aquí:** pasó dos veces seguidas, las dos con el aviso en mayúsculas en el cuerpo:
+  - **#894** (NORM-02b), con base `tarea/juan-carlos/espec-norm02b-r2`. El código no llegó a `main` y hubo que abrir el #898.
+  - **#904** (RM-25b), con base `tarea/juan-carlos/propiedad-rm25b-rm27-2`. El código entró en el PR de gobernanza #902, que ahora lleva 24 archivos y llegará a `main` con una decisión de frontend todavía abierta.
+  - En los dos casos `main` no cambió y no se perdió nada. El coste es un PR más, o que el código se fusione dentro de otro PR.
+* **Verificabilidad:** el predicado es $\text{fusionable}(p) \Rightarrow \lnot\,\text{borrador}(p)$, y lo hace cumplir GitHub, no quien fusiona. La prueba observable está en el historial: `gh pr view 894 --json baseRefName` y `gh pr view 904 --json baseRefName` no dan `main`, y los dos están `MERGED`. La práctica queda así:
+  - todo PR apilado se abre con `gh pr create --draft`;
+  - cuando se fusiona su base, se hace `gh pr edit <n> --base main` y después `gh pr ready <n>`;
+  - mejor aún, no se apila sobre una rama de gobernanza sin fusionar: se espera a que se fusione y se abre contra `main`.
 * **Soporte bibliográfico:**
-  - PostgreSQL Global Development Group (documentación oficial, v16). *«37.17. columns»* (postgresql.org/docs/16/infoschema-columns.html): «Only those columns are shown that the current user has access to (by way of being the owner or having some privilege)». Es la causa directa del punto ciego.
-* **Estado:** aplicado en `jobs/purga_demo/purga.py` y `guardias.py` (DEMO-05c). No introduce token nuevo.
-
----
-
-### Aporte 165: Un Rol Estrecho con Políticas Propias Falla en Tablas Ajenas por las Políticas `TO public` de Otras Salas
-`¤seguridad` `¤demo`
-
-* **Descripción:** las políticas permisivas que alcanzan a un rol se combinan con OR, y las `TO public` alcanzan a todos los roles. Si una política `TO public` de otra sala llama a una función cuyo `EXECUTE` solo tiene la aplicación, cualquier `SELECT` o `DELETE` del rol nuevo sobre esa tabla falla con «permission denied for function», aunque su propia política baste y aunque la tabla no tenga filas que coincidan. Observado en PostgreSQL 16: el error sale con 0 filas de la biblioteca en el tenant, así que el permiso se comprueba al preparar la sentencia y no al evaluar cada fila. Darle `EXECUTE` sobre esas funciones SECURITY INVOKER no le abre datos: corren con sus permisos (aquí leerían `users.activo`, que el rol no tiene, y fallarían cerradas si alguna vez se evaluaran).
-* **Por qué es útil aquí:** la purga de DEMO-05c como `purga_demo` caía en `biblioteca_impactos_organizacion` y en las demás tablas de la biblioteca (`biblioteca_puede()`, `biblioteca_miembro_activo()`, `EXECUTE` solo para `lopdp_app`). `politicas_purga.sql` concede `EXECUTE` sobre las funciones SECURITY INVOKER que llaman esas políticas, calculadas desde `pg_depend` sin lista fija, y la guardia nombra cualquiera que le falte. Toda ficha que cree un rol con políticas propias (purga, réplica, informes) se topará con lo mismo.
-* **Verificabilidad:** sin el `GRANT`, `purgar_tenant` como `purga_demo` lanza `InsufficientPrivilege: permission denied for function biblioteca_puede` (medido el 2026-11-19 en el PostgreSQL 16 local); con el `GRANT`, `purgar_tenant(...) = (0, 3)`. Lo fija `test_guardia_vigila_las_funciones_de_otras_politicas`. No es una prueba sobre la implementación interna de PostgreSQL: es un comportamiento observado en la v16.
-* **Soporte bibliográfico:**
-  - PostgreSQL Global Development Group (documentación oficial, v16). *«CREATE POLICY»* (postgresql.org/docs/16/sql-createpolicy.html): las políticas permisivas que se aplican a una consulta se combinan con OR, y una política sin `TO` vale para `PUBLIC`, es decir, para todos los roles. Respalda que las políticas de otra sala entran en las sentencias del rol nuevo.
-* **Estado:** aplicado en `jobs/purga_demo/politicas_purga.sql` y `guardias.py` (DEMO-05c), `GRANT` confirmado por el CTO (2026-11-20): solo funciones SECURITY INVOKER (`NOT prosecdef`), que no abren datos, y la guardia nombra la que falte. No introduce token nuevo.
-
-## Candidatos descartados de esta sesión (DEMO-05c)
-
-| Candidato | Motivo |
-| :--- | :--- |
-| `exec_driver_sql` de SQLAlchemy con psycopg 3 interpreta `%` aunque no haya parámetros. | Comportamiento documentado del driver; se usa el cursor DBAPI para ejecutar el SQL. |
-| `CREATE ROLE` es transaccional y permite probar un rol global en una transacción revertida. | Ya fijado por la especificación de DEMO-05c (R11). |
+  - GitHub (documentación oficial), *«About pull requests»*, sección «Draft pull requests» (docs.github.com): un PR en borrador no se puede fusionar hasta marcarlo como listo para revisión.
+  - Shigeo Shingo (1986), *«Zero Quality Control: Source Inspection and the Poka-yoke System»* (ya citado en el registro de fuentes): un aviso depende de que alguien lo atienda; un dispositivo que impide el paso, no.
+* **Estado:** práctica para los briefs y las instrucciones de las sesiones de implementación. No tiene árbitro en el repositorio, porque lo hace cumplir la plataforma. Un árbitro de CI que rechace PR con base distinta de `main` tocaría `.github/workflows/`, y eso es del propietario. No introduce token nuevo.

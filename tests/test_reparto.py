@@ -130,3 +130,132 @@ def test_ci26_m2_reparto_rama_con_tilde_no_da_hallazgo_r5(tmp_path, monkeypatch)
     hallazgos = vr.revisar_diff(archivos_mutados, bloque, indice)
     assert len(hallazgos) == 1
     assert "está fuera de su «Escribe»" in hallazgos[0]
+
+
+# --------------------------------------------------------------------------- CI-33
+
+def _ficha_ci33(tid, propiedad=(), estado="en_curso"):
+    lista = ", ".join(f'"{p}"' for p in propiedad)
+    return (f'+++\nid = "{tid}"\ntitulo = "t"\nola = "backlog"\nestado = "{estado}"\nsala = "s"\n'
+            f'depende_de = []\npropiedad = [{lista}]\ncrea = []\narbitro = "pytest"\n+++\n\n# {tid}\n')
+
+
+_SECCIONADO = "cabecera\n# === BL-01 ===\nx = 1\n# === fin BL-01 ===\npie 1\npie 2\n"
+
+
+def _repo_ci33(tmp_path, base: dict, rama: dict):
+    """Repositorio temporal con `main` (archivos `base`) y la rama `tarea/x` (`rama`; None borra el archivo)."""
+    import os
+    import subprocess
+    env = dict(os.environ, GIT_AUTHOR_NAME="T", GIT_AUTHOR_EMAIL="t@e.com",
+               GIT_COMMITTER_NAME="T", GIT_COMMITTER_EMAIL="t@e.com")
+
+    def git(*args):
+        subprocess.run(["git", *args], cwd=tmp_path, env=env, check=True, capture_output=True)
+
+    def escribir(archivos):
+        for ruta, texto in archivos.items():
+            f = tmp_path / ruta
+            if texto is None:
+                f.unlink()
+                continue
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_bytes(texto.encode("utf-8"))
+
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    git("init")
+    git("checkout", "-b", "main")
+    escribir({"LEEME.md": "repo\n", **base})
+    git("add", "-A")
+    git("commit", "-m", "base")
+    git("checkout", "-b", "tarea/x")
+    escribir(rama)
+    git("add", "-A")
+    git("commit", "-m", "rama")
+    return tmp_path
+
+
+def _r5_ci33(tmp_path, monkeypatch, bloque, base, rama):
+    monkeypatch.setattr(vr, "RAIZ", _repo_ci33(tmp_path, base, rama))
+    return vr.revisar_rama("tarea/x", "main", bloque, indice)
+
+
+def test_ci33_ficha_propia(tmp_path, monkeypatch):
+    bloque = vr.Bloque("BL-01", 0, ["BL-01"], ["a.py"])
+    hallazgos = _r5_ci33(tmp_path, monkeypatch, bloque,
+                         {"governance/tareas/BL-01.md": _ficha_ci33("BL-01", estado="pendiente")},
+                         {"governance/tareas/BL-01.md": _ficha_ci33("BL-01"), "a.py": "x = 1\n"})
+    assert hallazgos == []
+
+
+def test_ci33_ficha_ajena(tmp_path, monkeypatch):
+    bloque = vr.Bloque("BL-01", 0, ["BL-01"], ["a.py"])
+    hallazgos = _r5_ci33(tmp_path, monkeypatch, bloque, {"governance/tareas/OT-01.md": _ficha_ci33("OT-01")},
+                         {"governance/tareas/OT-01.md": _ficha_ci33("OT-01", estado="bloqueada")})
+    assert hallazgos == ["R5 BL-01: «governance/tareas/OT-01.md» está fuera de su «Escribe»"]
+
+
+def test_ci33_brief_y_portada(tmp_path, monkeypatch):
+    bloque = vr.Bloque("BL-01", 0, ["BL-01"], ["a.py"])
+    hallazgos = _r5_ci33(tmp_path, monkeypatch, bloque, {},
+                         {"governance/apoyo/briefs/BL-01.md": "brief\n", "governance/artefactos/TASKS.md": "t\n",
+                          "governance/apoyo/BRIEFS_POR_BLOQUE.md": "portada\n"})
+    assert hallazgos == [
+        "R5 BL-01: «governance/apoyo/BRIEFS_POR_BLOQUE.md» está fuera de su «Escribe»",
+        "R5 BL-01: «governance/apoyo/briefs/BL-01.md» está fuera de su «Escribe»",
+        "R5 BL-01: «governance/artefactos/TASKS.md» está fuera de su «Escribe»",
+    ]
+
+
+def test_ci33_seccion_por_sembrar(tmp_path, monkeypatch):
+    bloque = vr.Bloque("BL-01", 0, ["BL-01"], ["a.py"])
+    hallazgos = _r5_ci33(
+        tmp_path, monkeypatch, bloque,
+        {"governance/tareas/BL-01.md": _ficha_ci33("BL-01", ["a.py"]), "b.py": _SECCIONADO},
+        {"governance/tareas/BL-01.md": _ficha_ci33("BL-01", ["a.py", "b.py#BL-01"]),
+         "b.py": _SECCIONADO.replace("x = 1\n", "x = 2\ny = 3\n")})
+    assert hallazgos == []
+
+
+def test_ci33_linea_fuera_de_la_seccion(tmp_path, monkeypatch):
+    bloque = vr.Bloque("BL-01", 0, ["BL-01"], ["a.py"])
+    ficha = {"governance/tareas/BL-01.md": _ficha_ci33("BL-01", ["a.py", "b.py#BL-01"])}
+    mensaje = ["R5 BL-01: «b.py» cambia líneas fuera de la sección BL-01"]
+    cambiada = _r5_ci33(tmp_path / "cambia", monkeypatch, bloque, {"b.py": _SECCIONADO},
+                        {**ficha, "b.py": _SECCIONADO.replace("pie 1", "pie cambiado")})
+    borrada = _r5_ci33(tmp_path / "borra", monkeypatch, bloque, {"b.py": _SECCIONADO},
+                       {**ficha, "b.py": _SECCIONADO.replace("pie 1\n", "")})
+    assert cambiada == mensaje
+    assert borrada == mensaje
+
+
+def test_ci33_borrado_dentro_de_la_seccion_es_valido():
+    """El borrado puro da la línea siguiente; dentro de la sección, esa línea es la de cierre como mucho."""
+    assert vr.rango_de_seccion(_SECCIONADO, "BL-01") == (2, 4)
+    assert vr.rango_de_seccion("--- INICIO X-1 ---\na\n--- FIN X-1 ---\n", "X-1") == (1, 3)
+    assert vr.rango_de_seccion(_SECCIONADO, "OT-01") is None
+
+
+def test_ci33_seccion_sin_marca(tmp_path, monkeypatch):
+    bloque = vr.Bloque("BL-01", 0, ["BL-01"], ["a.py"])
+    hallazgos = _r5_ci33(tmp_path, monkeypatch, bloque, {"b.py": "sin marcas\n"},
+                         {"governance/tareas/BL-01.md": _ficha_ci33("BL-01", ["a.py", "b.py#BL-01"]),
+                          "b.py": "sin marcas, cambiado\n"})
+    assert hallazgos == ["R5 BL-01: «b.py» no tiene la sección BL-01"]
+
+
+def test_ci33_ficha_propia_hecha(tmp_path, monkeypatch):
+    bloque = vr.Bloque("BL-01", 0, ["BL-01"], ["a.py"])
+    hallazgos = _r5_ci33(tmp_path, monkeypatch, bloque, {"governance/tareas/BL-01.md": _ficha_ci33("BL-01")},
+                         {"governance/tareas/BL-01.md": _ficha_ci33("BL-01", estado="hecha")})
+    assert hallazgos == ["R5 BL-01: «governance/tareas/BL-01.md» pasa a hecha; el cierre lo hace el coordinador"]
+
+
+def test_ci33_bloque_con_dos_tareas(tmp_path, monkeypatch):
+    bloque = vr.Bloque("BL-01", 0, ["BL-01", "BL-02"], ["a.py"])
+    hallazgos = _r5_ci33(tmp_path, monkeypatch, bloque,
+                         {"governance/tareas/BL-01.md": _ficha_ci33("BL-01", estado="pendiente"),
+                          "governance/tareas/BL-02.md": _ficha_ci33("BL-02", estado="pendiente")},
+                         {"governance/tareas/BL-01.md": _ficha_ci33("BL-01"),
+                          "governance/tareas/BL-02.md": _ficha_ci33("BL-02")})
+    assert hallazgos == []

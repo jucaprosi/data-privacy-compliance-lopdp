@@ -90,6 +90,9 @@ class TaskEvidenceUploadRequest(BaseModel):
 class TaskEvidenceValidationRequest(BaseModel):
     validation_status: EvidenceValidation
     notes: str = ""
+    # RM-25b (R6): nivel de evidencia que acredita la validación final. Obligatorio al aprobar (lo exige el
+    # motor con 422); al rechazar se ignora.
+    nivel_acreditado: Optional[int] = Field(default=None, ge=0, le=4)
 
 
 class RoadmapTask(BaseModel):
