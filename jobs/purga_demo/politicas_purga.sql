@@ -42,24 +42,14 @@ $fn$;
 REVOKE ALL ON FUNCTION public.es_persona_ficticia(character varying) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.es_persona_ficticia(character varying) TO purga_demo;
 
--- R6 · users: solo el identificador; jamás el correo.
-REVOKE ALL ON public.users FROM purga_demo;
-GRANT SELECT (id), DELETE ON public.users TO purga_demo;
-
--- R5 · demo_sesiones: solo las columnas que la purga necesita.
-REVOKE ALL ON public.demo_sesiones FROM purga_demo;
-GRANT SELECT (id, tenant_id, estado, terminada_en, persona_usuario_id), DELETE ON public.demo_sesiones TO purga_demo;
-
--- R3 · tenants: el filtro de vencidos lo aplica el código mientras la tabla no tenga RLS.
-REVOKE ALL ON public.tenants FROM purga_demo;
-GRANT SELECT, DELETE ON public.tenants TO purga_demo;
-
 DO $$
 DECLARE
   marcador CONSTANT text := 'EXISTS (SELECT 1 FROM public.entorno_marcador WHERE valor = ''demo'')';
   t record;
 BEGIN
   -- R4 · Todas las tablas con `tenant_id`, salvo tenants y demo_sesiones (catálogo, no information_schema).
+  -- Orden de bloqueos: políticas (AccessExclusiveLock) antes que REVOKE/GRANT (tupla en pg_class) para no
+  -- cruzarse en interbloqueo con autovacuum (VACUUM ANALYZE actualiza pg_class al cerrar su bloqueo).
   FOR t IN
     SELECT c.relname, c.relrowsecurity
       FROM pg_class c
@@ -68,8 +58,6 @@ BEGIN
        AND c.relname NOT IN ('tenants', 'demo_sesiones')
      ORDER BY c.relname
   LOOP
-    EXECUTE format('REVOKE ALL ON public.%I FROM purga_demo', t.relname);
-    EXECUTE format('GRANT SELECT, DELETE ON public.%I TO purga_demo', t.relname);
     EXECUTE format('DROP POLICY IF EXISTS purga_demo_select ON public.%I', t.relname);
     EXECUTE format('DROP POLICY IF EXISTS purga_demo_delete ON public.%I', t.relname);
     IF t.relrowsecurity THEN
@@ -78,6 +66,8 @@ BEGIN
       EXECUTE format('CREATE POLICY purga_demo_delete ON public.%I AS PERMISSIVE FOR DELETE TO purga_demo '
                      'USING (%s AND tenant_id::text IN (SELECT id::text FROM public.tenants))', t.relname, marcador);
     END IF;
+    EXECUTE format('REVOKE ALL ON public.%I FROM purga_demo', t.relname);
+    EXECUTE format('GRANT SELECT, DELETE ON public.%I TO purga_demo', t.relname);
   END LOOP;
 
   -- Las políticas permisivas se combinan con OR y PostgreSQL comprueba al iniciar cada sentencia el EXECUTE
@@ -135,3 +125,15 @@ BEGIN
                    'USING (%s)', marcador);
   END IF;
 END $$;
+
+-- R6 · users: solo el identificador; jamás el correo (después de sus políticas por orden de bloqueos).
+REVOKE ALL ON public.users FROM purga_demo;
+GRANT SELECT (id), DELETE ON public.users TO purga_demo;
+
+-- R5 · demo_sesiones: solo las columnas que la purga necesita.
+REVOKE ALL ON public.demo_sesiones FROM purga_demo;
+GRANT SELECT (id, tenant_id, estado, terminada_en, persona_usuario_id), DELETE ON public.demo_sesiones TO purga_demo;
+
+-- R3 · tenants: el filtro de vencidos lo aplica el código mientras la tabla no tenga RLS.
+REVOKE ALL ON public.tenants FROM purga_demo;
+GRANT SELECT, DELETE ON public.tenants TO purga_demo;
