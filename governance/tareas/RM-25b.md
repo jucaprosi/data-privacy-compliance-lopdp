@@ -5,8 +5,8 @@ ola = "backlog"
 estado = "pendiente"
 sala = "roadmap"
 depende_de = ["RM-25a", "DIAG-12", "DIAG-07", "ORG-22", "RET-02", "RET-03"]
-propiedad = ["alembic/versions/20261112_evidencia_doble_validacion_exigir.py", "features/roadmap/services/evidencia_engine.py", "api/routers/roadmaps.py", "features/roadmap/services/tareas_validadas_engine.py", "tests/test_diag12_estados.py", "tests/test_rm25b_validacion_final.py"]
-crea = ["alembic/versions/20261112_evidencia_doble_validacion_exigir.py", "tests/test_rm25b_validacion_final.py"]
+propiedad = ["alembic/versions/rm25b_evidencia_exigir.py", "features/roadmap/services/evidencia_engine.py", "api/routers/roadmaps.py", "features/roadmap/services/tareas_validadas_engine.py", "tests/test_diag12_estados.py", "tests/test_rm25b_validacion_final.py"]
+crea = ["alembic/versions/rm25b_evidencia_exigir.py", "tests/test_rm25b_validacion_final.py"]
 arbitro = "pytest tests/test_rm25b_validacion_final.py tests/test_diag12_estados.py contra PostgreSQL 16 local con lopdp_app y RLS + suite completa: aprobar sin primera validación da 409 PRIMERA_VALIDACION_PENDIENTE; un implementador da 403; el mismo coordinador como validador final da 409; un INSERT o UPDATE directo a approved sin primera validación lo rechaza el CHECK; DIAG-12 no cuenta una tarea que aprobó un DPO sin primera validación; mutaciones documentadas: quitar el CHECK o quitar la condición de rol en la consulta hace fallar su prueba"
 rastros = ["¤roadmap"]
 agente = "ninguno"
@@ -18,7 +18,7 @@ Diseño del Arquitecto ADPA, 2026-11-11 (doble validación de la evidencia: prim
 
 ## Entrega
 - Va **después** de que RM-25a esté al 100 % y de que la revisión estable sea posterior, con el mismo brief de despliegue que DER-06b (compuerta humana del brief de revisiones).
-- Migración `20261112_evidencia_doble_validacion_exigir`: `CHECK (validation_status <> 'approved' OR primera_validacion_por IS NOT NULL) NOT VALID` (deja en paz las filas históricas y exige el paso en las nuevas); `down_revision` sobre la cabeza real.
+- Migración `rm25b_evidencia_exigir` (primera de la sala `roadmap`, sobre `BASE_COMUN` con `branch_labels = ("roadmap",)`): `CHECK (validation_status <> 'approved' OR primera_validacion_por IS NOT NULL) NOT VALID` (deja en paz las filas históricas y exige el paso en las nuevas).
 - `evidencia_engine.py`: la validación final exige que haya primera validación (409 `PRIMERA_VALIDACION_PENDIENTE`), un rol `dpo` o `auditor`, y que quien valida sea distinto de quien subió y de quien hizo la primera validación. El PATCH de `roadmaps.py` queda en `require_role("dpo", "auditor")` con prueba de 403 para `implementador`; el rechazo puede seguir siendo de cualquiera de los dos pasos.
 - `tareas_validadas_engine.py` (de DIAG-12, que debe estar `hecha`): la consulta usa los roles guardados (`primera_validacion_rol = 'coordinador'` y `validado_rol IN ('dpo', 'auditor')`), no los roles vigentes. `tests/test_diag12_estados.py`: el caso nuevo.
 - **Pendiente del CTO:** (a) `implementador` deja de validar (hoy puede; choca con el invariante 14 de EVY); (b) las evidencias `approved` antiguas sin primera validación: propuesta del Arquitecto, que no cuenten las validadas después del despliegue de esta ficha y que las anteriores cuenten marcadas como «validación simple»; (c) el rol `auditor` no existe todavía en `Role` ni en el CHECK `ck_utr_role` (lo crea ORG-22, pendiente): por eso esta ficha depende de ORG-22 (ORG-22b, activar): hasta entonces DIAG-12 entra con «solo dpo», pero «solo dpo» no es la regla definitiva.

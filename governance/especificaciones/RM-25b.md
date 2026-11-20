@@ -3,7 +3,7 @@
 
 ## 1. Datos
 
-Migración `rm25b_evidencia_exigir.py`, sin fecha (sustituye a `20261112_evidencia_doble_validacion_exigir.py`); `down_revision` = la cabeza de `main` al implementar (FUSION_ALEMBIC). Es la tercera migración de su tanda. Es el paso «contraer» de RM-25a, que añadió en `task_evidence` las columnas `primera_validacion_por`, `primera_validacion_en`, `primera_validacion_rol`, `validado_rol` y `nivel_acreditado`.
+Migración `alembic/versions/rm25b_evidencia_exigir.py`, de la sala `roadmap` (`alembic/salas.py`, CI-28). Es la primera migración de esa sala: `down_revision = BASE_COMUN` (`"ret02_clave_objeto"`) y `branch_labels = ("roadmap",)`. Las siguientes migraciones de `roadmap` cuelgan de `roadmap@head`. Es el paso «contraer» de RM-25a, que añadió en `task_evidence` las columnas `primera_validacion_por`, `primera_validacion_en`, `primera_validacion_rol`, `validado_rol` y `nivel_acreditado`.
 
 - `task_evidence.requiere_revalidacion BOOLEAN NOT NULL DEFAULT false`.
 - La migración marca `requiere_revalidacion = true` en las evidencias `approved` que no tienen primera validación. **Antes imprime el recuento** de las filas que va a marcar. No cambia su `validation_status` ni promueve ninguna.
