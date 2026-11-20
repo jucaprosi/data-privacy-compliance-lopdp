@@ -50,3 +50,13 @@ __all__ = [
 # === ORG-20 ===
 # Sección reservada para ORG-20.
 # === fin ORG-20 ===
+
+# === NORM-02b ===
+# Destinatarios del aviso de novedades normativas: solo por fn_destinatarios_normativos() (R1, R2).
+from features.plataforma.services.destinatarios_normativos_engine import (  # noqa: E402
+    contar_organizaciones_activas,
+    destinatarios_normativos,
+)
+
+__all__.extend(["contar_organizaciones_activas", "destinatarios_normativos"])
+# === fin NORM-02b ===
