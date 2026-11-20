@@ -55,7 +55,7 @@ export class LocatorResolver {
         /role=(\w+)(?:\[name=["']?([^"'\]]+)["']?\])?/
       );
       if (roleMatch) {
-        const roleName = roleMatch[1] as any;
+        const roleName = roleMatch[1] as Parameters<Page["getByRole"]>[0];
         const roleName2 = roleMatch[2];
 
         if (roleName2) {
@@ -75,7 +75,7 @@ export class LocatorResolver {
 
     // N6: text - formato: text="algo" o text=/regex/
     if (s.startsWith("text=")) {
-      let textValue = s.replace(/^text=["']?/, "").replace(/["']?$/, "");
+      const textValue = s.replace(/^text=["']?/, "").replace(/["']?$/, "");
 
       // Regex support
       if (textValue.startsWith("/") && textValue.endsWith("/")) {

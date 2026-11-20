@@ -139,7 +139,6 @@ test.describe("Vista de olas y tareas (FE-03)", () => {
 
   test("el coordinador elige el área y solo entonces distribuye a su responsable", async ({ page }) => {
     await abrir(page, "?rol=coordinador&usuario=user-enc-01");
-    const card = tarea(page, "task-002");
     await page.locator("#area-asignacion-task-002").selectOption("area-001");
     await page.locator("#responsable-asignacion-task-002").selectOption("user-resp-01");
     await page.getByRole("button", { name: "Distribuir tarea" }).nth(1).click();

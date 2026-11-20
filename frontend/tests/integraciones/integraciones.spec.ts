@@ -1,7 +1,7 @@
 /**
  * API-02: Pruebas de integración de interfaz para Claves de Integración y Techos.
  */
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 
 test.describe("API-02: Claves de integración", () => {
   test("renderiza panel de claves y techos de paquete", async ({ page }) => {

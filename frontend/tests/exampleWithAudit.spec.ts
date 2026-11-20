@@ -130,7 +130,7 @@ test.describe("Ejemplo: Dashboard con Auditoría Completa", () => {
         console.log(
           `  ${locator}: ${isVisible ? "✅ visible" : "❌ no visible"}`
         );
-      } catch (e) {
+      } catch {
         console.log(`  ${locator}: ⚠️ error`);
       }
     }
