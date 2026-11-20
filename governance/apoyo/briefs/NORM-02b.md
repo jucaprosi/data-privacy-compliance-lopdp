@@ -24,13 +24,16 @@
 
   - `features/plataforma/services/destinatarios_normativos_engine.py`
   - `tests/test_norm02b_avisos_organizaciones.py`
+  - `alembic/versions/norm02b_destinatarios_normativos.py`
+  - `governance/operaciones/BRIEF_PROPIETARIO_NORM02B.md`
 
 **Secciones (en tu PR).** Abre con su marca `# === NORM-02b ===` y `# === fin NORM-02b ===` tus secciones en `app_core/pasillo/plataforma.py`, `features/plataforma/plataforma_service.py`, `app_core/pasillo/notificaciones.py` y `features/inteligencia_normativa/inteligencia_normativa_service.py`, y amplía en el mismo PR la propiedad de la ficha con esas cuatro secciones (`ruta#NORM-02b`). Solo escribes dentro de tus marcas.
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; cruza salas solo por pasillo y compuerta.
-- Lee las organizaciones con el mismo mecanismo que ya usa el operador de la plataforma. No crees un rol que salte la RLS ni añadas una política. Si con ese mecanismo no se pueden leer los roles de los usuarios, detente e infórmalo: es decisión del propietario y de Seguridad (R2).
+- Lee los destinatarios solo con `fn_destinatarios_normativos()` (R2, decidido el 2026-11-19: opción (a)). Su firma, filtro, permisos y dueño los fija la especificación §1; no los amplíes. No crees un rol que salte la RLS ni añadas o cambies ninguna política. El operador sigue sin fijar organización.
+- Si en el PostgreSQL local la función no ve las filas, o si para que las vea haría falta una política o un rol nuevo, detente e infórmalo (R2b).
 - Ni los registros ni la bitácora guardan correos (R8). Ningún mensaje lleva destinatarios ni nombres de dos organizaciones (R3).
 - No uses la base ni el proyecto de producción. No despliegues.
 - No edites gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
@@ -38,5 +41,5 @@
 
 **Hecho si** (árbitro exógeno):
 
-- `NORM-02b`: pytest tests/test_norm02b_avisos_organizaciones.py contra un PostgreSQL 16 local en contenedor
+- `NORM-02b`: pytest tests/test_norm02b_avisos_organizaciones.py contra un PostgreSQL 16 local con lopdp_app, y tests/test_alembic_cabeza_por_sala.py; mutaciones: un solo correo con todos los destinatarios, GRANT EXECUTE TO PUBLIC sobre fn_destinatarios_normativos, añadir una columna a la función y quitar la condición de valid_to
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
