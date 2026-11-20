@@ -24,5 +24,5 @@ Diseño del Arquitecto ADPA (2026-11-12) por decisión del CTO: política explí
 - Paso 5 del brief `BRIEF_PROPIETARIO_DEMO05.md` con la comprobación de solo lectura.
 
 ## Límites
-- Los triggers de inmutabilidad de la biblioteca los resuelve DEMO-05d (opción a, confirmada por el CTO), que va después y comparte `jobs/purga_demo/`.
+- Los triggers de inmutabilidad de la biblioteca los resuelve DEMO-05d, que va después y comparte `jobs/purga_demo/`; el mecanismo se decide en su especificación.
 - Nada en Alembic.
