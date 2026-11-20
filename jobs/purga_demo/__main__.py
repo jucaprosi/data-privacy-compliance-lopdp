@@ -17,7 +17,7 @@ from sqlalchemy.engine import Connection, make_url
 from sqlalchemy.exc import SQLAlchemyError
 
 from .almacen import Almacen, AlmacenGCS, ErrorAlmacen
-from .guardias import PurgaRechazada, exigir_demo, faltan_politicas, tablas_sin_rls
+from .guardias import PurgaRechazada, exigir_demo, falta_funcion_inmutables, faltan_politicas, tablas_sin_rls
 from .purga import Destino, ErrorPurga, purgar
 
 
@@ -31,11 +31,16 @@ def _lectura(destino: Destino):
             yield con
 
 
+def _faltas(con: Connection) -> list[str]:
+    """Guardia completa: políticas de `purga_demo` (DEMO-05c R9) y función de las inmutables (DEMO-05d R6)."""
+    return faltan_politicas(con) + falta_funcion_inmutables(con)
+
+
 def ejecutar(destino: Destino, almacen: Almacen, ahora: datetime) -> int:
-    """Guardia de políticas (DEMO-05c R9) y purga. Con una `Connection` no confirma nada."""
+    """Guardia de políticas y de la función de inmutables, y purga. Con una `Connection` no confirma nada."""
     try:
         with _lectura(destino) as con:
-            faltan = faltan_politicas(con)
+            faltan = _faltas(con)
             sin_rls = tablas_sin_rls(con)
     except SQLAlchemyError as error:
         print(f"[purga-demo] ERROR: no se pudo comprobar las políticas de purga ({type(error).__name__}).",
@@ -52,6 +57,10 @@ def ejecutar(destino: Destino, almacen: Almacen, ahora: datetime) -> int:
     except (ErrorPurga, ErrorAlmacen) as error:
         print(f"[purga-demo] ERROR: {error}", file=sys.stderr)
         return 1
+    except SQLAlchemyError as error:
+        # P. ej. la función de inmutables se niega (42501, DEMO-05d R1): la transacción del tenant ya revirtió.
+        print(f"[purga-demo] ERROR: la base rechazó la purga ({type(error).__name__}).", file=sys.stderr)
+        return 1
     print(f"[purga-demo] tenants={len(informe.tenants)} objetos={informe.objetos} filas={informe.filas} "
           f"sesiones_caducadas={informe.sesiones_caducadas}")
     return 0
@@ -64,7 +73,7 @@ def comprobar(destino: Destino) -> int:
     """R10: la guardia da vacío y `es_persona_ficticia` reconoce al menos a una persona ficticia. Sin borrar."""
     try:
         with _lectura(destino) as con:
-            faltan = faltan_politicas(con)
+            faltan = _faltas(con)
             sin_rls = tablas_sin_rls(con)
             personas = 0 if faltan else con.execute(text(_SQL_PERSONAS_FICTICIAS)).scalar_one()
     except SQLAlchemyError as error:
