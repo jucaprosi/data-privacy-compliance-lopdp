@@ -2,7 +2,7 @@
 id = "INC-03f"
 titulo = "Insignia de estado y botones Cerrar y Reabrir en la bitácora de incidentes"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "frontend"
 depende_de = ["INC-03", "FE-17", "INC-01", "INC-04"]
 propiedad = ["frontend/src/components/IncidentPlaybook.tsx", "frontend/src/lib/incidentes/estado.ts", "frontend/tests/incidentes/estado.spec.ts"]

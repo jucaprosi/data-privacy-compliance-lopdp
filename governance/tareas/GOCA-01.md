@@ -2,7 +2,7 @@
 id = "GOCA-01"
 titulo = "Agente Edge en Go (services_go/cctv_agent): conector local de cámaras/NVR con recorte por eventos H.265, supresión de audio y subida directa TLS a GCS"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "go_cctv_agent"
 depende_de = ["CCTV-01", "BOV-02"]
 propiedad = ["services_go/cctv_agent/go.mod", "services_go/cctv_agent/main.go", "services_go/cctv_agent/cctv_agent_service.go", "services_go/cctv_agent/config_schema.json", "app_core/pasillo/go_cctv_agent.py#GOCA-01", "app_core/pasillo/videovigilancia.py#GOCA-01", "features/videovigilancia/services/cctv_provisioning_bundle.py", "tests/test_goca01_cctv_edge_agent_contract.py"]
