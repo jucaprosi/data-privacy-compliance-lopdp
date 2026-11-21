@@ -2,7 +2,7 @@
 id = "DEMO-05d"
 titulo = "Purga de la demo frente a los triggers de inmutabilidad de biblioteca y consultas al DPO"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "demo"
 depende_de = ["DEMO-05", "DEMO-05b", "DEMO-05c", "SEC-20"]
 propiedad = ["jobs/purga_demo/politicas_purga.sql", "jobs/purga_demo/purga.py", "jobs/purga_demo/guardias.py", "jobs/purga_demo/__main__.py", "governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md", "tests/test_demo05d_purga_inmutables.py"]

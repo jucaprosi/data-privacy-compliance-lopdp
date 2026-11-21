@@ -2,14 +2,13 @@
 id = "API-02b"
 titulo = "Webhooks firmados HMAC-SHA256 con techo del paquete"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "pasillo_central, frontend"
 depende_de = ["API-02", "BOV-01"]
 propiedad = ["alembic/versions/api02b_webhooks_suscripciones.py", "app_core/integraciones/webhooks.py", "app_core/integraciones/techos.py#API-02b", "api/routers/integraciones_webhooks.py", "tests/test_api02b_webhooks.py", "tests/matriz/API-02b.py", "tests/matriz/roles/auditor.py#API-02b", "frontend/src/components/integraciones/IntegracionesView.tsx#API-02b", "frontend/src/components/integraciones/WebhooksPanel.tsx", "frontend/src/lib/integraciones/webhooks.ts", "frontend/tests/integraciones/webhooks.spec.ts", "governance/operaciones/BRIEF_PROPIETARIO_SECRETO_WEBHOOKS.md"]
 crea = ["alembic/versions/api02b_webhooks_suscripciones.py", "app_core/integraciones/webhooks.py", "api/routers/integraciones_webhooks.py", "tests/test_api02b_webhooks.py", "tests/matriz/API-02b.py", "frontend/src/components/integraciones/WebhooksPanel.tsx", "frontend/src/lib/integraciones/webhooks.ts", "frontend/tests/integraciones/webhooks.spec.ts", "governance/operaciones/BRIEF_PROPIETARIO_SECRETO_WEBHOOKS.md"]
 arbitro = "pytest tests/test_api02b_webhooks.py + test_matriz_permisos.py + Playwright frontend/tests/integraciones/webhooks.spec.ts + tsc --noEmit + build; mutaciones m1 a m5"
 rastros = ["¤seguridad", "¤seguridad-tenant", "¤frontend-ide"]
-agente = "ninguno"
 +++
 
 # API-02b · Webhooks firmados HMAC-SHA256 con techo del paquete

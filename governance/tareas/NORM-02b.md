@@ -2,7 +2,7 @@
 id = "NORM-02b"
 titulo = "Aviso a las organizaciones de resoluciones nuevas o modificadas"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "inteligencia_normativa"
 depende_de = ["NORM-02", "BOV-01", "NOTIF-01", "PLAT-01"]
 propiedad = ["features/plataforma/services/destinatarios_normativos_engine.py", "tests/test_norm02b_avisos_organizaciones.py", "alembic/versions/norm02b_destinatarios_normativos.py", "governance/operaciones/BRIEF_PROPIETARIO_NORM02B.md", "app_core/pasillo/plataforma.py#NORM-02b", "features/plataforma/plataforma_service.py#NORM-02b", "app_core/pasillo/notificaciones.py#NORM-02b", "features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-02b"]
