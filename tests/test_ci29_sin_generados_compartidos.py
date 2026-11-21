@@ -50,19 +50,31 @@ def test_orden_por_archivo_compartido():
     assert con_orden == []
 
 
+def _bloque_sintetico(tid, tanda):
+    return (f"### {tid} · n  (tanda {tanda})\n\n**Objetivo** (en este orden):\n\n1. `{tid}` — x\n\n"
+            f"**Escribe** (lista):\n\n  - `{tid}.py`\n\n**No hagas:**\n\n")
+
+
+def _ida_y_vuelta(portada: str, bloques: dict[str, str]) -> None:
+    nueva_portada, separados = rep.repartir(rep.combinar(portada, bloques))
+    assert nueva_portada == portada and separados == bloques
+
+
 def test_reparto_sin_perdidas():
-    portada = (RAIZ / rep.PORTADA).read_bytes().decode("utf-8")
+    # muestra sintética fija: siempre se prueba, esté o no la carpeta real
+    bloques = {"A-1": _bloque_sintetico("A-1", 1), "B-1": _bloque_sintetico("B-1", 2)}
+    portada, bloques = rep.repartir(rep.combinar("# Portada\n\n## Briefs\n\n## Fin\n", bloques))
+    _ida_y_vuelta(portada, bloques)
+    # con la carpeta real, si tiene briefs (vacía o ausente, no exige nada)
     archivos = {p.stem: p.read_bytes().decode("utf-8")
                 for p in sorted((RAIZ / rep.DIR_BRIEFS).glob("*.md"))}
-    assert archivos, "la carpeta de briefs no puede estar vacía"
-    unido = rep.combinar(portada, archivos)
-    nueva_portada, bloques = rep.repartir(unido)
-    assert nueva_portada == portada and bloques == archivos
+    if archivos:
+        _ida_y_vuelta((RAIZ / rep.PORTADA).read_bytes().decode("utf-8"), archivos)
     # mutación: perder una letra en un bloque cambia la unión
-    nombre = next(iter(archivos))
+    nombre = next(iter(bloques))
     # `combinar` repone el salto de línea final si falta: la letra perdida es la primera, nunca la última
-    roto = dict(archivos, **{nombre: archivos[nombre][1:]})
-    assert rep.combinar(portada, roto) != unido
+    roto = dict(bloques, **{nombre: bloques[nombre][1:]})
+    assert rep.combinar(portada, roto) != rep.combinar(portada, bloques)
 
 
 def test_alcance_un_brief_por_ficha():
