@@ -3168,3 +3168,49 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
   - GitHub (documentación oficial), *«About pull requests»*, sección «Draft pull requests» (docs.github.com): un PR en borrador no se puede fusionar hasta marcarlo como listo para revisión.
   - Shigeo Shingo (1986), *«Zero Quality Control: Source Inspection and the Poka-yoke System»* (ya citado en el registro de fuentes): un aviso depende de que alguien lo atienda; un dispositivo que impide el paso, no.
 * **Estado:** práctica para los briefs y las instrucciones de las sesiones de implementación. No tiene árbitro en el repositorio, porque lo hace cumplir la plataforma. Un árbitro de CI que rechace PR con base distinta de `main` tocaría `.github/workflows/`, y eso es del propietario. No introduce token nuevo.
+
+---
+
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE (XXXV):** sesión del 2026-11-20: lint del frontend (PR #910), DEMO-05d (PR #913) y la corrección de sus checks. Se consideraron 6 candidatos y sobrevivieron 2. Los dos se reprodujeron otra vez el mismo día contra la PostgreSQL 16 local del arnés (base `lopdp_demo_05d_0e6a8cc4`, nunca una compartida). El resto está en la tabla de descartados.
+
+### Aporte 165: El `psql` de Windows Ignora las Opciones que Van Detrás de la Cadena de Conexión y Sale con Código 0
+`¤postgres` `¤ci-cd`
+
+* **Descripción:** en Linux, `psql <conexión> -c "…"` funciona porque el `getopt` de GNU reordena los argumentos. El `psql.exe` de Windows no los reordena: todo lo que va detrás del primer argumento que no es opción se ignora con un aviso. Si no hay entrada, sale con código 0 sin haber ejecutado nada. En una ventana de PowerShell parece colgado, porque abre una sesión interactiva que espera la entrada. En un script, o con la entrada cerrada, da un falso verde: el código de salida no permite distinguir entre «ejecutó el SQL» y «no ejecutó nada».
+* **Por qué es útil aquí:** los briefs del propietario se pegan tal cual en PowerShell, y el paso 5b de `governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md` tenía `psql $PSQL_DEMO -1 -v ON_ERROR_STOP=1 -f jobs/purga_demo/politicas_purga.sql`. Ejecutado en Windows, no habría aplicado las políticas. Al validar el paso 5d, la orden se quedó esperando en la entrada y hubo que detenerla. Puede repetirse en todo brief con `psql`, `pg_dump` o `pg_restore`, porque usan el mismo analizador de argumentos de PostgreSQL. Para `pg_dump` y `pg_restore` no lo comprobé.
+* **Verificabilidad:** con el `psql (PostgreSQL) 16.14` de `C:/Users/Juan Carlos/AppData/Local/Programs/PostgreSQL16/pgsql/bin/`, Git Bash, entrada cerrada (`</dev/null`), el 2026-11-20:
+
+| Orden | Salida | Código |
+| :--- | :--- | :--- |
+| `psql "$U" -tA -c "SELECT 1"` | `warning: extra command-line argument "-c" ignored` y `"SELECT 1" ignored`; no imprime `1` | **0** |
+| `psql -tA -c "SELECT 1" "$U"` | `1` | 0 |
+
+  Predicado: $\text{ejecuta}(\texttt{psql}\ U\ \texttt{-c}\ q) = \text{False} \land \text{exit} = 0$, y $\text{ejecuta}(\texttt{psql -c}\ q\ U) = \text{True}$. Regla para los briefs: en toda orden de cliente de PostgreSQL las opciones van primero y la cadena de conexión al final.
+* **Soporte bibliográfico:**
+  - PostgreSQL Global Development Group, documentación oficial (v16), *psql*, sección «Synopsis»: `psql [option...] [dbname [username]]`, es decir, las opciones van antes de la base. La página no dice que en Windows las opciones de detrás se ignoren. Eso es lo observado aquí, sin fuente oficial que lo documente.
+* **Estado:** corregido en los pasos 5b y 5d de `BRIEF_PROPIETARIO_DEMO05.md` (PR #913, todavía sin fusionar). Los demás briefs no se revisaron. No introduce token nuevo.
+
+### Aporte 166: Un `RESET ROLE` en `finally` Dentro de una Transacción Abortada Cambia el Error Real por un 25P02
+`¤postgres` `¤arbitro`
+
+* **Descripción:** una prueba de permisos hace `SET ROLE <rol sin privilegios>`, ejecuta la sentencia que debe fallar y deja el `RESET ROLE` en un `finally`. Si la sentencia falla, PostgreSQL aborta la transacción, o el savepoint, y rechaza todo lo que llegue después con `25P02 in_failed_transaction`. También rechaza el `RESET ROLE`. En Python, la excepción del `finally` sustituye a la original, que pasa a `__context__`, así que `pytest.raises` y el código que lee `sqlstate` ven 25P02, no el 42501 esperado. Como `SET ROLE` es transaccional, el `finally` sobra: al revertir el savepoint se recupera el rol de antes.
+* **Por qué es útil aquí:** en `tests/test_demo05d_purga_inmutables.py` las cuatro primeras corridas de las pruebas de falla cerrada recibieron 25P02 en lugar de 42501. Parecía un fallo de la función y era el ayudante de la prueba. El patrón `SET ROLE` y una sentencia que debe fallar se repite en las pruebas de RLS y de permisos del repositorio: una prueba que acepta «cualquier error» pasa aunque la sentencia falle por otra razón.
+* **Verificabilidad:** con psycopg 3 y la base local, dentro de `conn.transaction()` (savepoint), con `SET ROLE zz_p25` y luego `SELECT * FROM pg_authid`, el 2026-11-20:
+  - con `RESET ROLE` en `finally`, el error que sale tiene `sqlstate = 25P02`;
+  - sin el `finally`, sale `sqlstate = 42501`;
+  - en los dos casos, tras el rollback del savepoint, `current_user` es otra vez `lopdp_beta_owner`.
+
+  Predicado: $\text{finally}(\texttt{RESET ROLE}) \Rightarrow \text{sqlstate} = \texttt{25P02} \neq \texttt{42501}$, y $\text{rollback}(\text{savepoint}) \Rightarrow \texttt{current\_user} = \text{rol previo}$.
+* **Soporte bibliográfico:**
+  - Yee, K.-P. (2005). *PEP 3134 – Exception Chaining and Embedded Tracebacks*. Python Software Foundation. — Una excepción lanzada mientras se maneja otra la reemplaza, y la anterior solo queda en `__context__`.
+  - PostgreSQL Global Development Group, documentación oficial (v16), *SET ROLE* («los efectos de `SET ROLE` se deshacen si la transacción se revierte», como cualquier `SET`) y apéndice A, código `25P02 in_failed_transaction`. No se releyeron los párrafos en esta sesión.
+* **Estado:** aplicado en el ayudante `llamar()` de `tests/test_demo05d_purga_inmutables.py` (PR #913): `SET ROLE` dentro del savepoint, sin `finally`. Las pruebas de falla cerrada comprueban el `sqlstate` exacto. No introduce token nuevo.
+
+## Candidatos descartados de esta sesión (Parte XXXV)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| `generar_indice_tareas.py --verificar` dio 0 en local y falló en el CI: la ficha estaba en `pendiente` con un «crea» cuyo archivo traía el PR, y la prueba nueva no estaba en un commit. | Misma causa que la práctica ya registrada (Aporte 162, descartados): el índice lee `HEAD`, no el árbol de trabajo. Se verifica después del commit. |
+| El brief pedía `estado = "en_curso"`, pero la ficha no figuraba en su lista «Escribe». | Es el hueco del Aporte 162 (lo que exige una especificación o un brief no lo cruza ningún árbitro con la lista de escritura). |
+| `tests/test_sin_sql_interpolado.py` no trata como constante un `FIRMA = f"{FUNCION}(…)"` de módulo. | El árbitro funciona como dice su docstring: solo exime los literales de módulo. No es un gotcha, es la regla. |
+| En local, el dueño de las tablas es superusuario y R5 (RLS con FORCE) no se ejercitaba. | Ya registrado en el Aporte 84 (§5.8 de PostgreSQL). |
