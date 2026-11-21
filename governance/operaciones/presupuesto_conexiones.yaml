@@ -3,9 +3,11 @@
 # Lo comprueba tests/test_gcp05_escalado.py. El pool real sale de DB_POOL_SIZE y DB_MAX_OVERFLOW
 # del manifiesto del backend (app_core/db/session.py los lee y exige en Cloud Run).
 max_connections: 100
-# PROVISIONAL: 100 no es un dato medido. El propietario lo confirma con solo lectura:
-#   gcloud sql instances describe <instancia> --format="value(settings.databaseFlags)"
-#   SHOW max_connections;
+# Confirmación de solo lectura (GCP-05b, 2026-11-21):
+#   - Producción (evydentia-production, db-f1-micro): SHOW max_connections; = 25 (por defecto en PostgreSQL 16 sin flag).
+#   - Pruebas (evydentia-pruebas, db-g1-small): SHOW max_connections; = 50.
+# Para alcanzar las 100 conexiones del presupuesto de producción declarado en cloud_sql_instance.yaml
+# (tier db-custom-1-3840), la instancia de producción requiere la bandera max_connections=100 o el tier custom.
 provisional: true
 reservadas: 10   # 2 de ellas para migración manual
 consumidores:

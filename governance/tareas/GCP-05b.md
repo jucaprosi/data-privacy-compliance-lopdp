@@ -2,14 +2,13 @@
 id = "GCP-05b"
 titulo = "Prueba de carga real contra el entorno de pruebas y confirmación del presupuesto de conexiones"
 ola = "C"
-estado = "pendiente"
+estado = "hecha"
 sala = "operaciones"
 depende_de = ["GCP-05", "EP-09"]
 propiedad = ["governance/operaciones/PRUEBA_DE_CARGA.md", "governance/operaciones/presupuesto_conexiones.yaml"]
 crea = []
 arbitro = "python scripts/prueba_carga.py --entorno pruebas con su informe en PRUEBA_DE_CARGA.md + pytest tests/test_gcp05_escalado.py"
 rastros = ["¤cloud-run-perf", "¤arbitro"]
-agente = "ninguno"
 +++
 
 # GCP-05b · Prueba de carga real contra el entorno de pruebas y confirmación del presupuesto de conexiones
