@@ -1,0 +1,31 @@
+# DEMO-07 · Proyecto de Google Cloud propio del entorno de demostración comercial (PRD EVYDENTIA §5.6).
+# Identificador: evydentia-demo (517105327086), región us-central1.
+# Aislamiento absoluto con producción: ninguna cuenta de servicio de este proyecto tiene permisos en evydentia.
+# APP_ENV=demo rige en todos los servicios y jobs.
+proyecto: evydentia-demo
+numero_proyecto: "517105327086"
+region: us-central1
+entorno: demo
+apis:
+  - run.googleapis.com
+  - artifactregistry.googleapis.com
+  - secretmanager.googleapis.com
+  - sqladmin.googleapis.com
+  - storage.googleapis.com
+  - cloudscheduler.googleapis.com
+  - cloudbuild.googleapis.com
+cuentas_de_servicio:
+  - nombre: 517105327086-compute@developer.gserviceaccount.com
+    para: servicios de Cloud Run (evydentia-backend-demo y evydentia-web-demo); cuenta por defecto de cómputo
+    roles: [roles/cloudsql.client, roles/storage.objectAdmin, roles/secretmanager.secretAccessor, roles/run.invoker]
+  - nombre: purga-demo@evydentia-demo.iam.gserviceaccount.com
+    para: Cloud Run Job purga-demo (DEMO-05); ejecuta la purga nocturna determinista
+    roles: [roles/cloudsql.client]
+  - nombre: scheduler-purga-demo@evydentia-demo.iam.gserviceaccount.com
+    para: Cloud Scheduler purga-demo-nocturna; dispara el job de purga cada noche
+    roles: [roles/run.invoker]
+aislamiento:
+  huella_proyecto_produccion: evydentia-production
+  permisos_en_produccion: ninguno
+  produccion_con_permisos_en_demo: ninguno
+  datos: exclusivamente ficticios con dominios .invalid
