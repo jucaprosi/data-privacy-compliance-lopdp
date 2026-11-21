@@ -149,15 +149,21 @@ def _porcelana():
                           encoding="utf-8", check=True).stdout
 
 
+def _ordenadas(tandas: list[int]) -> bool:
+    return tandas == sorted(set(tandas))
+
+
 def test_vista_de_tandas_sin_archivos():
     antes = _porcelana()
     res = subprocess.run([sys.executable, str(RAIZ / "scripts" / "verificar_reparto.py"), "--tandas"],
                          cwd=RAIZ, capture_output=True, text=True, encoding="utf-8")
     assert res.returncode == 0, res.stdout[-800:]
     tandas = [int(m.group(1)) for m in re.finditer(r"(?m)^Tanda (\d+): ", res.stdout)]
-    assert tandas and tandas == sorted(set(tandas))
+    assert _ordenadas(tandas)  # la lista vacía vale: la carpeta puede estar vacía o ausente
     assert res.stdout.rstrip().splitlines()[-1].startswith("REPARTO OK: ")
     assert _porcelana() == antes
+    # mutación m2: dos tandas desordenadas no pasan la comprobación del orden
+    assert not _ordenadas([7, 2]) and not _ordenadas([2, 2, 7, 5])
     # la vista sale de las cabeceras: dos bloques de una tanda se agrupan y las tandas van en orden
     bloques = rep.leer_bloques(_bloque("B-1", 7, "B-1") + _bloque("A-1", 7, "A-1") + _bloque("C-1", 2, "C-1"))
     assert rep.vista_de_tandas(bloques) == ["Tanda 2: C-1", "Tanda 7: A-1, B-1"]
