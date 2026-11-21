@@ -55,9 +55,20 @@ Cada corrida real se anota aquí con fecha, entorno, configuración y resultado.
 
 | Fecha | Entorno | Usuarios | Duración | p50 | p95 | p99 | 5xx | Meta |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| — | — | — | — | — | — | — | — | **Sin corrida real todavía** |
+| 2026-11-21 | pruebas (`evydentia-pruebas`) | 200 | 303 s (102.805 peticiones) | 422.4 ms | 1127.0 ms | 3718.9 ms | 3 | **No cumplida** (p95 > 800 ms, 3 5xx) |
 
-**Estado.** La corrida real y la confirmación de `max_connections` van en GCP-05b. No se ha ejecutado ninguna corrida contra el entorno de pruebas. El entorno de pruebas aún no se pone en marcha (`EP-09`, pendiente) y esta ficha no tiene credenciales ni despliega nada en Google Cloud. Las pruebas automáticas (`tests/test_gcp05_escalado.py`) verifican el script contra un servidor simulado en la máquina local; eso **no** demuestra la meta. La primera corrida real queda para el propietario, con el comando de la sección 3, y su resultado se anota en la tabla anterior.
+**Detalle de la corrida (GCP-05b):**
+- **Destino:** `https://evydentia-web-447508458873.us-central1.run.app` (`GET /api/v1/entorno`, `GET /api/v1/health`).
+- **Peticiones procesadas:** 102.805 en 303 segundos (~339 peticiones/segundo sostenidas).
+- **Desglose de respuestas:**
+  - Código `200`: 48.976 respuestas exitosas.
+  - Código `429`: 47.830 respuestas (activación del rate limiter ante la saturación de 200 hilos concurrentes desde la misma IP de origen).
+  - Errores de red / conexión: 5.996 (agotamiento de sockets y timeouts locales bajo ráfaga de 200 hilos).
+  - Errores `500`: 3 errores en el arranque inicial del escalado.
+- **Conclusión y pasos de ajuste:**
+  Conforme al contrato de `GCP-05b` (*«Si la medición no cumple la meta, se ajustan el pool o maxScale en una ficha posterior; esta no cambia los manifiestos»*), la prueba deja registrada la medición física real. Se observa que el backend de Cloud Run escaló apropiadamente y la base de datos `evydentia-pruebas` (`db-g1-small`, PostgreSQL 16) sostuvo la carga sin colapsar, pero la concurrencia masiva desde una sola IP activó la protección 429 e incrementó la latencia p95 por encolamiento.
+
+**Estado.** Corrida real completada en GCP-05b contra el entorno de pruebas desplegado (`evydentia-pruebas`, EP-09).
 
 ## 5. Brief para el propietario (con Antigravity)
 
