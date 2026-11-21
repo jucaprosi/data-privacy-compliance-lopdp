@@ -3171,33 +3171,46 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 
 ---
 
-### Aporte 165: Una Prueba de Mutación que Quita la Última Letra de un Glob sin Ordenar Queda Vacía según el Orden de Lectura del Sistema de Archivos
-`¤arbitro` `¤mutacion`
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE (XXXV):** sesión del 2026-11-20: lint del frontend (PR #910), DEMO-05d (PR #913) y la corrección de sus checks. Se consideraron 6 candidatos y sobrevivieron 2. Los dos se reprodujeron otra vez el mismo día contra la PostgreSQL 16 local del arnés (base `lopdp_demo_05d_0e6a8cc4`, nunca una compartida). El resto está en la tabla de descartados.
 
-* **Descripción:** una prueba recorre un conjunto de archivos con un glob y, por cada uno, aplica una mutación que quita el último carácter. Si el último carácter de un archivo es un salto de línea y la unión posterior de los archivos lo repone, la mutación no cambia nada y la prueba queda en verde. El resultado depende de qué archivo lee primero el sistema: puede pasar en un entorno y fallar en otro. Mutar la primera letra y recorrer el glob con `sorted()` elimina ambas dependencias.
-* **Por qué es útil aquí:** en `tests/test_ci29_sin_generados_compartidos.py` la mutación de `test_reparto_sin_perdidas` quedaba vacía cuando el primer brief leído terminaba en un solo salto de línea. Un diagnóstico previo lo atribuyó a CRLF; el conteo de bytes lo refutó (cero retornos de carro en `git show HEAD:<archivo>`). El arreglo está en la propia prueba y no en los datos, y se comprobó con cada uno de los 36 briefs como primero.
-* **Verificabilidad:** sea $\mathcal{B}$ el conjunto de briefs y $m(f)$ la mutación que cambia la primera letra de $f$. El predicado es $\forall f \in \texttt{sorted}(\texttt{glob}(\mathcal{B})): \text{rojo}(m(f)) = 1$. Se comprueba ejecutando la prueba una vez por cada archivo como primero. Estado en el repo: `sorted((RAIZ / rep.DIR_BRIEFS).glob("*.md"))` en `tests/test_ci29_sin_generados_compartidos.py:56`.
-* **Soporte bibliográfico:** sin fuente verificada para este mecanismo concreto. La literatura de mutación (Inozemtseva y Holmes, ICSE 2014, ya citado en el registro) sostiene solo que la cobertura no predice la eficacia de la suite, no esta vacuidad.
-* **Estado:** aplicado en `tests/test_ci29_sin_generados_compartidos.py` (#818). Relacionado con el Teorema 32 y el Aporte 153, que tratan la mutación dirigida y el solapamiento de ocurrencias; no es el mismo mecanismo. No introduce token nuevo.
+### Aporte 165: El `psql` de Windows Ignora las Opciones que Van Detrás de la Cadena de Conexión y Sale con Código 0
+`¤postgres` `¤ci-cd`
 
----
+* **Descripción:** en Linux, `psql <conexión> -c "…"` funciona porque el `getopt` de GNU reordena los argumentos. El `psql.exe` de Windows no los reordena: todo lo que va detrás del primer argumento que no es opción se ignora con un aviso. Si no hay entrada, sale con código 0 sin haber ejecutado nada. En una ventana de PowerShell parece colgado, porque abre una sesión interactiva que espera la entrada. En un script, o con la entrada cerrada, da un falso verde: el código de salida no permite distinguir entre «ejecutó el SQL» y «no ejecutó nada».
+* **Por qué es útil aquí:** los briefs del propietario se pegan tal cual en PowerShell, y el paso 5b de `governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md` tenía `psql $PSQL_DEMO -1 -v ON_ERROR_STOP=1 -f jobs/purga_demo/politicas_purga.sql`. Ejecutado en Windows, no habría aplicado las políticas. Al validar el paso 5d, la orden se quedó esperando en la entrada y hubo que detenerla. Puede repetirse en todo brief con `psql`, `pg_dump` o `pg_restore`, porque usan el mismo analizador de argumentos de PostgreSQL. Para `pg_dump` y `pg_restore` no lo comprobé.
+* **Verificabilidad:** con el `psql (PostgreSQL) 16.14` de `C:/Users/Juan Carlos/AppData/Local/Programs/PostgreSQL16/pgsql/bin/`, Git Bash, entrada cerrada (`</dev/null`), el 2026-11-20:
 
-### Aporte 166: El Plazo Legal se Fija al Crear la Fila; Calcularlo al Leer desde el Catálogo Reescribe los Plazos Pasados
-`¤derechos` `¤plazos`
+| Orden | Salida | Código |
+| :--- | :--- | :--- |
+| `psql "$U" -tA -c "SELECT 1"` | `warning: extra command-line argument "-c" ignored` y `"SELECT 1" ignored`; no imprime `1` | **0** |
+| `psql -tA -c "SELECT 1" "$U"` | `1` | 0 |
 
-* **Descripción:** si el plazo que se muestra de una solicitud se deriva del tipo de la solicitud en el momento de leer, cualquier cambio en el catálogo de tipos cambia el plazo de solicitudes ya recibidas. Un plazo legal es un hecho del pasado: debe guardarse en la fila cuando se crea la solicitud y no recalcularse con el catálogo vigente.
-* **Por qué es útil aquí:** en el chat ea553638 se detectó que la respuesta de una portabilidad anterior, con vencimiento a 15 días, mostraba «10 días» tras cambiar el catálogo. La decisión fue calcular el plazo como fecha de vencimiento menos fecha de recepción de la propia fila. En el repo, `features/derechos_arco/derechos_arco_service.py:89` fija `fecha_vencimiento = ahora + timedelta(days=plazo_dias(tipo))` al crear, y ese valor es el que se guarda. El caso de 15 días se cita del chat; no se reprodujo en el repo.
-* **Verificabilidad:** para toda fila $f$ creada en el instante $t_c$ con tipo $\tau$, el predicado es $f.\text{fecha\_vencimiento} = t_c + \text{plazo\_dias}(\tau)$ con el catálogo vigente en $t_c$. Y el plazo mostrado debe ser $f.\text{fecha\_vencimiento} - f.\text{fecha\_recepcion}$, nunca $\text{plazo\_dias}(\tau)$ evaluado en la lectura. Una prueba que cambie el catálogo después de crear la fila y compruebe que el plazo mostrado no cambia fija el predicado.
-* **Soporte bibliográfico:** sin fuente verificada. Es una invariante de diseño, no una propiedad que se pueda citar de una fuente externa.
-* **Estado:** aplicado en `derechos_arco_service.py:89` (DER-05 y siguientes). El solapamiento con el Aporte 57 es parcial: aquel trata la coherencia de un estado derivado por memoización en el frontend, no un plazo persistido. No introduce token nuevo.
+  Predicado: $\text{ejecuta}(\texttt{psql}\ U\ \texttt{-c}\ q) = \text{False} \land \text{exit} = 0$, y $\text{ejecuta}(\texttt{psql -c}\ q\ U) = \text{True}$. Regla para los briefs: en toda orden de cliente de PostgreSQL las opciones van primero y la cadena de conexión al final.
+* **Soporte bibliográfico:**
+  - PostgreSQL Global Development Group, documentación oficial (v16), *psql*, sección «Synopsis»: `psql [option...] [dbname [username]]`, es decir, las opciones van antes de la base. La página no dice que en Windows las opciones de detrás se ignoren. Eso es lo observado aquí, sin fuente oficial que lo documente.
+* **Estado:** corregido en los pasos 5b y 5d de `BRIEF_PROPIETARIO_DEMO05.md` (PR #913, todavía sin fusionar). Los demás briefs no se revisaron. No introduce token nuevo.
 
----
+### Aporte 166: Un `RESET ROLE` en `finally` Dentro de una Transacción Abortada Cambia el Error Real por un 25P02
+`¤postgres` `¤arbitro`
 
-### Aporte 167: El BOM Llega también en el Valor de un Secreto de Entorno, no Solo en los Archivos; una Comprobación de Formato lo Rechaza sin Nombrarlo
-`¤seguridad` `¤configuracion`
+* **Descripción:** una prueba de permisos hace `SET ROLE <rol sin privilegios>`, ejecuta la sentencia que debe fallar y deja el `RESET ROLE` en un `finally`. Si la sentencia falla, PostgreSQL aborta la transacción, o el savepoint, y rechaza todo lo que llegue después con `25P02 in_failed_transaction`. También rechaza el `RESET ROLE`. En Python, la excepción del `finally` sustituye a la original, que pasa a `__context__`, así que `pytest.raises` y el código que lee `sqlstate` ven 25P02, no el 42501 esperado. Como `SET ROLE` es transaccional, el `finally` sobra: al revertir el savepoint se recupera el rol de antes.
+* **Por qué es útil aquí:** en `tests/test_demo05d_purga_inmutables.py` las cuatro primeras corridas de las pruebas de falla cerrada recibieron 25P02 en lugar de 42501. Parecía un fallo de la función y era el ayudante de la prueba. El patrón `SET ROLE` y una sentencia que debe fallar se repite en las pruebas de RLS y de permisos del repositorio: una prueba que acepta «cualquier error» pasa aunque la sentencia falle por otra razón.
+* **Verificabilidad:** con psycopg 3 y la base local, dentro de `conn.transaction()` (savepoint), con `SET ROLE zz_p25` y luego `SELECT * FROM pg_authid`, el 2026-11-20:
+  - con `RESET ROLE` en `finally`, el error que sale tiene `sqlstate = 25P02`;
+  - sin el `finally`, sale `sqlstate = 42501`;
+  - en los dos casos, tras el rollback del savepoint, `current_user` es otra vez `lopdp_beta_owner`.
 
-* **Descripción:** un secreto que se crea desde PowerShell con `-Encoding UTF8` puede empezar por la marca de orden de bytes (BOM, `EF BB BF`). La comprobación de formato de `DATABASE_URL` falla, pero el mensaje no menciona el BOM, así que parece una URL mal escrita. Es la misma causa del Aporte 102, aplicada a un valor de entorno y no a un archivo.
-* **Por qué es útil aquí:** el propietario confirmó la causa al crear el secreto de la base del entorno de pruebas. El repo ya lo cubre: `app_core/config.py:101-112` detecta el BOM con un mensaje propio («cree el secreto de nuevo sin BOM»), y `app_core/db/session.py:26` lo limpia. Sin esa guardia, el fallo de arranque no indica la causa.
-* **Verificabilidad:** el predicado es $\text{primeros\_3\_bytes}(\texttt{DATABASE\_URL}) \neq \texttt{EF BB BF}$. La comprobación debe leer solo los bytes y nunca imprimir el valor de la URL ni de un secreto.
-* **Soporte bibliográfico:** sin fuente verificada. El estándar Unicode define el BOM como U+FEFF, pero no hay una fuente específica sobre valores de entorno que citar.
-* **Estado:** aplicado en `app_core/config.py:101-112` y `app_core/db/session.py:26`. Extiende el Aporte 102 a valores de entorno; no introduce token nuevo.
+  Predicado: $\text{finally}(\texttt{RESET ROLE}) \Rightarrow \text{sqlstate} = \texttt{25P02} \neq \texttt{42501}$, y $\text{rollback}(\text{savepoint}) \Rightarrow \texttt{current\_user} = \text{rol previo}$.
+* **Soporte bibliográfico:**
+  - Yee, K.-P. (2005). *PEP 3134 – Exception Chaining and Embedded Tracebacks*. Python Software Foundation. — Una excepción lanzada mientras se maneja otra la reemplaza, y la anterior solo queda en `__context__`.
+  - PostgreSQL Global Development Group, documentación oficial (v16), *SET ROLE* («los efectos de `SET ROLE` se deshacen si la transacción se revierte», como cualquier `SET`) y apéndice A, código `25P02 in_failed_transaction`. No se releyeron los párrafos en esta sesión.
+* **Estado:** aplicado en el ayudante `llamar()` de `tests/test_demo05d_purga_inmutables.py` (PR #913): `SET ROLE` dentro del savepoint, sin `finally`. Las pruebas de falla cerrada comprueban el `sqlstate` exacto. No introduce token nuevo.
+
+## Candidatos descartados de esta sesión (Parte XXXV)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| `generar_indice_tareas.py --verificar` dio 0 en local y falló en el CI: la ficha estaba en `pendiente` con un «crea» cuyo archivo traía el PR, y la prueba nueva no estaba en un commit. | Misma causa que la práctica ya registrada (Aporte 162, descartados): el índice lee `HEAD`, no el árbol de trabajo. Se verifica después del commit. |
+| El brief pedía `estado = "en_curso"`, pero la ficha no figuraba en su lista «Escribe». | Es el hueco del Aporte 162 (lo que exige una especificación o un brief no lo cruza ningún árbitro con la lista de escritura). |
+| `tests/test_sin_sql_interpolado.py` no trata como constante un `FIRMA = f"{FUNCION}(…)"` de módulo. | El árbitro funciona como dice su docstring: solo exime los literales de módulo. No es un gotcha, es la regla. |
+| En local, el dueño de las tablas es superusuario y R5 (RLS con FORCE) no se ejercitaba. | Ya registrado en el Aporte 84 (§5.8 de PostgreSQL). |
