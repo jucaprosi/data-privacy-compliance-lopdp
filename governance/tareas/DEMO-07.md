@@ -2,13 +2,12 @@
 id = "DEMO-07"
 titulo = "Infraestructura de la demo en Google Cloud (personas, sin agente)"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "operaciones"
 depende_de = ["DEMO-02", "DEMO-04", "DEMO-05", "DEMO-06", "GCP-01", "GCP-03", "GCP-04"]
 propiedad = ["governance/operaciones/DEMO_COMERCIAL.md", "governance/operaciones/entornos/demo/**"]
 arbitro = "Recorrido de aceptación documentado en governance/operaciones/DEMO_COMERCIAL.md: entrada, «Ver como», terminar y purga de la noche siguiente comprobados en el proyecto demo"
 rastros = ["¤demo"]
-agente = "ninguno"
 +++
 
 # DEMO-07 · Infraestructura de la demo en Google Cloud (personas, sin agente)

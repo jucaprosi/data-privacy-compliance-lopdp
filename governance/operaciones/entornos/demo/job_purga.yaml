@@ -1,0 +1,32 @@
+# DEMO-07 · Cloud Run Job de purga determinista de la demo (purga-demo).
+# Implementa DEMO-05: eliminación de evidencias y registros de tenants vencidos.
+# Ejecutado en contenedor propio con imagen compilada y subida a Artifact Registry.
+metadata:
+  name: purga-demo
+  project: evydentia-demo
+  region: us-central1
+spec:
+  template:
+    spec:
+      taskCount: 1
+      template:
+        spec:
+          maxRetries: 0
+          timeoutSeconds: 600
+          serviceAccountName: purga-demo@evydentia-demo.iam.gserviceaccount.com
+          containers:
+            - image: us-central1-docker.pkg.dev/evydentia-demo/evydentia-demo-containers/purga-demo:v1
+              env:
+                - name: APP_ENV
+                  value: demo
+                - name: HUELLA_PROYECTO_PRODUCCION
+                  value: evydentia-production
+                - name: PURGA_PROYECTO_DEMO
+                  value: evydentia-demo
+                - name: PURGA_BUCKETS
+                  value: lopdp360-demo-evidencias
+                - name: PURGA_DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: PURGA_DATABASE_URL
+                      key: latest

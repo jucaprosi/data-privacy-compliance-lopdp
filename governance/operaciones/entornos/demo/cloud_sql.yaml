@@ -1,0 +1,41 @@
+# DEMO-07 · Instancia Cloud SQL PostgreSQL 16 del entorno de demo (evydentia-demo-db).
+# Configurada según PRD EVYDENTIA §5.6.7 (decisión del propietario: ALWAYS encendida para disponibilidad comercial).
+# Migraciones al día en todas las 12 cabezas Alembic (con01, norm02b, capa04, 20261107, 20261101, for01, rat08, cctv01, norm03, api02b, 20261105, rm25b).
+name: evydentia-demo-db
+databaseVersion: POSTGRES_16
+region: us-central1
+zone: us-central1-c
+settings:
+  tier: db-f1-micro
+  activationPolicy: ALWAYS
+  availabilityType: ZONAL
+  dataDiskType: PD_SSD
+  storageAutoResize: true
+  ipConfiguration:
+    ipv4Enabled: true
+    sslMode: ENCRYPTED_ONLY
+    requireSsl: true
+  databaseFlags:
+    - name: cloudsql.iam_authentication
+      value: "on"
+databases:
+  - name: evydentia_demo
+    encoding: UTF8
+users:
+  - name: postgres
+    type: BUILT_IN
+  - name: evydentia_demo_app
+    type: BUILT_IN
+    atributos: [LOGIN, NOSUPERUSER, NOBYPASSRLS, NOCREATEDB, NOCREATEROLE]
+  - name: purga_demo
+    type: BUILT_IN
+    atributos: [LOGIN, NOSUPERUSER, NOBYPASSRLS, NOCREATEDB, NOCREATEROLE]
+roles_y_politicas:
+  rol_aplicacion: evydentia_demo_app
+  rol_purga: purga_demo
+  politicas_purga: jobs/purga_demo/politicas_purga.sql
+  funcion_borrado_inmutables: purga_demo_borrar_inmutables (SECURITY DEFINER, execute purga_demo)
+conexion:
+  socket: /cloudsql/evydentia-demo:us-central1:evydentia-demo-db
+  url_aplicacion: secreto DATABASE_URL_APP en Secret Manager
+  url_purga: secreto PURGA_DATABASE_URL en Secret Manager

@@ -1,0 +1,14 @@
+# DEMO-07 · Cloud Scheduler de la purga nocturna de la demo (purga-demo-nocturna).
+# Dispara el job purga-demo todas las noches a las 03:00 ECT (America/Guayaquil).
+name: purga-demo-nocturna
+project: evydentia-demo
+region: us-central1
+schedule: "0 3 * * *"
+timeZone: "America/Guayaquil"
+state: ENABLED
+httpTarget:
+  uri: https://us-central1-run.googleapis.com/v2/projects/evydentia-demo/locations/us-central1/jobs/purga-demo:run
+  httpMethod: POST
+  oidcToken:
+    serviceAccountEmail: scheduler-purga-demo@evydentia-demo.iam.gserviceaccount.com
+    audience: https://us-central1-run.googleapis.com/

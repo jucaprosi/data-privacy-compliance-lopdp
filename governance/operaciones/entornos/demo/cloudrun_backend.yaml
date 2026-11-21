@@ -1,0 +1,77 @@
+# DEMO-07 · Backend del entorno de demostración (evydentia-backend-demo).
+# Ingress all pero protegido por IAM: allUsers removido, solo la cuenta del frontend
+# (517105327086-compute@developer.gserviceaccount.com) tiene rol roles/run.invoker.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: evydentia-backend-demo
+  labels:
+    entorno: demo
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/startup-cpu-boost: "true"
+        run.googleapis.com/execution-environment: gen2
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "2"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: 517105327086-compute@developer.gserviceaccount.com
+      containers:
+        - image: us-central1-docker.pkg.dev/evydentia-demo/evydentia-demo-containers/evydentia-backend-demo
+          ports:
+            - name: http1
+              containerPort: 8080
+          env:
+            - name: APP_ENV
+              value: demo
+            - name: ENVIRONMENT
+              value: demo
+            - name: GOOGLE_CLOUD_PROJECT
+              value: evydentia-demo
+            - name: PROJECT_ID
+              value: evydentia-demo
+            - name: HUELLA_PROYECTO_PRODUCCION
+              value: evydentia-production
+            - name: GCP_STORAGE_BUCKET
+              value: lopdp360-demo-evidencias
+            - name: PROXIES_CONFIABLES
+              value: "1"
+            - name: CORS_ORIGINS
+              value: https://evydentia-web-demo-517105327086.us-central1.run.app
+            - name: GOOGLE_CLIENT_ID
+              value: 943042355099-um6ieu8s1s8kettg253g9v5ms8ag7k4l.apps.googleusercontent.com
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: DATABASE_URL_APP
+                  key: latest
+            - name: DEMO_VENDEDORES
+              valueFrom:
+                secretKeyRef:
+                  name: DEMO_VENDEDORES
+                  key: latest
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: JWT_SECRET
+                  key: latest
+            - name: SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: SESSION_SECRET
+                  key: latest
+            - name: INVENTARIO_CLAVE_CIFRADO
+              valueFrom:
+                secretKeyRef:
+                  name: INVENTARIO_CLAVE_CIFRADO
+                  key: latest
+---
+# Política IAM de invocación
+invocadores:
+  - member: serviceAccount:517105327086-compute@developer.gserviceaccount.com
+    role: roles/run.invoker

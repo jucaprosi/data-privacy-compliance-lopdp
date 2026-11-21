@@ -1,0 +1,25 @@
+# DEMO-07 · Bucket de almacenamiento del entorno de demo (PRD §5.6 y BRIEF_PROPIETARIO_BUCKET_DEMO.md).
+# Invariante 63 y DEMO-05: NUNCA tiene política de retención ni bloqueo de objetos (WORM),
+# permitiendo a purga-demo la eliminación determinista de evidencias ficticias de demos vencidas.
+proyecto: evydentia-demo
+ubicacion: us-central1
+buckets:
+  - nombre: lopdp360-demo-evidencias
+    tier: demo-evidencias
+    storageClass: STANDARD
+    uniformBucketLevelAccess: true
+    publicAccessPrevention: enforced
+    softDeletePolicy:
+      retentionDurationSeconds: 0
+    retentionPolicy:
+      enabled: false
+      locked: false
+    lifecycle:
+      rule:
+        - action: {type: Delete}
+          condition: {age: 3}
+    permisos:
+      - cuenta: purga-demo@evydentia-demo.iam.gserviceaccount.com
+        roles: [roles/storage.objectAdmin, roles/storage.legacyBucketReader]
+      - cuenta: 517105327086-compute@developer.gserviceaccount.com
+        roles: [roles/storage.objectAdmin]
