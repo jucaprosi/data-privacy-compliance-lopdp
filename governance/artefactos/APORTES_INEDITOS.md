@@ -3214,3 +3214,36 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | El brief pedía `estado = "en_curso"`, pero la ficha no figuraba en su lista «Escribe». | Es el hueco del Aporte 162 (lo que exige una especificación o un brief no lo cruza ningún árbitro con la lista de escritura). |
 | `tests/test_sin_sql_interpolado.py` no trata como constante un `FIRMA = f"{FUNCION}(…)"` de módulo. | El árbitro funciona como dice su docstring: solo exime los literales de módulo. No es un gotcha, es la regla. |
 | En local, el dueño de las tablas es superusuario y R5 (RLS con FORCE) no se ejercitaba. | Ya registrado en el Aporte 84 (§5.8 de PostgreSQL). |
+
+---
+
+### Aporte 167: Una Prueba de Mutación que Quita la Última Letra de un Glob sin Ordenar Queda Vacía según el Orden de Lectura del Sistema de Archivos
+`¤arbitro` `¤mutacion`
+
+* **Descripción:** una prueba recorre un conjunto de archivos con un glob y, por cada uno, aplica una mutación que quita el último carácter. Si el último carácter de un archivo es un salto de línea y la unión posterior de los archivos lo repone, la mutación no cambia nada y la prueba queda en verde. El resultado depende de qué archivo lee primero el sistema: puede pasar en un entorno y fallar en otro. Mutar la primera letra y recorrer el glob con `sorted()` elimina ambas dependencias.
+* **Por qué es útil aquí:** en `tests/test_ci29_sin_generados_compartidos.py` la mutación de `test_reparto_sin_perdidas` quedaba vacía cuando el primer brief leído terminaba en un solo salto de línea. Un diagnóstico previo lo atribuyó a CRLF; el conteo de bytes lo refutó (cero retornos de carro en `git show HEAD:<archivo>`). El arreglo está en la propia prueba y no en los datos, y se comprobó con cada uno de los 36 briefs como primero.
+* **Verificabilidad:** sea $\mathcal{B}$ el conjunto de briefs y $m(f)$ la mutación que cambia la primera letra de $f$. El predicado es $\forall f \in \texttt{sorted}(\texttt{glob}(\mathcal{B})): \text{rojo}(m(f)) = 1$. Se comprueba ejecutando la prueba una vez por cada archivo como primero. Estado en el repo: `sorted((RAIZ / rep.DIR_BRIEFS).glob("*.md"))` en `tests/test_ci29_sin_generados_compartidos.py:56`.
+* **Soporte bibliográfico:** sin fuente verificada para este mecanismo concreto. La literatura de mutación (Inozemtseva y Holmes, ICSE 2014, ya citado en el registro) sostiene solo que la cobertura no predice la eficacia de la suite, no esta vacuidad.
+* **Estado:** aplicado en `tests/test_ci29_sin_generados_compartidos.py` (#818). Relacionado con el Teorema 32 y el Aporte 153, que tratan la mutación dirigida y el solapamiento de ocurrencias; no es el mismo mecanismo. No introduce token nuevo.
+
+---
+
+### Aporte 168: El Plazo Legal se Fija al Crear la Fila; Calcularlo al Leer desde el Catálogo Reescribe los Plazos Pasados
+`¤derechos` `¤plazos`
+
+* **Descripción:** si el plazo que se muestra de una solicitud se deriva del tipo de la solicitud en el momento de leer, cualquier cambio en el catálogo de tipos cambia el plazo de solicitudes ya recibidas. Un plazo legal es un hecho del pasado: debe guardarse en la fila cuando se crea la solicitud y no recalcularse con el catálogo vigente.
+* **Por qué es útil aquí:** en el chat ea553638 se detectó que la respuesta de una portabilidad anterior, con vencimiento a 15 días, mostraba «10 días» tras cambiar el catálogo. La decisión fue calcular el plazo como fecha de vencimiento menos fecha de recepción de la propia fila. En el repo, `features/derechos_arco/derechos_arco_service.py:89` fija `fecha_vencimiento = ahora + timedelta(days=plazo_dias(tipo))` al crear, y ese valor es el que se guarda. El caso de 15 días se cita del chat; no se reprodujo en el repo.
+* **Verificabilidad:** para toda fila $f$ creada en el instante $t_c$ con tipo $\tau$, el predicado es $f.\text{fecha\_vencimiento} = t_c + \text{plazo\_dias}(\tau)$ con el catálogo vigente en $t_c$. Y el plazo mostrado debe ser $f.\text{fecha\_vencimiento} - f.\text{fecha\_recepcion}$, nunca $\text{plazo\_dias}(\tau)$ evaluado en la lectura. Una prueba que cambie el catálogo después de crear la fila y compruebe que el plazo mostrado no cambia fija el predicado.
+* **Soporte bibliográfico:** sin fuente verificada. Es una invariante de diseño, no una propiedad que se pueda citar de una fuente externa.
+* **Estado:** aplicado en `derechos_arco_service.py:89` (DER-05 y siguientes). El solapamiento con el Aporte 57 es parcial: aquel trata la coherencia de un estado derivado por memoización en el frontend, no un plazo persistido. No introduce token nuevo.
+
+---
+
+### Aporte 169: El BOM Llega también en el Valor de un Secreto de Entorno, no Solo en los Archivos; una Comprobación de Formato lo Rechaza sin Nombrarlo
+`¤seguridad` `¤configuracion`
+
+* **Descripción:** un secreto que se crea desde PowerShell con `-Encoding UTF8` puede empezar por la marca de orden de bytes (BOM, `EF BB BF`). La comprobación de formato de `DATABASE_URL` falla, pero el mensaje no menciona el BOM, así que parece una URL mal escrita. Es la misma causa del Aporte 102, aplicada a un valor de entorno y no a un archivo.
+* **Por qué es útil aquí:** el propietario confirmó la causa al crear el secreto de la base del entorno de pruebas. El repo ya lo cubre: `app_core/config.py:101-112` detecta el BOM con un mensaje propio («cree el secreto de nuevo sin BOM»), y `app_core/db/session.py:26` lo limpia. Sin esa guardia, el fallo de arranque no indica la causa.
+* **Verificabilidad:** el predicado es $\text{primeros\_3\_bytes}(\texttt{DATABASE\_URL}) \neq \texttt{EF BB BF}$. La comprobación debe leer solo los bytes y nunca imprimir el valor de la URL ni de un secreto.
+* **Soporte bibliográfico:** sin fuente verificada. El estándar Unicode define el BOM como U+FEFF, pero no hay una fuente específica sobre valores de entorno que citar.
+* **Estado:** aplicado en `app_core/config.py:101-112` y `app_core/db/session.py:26`. Extiende el Aporte 102 a valores de entorno; no introduce token nuevo.
