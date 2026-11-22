@@ -2,7 +2,7 @@
 id = "GOB-05"
 titulo = "Adoptar el generador de índice del molde de ZERAG (claves de configuración, cabecera de imports, sugerencia de ruta y exenciones con caducidad) y retirar el mecanismo propio de exenciones"
 ola = "indep"
-estado = "en_curso"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["ADPA-10", "CI-35", "DEMO-03a"]
 propiedad = ["scripts/generar_indice_tareas.py", "governance/tareas/_exenciones_propiedad.txt", "tests/test_generar_indice_tareas_arbol.py", "governance/tareas/GOB-05.md"]
