@@ -9,7 +9,6 @@ propiedad = ["governance/operaciones/cloud_load_balancer.yaml", "tests/test_gcp0
 crea = ["tests/test_gcp04b_waf_y_registro.py"]
 arbitro = "pytest tests/test_gcp04b_waf_y_registro.py tests/test_gcp04_cloudsql_migration_cutover.py tests/test_gcp09_dominio_e_ingress.py; mutaciones m1 a m4."
 rastros = ["¤seguridad", "¤arbitro"]
-agente = "ninguno"
 +++
 
 # GCP-04b · Exclusión de la firma 942421 en Cloud Armor y registro permanente del balanceador
