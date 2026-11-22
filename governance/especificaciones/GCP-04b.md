@@ -13,7 +13,9 @@ Sin tablas ni migraciones. Estado final:
 Hecho medido el 2026-11-22. Fuentes: el registro del balanceador, leído por el CTO con el paso 1 del brief, y `origin/main` f34d1dc1.
 - A las 15:55:01 UTC, la regla 1000 (`sqli-v33-stable`) dio DENY 403 en `/api/v1/organizacion/mis-organizaciones` y en `/api/v1/plataforma/organizaciones`. La firma fue `owasp-crs-v030301-id942421-sqli`, de anomalía de caracteres SQL restringidos y nivel 4 de paranoia. Las páginas pasaron con ACCEPT; solo se bloquean las llamadas que llevan el token de Google.
 - `governance/operaciones/cloud_load_balancer.yaml:12` tenía `evaluatePreconfiguredWaf('sqli-v33-stable')` sin `sensitivity`, y los servicios de backend no declaraban registro. En la nube, `logConfig` estaba vacío, así que el bloqueo no dejó rastro.
-- El propietario ya activó el registro en los dos servicios, con muestreo 1.
+- **La firma llega por dos vías.** A las 15:55 llegó por la cabecera `Authorization: Bearer <token de Google>` de las llamadas a la API. Entre las 16:04:56 y las 16:05:01 UTC, antes de que el cambio se propagara, dio DENY en `/login` y `/favicon.ico`, en peticiones que solo llevaban cookies: la causa era la cookie de Google Identity. Por eso se excluye la firma y no se excluye la cabecera `Authorization`.
+- **Expresión aplicada.** Confirmada en la nube con `rules describe 1000` y aplicada por el propietario: la de §1. Desde las 16:05:05 UTC hubo 30 ACCEPT, 0 DENY y ningún 403.
+- El propietario activó el registro en los dos servicios, con muestreo 1.
 
 ## 2. API
 
