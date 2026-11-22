@@ -2,10 +2,10 @@
 id = "BOV-02b"
 titulo = "Montaje de los routers de objetos y del orquestador de la bóveda por su compuerta"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "boveda_cloud"
-depende_de = ["BOV-01", "BOV-02", "BOV-04", "ORG-22c"]
-propiedad = ["features/boveda_cloud/boveda_cloud_service.py#BOV-01", "tests/matriz/BOV-02b.py", "tests/matriz/roles/auditor.py#BOV-02b", "tests/test_bov02b_montaje_routers.py"]
+depende_de = ["BOV-01", "BOV-02", "BOV-04", "ORG-22c", "RM-25b"]
+propiedad = ["features/boveda_cloud/boveda_cloud_service.py#BOV-01", "tests/matriz/BOV-02b.py", "tests/matriz/roles/auditor.py#BOV-02b", "tests/test_bov02b_montaje_routers.py", "tests/test_matriz_permisos.py", "tests/test_bov01_paquetes_cuotas.py"]
 crea = ["tests/matriz/BOV-02b.py", "tests/test_bov02b_montaje_routers.py"]
 arbitro = "pytest tests/test_bov02b_montaje_routers.py tests/test_matriz_permisos.py tests/test_bov04_orquestador_diez_dimensiones.py; mutación m1."
 rastros = ["¤rbac-tenant", "¤arbitro"]

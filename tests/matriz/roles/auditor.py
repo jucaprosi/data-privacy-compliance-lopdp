@@ -298,4 +298,9 @@ _seccion("RM-27", {
 # === fin RM-27 ===
 
 # === BOV-02b ===
+_seccion("BOV-02b", {
+    "solicitar_url_subida_boveda": False,
+    "solicitar_url_descarga_boveda": False,
+    "consultar_orquestador_10d_boveda": False,
+})
 # === fin BOV-02b ===

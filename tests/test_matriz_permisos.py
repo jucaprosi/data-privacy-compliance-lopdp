@@ -615,12 +615,13 @@ def _extraer_roles_permitidos_estatico(route_ctx) -> set[str] | None:
             closure = inspect.getclosurevars(dep.call)
             if "roles" in closure.nonlocals:
                 return set(closure.nonlocals["roles"])
-            # Guarda propia que lee ROLES_CONSULTA del servicio del módulo (BOV-01): módulo.ROLES_CONSULTA.
+            # Guarda propia que lee ROLES_CONSULTA (BOV-01) o ROLES_OBJETOS (BOV-02) del servicio del módulo.
             codigo = dep.call.__code__
-            if "ROLES_CONSULTA" in codigo.co_names and "x_role" in codigo.co_varnames:
-                for modulo in dep.call.__globals__.values():
-                    if inspect.ismodule(modulo) and hasattr(modulo, "ROLES_CONSULTA"):
-                        return set(modulo.ROLES_CONSULTA)
+            for nombre_roles in ("ROLES_CONSULTA", "ROLES_OBJETOS"):
+                if nombre_roles in codigo.co_names and "x_role" in codigo.co_varnames:
+                    for modulo in dep.call.__globals__.values():
+                        if inspect.ismodule(modulo) and hasattr(modulo, nombre_roles):
+                            return set(getattr(modulo, nombre_roles))
         for hijo in dep.dependencies:
             res = _inspeccionar_dependant(hijo)
             if res is not None:
