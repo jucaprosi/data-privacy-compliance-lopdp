@@ -151,11 +151,13 @@ def test_5c_formato_de_la_lista():
 
 # 6 · cero fichas -------------------------------------------------------------------------------
 
-def test_6_cero_fichas_falla_e_informa_la_base():
+def test_6_cero_fichas_cargadas_falla_e_informa_la_base():
+    # CI-35 R2: sin ninguna ficha es un fallo del lector, no un estado del proyecto
     errores = git.validar([], arbol={"x.py"}, leer=lambda r: "", base="HEAD abc1234")
     assert len(errores) == 1 and "Base: HEAD abc1234" in errores[0]
+    # CI-35 R1: todas en «hecha» es un estado legítimo
     hechas = git.validar([_t("A", ["x.py"], estado="hecha")], arbol={"x.py"}, leer=lambda r: "", base="HEAD abc1234")
-    assert any("0 fichas no hechas" in e for e in hechas)
+    assert hechas == []
 
 
 def test_validar_sin_arbol_no_cambia():
@@ -184,6 +186,15 @@ def _real(exenciones_extra=()):
 
 
 def test_7a_la_propiedad_real_cumple_contra_el_arbol():
+    # CI-35 R3: muestra sintética fija, válida tenga main 0 o más fichas pendientes
+    archivos = {"x.py": "", "y.py": ""}
+    hechas = [_t("A", ["x.py"], estado="hecha"), _t("B", ["y.py"], depende=["A"], estado="hecha")]
+    # m1: volver a dar error con 0 fichas no hechas
+    assert git.validar_contra_arbol(hechas, set(archivos), archivos.get, "HEAD abc1234") == []
+    # m2: aceptar una lista vacía (lector roto)
+    vacia = git.validar_contra_arbol([], set(archivos), archivos.get, "HEAD abc1234")
+    assert [h.nivel for h in vacia] == ["error"] and "Base: HEAD abc1234" in vacia[0].mensaje
+    # y con las fichas reales, sin fijar cuántas siguen pendientes
     errores, base = _real()
     assert errores == [], f"Base: {base}\n" + "\n".join(errores)
 

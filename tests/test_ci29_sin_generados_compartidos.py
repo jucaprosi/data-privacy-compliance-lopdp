@@ -35,10 +35,14 @@ def test_indice_valida_sin_committear():
     assert git.INICIO not in (RAIZ / "governance/artefactos/TASKS.md").read_text(encoding="utf-8")
     ignorados = (RAIZ / ".gitignore").read_text(encoding="utf-8").splitlines()
     assert "governance/artefactos/_generado/" in ignorados
+    # CI-35 R3: muestra sintética fija con 0 fichas no hechas, contra un árbol sintético
+    hechas = [git.Tarea(**{**_t("A-1").__dict__, "estado": "hecha"})]
+    assert git.validar(hechas, {"sala"}, arbol={"x.py"}, leer=lambda r: "", base="HEAD abc1234") == []
+    # y el generador real sale con 0, tenga main 0 o más fichas pendientes
     ok = subprocess.run([sys.executable, str(RAIZ / "scripts" / "generar_indice_tareas.py")],
                         cwd=RAIZ, capture_output=True, text=True)
     assert ok.returncode == 0, ok.stdout
-    # mutación: una dependencia inexistente lo hace fallar
+    # m4: una dependencia inexistente lo hace fallar
     assert any("NOEXISTE" in e for e in git.validar([_t("A-1", depende=("NOEXISTE",))], {"sala"}))
 
 
