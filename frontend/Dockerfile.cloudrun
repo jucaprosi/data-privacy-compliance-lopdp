@@ -6,14 +6,14 @@
 # client id de Google (GCP-03b): ver la etapa 2.
 
 # --- Etapa 1: dependencias de compilación ---
-FROM node:20-alpine AS deps
+FROM node:22-alpine AS deps
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 
 # --- Etapa 2: compilación standalone ---
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 # GCP-03b · Next incrusta NEXT_PUBLIC_* en el bundle al compilar y frontend/src/lib/auth/modo.ts lee el
@@ -32,7 +32,7 @@ RUN mv next.config.ts next.config.base.ts \
  && npx next build
 
 # --- Etapa 3: ejecución mínima (alpine + Node de apk), sin node_modules completos ni privilegios ---
-FROM alpine:3.20 AS runner
+FROM alpine:3.21 AS runner
 RUN apk add --no-cache nodejs \
  && addgroup -S -g 1001 nodejs \
  && adduser -S -u 1001 -G nodejs nextjs
