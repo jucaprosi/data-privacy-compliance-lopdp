@@ -46,3 +46,21 @@ async def generar_json(cliente, modelo: str, sistema: str, usuario: str, esquema
             temperature=0,
         ),
     )
+
+
+async def vectorizar(cliente, modelo: str, textos: list[str]) -> list[list[float]]:
+    """Vectores de `textos` en el mismo orden (IA-12, `¤vertex-cache`); la compuerta valida el recuento."""
+    respuesta = await cliente.aio.models.embed_content(model=modelo, contents=list(textos))
+    return [list(e.values or []) for e in (getattr(respuesta, "embeddings", None) or [])]
+
+
+def crear_cache(cliente, modelo: str, contenido: str, ttl_segundos: int) -> tuple[str, int]:
+    """Crea un CachedContent de Vertex y devuelve (nombre, tokens) crudos; la compuerta los valida."""
+    from google.genai import types
+
+    cache = cliente.caches.create(
+        model=modelo,
+        config=types.CreateCachedContentConfig(contents=[contenido], ttl=f"{int(ttl_segundos)}s"),
+    )
+    uso = getattr(cache, "usage_metadata", None)
+    return getattr(cache, "name", None), getattr(uso, "total_token_count", None)
