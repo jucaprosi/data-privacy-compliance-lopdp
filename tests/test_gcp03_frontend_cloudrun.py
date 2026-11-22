@@ -209,3 +209,94 @@ def test_cloudrun_frontend_manifest_seguro():
             http_get = contenedor[sonda]["httpGet"]
             assert http_get["port"] == 3000
             assert http_get["path"] == "/health"
+
+
+# --------------------------------------------------------------------------- GCP-03b
+# El client id de Google entra al compilar y la imagen se etiqueta por commit
+# (governance/especificaciones/GCP-03b.md). frontend/cloudbuild.yaml se lee como texto (R-ADPA).
+
+CLOUDBUILD = FRONTEND / "cloudbuild.yaml"
+FUENTES = FRONTEND / "src"
+CLIENT_ID = "NEXT_PUBLIC_GOOGLE_CLIENT_ID"
+
+# R2 · toda variable NEXT_PUBLIC_* que lee frontend/src está en uno de los tres grupos de §1
+DE_COMPILACION = frozenset({CLIENT_ID})
+DE_SERVIDOR = frozenset({"NEXT_PUBLIC_API_URL"})
+SOLO_DESARROLLO = frozenset({
+    "NEXT_PUBLIC_AUTH_MODE", "NEXT_PUBLIC_USER_ID", "NEXT_PUBLIC_USER_ROLE", "NEXT_PUBLIC_USER_EMAIL",
+    "NEXT_PUBLIC_TENANT_ID", "NEXT_PUBLIC_OPERADOR_PLATAFORMA", "NEXT_PUBLIC_EVIDENCIA_FISICA",
+})
+
+_ITEM_LISTA = re.compile(r"^\s*-\s*'([^']*)'\s*$", re.MULTILINE)
+
+
+def _etapas() -> list[_EtapaDocker]:
+    return _parsear_dockerfile(DOCKERFILE.read_text(encoding="utf-8"))
+
+
+def _nombre_arg(arg: str) -> str:
+    return arg.split("=", 1)[0].strip()
+
+
+def _cloudbuild() -> tuple[str, list[str], list[str]]:
+    """(texto, argumentos del paso de docker, imágenes publicadas)."""
+    texto = CLOUDBUILD.read_text(encoding="utf-8")
+    pasos, _, resto = texto.partition("\nimages:")
+    return texto, _ITEM_LISTA.findall(pasos), _ITEM_LISTA.findall(resto.split("\noptions:")[0])
+
+
+def _build_args(argumentos: list[str]) -> dict[str, str]:
+    pares = [argumentos[i + 1] for i, a in enumerate(argumentos[:-1]) if a == "--build-arg"]
+    return dict(p.split("=", 1) if "=" in p else (p, "") for p in pares)
+
+
+def test_client_id_entra_al_compilar():
+    # R1 · m1: quitar el ARG da rojo
+    builder = next(e for e in _etapas() if e.alias == "builder")
+    orden = builder.instrucciones
+    arg = [i for i, (v, a) in enumerate(orden) if v == "ARG" and _nombre_arg(a) == CLIENT_ID]
+    env = [i for i, (v, a) in enumerate(orden)
+           if v == "ENV" and _parsear_env(_EtapaDocker("", None, [(v, a)])).get(CLIENT_ID) == "${%s}" % CLIENT_ID]
+    compila = [i for i, (v, a) in enumerate(orden) if v == "RUN" and "next build" in a]
+    assert arg, f"la etapa builder no declara ARG {CLIENT_ID}"
+    assert env, f"la etapa builder no fija ENV {CLIENT_ID}=${{{CLIENT_ID}}}"
+    assert compila and arg[0] < env[0] < compila[0], "ARG y ENV del client id deben ir antes de compilar"
+
+
+def test_cloudbuild_pasa_el_client_id():
+    # R1 · m2: quitar el --build-arg da rojo
+    _, argumentos, _ = _cloudbuild()
+    valor = _build_args(argumentos).get(CLIENT_ID, "")
+    assert re.fullmatch(r"\d+-[a-z0-9]+\.apps\.googleusercontent\.com", valor), valor
+
+
+def test_variables_del_cliente_clasificadas():
+    # R2 · m3: una variable nueva sin clasificar, o un ARG de una variable de desarrollo, da rojo
+    grupos = DE_COMPILACION | DE_SERVIDOR | SOLO_DESARROLLO
+    assert len(grupos) == len(DE_COMPILACION) + len(DE_SERVIDOR) + len(SOLO_DESARROLLO), "grupos solapados"
+    usadas = {v for p in FUENTES.rglob("*") if p.suffix in {".ts", ".tsx", ".js", ".jsx", ".mjs"}
+              for v in re.findall(r"NEXT_PUBLIC_[A-Z0-9_]+", p.read_text(encoding="utf-8"))}
+    assert usadas, "no se encontró ninguna NEXT_PUBLIC_* en frontend/src"
+    assert usadas <= grupos, f"variables sin clasificar en la prueba: {sorted(usadas - grupos)}"
+    etapas = _etapas()
+    builder = next(e for e in etapas if e.alias == "builder")
+    args_builder = {_nombre_arg(a) for v, a in builder.instrucciones if v == "ARG"}
+    horneadas = {_nombre_arg(a) for e in etapas for v, a in e.instrucciones if v == "ARG"}
+    horneadas |= {k for e in etapas for k in _parsear_env(e)}
+    _, argumentos, _ = _cloudbuild()
+    build_args = set(_build_args(argumentos))
+    for variable in DE_COMPILACION:
+        assert variable in args_builder and variable in build_args, variable
+    for variable in SOLO_DESARROLLO:  # una identidad de prueba nunca entra al bundle de producción
+        assert variable not in horneadas and variable not in build_args, variable
+
+
+def test_imagen_etiquetada_por_commit():
+    # R3 · m4: volver a «v2» da rojo; sin _ETIQUETA, Cloud Build rechaza la construcción (MUST_MATCH)
+    texto, argumentos, imagenes = _cloudbuild()
+    etiqueta = argumentos[argumentos.index("-t") + 1]
+    assert etiqueta.endswith("/web:${_ETIQUETA}"), etiqueta
+    assert imagenes == [etiqueta]
+    assert ":v2" not in texto
+    assert re.search(r"^options:\s*\n\s+substitutionOption:\s*'?MUST_MATCH'?\s*$", texto, re.MULTILINE)
+    assert "substitutions:" not in texto and "ALLOW_LOOSE" not in texto, "_ETIQUETA no lleva valor por defecto"
