@@ -325,10 +325,16 @@ def sugerir_ruta(f: str, arbol: set[str], dirs: set[str] | None = None) -> str |
 
 def validar_contra_arbol(tareas: list[Tarea], arbol: set[str], leer: Callable[[str], str],
                          base: str = "HEAD") -> list[Hallazgo]:
-    """Reglas 1 a 4 de R-PROP-EXISTE. «arbol» y «leer» se inyectan (en CI: git ls-tree de HEAD)."""
+    """Reglas 1 a 4 de R-PROP-EXISTE. «arbol» y «leer» se inyectan (en CI: git ls-tree de HEAD).
+
+    CI-35: 0 fichas no hechas es un estado legítimo (no hay nada que comparar y devuelve []);
+    0 fichas cargadas es un fallo del lector y sigue en rojo.
+    """
+    if not tareas:
+        return [Hallazgo("", "", "error", f"Base: {base}, 0 fichas cargadas: el lector de fichas no devolvió ninguna")]
     vivas = [t for t in tareas if t.estado != "hecha"]
     if not vivas:
-        return [Hallazgo("", "", "error", f"Base: {base}, 0 fichas no hechas: no hay nada que comparar")]
+        return []
     por_id = {t.id: t for t in tareas}
     anc = _ancestros(tareas)
     dirs = _directorios(arbol)

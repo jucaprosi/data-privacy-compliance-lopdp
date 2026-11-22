@@ -34,14 +34,28 @@ def test_el_catalogo_del_prd_de_evydentia_cubre_las_salas_de_las_fichas_abiertas
     assert salas and usadas <= salas
 
 
-def test_quitar_una_fila_del_catalogo_hace_fallar_la_ficha_de_esa_sala():
-    texto = git.PRD_MD.read_text(encoding="utf-8").replace("\r\n", "\n")
-    tareas, _ = git.cargar_tareas()
+_PRD_SINTETICO = "### 5.2 Catálogo\n\n| Sala | U |\n| :-- | :-- |\n| `alfa` | x |\n| `beta` | y |\n\nfin\n"
+
+
+def _quitar_fila_hace_fallar(texto, tareas):
+    """Quita del catálogo la sala de la primera ficha no hecha y exige que alguna de sus fichas falle."""
     sala = next(t.sala.split(",")[0].strip() for t in tareas if t.estado != "hecha")
     sin_fila = "\n".join(l for l in texto.split("\n") if not l.startswith(f"| `{sala}` |"))
     assert sala not in git.salas_del_prd(sin_fila)
     assert any(e.startswith(t_id) for t_id in [t.id for t in tareas if sala in t.sala]
                for e in git.validar(tareas, git.salas_del_prd(sin_fila)))
+
+
+def test_quitar_una_fila_del_catalogo_hace_fallar_la_ficha_de_esa_sala():
+    # CI-35 R3: muestra sintética fija con una ficha viva; m3 (no validar la sala) la hace fallar
+    viva = git.Tarea(**{**_t("S-1").__dict__, "sala": "alfa"})
+    hecha = git.Tarea(**{**_t("S-2", propiedad=("y.py",), estado="hecha").__dict__, "sala": "beta"})
+    assert git.validar([viva, hecha], git.salas_del_prd(_PRD_SINTETICO)) == []
+    _quitar_fila_hace_fallar(_PRD_SINTETICO, [viva, hecha])
+    # con las fichas reales, solo si queda alguna viva: main no fija cuántas hay pendientes
+    tareas, _ = git.cargar_tareas()
+    if any(t.estado != "hecha" for t in tareas):
+        _quitar_fila_hace_fallar(git.PRD_MD.read_text(encoding="utf-8").replace("\r\n", "\n"), tareas)
 
 
 def test_una_sala_fuera_del_catalogo_del_prd_se_rechaza():
