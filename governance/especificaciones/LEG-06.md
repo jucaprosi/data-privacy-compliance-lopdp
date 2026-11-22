@@ -7,7 +7,7 @@ Sin tablas ni migraciones. Estado final:
 
 | Archivo | Estado final |
 | :--- | :--- |
-| `LICENSE` (nuevo) | copia literal del `LICENSE` del repositorio de respaldo `jucaprosi/evydentia`, que el propietario entrega a la sesión |
+| `LICENSE` (nuevo) | copia literal de `jucaprosi/evydentia@23b1d32:LICENSE`. Se lee con `gh api repos/jucaprosi/evydentia/contents/LICENSE` o desde `C:/Users/Juan Carlos/respaldo-evydentia/LICENSE`. Su SHA-256 es `f814709c25412c5863eec4c284303f790c04b6063356907468f964b73ee3a7db` |
 | `frontend/package.json` | `"license": "UNLICENSED"` |
 | `scripts/poner_aviso_de_autor.py` (nuevo) | pone la línea de aviso donde falte (R2); con `--verificar`, solo informa |
 | `scripts/verificar_alcance_pr.py` | admite el diff transversal de R5 |
@@ -63,7 +63,7 @@ No aplica: el aviso va en el código fuente y no se muestra en pantalla.
 | :--- | :--- |
 | **Dado** `git ls-files` con las extensiones de R1, **entonces** todos llevan el aviso en la posición de R2. Mutación m1: quitarlo de un archivo da rojo con la línea que hay que pegar. | `test_todo_archivo_de_codigo_lleva_el_aviso` |
 | **Dado** archivos sintéticos con BOM, shebang, línea `coding`, `@echo off`, `"use client"` y un archivo vacío, **entonces** el script deja el aviso en su sitio y una segunda pasada no cambia nada. Mutación m2: poner el aviso antes del shebang da rojo. | `test_posicion_y_idempotencia` |
-| **Dado** `LICENSE`, **entonces** existe y su contenido es igual al del respaldo, comparado por hash SHA-256 registrado en la prueba. `frontend/package.json` lleva `"license": "UNLICENSED"`. Mutación m3: quitar el campo da rojo. | `test_licencia_y_package_json` |
+| **Dado** `LICENSE`, **entonces** existe y su contenido es igual al del respaldo, comparado por hash: SHA-256 `f814709c25412c5863eec4c284303f790c04b6063356907468f964b73ee3a7db`. `frontend/package.json` lleva `"license": "UNLICENSED"`. Mutación m3: quitar el campo da rojo. | `test_licencia_y_package_json` |
 | **Dado** un diff transversal sintético que añade el aviso, **entonces** el alcance da verde. Con una línea más cambiada en el mismo archivo da rojo. Mutación m4: quitar la condición (b) da verde y la prueba lo detecta. | `tests/test_verificar_alcance_pr.py::test_leg06_transversal` |
 | **Dado** otra ficha en `en_curso` en la base, **entonces** el alcance de LEG-06 da rojo. Mutación m5: quitar R6 da verde y la prueba lo detecta. | `tests/test_verificar_alcance_pr.py::test_leg06_sin_fichas_en_curso` |
 
