@@ -312,14 +312,14 @@ def test_14_cache_control_se_conserva_y_no_store_por_defecto(nube):
 
 
 def test_15_compilacion_y_ejecucion_con_la_misma_version_mayor_de_node_sobre_musl(imagen):
-    """Nota del CTO: compilar en node:20-alpine (musl) para que los módulos nativos sirvan al ejecutar."""
+    """Nota del CTO: compilar en node:22-alpine (musl) para que los módulos nativos sirvan al ejecutar."""
     texto = (FRONTEND / "Dockerfile.cloudrun").read_text(encoding="utf-8")
     etapas = dict((nombre, base) for base, nombre in re.findall(r"^FROM\s+(\S+)\s+AS\s+(\S+)", texto, flags=re.M))
-    assert etapas["deps"] == "node:20-alpine" and etapas["builder"] == "node:20-alpine"
+    assert etapas["deps"] == "node:22-alpine" and etapas["builder"] == "node:22-alpine"
     assert etapas["runner"].startswith("alpine:")
     version = subprocess.run(["docker", "run", "--rm", "--entrypoint", "no" + "de", imagen, "-v"],
                              capture_output=True, text=True, check=True).stdout.strip()
-    assert version.startswith("v20."), version
+    assert version.startswith("v22."), version
     libc = subprocess.run(["docker", "run", "--rm", "--entrypoint", "sh", imagen, "-c", "ls /lib/ld-musl-*"],
                           capture_output=True, text=True)
     assert libc.returncode == 0

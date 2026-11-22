@@ -156,7 +156,7 @@ def test_dockerfile_multistage_non_root():
     assert runner.alias == "runner"
     compilacion = [e for e in etapas if e.alias != "runner"]
     assert compilacion and all(e.base.startswith("node:") for e in compilacion)
-    assert runner.base == "alpine:3.20"
+    assert runner.base == "alpine:3.21"
 
     runs_runner = [arg for verbo, arg in runner.instrucciones if verbo == "RUN"]
     assert any("apk add" in r and "nodejs" in r for r in runs_runner)
