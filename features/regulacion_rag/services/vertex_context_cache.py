@@ -5,8 +5,11 @@ Solo se cachea normativa pública del corpus cerrado: nunca la consulta ni datos
 La caché se identifica por `corpus_sha256`; si el corpus cambia (reforma), se crea otra.
 
 Límite conocido: el registro vive en memoria del proceso. En Cloud Run cada instancia crea
-su propia caché. La creación real en Vertex depende de una ficha de la sala inferencia; hasta
-entonces el creador por defecto falla cerrado (VTX_CACHE_NO_DISPONIBLE).
+su propia caché. La creación real en Vertex va por el pasillo de inferencia (IA-12); si la
+inferencia no está disponible, el creador por defecto falla cerrado (VTX_CACHE_NO_DISPONIBLE).
+
+El creador por defecto ya es real (pasillo IA-12): las pruebas no deben llamar a Vertex; usan
+`configurar_creador` con un doble o sustituyen `crear_cache_contenido` del pasillo de inferencia.
 """
 from __future__ import annotations
 
@@ -41,10 +44,6 @@ class CreadorCacheContenido(Protocol):
     def __call__(self, modelo: str, contenido: str, ttl_seconds: int) -> tuple[str, int]: ...
 
 
-def _creador_no_disponible(modelo: str, contenido: str, ttl_seconds: int) -> tuple[str, int]:
-    raise ErrorNegocio(VTX_CACHE_NO_DISPONIBLE)
-
-
 def texto_canonico(corpus: Iterable[UnidadNormativa]) -> str:
     """Texto determinista del corpus público; base del hash y del contenido cacheado."""
     lineas = [
@@ -58,20 +57,34 @@ def huella_corpus(corpus: Iterable[UnidadNormativa]) -> str:
     return hashlib.sha256(texto_canonico(corpus).encode("utf-8")).hexdigest()
 
 
-_creador: CreadorCacheContenido = _creador_no_disponible
+def _creador_inferencia(modelo: str, contenido: str, ttl_seconds: int) -> tuple[str, int]:
+    """Creador por defecto (REG-03): el pasillo de inferencia (IA-12); sus fallos cierran como VTX_CACHE_NO_DISPONIBLE."""
+    from app_core.pasillo import inferencia
+
+    return inferencia.crear_cache_contenido(modelo, contenido, ttl_seconds)
+
+
+_creador: CreadorCacheContenido = _creador_inferencia
 _registro: dict[tuple[str, str], tuple[VertexCorpusCacheDescriptor, float]] = {}
 _candado = threading.Lock()
 
 
 def configurar_creador(creador: CreadorCacheContenido | None) -> None:
-    """Conecta el puerto (doble en pruebas; adaptador de inferencia cuando exista). None restaura el cerrado."""
+    """Conecta el puerto (doble en pruebas). None restaura el creador por defecto: el pasillo de inferencia."""
     global _creador
-    _creador = creador or _creador_no_disponible
+    _creador = creador or _creador_inferencia
 
 
 def vaciar_registro() -> None:
     with _candado:
         _registro.clear()
+
+
+def regenerar_si_difiere(corpus_sha256: str) -> None:
+    """Vacía el registro si la caché vigente no es la de `corpus_sha256`; la próxima llamada crea otra (REG-03)."""
+    with _candado:
+        if any(clave[1] != corpus_sha256 for clave in _registro):
+            _registro.clear()
 
 
 def obtener_o_crear(

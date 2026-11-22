@@ -43,4 +43,29 @@ async def publicar_paquete(session, operador_id: str, paquete_id: str) -> Public
 # === fin REG-01 ===
 
 # === REG-03 ===
+# ¤vertex-cache
+from features.regulacion_rag.domain.corpus import CORPUS_NORMATIVO_OFICIAL, fundamento as _fundamento
+from features.regulacion_rag.services import vertex_context_cache as _cache_vertex
+
+
+async def vectorizar_fragmentos(textos: list[str], modelo: str) -> list[list[float]]:
+    """Vectores por el pasillo de inferencia (IA-12); sin inferencia propaga el error al llamador."""
+    from app_core.pasillo import inferencia
+
+    return await inferencia.vectorizar(textos, modelo)
+
+
+def obtener_o_crear_cache_normativo(modelo: str) -> _cache_vertex.VertexCorpusCacheDescriptor:
+    """Descriptor de la caché de contexto del corpus oficial; sin inferencia lanza VTX_CACHE_NO_DISPONIBLE."""
+    return _cache_vertex.obtener_o_crear(modelo, corpus=CORPUS_NORMATIVO_OFICIAL)
+
+
+def regenerar_cache_normativo(corpus_sha256: str) -> None:
+    """Si el hash difiere de la caché vigente, vacía el registro para que la próxima llamada cree otra."""
+    _cache_vertex.regenerar_si_difiere(corpus_sha256)
+
+
+def corpus_citable() -> dict[str, dict]:
+    """{clave: fundamento} de cada unidad del corpus oficial (el mismo de la caché)."""
+    return {norma.id: _fundamento(norma.id) for norma in CORPUS_NORMATIVO_OFICIAL}
 # === fin REG-03 ===
