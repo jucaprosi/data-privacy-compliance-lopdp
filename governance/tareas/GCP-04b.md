@@ -2,7 +2,7 @@
 id = "GCP-04b"
 titulo = "Exclusión de la firma 942421 en Cloud Armor y registro permanente del balanceador"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "operaciones"
 depende_de = ["GCP-04", "GCP-09"]
 propiedad = ["governance/operaciones/cloud_load_balancer.yaml", "tests/test_gcp04b_waf_y_registro.py"]
