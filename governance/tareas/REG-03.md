@@ -2,7 +2,7 @@
 id = "REG-03"
 titulo = "Compuertas de vectores, caché y corpus citable de la sala regulacion_rag"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "regulacion_rag"
 depende_de = ["IA-12", "NORM-03", "VTX-01"]
 propiedad = ["features/regulacion_rag/regulacion_rag_service.py#REG-03", "features/regulacion_rag/services/vertex_context_cache.py", "tests/test_reg03_compuertas_corpus.py"]
