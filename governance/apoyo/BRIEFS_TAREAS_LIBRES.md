@@ -11,22 +11,45 @@ Las tandas 88 y 89 están cerradas:
 - **GOB-05** (#944): el generador del índice sigue el molde de ZERAG y conserva lo que trajo CI-35.
 - **GCP-03b** (#946): el client id de Google entra al compilar y la imagen web se etiqueta por commit. Cierra el incidente del login del 2026-11-22.
 
-Ninguna ficha tiene brief al corte. Las cuatro pendientes esperan a su brief o a otra ficha:
+Tanda 90: GCP-04b, CI-36 y CI-37 tienen brief y se pueden lanzar. LEG-06 espera a CI-36.
 
-| ID | Brief | Sala | Depende de (pendiente) | Estado al corte | Qué cierra |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `GCP-04b` | Pendiente; lo escribe el Tech Lead | `operaciones` | — | **Sin brief.** Ficha y especificación en #940. | `cloud_load_balancer.yaml` con la exclusión de 942421 y el registro del balanceador, con su árbitro. |
-| `CI-36` | Pendiente; lo escribe el Tech Lead | `frontend` | — | **Sin brief.** Ya no espera a GCP-03b. Ficha en #936. | Node 22 LTS en imágenes, CI y `engines`. El cambio de `node-version` del workflow lo aplica el propietario. |
-| `CI-37` | Pendiente; lo escribe el Tech Lead | `gobernanza` | — | **Sin brief.** Especificación en #945. | Minutos de GitHub Actions por fusión reducidos a la mitad sin perder árbitros. Toca `.github/workflows/zero-regression-pipeline.yml`: ese archivo lo aplica el propietario. |
-| `LEG-06` | Pendiente; lo escribe el Tech Lead | `gobernanza` | **CI-36** | **Espera a CI-36**: los dos tocan `frontend/package.json`. Especificación en #947. | Licencia propietaria y aviso de derechos de autor en todo archivo de código versionado. |
+| ID | Brief | Sala | Tanda | Depende de (pendiente) | Estado al corte | Qué cierra |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `GCP-04b` | `briefs/GCP-04b.md` | `operaciones` | 90 | — | **Lista para lanzar.** | `cloud_load_balancer.yaml` igual que la nube: exclusión de 942421 en la regla 1000 y registro del balanceador, con su árbitro. |
+| `CI-36` | `briefs/CI-36.md` | `frontend` | 90 | — | **Lista para lanzar.** PR en borrador hasta el commit del propietario con las cuatro `node-version: "22"`. | Node 22 LTS en imágenes, CI y `engines`; sin `EBADENGINE`. |
+| `CI-37` | `briefs/CI-37.md` | `gobernanza` | 90 | — | **Lista para lanzar.** PR en borrador hasta que el propietario aplique el workflow nuevo. | Minutos de GitHub Actions por fusión reducidos al menos a la mitad, sin perder árbitros. |
+| `LEG-06` | Pendiente | `gobernanza` | — | **CI-36** | **Espera a CI-36**: las dos tocan `frontend/package.json`. Especificación en #947. | Licencia propietaria y aviso de derechos de autor en todo archivo de código versionado. |
 
-GCP-04b, CI-36 y CI-37 no comparten archivos ni traen migraciones: cuando tengan brief van en paralelo y se fusionan según llega su CI en verde.
+GCP-04b, CI-36 y CI-37 no comparten archivos del repositorio ni traen migraciones: van en paralelo y se fusionan según llega su CI en verde. El único punto común es el workflow:
+- CI-36 cambia solo las cuatro líneas `node-version`, con un commit del propietario.
+- CI-37 lo reescribe, y su archivo también lo aplica el propietario.
+- La que se fusione segunda rehace el commit del propietario sobre `main`.
 
 ## 2. Órdenes de lanzamiento
 
 Cada orden se pega en una sesión nueva de VS Code con superpowers, o la ejecuta el Tech Lead en su sesión. El brief es autosuficiente: rama, «Escribe», «No hagas» y árbitro están en él. Modelo por defecto.
 
-No hay órdenes al corte. Se añaden aquí cuando el Tech Lead publique los briefs de GCP-04b, CI-36 y CI-37, y el de LEG-06 cuando CI-36 esté en `main`.
+### GCP-04b
+
+```text
+Ejecuta la tarea GCP-04b siguiendo al pie de la letra su brief governance/apoyo/briefs/GCP-04b.md de origin/main (haz git fetch origin antes de leerlo). El contrato es governance/especificaciones/GCP-04b.md. Trabaja en un worktree propio en C:/Users/Juan Carlos/worktrees-evydentia/gcp-04b con la rama tarea/juan-carlos/gcp-04b creada desde origin/main. Abre un PR hacia main y no lo fusiones: lo simula y lo fusiona el CTO. Escribe en español.
+```
+
+### CI-36
+
+```text
+Ejecuta la tarea CI-36 siguiendo al pie de la letra su brief governance/apoyo/briefs/CI-36.md de origin/main (haz git fetch origin antes de leerlo). El contrato es governance/especificaciones/CI-36.md. Trabaja en un worktree propio en C:/Users/Juan Carlos/worktrees-evydentia/ci-36 con la rama tarea/juan-carlos/ci-36 creada desde origin/main. Abre el PR hacia main como borrador, con el comando del commit del propietario para las cuatro node-version, y no lo fusiones: lo simula y lo fusiona el CTO. Escribe en español.
+```
+
+### CI-37
+
+```text
+Ejecuta la tarea CI-37 siguiendo al pie de la letra su brief governance/apoyo/briefs/CI-37.md de origin/main (haz git fetch origin antes de leerlo). El contrato es governance/especificaciones/CI-37.md. Trabaja en un worktree propio en C:/Users/Juan Carlos/worktrees-evydentia/ci-37 con la rama tarea/juan-carlos/ci-37 creada desde origin/main. No escribas en .github/workflows: deja el workflow nuevo en C:/Users/Juan Carlos/worktrees-evydentia/ci-37-workflow.yml y en el PR el comando con que lo aplica el propietario. Abre el PR hacia main como borrador y no lo fusiones: lo simula y lo fusiona el CTO. Escribe en español.
+```
+
+### LEG-06 (todavía no)
+
+Su orden se añade aquí cuando CI-36 esté en `main` y el Tech Lead publique su brief.
 
 ## 3. Despliegue a producción
 
