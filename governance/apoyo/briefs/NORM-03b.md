@@ -27,6 +27,8 @@
   - `frontend/src/components/normativa/PanelResolucion.tsx`
   - `frontend/src/components/normativa/CentroVigilancia.tsx`
   - `frontend/tests/normativa_impacto/impacto.spec.ts`
+  - `frontend/src/components/layout/menus/index.ts#NORM-02`
+  - `frontend/src/components/layout/pantallas/index.tsx#NORM-02`
 
 **No hagas:**
 

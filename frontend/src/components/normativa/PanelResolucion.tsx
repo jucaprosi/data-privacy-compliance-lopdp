@@ -1,15 +1,31 @@
 "use client";
-/** Panel lateral de una norma: documento, historial de versiones y, para el operador, el registro de la revisión. */
+/**
+ * Panel lateral de una norma: documento, historial de versiones y, para el operador, el registro de la revisión.
+ * NORM-03b: para los roles de lectura del análisis de impacto, pestañas «Documento» e «Impacto» (NORM-03).
+ */
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import PestanaImpacto from "@/components/normativa_impacto/PestanaImpacto";
+import { ROLES_DECISION, ROLES_PEDIDO } from "@/components/normativa_impacto/cliente";
 import {
   bajarOriginal, detalleResolucion, registrarRevision, ErrorNormativa,
   type DetalleResolucion, type EstadoRevision,
 } from "./cliente";
 import { ESTADO_RESOLUCION, fechaCorta, MENSAJES, OPCIONES_REVISION } from "./etiquetas";
 
-export default function PanelResolucion({ id, operador, alCerrar, alRevisar }: {
-  id: string; operador: boolean; alCerrar: () => void; alRevisar: () => void;
+/** Roles que leen el análisis de impacto (router de NORM-03); el servidor vuelve a autorizar. */
+const ROLES_LECTURA_IMPACTO = [...ROLES_PEDIDO, "coordinador", "implementador", "auditor"] as const;
+
+type SeccionId = "documento" | "impacto";
+const SECCIONES: { id: SeccionId; nombre: string }[] = [
+  { id: "documento", nombre: "Documento" },
+  { id: "impacto", nombre: "Impacto" },
+];
+
+const tiene = (roles: readonly string[], permitidos: readonly string[]) => permitidos.some((r) => roles.includes(r));
+
+export default function PanelResolucion({ id, operador, roles, alCerrar, alRevisar }: {
+  id: string; operador: boolean; roles: readonly string[] | null; alCerrar: () => void; alRevisar: () => void;
 }) {
   const [d, setD] = useState<DetalleResolucion | null>(null);
   const [fallo, setFallo] = useState(false);
@@ -21,6 +37,23 @@ export default function PanelResolucion({ id, operador, alCerrar, alRevisar }: {
   const [errorNota, setErrorNota] = useState("");
   const titulo = useRef<HTMLHeadingElement>(null);
   const enlaceActual = useRef<string | null>(null);
+  const [seccion, setSeccion] = useState<SeccionId>("documento");
+  const refsSeccion = useRef<Record<string, HTMLButtonElement | null>>({});
+  // Sin roles leídos (cargando o con fallo) no hay pestañas: el panel se ve como siempre.
+  const conPestanas = roles !== null && tiene(roles, ROLES_LECTURA_IMPACTO);
+
+  useEffect(() => { setSeccion("documento"); }, [id]);
+
+  const moverSeccion = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const i = SECCIONES.findIndex((s) => s.id === seccion);
+    const destino = { ArrowRight: (i + 1) % SECCIONES.length, ArrowLeft: (i + SECCIONES.length - 1) % SECCIONES.length,
+      Home: 0, End: SECCIONES.length - 1 }[e.key];
+    if (destino === undefined) return;
+    e.preventDefault();
+    const sig = SECCIONES[destino].id;
+    setSeccion(sig);
+    refsSeccion.current[sig]?.focus();
+  };
 
   const cargarDocumento = useCallback(async () => {
     setSinDocumento(null);
@@ -76,8 +109,27 @@ export default function PanelResolucion({ id, operador, alCerrar, alRevisar }: {
         <button type="button" onClick={alCerrar} className="rounded border border-[var(--ui-borde)] px-2 py-1 text-sm">Cerrar el panel</button>
       </div>
       {fallo ? <p role="alert" className="text-sm">No pudimos cargar la norma. Inténtalo de nuevo.</p> : null}
-      {d ? (
-        <>
+      {conPestanas ? (
+        <div role="tablist" aria-label="Secciones de la resolución" onKeyDown={moverSeccion}
+          className="flex gap-1 border-b border-[var(--ui-borde)]">
+          {SECCIONES.map((s) => (
+            <button key={s.id} ref={(el) => { refsSeccion.current[s.id] = el; }} type="button" role="tab"
+              id={`res-tab-${s.id}`} aria-selected={seccion === s.id} aria-controls={`res-panel-${s.id}`}
+              tabIndex={seccion === s.id ? 0 : -1} onClick={() => setSeccion(s.id)}
+              className={`px-3 py-2 text-sm ${seccion === s.id ? "border-b-2 border-current font-medium" : "text-[var(--ui-texto-suave)]"}`}>
+              {s.nombre}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {conPestanas && seccion === "impacto" ? (
+        <div role="tabpanel" id="res-panel-impacto" aria-labelledby="res-tab-impacto">
+          <PestanaImpacto resolucionId={id} esDpo={tiene(roles ?? [], ROLES_DECISION)}
+            puedePedir={tiene(roles ?? [], ROLES_PEDIDO)} />
+        </div>
+      ) : d ? (
+        <div className="flex flex-col gap-3" {...(conPestanas
+          ? { role: "tabpanel", id: "res-panel-documento", "aria-labelledby": "res-tab-documento" } : {})}>
           <p className="text-sm">{d.titulo}</p>
           <p className="text-sm">Estado: {ESTADO_RESOLUCION[d.estado].texto}
             {d.revisada_en ? ` · revisada el ${fechaCorta(d.revisada_en)}` : ""}</p>
@@ -118,7 +170,7 @@ export default function PanelResolucion({ id, operador, alCerrar, alRevisar }: {
               </form>
             ) : <button type="button" onClick={() => setRevisando(true)} className="self-start rounded border border-[var(--ui-borde)] px-2 py-1 text-sm">Registrar revisión</button>
           ) : null}
-        </>
+        </div>
       ) : null}
     </aside>
   );

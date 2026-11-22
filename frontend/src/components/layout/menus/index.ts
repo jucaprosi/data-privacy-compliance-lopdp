@@ -195,7 +195,8 @@ SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMEN
 // === fin DLP-01 ===
 
 // === NORM-02 ===
-// Sección reservada para NORM-02.
+import { SUBMENUS_NORM_02 } from "./NORM-02";
+SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMENUS_NORM_02]));
 // === fin NORM-02 ===
 
 // === BOV-01 ===
