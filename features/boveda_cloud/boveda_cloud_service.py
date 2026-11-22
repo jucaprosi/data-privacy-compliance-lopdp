@@ -49,10 +49,17 @@ _SQL_CONSUMO = {
 
 def __getattr__(nombre: str):
     # El router se carga al pedirlo (main.py), para que las rutas importen esta compuerta sin ciclo.
+    # BOV-02b: una puerta por sala; la compuerta reúne los routers de suscripción, objetos y orquestador.
     if nombre == "router":
-        from features.boveda_cloud.routes.boveda_paquetes_routes import router
+        from fastapi import APIRouter
 
-        return router
+        from features.boveda_cloud.routes.boveda_paquetes_routes import router as router_paquetes
+
+        sala = APIRouter()
+        sala.include_router(router_paquetes)
+        sala.include_router(router_objetos())
+        sala.include_router(router_orquestador())
+        return sala
     raise AttributeError(nombre)
 
 

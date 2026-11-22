@@ -26,6 +26,7 @@
   - `tests/matriz/BOV-02b.py`
   - `tests/matriz/roles/auditor.py#BOV-02b`
   - `tests/test_bov02b_montaje_routers.py`
+  - `tests/test_matriz_permisos.py`
 
 **No hagas:**
 
