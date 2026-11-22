@@ -16,7 +16,7 @@ agente = "ninguno"
 
 **Contrato:** `governance/especificaciones/NORM-03b.md` (manda sobre esta ficha).
 
-**Origen.** Pedido del CTO (2026-11-21). Medido: los componentes de NORM-03 (`PestanaImpacto.tsx`) no se usan fuera de su carpeta, y el router de impacto ya está montado por `AUTO_REGISTRO`. Pasa por UX/UI antes de lanzarse.
+**Origen.** Pedido del CTO (2026-11-21). Medido: los componentes de NORM-03 (`PestanaImpacto.tsx`) no se usan fuera de su carpeta, y el router de impacto ya está montado por `AUTO_REGISTRO`. UX/UI cerró la interfaz el 2026-11-21.
 
 ## Entrega
 - La pestaña «Impacto» en `PanelResolucion.tsx`, con los roles leídos de `/organizacion/me/roles`.
