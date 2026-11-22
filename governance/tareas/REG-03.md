@@ -9,7 +9,6 @@ propiedad = ["features/regulacion_rag/regulacion_rag_service.py#REG-03", "featur
 crea = ["tests/test_reg03_compuertas_corpus.py"]
 arbitro = "pytest tests/test_reg03_compuertas_corpus.py tests/test_norm03_impacto_hitl.py; mutaciones m1 a m3."
 rastros = ["¤vertex-cache", "¤arbitro"]
-agente = "ninguno"
 +++
 
 # REG-03 · Compuertas de vectores, caché y corpus citable de la sala regulacion_rag

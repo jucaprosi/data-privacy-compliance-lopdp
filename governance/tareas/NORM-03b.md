@@ -9,7 +9,6 @@ propiedad = ["frontend/src/components/normativa/PanelResolucion.tsx", "frontend/
 crea = []
 arbitro = "Playwright frontend/tests/normativa_impacto/impacto.spec.ts + tsc --noEmit + npm run build; mutación m1."
 rastros = ["¤frontend-ide"]
-agente = "ninguno"
 +++
 
 # NORM-03b · Pestaña «Impacto» en el panel de una resolución de NORM-02

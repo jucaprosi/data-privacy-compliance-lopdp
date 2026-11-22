@@ -9,7 +9,6 @@ propiedad = ["features/boveda_cloud/boveda_cloud_service.py#BOV-01", "tests/matr
 crea = ["tests/matriz/BOV-02b.py", "tests/test_bov02b_montaje_routers.py"]
 arbitro = "pytest tests/test_bov02b_montaje_routers.py tests/test_matriz_permisos.py tests/test_bov04_orquestador_diez_dimensiones.py; mutación m1."
 rastros = ["¤rbac-tenant", "¤arbitro"]
-agente = "ninguno"
 +++
 
 # BOV-02b · Montaje de los routers de objetos y del orquestador de la bóveda por su compuerta
