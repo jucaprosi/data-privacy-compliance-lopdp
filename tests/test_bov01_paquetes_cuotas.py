@@ -34,9 +34,18 @@ RUTA = "/api/v1/boveda-cloud/suscripcion"
 
 # Sin base de datos ------------------------------------------------------------------------------
 def test_validar_consumo_no_se_expone_por_http():
-    """Mutación: añadir la ruta POST /suscripcion/validar-consumo → rojo."""
-    rutas = {(r.path, tuple(sorted(r.methods))) for r in svc.router.routes}
-    assert rutas == {("/boveda-cloud/suscripcion", ("GET",)), ("/boveda-cloud/suscripcion", ("POST",))}
+    """Mutación: añadir la ruta POST /suscripcion/validar-consumo → rojo.
+
+    Lee el OpenAPI de la app que monta la compuerta (BOV-02b la amplía con objetos y orquestador): no depende
+    de cómo FastAPI guarda los routers incluidos en `.routes`, que cambia entre versiones.
+    """
+    rutas_suscripcion = {
+        (metodo.upper(), ruta)
+        for ruta, operaciones in app.openapi()["paths"].items()
+        if ruta.startswith(RUTA)
+        for metodo in operaciones
+    }
+    assert rutas_suscripcion == {("GET", RUTA), ("POST", RUTA)}
 
 
 async def _peticion(metodo, rol, monkeypatch, **kw):
