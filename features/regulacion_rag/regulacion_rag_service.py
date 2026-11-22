@@ -41,3 +41,6 @@ async def publicar_paquete(session, operador_id: str, paquete_id: str) -> Public
     paquete, anterior = await _paquetes.publicar(session, operador_id, paquete_id)
     return Publicacion(paquete=paquete, impacto=impacto_de_publicar(paquete, anterior))
 # === fin REG-01 ===
+
+# === REG-03 ===
+# === fin REG-03 ===
