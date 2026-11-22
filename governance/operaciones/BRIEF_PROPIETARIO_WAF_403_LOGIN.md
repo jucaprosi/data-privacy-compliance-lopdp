@@ -81,3 +81,11 @@ gcloud compute backend-services update evydentia-web-bs --global --enable-loggin
 ```
 
 El Arquitecto propone al Tech Lead una ficha que lo fije en `cloud_load_balancer.yaml` con su árbitro.
+
+## Resultado (2026-11-22, cerrado)
+
+- **Paso 1.** El propietario activó el registro en `evydentia-backend-bs` y en `evydentia-web-bs`, con muestreo 1. A las 15:55:01 UTC, la regla 1000 dio DENY con la firma `owasp-crs-v030301-id942421-sqli` en `/api/v1/organizacion/mis-organizaciones` y en `/api/v1/plataforma/organizaciones`.
+- **Segunda vía.** Entre las 16:04:56 y las 16:05:01 la misma firma bloqueó `/login` y `/favicon.ico`, en peticiones que solo llevaban la cookie de Google Identity. Por eso, tras un login, la aplicación entera daba «403 Forbidden» hasta borrar las cookies, y por eso se excluyó la firma y no la cabecera `Authorization`.
+- **Paso 2, aplicado.** El propietario dejó la regla 1000 con `evaluatePreconfiguredWaf('sqli-v33-stable', {'sensitivity': 4, 'opt_out_rule_ids': ['owasp-crs-v030301-id942421-sqli']})`, comprobado con `rules describe 1000`. La regla 1001 no cambió. Desde las 16:05:05 UTC hubo 0 DENY y ningún 403.
+- **Paso 3.** Queda abierto. Si la cuenta `juancarlosproanio@gmail.com` (sin «s») recibe «Usuario no registrado» o «no perteneces a ninguna organización», se da de alta según el §5 de `BRIEF_PROPIETARIO_DESPLIEGUE_MAIN.md`.
+- **Paso 4.** El registro queda activado. La ficha GCP-04b (#940) lleva al repositorio la expresión y el registro, en `cloud_load_balancer.yaml`, con su árbitro.
