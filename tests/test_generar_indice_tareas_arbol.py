@@ -130,6 +130,9 @@ def test_3b_la_ruta_que_crea_otra_tarea_abierta_no_se_sugiere():
 def test_3c_la_busqueda_por_nombre_base_se_limita_a_la_sala():
     rutas = {"features/y/a.py": "features/y/a.py", "features/x/b.py": "features/x/b.py"}
     assert git.sugerir_ruta("features/x/a.py", rutas) == ([], False)
+    # sin carpeta base común (ruta en la raíz, que ya tiene archivos): el nombre base suelto no sale de su sala
+    raiz = {"x.py": "x.py", "features/y/a.py": "features/y/a.py"}
+    assert git.sugerir_ruta("a.py", raiz) == ([], False)
 
 
 def test_creacion_implicita_solo_avisa_en_fase_1():
