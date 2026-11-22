@@ -91,5 +91,6 @@ def test_sin_inferencia_falla_cerrado(monkeypatch):
     monkeypatch.setattr(pasillo_inferencia, "crear_cache_contenido", crear)
     with pytest.raises(InferenciaNoDisponible):
         asyncio.run(pasillo.vectorizar_fragmentos(["a"], "text-embedding-005"))
-    with pytest.raises(ErrorNegocio):
+    with pytest.raises(ErrorNegocio) as error:
         pasillo.obtener_o_crear_cache_normativo("gemini-2.5-flash")
+    assert error.value.code == "VTX_CACHE_NO_DISPONIBLE"

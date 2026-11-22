@@ -7,6 +7,9 @@ La caché se identifica por `corpus_sha256`; si el corpus cambia (reforma), se c
 Límite conocido: el registro vive en memoria del proceso. En Cloud Run cada instancia crea
 su propia caché. La creación real en Vertex va por el pasillo de inferencia (IA-12); si la
 inferencia no está disponible, el creador por defecto falla cerrado (VTX_CACHE_NO_DISPONIBLE).
+
+El creador por defecto ya es real (pasillo IA-12): las pruebas no deben llamar a Vertex; usan
+`configurar_creador` con un doble o sustituyen `crear_cache_contenido` del pasillo de inferencia.
 """
 from __future__ import annotations
 
@@ -39,10 +42,6 @@ class CreadorCacheContenido(Protocol):
     """Puerto: crea un CachedContent con `contenido` y devuelve (cache_name, token_count)."""
 
     def __call__(self, modelo: str, contenido: str, ttl_seconds: int) -> tuple[str, int]: ...
-
-
-def _creador_no_disponible(modelo: str, contenido: str, ttl_seconds: int) -> tuple[str, int]:
-    raise ErrorNegocio(VTX_CACHE_NO_DISPONIBLE)
 
 
 def texto_canonico(corpus: Iterable[UnidadNormativa]) -> str:

@@ -48,14 +48,14 @@ from features.regulacion_rag.domain.corpus import CORPUS_NORMATIVO_OFICIAL, fund
 from features.regulacion_rag.services import vertex_context_cache as _cache_vertex
 
 
-async def vectorizar_fragmentos(textos, modelo):
+async def vectorizar_fragmentos(textos: list[str], modelo: str) -> list[list[float]]:
     """Vectores por el pasillo de inferencia (IA-12); sin inferencia propaga el error al llamador."""
     from app_core.pasillo import inferencia
 
     return await inferencia.vectorizar(textos, modelo)
 
 
-def obtener_o_crear_cache_normativo(modelo):
+def obtener_o_crear_cache_normativo(modelo: str) -> _cache_vertex.VertexCorpusCacheDescriptor:
     """Descriptor de la caché de contexto del corpus oficial; sin inferencia lanza VTX_CACHE_NO_DISPONIBLE."""
     return _cache_vertex.obtener_o_crear(modelo, corpus=CORPUS_NORMATIVO_OFICIAL)
 
