@@ -96,7 +96,6 @@
   "tests/test_e2e_flujo_completo.py": 0.1,
   "tests/test_merkle_anchoring.py": 0.1,
   "tests/test_errores_negocio.py": 0.1,
-  "tests/test_corrida_cubierta.py": 0.1,
   "tests/test_roadmap_generacion.py": 0.1,
   "tests/test_implementation_assistant_provider.py": 0.1,
   "tests/test_registro_automatico_routers.py": 0.0,
