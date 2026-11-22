@@ -1,4 +1,4 @@
-# ¤gemini-vertex ¤arbitro
+# ¤gemini-vertex ¤arbitro ¤vertex-cache
 """Compuerta de inferencia Gemini en Vertex AI sin clave (IA-03): DLP previo, tope de organización, falla cerrada."""
 from __future__ import annotations
 
@@ -9,8 +9,9 @@ from typing import Callable
 from pydantic import BaseModel
 
 from app_core.dlp_sanitizer import sanitizar_texto_pii
+from app_core.errors import CodigoErrorNegocio, ErrorNegocio
 from features.inferencia.domain.errores import MOTIVO_NEUTRO, InferenciaNoDisponible
-from features.inferencia.domain.modelos_permitidos import MODELOS_PERMITIDOS
+from features.inferencia.domain.modelos_permitidos import MODELOS_EMBEDDING, MODELOS_PERMITIDOS
 from features.inferencia.domain.prompts import PromptVersionado
 from features.inferencia.domain.regiones import UBICACION_POR_REGION
 from features.inferencia.domain.traza import Traza
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "EstadoProveedor",
     "InferenciaNoDisponible",
+    "MODELOS_EMBEDDING",
     "MODELOS_PERMITIDOS",
     "MOTIVO_NEUTRO",
     "estado",
@@ -29,9 +31,16 @@ __all__ = [
     "generar_estructurado",
     "generar_trazado",
     "registrar_traza",
+    "vectorizar",
+    "crear_cache_contenido",
     "inyectar_cliente_de_prueba",
     "inyectar_consumidor_de_prueba",
 ]
+
+
+IA_MODELO_EMBEDDING_NO_PERMITIDO = CodigoErrorNegocio(
+    "IA_MODELO_EMBEDDING_NO_PERMITIDO", 422, "El modelo de vectores no está en la lista permitida."
+)
 
 
 @dataclass(frozen=True)
@@ -189,3 +198,44 @@ async def registrar_traza(session, traza: Traza, entidad: str, entidad_id: str) 
             "prompt_version": traza.prompt_version, "corpus_sha256": traza.corpus_sha256,
         },
     )
+
+
+# IA-12 · Vectores y caché de contexto. R3: corpus normativo común sin datos personales, no consume tope.
+
+
+async def vectorizar(textos: list[str], modelo: str) -> list[list[float]]:
+    """Un vector por texto, en el mismo orden. Falla cerrada si el recuento no cuadra."""
+    if modelo not in MODELOS_EMBEDDING:
+        raise ErrorNegocio(IA_MODELO_EMBEDDING_NO_PERMITIDO)  # no llega al cliente
+    lista = list(textos)
+    cliente = _obtener_cliente()  # InferenciaNoDisponible sin configuración
+    if not lista:
+        return []
+    try:
+        vectores = await cliente_vertex.vectorizar(cliente, modelo, lista)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Fallo de vectores Vertex: %s", type(exc).__name__)
+        raise InferenciaNoDisponible() from exc
+    if len(vectores) != len(lista) or any(not v for v in vectores):
+        logger.warning("Vertex devolvió %d vectores para %d textos", len(vectores), len(lista))
+        raise InferenciaNoDisponible()
+    return vectores
+
+
+def crear_cache_contenido(modelo: str, contenido: str, ttl_segundos: int) -> tuple[str, int]:
+    """(nombre de la caché, tokens). Cumple el puerto `(modelo, contenido, ttl_seconds) -> (nombre, tokens)`."""
+    if modelo not in MODELOS_PERMITIDOS:
+        raise InferenciaNoDisponible()
+    cliente = _obtener_cliente()  # InferenciaNoDisponible sin configuración
+    try:
+        nombre, tokens = cliente_vertex.crear_cache(cliente, modelo, contenido, ttl_segundos)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Fallo de caché Vertex: %s", type(exc).__name__)
+        raise InferenciaNoDisponible() from exc
+    if not isinstance(nombre, str) or not nombre.strip():
+        logger.warning("Vertex devolvió una caché sin nombre")
+        raise InferenciaNoDisponible()
+    if isinstance(tokens, bool) or not isinstance(tokens, int) or tokens < 0:
+        logger.warning("Vertex devolvió una caché sin recuento de tokens")
+        raise InferenciaNoDisponible()
+    return nombre.strip(), tokens

@@ -40,3 +40,15 @@ async def registrar_traza(session, traza, entidad, entidad_id):
     from features.inferencia import inferencia_service
 
     return await inferencia_service.registrar_traza(session, traza, entidad, entidad_id)
+
+
+async def vectorizar(textos, modelo):
+    from features.inferencia import inferencia_service
+
+    return await inferencia_service.vectorizar(textos, modelo)
+
+
+def crear_cache_contenido(modelo, contenido, ttl_segundos):
+    from features.inferencia import inferencia_service
+
+    return inferencia_service.crear_cache_contenido(modelo, contenido, ttl_segundos)
