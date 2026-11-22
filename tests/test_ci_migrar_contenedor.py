@@ -4,6 +4,7 @@
 
 Estas guardias vivían junto al verificador de revisión que CI-18 retiró; la comprobación pasó a verificar_cloudsql_conexion.py.
 """
+import os
 import re
 from pathlib import Path
 
@@ -12,7 +13,12 @@ import pytest
 RAIZ = Path(__file__).resolve().parent.parent
 
 
-FLUJO = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
+# CI-37: CI37_WORKFLOW apunta a un workflow fuera del repositorio mientras el propietario no lo aplica.
+FLUJO = Path(os.environ.get("CI37_WORKFLOW") or RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml"
+             ).read_text(encoding="utf-8")
+# La única condición admisible es la omisión de R1 (CI-37): el push cuyo árbol ya verificó el PR no migra ni corre
+# el arnés. Cualquier otra condición excluiría corridas.
+CONDICION_DE_R1 = "if: steps.comprobar.outputs.cubierto == ''"
 
 
 # ¤arbitro
@@ -29,7 +35,7 @@ def fallos_al_migrar(flujo: str) -> list[str]:
     if len(pasos) != 1:
         return [f"{len(pasos)} pasos migran; debe haber uno"]
     paso, fallos = pasos[0], []
-    if re.search(r"(?m)^\s*if:", paso):
+    if any(c.strip() != CONDICION_DE_R1 for c in re.findall(r"(?m)^\s*if:.*$", paso)):
         fallos.append("la condición excluye corridas: el contenedor debe migrarse siempre")
     if "secrets." in paso or "TEST_DATABASE_URL" in paso:
         fallos.append("nombra un secreto o la URL de pruebas externa")
@@ -43,16 +49,16 @@ def fallos_al_migrar(flujo: str) -> list[str]:
 
 # ¤arbitro
 def test_migrar_va_antes_de_pytest_en_los_dos_arneses():
-    for trabajo, siguiente, pytest_del_trabajo in (("arnes-salas:", "arnes-completo:", "pytest $PRUEBAS -v"),
-                                                   ("arnes-completo:", "zero-regression:", "run: pytest tests/ -v")):
-        texto = FLUJO[FLUJO.index(f"  {trabajo}"):FLUJO.index(f"  {siguiente}")]
-        assert texto.index("*migrar_contenedor") < texto.index(pytest_del_trabajo), trabajo
+    # CI-37: el humo y los dos arneses viven en el job «Arnés Físico Determinista» y comparten una migración.
+    texto = FLUJO[FLUJO.index("\n  arnes:"):FLUJO.index("\n  playwright:")]
+    for posterior in ("playwright.humo.config.ts", "pytest $PRUEBAS -v", "run: pytest tests/ -v"):
+        assert texto.index("alembic upgrade heads") < texto.index(posterior), posterior
 
 
 # ¤arbitro
 def test_migrar_es_un_solo_paso_local_y_nunca_hacia_main():
     assert fallos_al_migrar(FLUJO) == []
-    assert FLUJO.count("&migrar_contenedor") == 1 and FLUJO.count("*migrar_contenedor") == 2
+    assert FLUJO.count("alembic upgrade") == 1 and "*migrar_contenedor" not in FLUJO
 
 
 URL_DEL_PASO = "MIGRATION_DATABASE_URL: postgresql://lopdp_beta_owner:solo-en-este-runner@localhost:5432/lopdp"
@@ -66,9 +72,12 @@ PASO_COPIADO = "      - name: Otra migracion\n        run: python -m alembic upg
     (URL_DEL_PASO, "MIGRATION_DATABASE_URL: ${{ env.TEST_DATABASE_URL }}", "secreto"),
     (URL_DEL_PASO, "MIGRATION_DATABASE_URL: ${{ env.OTRA_BASE }}", "literal"),
     (URL_DEL_PASO, "MIGRATION_DATABASE_URL: postgresql://rol:clave@base-remota.example:5432/lopdp", "servicio local"),
-    ("        name: Migrar el contenedor a la cabeza de Alembic\n        env:\n",
-     "        name: Migrar el contenedor a la cabeza de Alembic\n        if: needs.alcance.outputs.hacia_main == 'false'\n        env:\n",
+    ("name: Migrar el contenedor a la cabeza de Alembic\n        " + CONDICION_DE_R1 + "\n",
+     "name: Migrar el contenedor a la cabeza de Alembic\n        if: steps.destino.outputs.hacia_main == 'false'\n",
      "condición"),
+    ("name: Migrar el contenedor a la cabeza de Alembic\n        " + CONDICION_DE_R1 + "\n",
+     "name: Migrar el contenedor a la cabeza de Alembic\n        " + CONDICION_DE_R1
+     + " && github.event_name == 'pull_request'\n", "condición"),
     ("      - name: Install Frontend Dependencies\n", PASO_COPIADO + "      - name: Install Frontend Dependencies\n", "pasos migran"),
 ])
 def test_la_guarda_falla_si_el_paso_de_migrar_apunta_a_una_base_remota(viejo, nuevo, motivo):

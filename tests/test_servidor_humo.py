@@ -21,7 +21,8 @@ RAIZ = Path(__file__).resolve().parents[1]
 RUTA_ARRANCADOR = RAIZ / "tests" / "humo" / "servidor_humo.py"
 CARPETAS_DESPLEGADAS = ("api", "app_core", "features", "alembic", "scripts")
 ARCHIVOS_DE_DESPLIEGUE = ("backend.Dockerfile", "docker-compose.yml", "iniciar_backend.bat")
-FLUJO_DEL_CI = RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml"
+# CI-37: CI37_WORKFLOW apunta a un workflow fuera del repositorio mientras el propietario no lo aplica.
+FLUJO_DEL_CI = Path(os.environ.get("CI37_WORKFLOW") or RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml")
 PASO_DE_LA_COMPUERTA = "Un arnes corrio y paso"
 
 
@@ -159,9 +160,9 @@ sin_bash = pytest.mark.skipif(_bash() is None, reason="hace falta bash para ejec
     {"MODO": "completo", "HUMO": "success", "COMPLETO": "success"},
     # El push a main no corre el humo: ya fue compuerta en el PR. El arnés completo sigue siendo obligatorio.
     {"MODO": "completo", "HACIA_MAIN": "true", "HUMO": "skipped", "COMPLETO": "success"},
-    # El PR cubierto por la corrida del push no repite nada: todos sus jobs se omiten.
-    {"MODO": "salas", "CUBIERTA": "10", "HUMO": "skipped"},
-], ids=["pr-por-salas", "pr-completo", "push-a-main", "pr-cubierto"])
+    # CI-37 (R1): el push cuyo árbol ya verificó el PR no repite nada: el humo y el arnés se omiten.
+    {"MODO": "completo", "HACIA_MAIN": "true", "CUBIERTA": "10", "HUMO": "skipped"},
+], ids=["pr-por-salas", "pr-completo", "push-a-main", "push-cubierto"])
 def test_la_compuerta_pasa_cuando_el_humo_y_el_arnes_obligatorio_pasaron(resultados):
     res = ejecutar_compuerta(resultados)
     assert res.returncode == 0, res.stdout + res.stderr
