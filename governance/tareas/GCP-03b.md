@@ -9,7 +9,6 @@ propiedad = ["frontend/Dockerfile.cloudrun", "frontend/cloudbuild.yaml", "tests/
 crea = []
 arbitro = "pytest tests/test_gcp03_frontend_cloudrun.py; mutaciones m1 a m4; tras la fusión, el propietario construye con _ETIQUETA=<commit> y el login muestra «Continuar con Google»."
 rastros = ["¤arbitro", "¤seguridad"]
-agente = "ninguno"
 +++
 
 # GCP-03b · Client id de Google incrustado al compilar la imagen web y etiqueta por commit
