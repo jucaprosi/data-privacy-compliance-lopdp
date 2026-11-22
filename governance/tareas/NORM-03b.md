@@ -2,7 +2,7 @@
 id = "NORM-03b"
 titulo = "Pestaña «Impacto» en el panel de una resolución de NORM-02"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "frontend"
 depende_de = ["NORM-02", "NORM-03"]
 propiedad = ["frontend/src/components/normativa/PanelResolucion.tsx", "frontend/src/components/normativa/CentroVigilancia.tsx", "frontend/tests/normativa_impacto/impacto.spec.ts"]

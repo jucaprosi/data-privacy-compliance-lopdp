@@ -2,8 +2,12 @@
 /**
  * NORM-02: Centro de Vigilancia Normativa. Catálogo de resoluciones de la SPDP con filtros, panel con el
  * documento y el historial, y bitácora de búsquedas. El catálogo informa; no dictamina.
+ * NORM-03b: lee los roles de la sesión en /organizacion/me/roles y se los pasa al panel, que decide si pinta la
+ * pestaña «Impacto». Si la lectura falla, el panel no recibe roles; el servidor vuelve a autorizar.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
+
+import { organizacionApi } from "@/lib/roadmap/cliente";
 
 import Bitacora from "./Bitacora";
 import PanelResolucion from "./PanelResolucion";
@@ -37,6 +41,16 @@ export default function CentroVigilancia() {
   const disparador = useRef<HTMLElement | null>(null);
   const refsPestana = useRef<Record<string, HTMLButtonElement | null>>({});
   const operador = esOperador();
+  // null mientras se leen; vacío si la lectura falla (el panel se ve como siempre, sin aviso).
+  const [roles, setRoles] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    let vivo = true;
+    organizacionApi.getMyRoles()
+      .then((lista) => { if (vivo) setRoles(lista.map((r) => String(r.role))); })
+      .catch(() => { if (vivo) setRoles([]); });
+    return () => { vivo = false; };
+  }, []);
 
   const cargar = useCallback(async () => {
     setCargando(true);
@@ -156,7 +170,7 @@ export default function CentroVigilancia() {
           ) : null}
         </div>
       )}
-      {abierta ? <PanelResolucion id={abierta} operador={operador} alCerrar={cerrar} alRevisar={() => void cargar()} /> : null}
+      {abierta ? <PanelResolucion id={abierta} operador={operador} roles={roles} alCerrar={cerrar} alRevisar={() => void cargar()} /> : null}
     </section>
   );
 }
