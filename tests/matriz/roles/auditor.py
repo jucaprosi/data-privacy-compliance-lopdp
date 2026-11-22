@@ -296,3 +296,6 @@ _seccion("RM-27", {
     "activar_hoja_ruta": False,
 })
 # === fin RM-27 ===
+
+# === BOV-02b ===
+# === fin BOV-02b ===
