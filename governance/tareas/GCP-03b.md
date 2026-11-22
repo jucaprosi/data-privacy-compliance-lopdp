@@ -2,7 +2,7 @@
 id = "GCP-03b"
 titulo = "Client id de Google incrustado al compilar la imagen web y etiqueta por commit"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "frontend"
 depende_de = ["EP-02", "GCP-01", "GCP-03", "GCP-08", "GCP-09", "GCP-10", "QA-12", "RET-05"]
 propiedad = ["frontend/Dockerfile.cloudrun", "frontend/cloudbuild.yaml", "tests/test_gcp03_frontend_cloudrun.py"]

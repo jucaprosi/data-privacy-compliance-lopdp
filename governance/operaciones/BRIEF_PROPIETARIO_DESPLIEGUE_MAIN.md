@@ -46,6 +46,8 @@ Debe salir una revisión nueva con el 100 % y la imagen `backend:<commit de main
 gcloud run services update-traffic evydentia-backend --region us-central1 --project evydentia --to-revisions "<revisión del paso 1>=100"
 ```
 
+Este comando vuelve a fijar el tráfico a esa revisión. En el siguiente despliegue, comprueba que la revisión nueva recibe el 100 %. Si no lo recibe, ejecuta `gcloud run services update-traffic evydentia-backend --to-latest --region us-central1 --project evydentia`.
+
 ## 3. Frontend (solo con GCP-03b en `main`)
 
 ### 3.1 Construir la imagen con la etiqueta del commit
@@ -67,6 +69,16 @@ gcloud run services update evydentia-web --image "us-central1-docker.pkg.dev/evy
 
 `services update` solo cambia la imagen. Las variables (`APP_ENV`, `BACKEND_URL`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID`), la cuenta de servicio y el ingress siguen como estaban.
 
+Después lleva el tráfico a la revisión nueva:
+
+```powershell
+gcloud run services update-traffic evydentia-web --to-latest --region us-central1 --project evydentia
+```
+
+- La salida debe decir `100% LATEST (currently evydentia-web-000NN-xxx)`, con la revisión que acaba de crear `services update`.
+- Hace falta porque una vuelta atrás (3.4) fija el tráfico a una revisión. Desde ese momento, cada `services update` crea revisiones nuevas que no reciben tráfico. Así pasó el 2026-11-22: la revisión 00005 quedó lista, pero el tráfico seguía en la 00003.
+- Si el tráfico ya seguía a la más reciente, el comando no cambia nada.
+
 ### 3.3 Verificar que el client id llegó al navegador
 
 ```powershell
@@ -80,9 +92,13 @@ Después, en el navegador, entra con tu cuenta y comprueba tres cosas:
 
 ### 3.4 Vuelta atrás
 
+Solo si 3.3 dice «FALTA» o si el login falla en el navegador. Con «OK» y el login bien, no se ejecuta.
+
 ```powershell
 gcloud run services update-traffic evydentia-web --region us-central1 --project evydentia --to-revisions "<revisión del paso 1>=100"
 ```
+
+Este comando vuelve a fijar el tráfico a esa revisión. En la siguiente publicación, el `update-traffic --to-latest` de 3.2 es obligatorio.
 
 ## 4. Si aparece un 403
 
