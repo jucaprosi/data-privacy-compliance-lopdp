@@ -9,7 +9,7 @@ politica_cloud_armor:
   name: evydentia-waf
   reglas:
     - prioridad: 1000
-      expresion: evaluatePreconfiguredWaf('sqli-v33-stable')
+      expresion: "evaluatePreconfiguredWaf('sqli-v33-stable', {'sensitivity': 4, 'opt_out_rule_ids': ['owasp-crs-v030301-id942421-sqli']})"
       accion: deny(403)
     - prioridad: 1001
       expresion: evaluatePreconfiguredWaf('xss-v33-stable')
@@ -24,9 +24,11 @@ servicios_backend:
   - name: evydentia-backend-bs
     neg_serverless: evydentia-backend      # Cloud Run, us-central1
     politica_seguridad: evydentia-waf
+    registro: {habilitado: true, muestreo: 1}
   - name: evydentia-web-bs
     neg_serverless: evydentia-web          # Cloud Run, us-central1
     politica_seguridad: evydentia-waf
+    registro: {habilitado: true, muestreo: 1}
     cdn: false                             # GCP-06 decide la caché de activos
 url_map:
   name: evydentia-url-map
