@@ -2,6 +2,17 @@
 # ¤adpa
 """Capacidades de la sala Inferencia para otras salas (solo reexporta; la sala se importa al usarla)."""
 
+_CONSTANTES_DE_MODELO = frozenset({"MODELO_GENERACION", "MODELO_EMBEDDING"})
+
+
+def __getattr__(nombre):
+    """`MODELO_GENERACION` y `MODELO_EMBEDDING` (IA-13 R1): la única fuente es la sala, resuelta al pedirlos."""
+    if nombre in _CONSTANTES_DE_MODELO:
+        from features.inferencia.domain import modelos_permitidos
+
+        return getattr(modelos_permitidos, nombre)
+    raise AttributeError(f"module {__name__!r} has no attribute {nombre!r}")
+
 
 async def generar_estructurado(sistema, usuario, esquema, *, modelo, org_id):
     from features.inferencia import inferencia_service

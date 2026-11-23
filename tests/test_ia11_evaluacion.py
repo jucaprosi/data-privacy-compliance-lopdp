@@ -10,14 +10,14 @@ import pytest
 
 from app_core.dlp_sanitizer import sanitizar_texto_pii
 from features.inferencia import inferencia_service as svc
-from features.inferencia.domain.modelos_permitidos import MODELOS_PERMITIDOS
+from features.inferencia.domain.modelos_permitidos import MODELO_GENERACION, MODELOS_PERMITIDOS
 
 RAIZ = Path(__file__).resolve().parent.parent
 _spec = importlib.util.spec_from_file_location("evaluar_ia", RAIZ / "scripts" / "evaluar_ia.py")
 ev = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(ev)
 
-MODELO = "gemini-2.5-flash"
+MODELO = MODELO_GENERACION
 CASOS = {
     "prompt_id": "demo.resumen",
     "casos": [
@@ -57,7 +57,7 @@ def _resultado(raiz: Path, version: int, puntaje: float, modelo: str = MODELO, h
         "prompt_id": "demo.resumen",
         "version": version,
         "modelo": modelo,
-        "modelo_version": f"{modelo}-002",
+        "modelo_version": f"{modelo}-001",
         "puntaje": puntaje,
         "casos_evaluados": 1,
         "fecha": "2026-11-13T00:00:00Z",
@@ -150,14 +150,14 @@ def test_puntaje_por_criterios():
 class _Modelos:
     async def generate_content(self, **kw):
         return SimpleNamespace(
-            text='{"resumen": "Plazo de 15 dias", "cita": "Art. 13"}', model_version="gemini-2.5-flash-002"
+            text='{"resumen": "Plazo de 15 dias", "cita": "Art. 13"}', model_version=f"{MODELO}-001"
         )
 
 
 @pytest.fixture
 def vertex_doble(monkeypatch):
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "proyecto-prueba")
-    monkeypatch.setenv("VERTEX_LOCATION", "us-central1")
+    monkeypatch.setenv("VERTEX_LOCATION", "us")
     monkeypatch.setattr(svc, "_cliente", None)
     gastos = []
 
@@ -190,7 +190,7 @@ def test_script_escribe_resultado_y_consume_tope(tmp_path, vertex_doble):
     raiz = _repo(tmp_path)
     assert ev.main(["demo.resumen", "1", MODELO, "--org-id", "org-eval", "--confirmar"], raiz) == 0
     datos = ev.leer_resultado(raiz, "demo.resumen", 1, MODELO)
-    assert datos["puntaje"] == 1.0 and datos["modelo_version"] == "gemini-2.5-flash-002"
+    assert datos["puntaje"] == 1.0 and datos["modelo_version"] == f"{MODELO}-001"
     assert datos["fecha"] and datos["huella_casos"] == ev.huella_casos(raiz, "demo.resumen")
     assert vertex_doble == ["org-eval"]
     assert ev.problemas_de_resultados(raiz, MODELOS_PERMITIDOS) == []

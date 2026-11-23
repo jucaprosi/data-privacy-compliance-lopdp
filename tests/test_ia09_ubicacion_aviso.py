@@ -7,6 +7,8 @@ Mutaciones verificadas:
       -> test_ubicacion_sale_de_la_compuerta (cambia `UBICACION_POR_REGION` y espera el nuevo texto).
   M2. Pasar `None` o no propagar `tenant_id` desde el router / `analizar_control` hasta `ProveedorVertex.proponer`
       -> test_org_llega_al_proveedor.
+  M4 (IA-13 m2). Aceptar una ubicación sin etiqueta en `UBICACION_POR_REGION`
+      -> test_ia13_multirregion_us.
   M3. Escribir un país (p. ej. "Estados Unidos"), proveedor/modelo en frontend, o frases de encuadre/provisional
       -> test_sin_ubicacion_ni_encuadre_escritos_a_mano (con mutaciones verificadas en memoria).
 """
@@ -26,7 +28,10 @@ from fastapi.testclient import TestClient
 from features.evidencias.domain.models import EvidenciaRegistro
 from features.evidencias.services.evidencias_engine import registrar_evidencia
 from features.inferencia import inferencia_service as svc
+from features.inferencia.domain.errores import InferenciaNoDisponible
+from features.inferencia.domain.modelos_permitidos import MODELO_GENERACION
 from features.inferencia.domain.regiones import UBICACION_POR_REGION
+from features.inferencia.services import cliente_vertex
 from features.preanalisis.domain.models import ControlContexto, Fragmento, ProveedorNoDisponible
 from features.preanalisis.preanalisis_service import analizar_control, inyectar_proveedor_de_prueba, restablecer_proveedor_entorno
 from features.preanalisis.services import proveedor as mod
@@ -85,7 +90,7 @@ def entorno_limpio(monkeypatch: pytest.MonkeyPatch) -> Iterator[list[str]]:
     async def consumir(org_id: str) -> None:
         consumos.append(org_id)
 
-    for var in ("GOOGLE_CLOUD_PROJECT", "VERTEX_LOCATION"):
+    for var in ("GOOGLE_CLOUD_PROJECT", "VERTEX_LOCATION", "VERTEX_LOCATION_EMBEDDING"):
         monkeypatch.delenv(var, raising=False)
     svc.inyectar_cliente_de_prueba(None)
     svc.inyectar_consumidor_de_prueba(consumir)
@@ -101,7 +106,7 @@ def entorno_limpio(monkeypatch: pytest.MonkeyPatch) -> Iterator[list[str]]:
 def test_ubicacion_sale_de_la_compuerta(entorno_limpio: list[str], monkeypatch: pytest.MonkeyPatch) -> None:
     """M1: la ubicación sale de la compuerta y cambia dinámicamente al cambiar UBICACION_POR_REGION."""
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", PROYECTO)
-    monkeypatch.setenv("VERTEX_LOCATION", "us-central1")
+    monkeypatch.setenv("VERTEX_LOCATION", "us")
     with TestClient(app) as client:
         r_us = client.get(f"{URL}/estado", headers=HDR_ESTADO)
         assert r_us.status_code == 200
@@ -114,9 +119,9 @@ def test_ubicacion_sale_de_la_compuerta(entorno_limpio: list[str], monkeypatch: 
         assert r_ie.status_code == 200
         assert r_ie.json()["ubicacion"] == "servidores en Irlanda"
 
-        # Mutación en memoria del mapa para verificar que us-central1 no está cableado en router ni proveedor.
-        monkeypatch.setitem(UBICACION_POR_REGION, "us-central1", "Canadá")
-        monkeypatch.setenv("VERTEX_LOCATION", "us-central1")
+        # Mutación en memoria del mapa para verificar que `us` no está cableado en router ni proveedor.
+        monkeypatch.setitem(UBICACION_POR_REGION, "us", "Canadá")
+        monkeypatch.setenv("VERTEX_LOCATION", "us")
         r_mut = client.get(f"{URL}/estado", headers=HDR_ESTADO)
         assert r_mut.status_code == 200
         assert r_mut.json()["ubicacion"] == "servidores en Canadá"
@@ -160,7 +165,7 @@ def test_ubicacion_sale_de_la_compuerta(entorno_limpio: list[str], monkeypatch: 
 def test_org_llega_al_proveedor(entorno_limpio: list[str], monkeypatch: pytest.MonkeyPatch) -> None:
     """M2: POST /analizar propaga tenant_id hasta ProveedorVertex.proponer(..., org_id=tenant_id) y None falla cerrado."""
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", PROYECTO)
-    monkeypatch.setenv("VERTEX_LOCATION", "us-central1")
+    monkeypatch.setenv("VERTEX_LOCATION", "us")
     modelos = _ModelosFalsos()
     svc.inyectar_cliente_de_prueba(SimpleNamespace(aio=SimpleNamespace(models=modelos)))
 
@@ -321,7 +326,7 @@ def test_sin_ubicacion_ni_encuadre_escritos_a_mano() -> None:
         "por confirmar",
         "PENDIENTE",
         "Google Vertex AI",
-        "gemini-2.5-flash",
+        MODELO_GENERACION,
         "art. 60",
     ):
         mutado = base_tsx.replace("Estos fragmentos", f"{mutacion} Estos fragmentos", 1)
@@ -331,3 +336,29 @@ def test_sin_ubicacion_ni_encuadre_escritos_a_mano() -> None:
     assert _buscar_prohibidos_ia09(proveedor, contenidos[proveedor] + '\n"Estados Unidos"\n')
     router = "api/routers/preanalisis.py"
     assert _buscar_prohibidos_ia09(router, contenidos[router] + '\n"Estados Unidos"\n')
+
+
+def test_ia13_multirregion_us(entorno_limpio: list[str], monkeypatch: pytest.MonkeyPatch) -> None:
+    """IA-13 R2 y R4, M4: `us` llega al SDK y al estado; una ubicación sin etiqueta falla cerrada."""
+    capturado: dict = {}
+
+    class _ClienteFalso:
+        def __init__(self, **kw):  # noqa: ANN003
+            capturado.update(kw)
+
+    import google.genai as genai
+
+    monkeypatch.setattr(genai, "Client", _ClienteFalso)
+    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", PROYECTO)
+    monkeypatch.setenv("VERTEX_LOCATION", "us")
+    cliente_vertex.crear_cliente()
+    assert capturado["location"] == "us" and "api_key" not in capturado
+    e = svc.estado()
+    assert e.disponible and e.region == "us" and e.ubicacion == "Estados Unidos"
+    assert UBICACION_POR_REGION == {"us": "Estados Unidos", "us-central1": "Estados Unidos"}
+
+    # M4: una ubicación sin etiqueta no se acepta.
+    monkeypatch.setenv("VERTEX_LOCATION", "europe-west1")
+    assert not svc.estado().disponible
+    with pytest.raises(InferenciaNoDisponible):
+        svc._region_valida()

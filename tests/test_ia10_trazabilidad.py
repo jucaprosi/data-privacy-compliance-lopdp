@@ -10,10 +10,11 @@ from pydantic import BaseModel
 from app_core.pasillo import inferencia
 from features.inferencia import inferencia_service as svc
 from features.inferencia.domain.errores import InferenciaNoDisponible
+from features.inferencia.domain.modelos_permitidos import MODELO_GENERACION
 from features.inferencia.domain.traza import Traza
 
-ALIAS = "gemini-2.5-flash"
-VERSION = "gemini-2.5-flash-002"
+ALIAS = MODELO_GENERACION
+VERSION = f"{MODELO_GENERACION}-001"
 SHA = "a" * 64
 
 
@@ -40,7 +41,7 @@ PROMPT = inferencia.prompt_versionado("roadmap.redaccion", 2, "Eres un redactor.
 @pytest.fixture(autouse=True)
 def entorno(monkeypatch):
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "proyecto-prueba")
-    monkeypatch.setenv("VERTEX_LOCATION", "us-central1")
+    monkeypatch.setenv("VERTEX_LOCATION", "us")
     monkeypatch.setattr(svc, "_cliente", None)
 
     async def consumir(org):

@@ -10,11 +10,12 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app_core.db.session import fijar_contexto_rls
 from app_core.pasillo import inferencia
+from features.inferencia.domain.modelos_permitidos import MODELO_GENERACION
 from features.inferencia.domain.traza import Traza
 
 
 def _traza(tenant: str) -> Traza:
-    return Traza("roadmap", tenant, "gemini-2.5-flash-002", "gemini-2.5-flash", "roadmap.redaccion", 1, None)
+    return Traza("roadmap", tenant, f"{MODELO_GENERACION}-001", MODELO_GENERACION, "roadmap.redaccion", 1, None)
 
 
 @pytest_asyncio.fixture

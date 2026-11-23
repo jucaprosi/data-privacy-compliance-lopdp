@@ -5,16 +5,19 @@
 Mutaciones (governance/especificaciones/IA-12.md §5):
   m1. Si la compuerta devuelve menos vectores que textos sin error, falla `test_vectorizar_un_vector_por_texto`.
   m2. Si la compuerta acepta una caché con nombre vacío, falla `test_crear_cache_contenido`.
+  IA-13 m3. Si los vectores usan `VERTEX_LOCATION`, falla `test_vectores_sin_su_ubicacion_y_la_generacion_sigue`.
 """
 import asyncio
 from types import SimpleNamespace
 
 import pytest
+from pydantic import BaseModel
 
 from app_core.errors import ErrorNegocio
 from features.inferencia import inferencia_service as svc
 from features.inferencia.domain.errores import InferenciaNoDisponible
-from features.inferencia.domain.modelos_permitidos import MODELOS_EMBEDDING
+from features.inferencia.domain.modelos_permitidos import MODELO_EMBEDDING, MODELO_GENERACION, MODELOS_EMBEDDING
+from features.inferencia.services import cliente_vertex
 
 
 class ModelosFalsos:
@@ -29,6 +32,10 @@ class ModelosFalsos:
         if self.recortar:
             vectores = vectores[: -self.recortar]
         return SimpleNamespace(embeddings=vectores)
+
+    async def generate_content(self, **kw):
+        self.llamadas.append(kw)
+        return SimpleNamespace(text='{"estado": "ok"}')
 
 
 class CachesFalsas:
@@ -52,8 +59,10 @@ class ClienteFalso:
 @pytest.fixture(autouse=True)
 def entorno(monkeypatch):
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "proyecto-prueba")
-    monkeypatch.setenv("VERTEX_LOCATION", "us-central1")
+    monkeypatch.setenv("VERTEX_LOCATION", "us")
+    monkeypatch.setenv("VERTEX_LOCATION_EMBEDDING", "us-central1")
     monkeypatch.setattr(svc, "_cliente", None)
+    monkeypatch.setattr(svc, "_cliente_vectores", None)
     consumos: list[str] = []
 
     async def consumir(org):
@@ -65,7 +74,7 @@ def entorno(monkeypatch):
     svc.inyectar_consumidor_de_prueba(None)
 
 
-def _vectorizar(cliente, textos, modelo="text-embedding-005"):
+def _vectorizar(cliente, textos, modelo=MODELO_EMBEDDING):
     svc.inyectar_cliente_de_prueba(cliente)
     return asyncio.run(svc.vectorizar(textos, modelo))
 
@@ -75,7 +84,7 @@ def test_vectorizar_un_vector_por_texto(entorno):
     textos = ["uno", "dos dos", "tres tres tres"]
     vectores = _vectorizar(c, textos)
     assert vectores == [[0.0, 3.0], [1.0, 7.0], [2.0, 14.0]]
-    assert c.modelos.llamadas == [{"model": "text-embedding-005", "contents": textos}]
+    assert c.modelos.llamadas == [{"model": MODELO_EMBEDDING, "contents": textos}]
     assert entorno == []  # R3: no consume el tope de ninguna organización
 
     # m1: menos vectores que textos debe fallar cerrado
@@ -86,7 +95,7 @@ def test_vectorizar_un_vector_por_texto(entorno):
 def test_modelo_de_vectores_fuera_de_lista():
     assert MODELOS_EMBEDDING == ("text-embedding-005",)
     c = ClienteFalso()
-    for modelo in ("gemini-2.5-flash", "text-embedding-004", ""):
+    for modelo in (MODELO_GENERACION, "text-embedding-004", ""):
         with pytest.raises(ErrorNegocio) as e:
             _vectorizar(c, ["texto"], modelo=modelo)
         assert e.value.code == "IA_MODELO_EMBEDDING_NO_PERMITIDO"
@@ -96,9 +105,9 @@ def test_modelo_de_vectores_fuera_de_lista():
 def test_crear_cache_contenido(entorno):
     c = ClienteFalso()
     svc.inyectar_cliente_de_prueba(c)
-    assert svc.crear_cache_contenido("gemini-2.5-pro", "corpus público", 3600) == ("cachedContents/abc123", 4321)
+    assert svc.crear_cache_contenido(MODELO_GENERACION, "corpus público", 3600) == ("cachedContents/abc123", 4321)
     llamada = c.caches.llamadas[0]
-    assert llamada["model"] == "gemini-2.5-pro"
+    assert llamada["model"] == MODELO_GENERACION
     assert llamada["config"].contents and llamada["config"].ttl == "3600s"
     assert entorno == []
 
@@ -106,17 +115,50 @@ def test_crear_cache_contenido(entorno):
     for nombre in ("", "   ", None):
         svc.inyectar_cliente_de_prueba(ClienteFalso(nombre=nombre))
         with pytest.raises(InferenciaNoDisponible):
-            svc.crear_cache_contenido("gemini-2.5-pro", "corpus público", 3600)
+            svc.crear_cache_contenido(MODELO_GENERACION, "corpus público", 3600)
+
+
+class Esquema(BaseModel):
+    estado: str
+
+
+def test_vectores_sin_su_ubicacion_y_la_generacion_sigue(monkeypatch):
+    """IA-13 R3 y m3: sin `VERTEX_LOCATION_EMBEDDING` no hay vectores aunque haya `VERTEX_LOCATION`."""
+    c = ClienteFalso()
+    svc.inyectar_cliente_de_prueba(c)
+    monkeypatch.delenv("VERTEX_LOCATION_EMBEDDING")
+    with pytest.raises(InferenciaNoDisponible):
+        asyncio.run(svc.vectorizar(["texto"], MODELO_EMBEDDING))
+    assert c.modelos.llamadas == []
+    r = asyncio.run(svc.generar_estructurado("s", "u", Esquema, modelo=MODELO_GENERACION, org_id="org-1"))
+    assert r == Esquema(estado="ok") and c.modelos.llamadas[0]["model"] == MODELO_GENERACION
+
+
+def test_cliente_de_vectores_en_su_ubicacion(monkeypatch):
+    """IA-13 R3: el cliente de vectores va a `us-central1` y el de generación a `us`."""
+    capturado: list[dict] = []
+
+    class Fake:
+        def __init__(self, **kw):
+            capturado.append(kw)
+
+    import google.genai as genai
+
+    monkeypatch.setattr(genai, "Client", Fake)
+    cliente_vertex.crear_cliente(vectores=True)
+    cliente_vertex.crear_cliente()
+    assert [kw["location"] for kw in capturado] == ["us-central1", "us"]
 
 
 def test_sin_configuracion_falla_cerrada(monkeypatch):
     c = ClienteFalso()
     svc.inyectar_cliente_de_prueba(c)
     monkeypatch.delenv("VERTEX_LOCATION")
+    monkeypatch.delenv("VERTEX_LOCATION_EMBEDDING")
     with pytest.raises(InferenciaNoDisponible):
-        asyncio.run(svc.vectorizar(["texto"], "text-embedding-005"))
+        asyncio.run(svc.vectorizar(["texto"], MODELO_EMBEDDING))
     with pytest.raises(InferenciaNoDisponible):
-        svc.crear_cache_contenido("gemini-2.5-pro", "corpus", 60)
+        svc.crear_cache_contenido(MODELO_GENERACION, "corpus", 60)
     assert c.modelos.llamadas == [] and c.caches.llamadas == []
 
 
@@ -137,7 +179,7 @@ def test_errores_del_cliente_fallan_cerradas():
     with pytest.raises(InferenciaNoDisponible):
         _vectorizar(Roto(), ["texto"])
     with pytest.raises(InferenciaNoDisponible):
-        svc.crear_cache_contenido("gemini-2.5-pro", "corpus", 60)
+        svc.crear_cache_contenido(MODELO_GENERACION, "corpus", 60)
 
 
 def test_pasillo_reexporta_vectores_y_cache():
@@ -145,5 +187,5 @@ def test_pasillo_reexporta_vectores_y_cache():
 
     c = ClienteFalso()
     svc.inyectar_cliente_de_prueba(c)
-    assert asyncio.run(inferencia.vectorizar(["a", "bb"], "text-embedding-005")) == [[0.0, 1.0], [1.0, 2.0]]
-    assert inferencia.crear_cache_contenido("gemini-2.5-flash", "corpus", 120) == ("cachedContents/abc123", 4321)
+    assert asyncio.run(inferencia.vectorizar(["a", "bb"], MODELO_EMBEDDING)) == [[0.0, 1.0], [1.0, 2.0]]
+    assert inferencia.crear_cache_contenido(MODELO_GENERACION, "corpus", 120) == ("cachedContents/abc123", 4321)
