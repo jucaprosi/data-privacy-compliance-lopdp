@@ -125,7 +125,7 @@ En este modo el servidor confía en cabeceras declaradas por el cliente; no es a
 
 ## 7. No verificado
 
-- `governance/tareas/OPS-05.md`, `ADPA.md` y la sección `BL-48` de `governance/apoyo/BRIEFS_POR_BLOQUE.md` no existen en este checkout; el encargo adjunto fue la especificación operativa disponible.
+- `governance/tareas/OPS-05.md`, `ADPA.md` y el brief `BL-48` no existen en este checkout (desde GOB-06 los briefs viven fuera del repositorio, en la carpeta local `C:\Users\Juan Carlos\compartido\evydentia\`); el encargo adjunto fue la especificación operativa disponible.
 - No se accedió a Google Cloud Console ni a los entornos desplegados; sus valores, dominios, consentimiento, audiencia y usuarios de prueba no están verificados.
 - No se realizó un login real ni se usaron credenciales reales. Las pruebas automatizadas del repositorio simulan Google; la tarea FE-07 reserva la prueba real al propietario (`governance/tareas/FE-07.md:28-29`).
 - No se verificó una base local con un usuario y una membresía reales, ni una respuesta real de `/api/v1/organizacion/me/roles`.

@@ -2,6 +2,8 @@
 
 Un **parte** es el registro de la sesión para que otro agente tome la posta: la nota corta con la que un rol deja el estado de su trabajo para quien lo retome (otra sesión del mismo rol, otro rol o el propietario). Quien retoma lee primero el último parte de la carpeta de su rol. No sustituye al PRD, a los invariantes ni a las fichas: no es fuente normativa. Si un parte y una ficha se contradicen, manda la ficha.
 
+> **Desde GOB-06 no se versiona ningún parte nuevo:** cada rol guarda los suyos en `relevos\<rol>\AAAA-MM-DD_<tema>.md` de la carpeta local `C:\Users\Juan Carlos\compartido\evydentia\`, y lo que sigue sobre carpetas y PR vale solo para los partes que ya están aquí, que se quedan como registro fechado; una decisión de diseño que deba vincular va a su especificación.
+
 ## Dónde y cómo se llaman
 - Carpeta: una por rol dentro de `governance/partes/` (decisión del propietario, 2026-11-12). Cada rol guarda sus partes **solo en la suya**; no se crean otras carpetas de partes ni se dejan partes sueltos en `governance/partes/`.
 

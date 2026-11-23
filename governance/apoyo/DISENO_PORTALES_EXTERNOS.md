@@ -197,7 +197,7 @@ Aplica a la única subida prevista: evidencias del proveedor en P2 (y a cualquie
 | §9 mínimo | prueba: el esquema público rechaza campos fuera del catálogo |
 | §10 DLP | prueba: un CSV con cédulas simuladas queda `bloqueado`; un PDF limpio queda `limpio`; el rechazo se audita |
 
-Cada prueba debe fallar si el control falta (una prueba que pasa con el control quitado no cuenta; regla común de BRIEFS_POR_BLOQUE).
+Cada prueba debe fallar si el control falta (una prueba que pasa con el control quitado no cuenta; regla común de los briefs, que viven en la carpeta local `C:\Users\Juan Carlos\compartido\evydentia\` según GOB-06).
 
 ## 12. Tareas de implementación que abriría (sin fichas todavía)
 
