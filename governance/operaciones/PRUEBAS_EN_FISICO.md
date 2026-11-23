@@ -124,12 +124,25 @@ Para cambiar de rol, modifique `NEXT_PUBLIC_USER_ID` y `NEXT_PUBLIC_USER_ROLE` e
 | Aprobar, rechazar y ejecutar esa alta | ❌ | ❌ | ❌ | ✅ | ❌ |
 
 ### Recorrido de prueba recomendado (de punta a punta)
-1. **Implementador** → «Hoja de Ruta» → Generar Hoja de Ruta: generar la hoja de ruta (requiere `GOOGLE_CLOUD_PROJECT`, `VERTEX_LOCATION` y credenciales ADC).
+1. **Implementador** → «Hoja de Ruta» → Generar Hoja de Ruta: generar la hoja de ruta (requiere `GOOGLE_CLOUD_PROJECT`, `VERTEX_LOCATION=us`, `VERTEX_LOCATION_EMBEDDING=us-central1` y credenciales ADC).
 2. **Coordinador** → «Hoja de Ruta» → Olas & Tareas: asignar una tarea al responsable de Operaciones.
 3. **Responsable de área** → la tarea → Custodia de Evidencias: subir un PDF (requiere `GCP_STORAGE_BUCKET`, credenciales ADC y CORS habilitado en el bucket para `http://localhost:3000`).
 4. **Responsable de área** intenta validar su propia evidencia: debe rechazarse (quien sube no valida).
 5. **DPO** → la tarea → Custodia de Evidencias: aprobar la evidencia.
 6. **Implementador** → marcar la tarea como completada.
+
+### Humo real de Vertex AI (IA-16)
+Lo corre el propietario, no el CI, en `evydentia-demo`, `evydentia-pruebas` y `evydentia` (pasos y comprobación de la API en `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`). Generación en la multirregión `us` y vectores en `us-central1`:
+```powershell
+cd "C:\Users\Juan Carlos\worktrees-evydentia\humo-vertex"
+$env:GOOGLE_CLOUD_PROJECT = "evydentia-pruebas"
+$env:VERTEX_LOCATION = "us"
+$env:VERTEX_LOCATION_EMBEDDING = "us-central1"
+$env:VERTEX_HUMO = "1"
+python -m pytest tests/test_ia03_humo_vertex.py -v -rs
+Remove-Item Env:VERTEX_HUMO, Env:GOOGLE_CLOUD_PROJECT, Env:VERTEX_LOCATION, Env:VERTEX_LOCATION_EMBEDDING
+```
+Resultado esperado: `3 passed`. Medido el 2026-11-23 con el código de `main` bef495e0: `3 passed` en los tres proyectos; en `evydentia-pruebas`, tras habilitar `aiplatform.googleapis.com` (la primera corrida dio `403 SERVICE_DISABLED`).
 
 ### Bloqueos que conviene comprobar
 - Al **administrador**, en Administración → Roles: dar al DPO cualquier otro rol → **409** (independencia del delegado).

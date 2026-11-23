@@ -34,10 +34,12 @@ spec:
               value: demo
             - name: GOOGLE_CLOUD_PROJECT
               value: evydentia-demo
-            # Región de Vertex AI. Sin ella la inferencia no está disponible y la hoja de ruta no se
-            # genera (BRIEF_PROPIETARIO_VERTEX.md); us-central1 es la única región admitida
-            # (features/inferencia/domain/regiones.py).
+            # Vertex AI (IA-13, IA-16; BRIEF_PROPIETARIO_VERTEX.md). Sin estas dos variables la inferencia
+            # no está disponible y la hoja de ruta no se genera. Generación (gemini-3.8-flash): multirregión
+            # `us`. Vectores: `us-central1` (features/inferencia/domain/regiones.py).
             - name: VERTEX_LOCATION
+              value: us
+            - name: VERTEX_LOCATION_EMBEDDING
               value: us-central1
             - name: PROJECT_ID
               value: evydentia-demo
