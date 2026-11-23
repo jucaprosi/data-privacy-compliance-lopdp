@@ -38,6 +38,7 @@ Sin tablas ni migraciones. Estado final:
 | `governance/operaciones/CONFIGURACION_LOGIN_GOOGLE.md` | remite a la carpeta local de R1 en lugar de a los briefs del repositorio |
 | `governance/apoyo/LANZAMIENTO_TANDA_ORTOGONAL.md` | remite a la carpeta local de R1 en lugar de a los briefs del repositorio |
 | `governance/apoyo/LANZAMIENTO_TANDA_SECUENCIAL.md` | remite a la carpeta local de R1 en lugar de a los briefs del repositorio |
+| `governance/partes/README.md` | una línea: los partes nuevos van a `relevos\<rol>\` de R1; los existentes se quedan como registro fechado |
 
 Hecho medido en `origin/main` aa900e0d con `git grep -l -E "apoyo/briefs|BRIEFS_TAREAS_LIBRES|BRIEFS_POR_BLOQUE"`:
 - **Código y pruebas:** `verificar_reparto.py`, `verificar_alcance_pr.py`, `migrar_reparto_ci31.py`, `test_ci29_sin_generados_compartidos.py`, `test_ci31_reparto_por_ficha.py`, `test_reparto.py` y `test_verificar_alcance_pr.py`. `test_reparto_copias.py` importa `verificar_reparto` y comprueba las copias de los briefs.
@@ -45,7 +46,7 @@ Hecho medido en `origin/main` aa900e0d con `git grep -l -E "apoyo/briefs|BRIEFS_
 - **Dónde vive hoy la tanda:** solo en la cabecera de cada brief, `### <ID> · título (tanda N)`. Sin briefs en el repositorio, hace falta un campo en la ficha.
 - **Briefs vivos:** `governance/apoyo/briefs/` tiene FE-29 e IA-13 a IA-16, en las tandas 93 a 96.
 - **Documentos vivos que remiten a los briefs:** los seis de la tabla.
-- **Fuera de alcance**, por ser registros fechados de trabajo cerrado que ningún árbitro lee: las 22 fichas y especificaciones hechas que nombran los briefs, `governance/partes/` y `APORTES_INEDITOS.md`. Los `BRIEF_PROPIETARIO_*.md` son pasos del propietario, no briefs de agente, y se quedan.
+- **Fuera de alcance**, por ser registros fechados de trabajo cerrado que ningún árbitro lee: las 22 fichas y especificaciones hechas que nombran los briefs, los 20 partes existentes de `governance/partes/` y `APORTES_INEDITOS.md`. El CTO lo confirmó el 2026-11-23. Los `BRIEF_PROPIETARIO_*.md` son pasos del propietario, no briefs de agente, y se quedan.
 - `.github/workflows/` solo llama a `verificar_alcance_pr.py` con `--rama --base --cabeza`, y esa interfaz no cambia.
 
 ## 2. API
@@ -57,7 +58,7 @@ Hecho medido en `origin/main` aa900e0d con `git grep -l -E "apoyo/briefs|BRIEFS_
 
 - **R1 · Carpeta local.** `C:\Users\Juan Carlos\compartido\evydentia\` está fuera de todo worktree y sin git:
   - `briefs\<ID>.md`, uno por ficha;
-  - `relevos\`, para los partes de relevo entre sesiones;
+  - `relevos\<rol>\AAAA-MM-DD_<tema>.md`, para los partes de sesión de cada rol, que antes iban a `governance/partes/<rol>/`;
   - `TAREAS_LIBRES.md`, que sustituye a la hoja del CTO.
 
   La escribe el Tech Lead, salvo `TAREAS_LIBRES.md`, que es del CTO.
@@ -71,10 +72,12 @@ Hecho medido en `origin/main` aa900e0d con `git grep -l -E "apoyo/briefs|BRIEFS_
 
   El Tech Lead lo corre antes de lanzar la tanda, y una ficha sin brief no se lanza.
 - **R6 · Ningún brief en el repositorio.** Decisión del propietario, 2026-11-23: ni los briefs ni los archivos de briefs se versionan.
-  - El CTO ya copió a la carpeta de R1 los briefs vivos (FE-29 e IA-13 a IA-16) y la hoja. GOB-06 no copia nada; solo borra del repositorio los archivos de §1.
+  - El CTO ya copió a la carpeta de R1 los briefs vivos (FE-29 e IA-13 a IA-16, más LEG-07 del Tech Lead) y la hoja. GOB-06 no copia ni sobrescribe nada.
+  - Antes de borrar, el ingeniero compara el SHA-256 de cada `governance/apoyo/briefs/<ID>.md` y de `BRIEFS_TAREAS_LIBRES.md` con su copia en la carpeta (`briefs\<ID>.md` y `TAREAS_LIBRES.md`), y pega la tabla en el PR. Si alguno difiere, no borra y avisa al CTO.
   - Pone `tanda` en esas cinco fichas, y en LEG-07 si el Tech Lead le asignó una. Quita `agente` de LEG-07 y de la propia GOB-06, que es su archivo de cierre.
   - Corre R5 para las tandas 93 a 96 contra la carpeta real y pega la salida en el PR.
   - Hasta que se fusione GOB-06, toda ficha nueva entra con `agente = "ninguno"` y su brief va solo a la carpeta.
+- **R6b · Partes de sesión.** Desde GOB-06 no se versiona ningún parte nuevo: van a `relevos\<rol>\` de R1. Si un parte contiene una decisión de diseño que debe vincular, la decisión va a la especificación que corresponda. Es una indicación en `governance/partes/README.md`, no un árbitro.
 - **R7 · Sin choques.** GOB-06 se lanza cuando ninguna ficha cuya cabecera edita está en `en_curso`.
 - **R8 · Riesgos asumidos.**
   - La carpeta no tiene historial: un brief sobrescrito se pierde. El Tech Lead no sobrescribe; añade una versión `<ID>.v2.md` y deja la anterior.
