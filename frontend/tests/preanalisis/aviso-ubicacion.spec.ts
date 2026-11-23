@@ -1,16 +1,19 @@
 // © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
- * IA-09 · Aviso de consentimiento del preanálisis con la ubicación real donde se procesa.
+ * IA-09 / IA-15 · Aviso de consentimiento del preanálisis con el país y la región donde se procesa.
  *
  * Verifica en navegador real (Diagnóstico › Preanálisis):
- *  - Con una ubicación distinta (p. ej. "servidores en Irlanda"), muestra exactamente esa ubicación en
- *    `consentimiento-destino`, la etiqueta corta con `title` en `PanelPreanalisis` y el párrafo del panel.
- *  - Con `ubicacion: null`, muestra proveedor y modelo sin país ni marcadores provisionales.
- *  - Sin configuración (`disponible: false`), muestra "No podemos mostrar a quién se enviarían los datos. Por eso no los enviamos."
- *    y no renderiza el botón de envío.
- *  - Ningún texto visible contiene "adecuad", "conforme" ni "provisional".
+ *  - Con `ubicacion` (país) y `region` del estado, el aviso dice «Se procesan en {pais} (región {region}), fuera de
+ *    Ecuador.» y la etiqueta corta es «{destinatario} · {pais}, {region}» con `title` hacia el texto completo.
+ *  - Con el país Ecuador no dice «fuera de Ecuador».
+ *  - Sin `region` o sin `ubicacion`, no se ofrece el consentimiento y aparece un `role="status"` (falla cerrado).
+ *  - Sin configuración (`disponible: false`), se mantiene el texto de IA-09 y no se pinta el botón de envío.
+ *  - Ni el país ni la región están escritos a mano en `frontend/src/` (m3); nada recorta «servidores en …» (m1).
+ *  - Ningún texto del panel o del aviso contiene las palabras prohibidas de la especificación IA-15 §4.
  */
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 
 import { expect, test, type Browser, type BrowserContext, type Page } from "@playwright/test";
 
@@ -30,10 +33,21 @@ interface EstadoSimulado {
   modelo: string | null;
   motivo: string | null;
   ubicacion: string | null;
+  region: string | null;
 }
 
-const PROHIBIDOS_VISIBLES = /adecuad|conforme|provisional|por confirmar|Estados Unidos/i;
-const PROHIBIDOS_AVISO = /adecuad|conforme|provisional|por confirmar|pendiente|Estados Unidos/i;
+const PROHIBIDOS_VISIBLES = /adecuad|conforme|provisional|por confirmar/i;
+const PROHIBIDOS_AVISO = /adecuad|conforme|provisional|por confirmar|pendiente|seguro|garantiza|cumple|puede estar/i;
+const MENSAJE_FALLA_CERRADO = "El preanálisis no está disponible: falta configurar dónde se procesan los datos.";
+const ESTADO_US: EstadoSimulado = {
+  disponible: true,
+  proveedor: "Google Cloud",
+  modelo: "gemini-3.8-flash",
+  motivo: null,
+  ubicacion: "Estados Unidos",
+  region: "us",
+};
+const RAIZ_SRC = path.resolve(__dirname, "../../src");
 
 async function prepararContextoConEvidencia(browser: Browser): Promise<BrowserContext> {
   const context = await browser.newContext();
@@ -113,31 +127,19 @@ async function verificarTextosSinEncuadre(page: Page, textoDialogo?: string): Pr
   }
 }
 
-test.describe("IA-09 · aviso de ubicación en preanálisis", () => {
-  test("muestra la ubicación simulada en el panel, su title y consentimiento-destino", async ({ browser }) => {
+test.describe("IA-15 · aviso de país y región en preanálisis", () => {
+  test("nombra el país y la región del estado en la etiqueta, su title y el consentimiento", async ({ browser }) => {
     const context = await prepararContextoConEvidencia(browser);
     try {
       const page = await context.newPage();
-      const estado: EstadoSimulado = {
-        disponible: true,
-        proveedor: "Servicio Simulado",
-        modelo: "modelo-ia09",
-        motivo: null,
-        ubicacion: "servidores en Irlanda",
-      };
-      await simularPreanalisis(page, () => estado);
+      await simularPreanalisis(page, () => ESTADO_US);
       await abrirDiagnostico(page);
 
       const fraseEsperada =
-        "Estos fragmentos se envían a Servicio Simulado (modelo modelo-ia09), que los procesa en servidores en Irlanda.";
-      const etiqueta = page.getByText("Servicio Simulado · Irlanda", { exact: true });
+        "Estos fragmentos se envían a Google Cloud para procesarlos con el modelo gemini-3.8-flash. Se procesan en Estados Unidos (región us), fuera de Ecuador.";
+      const etiqueta = page.getByText("Google Cloud · Estados Unidos, us", { exact: true });
       await expect(etiqueta).toBeVisible();
       await expect(etiqueta).toHaveAttribute("title", fraseEsperada);
-      await expect(
-        page.getByText(
-          "La IA solo propone; nada se aplica sin tu decisión. Solo saldrán fragmentos enmascarados a Servicio Simulado; verás el texto exacto antes de autorizar el envío."
-        )
-      ).toBeVisible();
 
       const dialogo = await abrirDialogoConsentimiento(page);
       await expect(dialogo.getByTestId("consentimiento-destino")).toHaveText(fraseEsperada);
@@ -148,39 +150,43 @@ test.describe("IA-09 · aviso de ubicación en preanálisis", () => {
     }
   });
 
-  test("con ubicacion null muestra proveedor y modelo sin país ni marcadores provisionales", async ({ browser }) => {
+  test("con Ecuador como país no dice «fuera de Ecuador»", async ({ browser }) => {
     const context = await prepararContextoConEvidencia(browser);
     try {
       const page = await context.newPage();
-      const estado: EstadoSimulado = {
-        disponible: true,
-        proveedor: "Servicio Simulado",
-        modelo: "modelo-ia09",
-        motivo: null,
-        ubicacion: null,
-      };
-      await simularPreanalisis(page, () => estado);
+      await simularPreanalisis(page, () => ({ ...ESTADO_US, ubicacion: "Ecuador", region: "quito" }));
       await abrirDiagnostico(page);
-
-      const fraseEsperada = "Estos fragmentos se envían a Servicio Simulado (modelo modelo-ia09).";
-      const etiqueta = page.getByText("Servicio Simulado", { exact: true });
-      await expect(etiqueta).toBeVisible();
-      await expect(etiqueta).toHaveAttribute("title", fraseEsperada);
-      await expect(
-        page.getByText(
-          "La IA solo propone; nada se aplica sin tu decisión. Solo saldrán fragmentos enmascarados a Servicio Simulado; verás el texto exacto antes de autorizar el envío."
-        )
-      ).toBeVisible();
-
       const dialogo = await abrirDialogoConsentimiento(page);
-      const destino = dialogo.getByTestId("consentimiento-destino");
-      await expect(destino).toHaveText(fraseEsperada);
-      await expect(destino).not.toContainText("servidores en");
-      await verificarTextosSinEncuadre(page, await dialogo.innerText());
+      await expect(dialogo.getByTestId("consentimiento-destino")).toHaveText(
+        "Estos fragmentos se envían a Google Cloud para procesarlos con el modelo gemini-3.8-flash. Se procesan en Ecuador (región quito)."
+      );
     } finally {
       await context.close();
     }
   });
+
+  for (const [nombre, falta] of [
+    ["sin region", { region: null }],
+    ["sin ubicacion", { ubicacion: null }],
+    ["con region vacía", { region: "  " }],
+  ] as const) {
+    test(`falla cerrado ${nombre}: sin consentimiento y con aviso de estado`, async ({ browser }) => {
+      const context = await prepararContextoConEvidencia(browser);
+      try {
+        const page = await context.newPage();
+        await simularPreanalisis(page, () => ({ ...ESTADO_US, ...falta }));
+        await abrirDiagnostico(page);
+        await expect(page.getByRole("status").filter({ hasText: MENSAJE_FALLA_CERRADO })).toBeVisible();
+        await expect(page.getByRole("button", { name: "Analizar con IA" })).toHaveCount(0);
+        await expect(page.getByRole("dialog")).toHaveCount(0);
+        await expect(page.locator("body")).not.toContainText("undefined");
+        await expect(page.locator("body")).not.toContainText("null");
+        await verificarTextosSinEncuadre(page);
+      } finally {
+        await context.close();
+      }
+    });
+  }
 
   test("sin configuración bloquea el envío y no muestra el botón de autorizar", async ({ browser }) => {
     const context = await prepararContextoConEvidencia(browser);
@@ -193,6 +199,7 @@ test.describe("IA-09 · aviso de ubicación en preanálisis", () => {
         modelo: null,
         motivo: "Servicio sin configurar.",
         ubicacion: null,
+        region: null,
       }));
       await abrirDiagnostico(paginaApagada);
       await expect(paginaApagada.getByRole("button", { name: "Analizar con IA" })).toHaveCount(0);
@@ -203,23 +210,11 @@ test.describe("IA-09 · aviso de ubicación en preanálisis", () => {
 
       // 2. Si deja de estar disponible al abrir el consentimiento: aviso fijo y sin botón de envío.
       const page = await context.newPage();
-      let estado: EstadoSimulado = {
-        disponible: true,
-        proveedor: "Servicio Simulado",
-        modelo: "modelo-ia09",
-        motivo: null,
-        ubicacion: "servidores en Irlanda",
-      };
+      let estado: EstadoSimulado = ESTADO_US;
       await simularPreanalisis(page, () => estado);
       await abrirDiagnostico(page);
 
-      estado = {
-        disponible: false,
-        proveedor: null,
-        modelo: null,
-        motivo: "No disponible.",
-        ubicacion: null,
-      };
+      estado = { disponible: false, proveedor: null, modelo: null, motivo: "No disponible.", ubicacion: null, region: null };
       const dialogo = await abrirDialogoConsentimiento(page);
       await expect(dialogo.getByTestId("consentimiento-destino")).toHaveText(
         "No podemos mostrar a quién se enviarían los datos. Por eso no los enviamos."
@@ -228,6 +223,21 @@ test.describe("IA-09 · aviso de ubicación en preanálisis", () => {
       await verificarTextosSinEncuadre(page, await dialogo.innerText());
     } finally {
       await context.close();
+    }
+  });
+
+  test("el código de los componentes no escribe el país, la región ni recorta «servidores en»", () => {
+    const archivos = [
+      "components/preanalisis/ConsentimientoEnvio.tsx",
+      "components/preanalisis/PanelPreanalisis.tsx",
+      "lib/preanalisis/cliente.ts",
+      "lib/preanalisis/tipos.ts",
+    ];
+    for (const rel of archivos) {
+      const texto = readFileSync(path.join(RAIZ_SRC, rel), "utf-8");
+      expect(texto, `${rel}: país escrito a mano`).not.toMatch(/Estados Unidos/);
+      expect(texto, `${rel}: región escrita a mano`).not.toMatch(/(["'`])us\1/);
+      expect(texto, `${rel}: recorta o nombra «servidores»`).not.toMatch(/servidores/i);
     }
   });
 });

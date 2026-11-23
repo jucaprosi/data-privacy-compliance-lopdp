@@ -3,6 +3,7 @@
 
 import React, { useEffect, useId, useRef, useState } from "react";
 import { ChevronDown, ChevronRight, ShieldAlert, ShieldCheck, X } from "lucide-react";
+import { avisoDeEnvio } from "@/lib/preanalisis/cliente";
 import type { EstadoServicioIA, FragmentoDocumento } from "@/lib/preanalisis/tipos";
 
 export interface GrupoConsentimiento {
@@ -72,7 +73,8 @@ export default function ConsentimientoEnvio({
   const totalFragmentos = grupos.reduce((suma, g) => suma + g.fragmentos.length, 0);
   const totalPii = grupos.reduce((suma, g) => suma + g.piiEnmascarada, 0);
   const plegable = modoLote || grupos.length > 1;
-  const sinDestino = estadoServicio === null || estadoServicio.disponible === false;
+  const aviso = avisoDeEnvio(estadoServicio);
+  const sinDestino = aviso === null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
@@ -121,21 +123,7 @@ export default function ConsentimientoEnvio({
           </div>
 
           <p data-testid="consentimiento-destino" className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed">
-            {sinDestino ? (
-              "No podemos mostrar a quién se enviarían los datos. Por eso no los enviamos."
-            ) : !estadoServicio.proveedor || !estadoServicio.modelo ? (
-              "Estos fragmentos se envían al servicio de IA configurado."
-            ) : estadoServicio.ubicacion ? (
-              <>
-                Estos fragmentos se envían a <strong className="text-white">{estadoServicio.proveedor}</strong> (modelo{" "}
-                {estadoServicio.modelo}), que los procesa en {estadoServicio.ubicacion}.
-              </>
-            ) : (
-              <>
-                Estos fragmentos se envían a <strong className="text-white">{estadoServicio.proveedor}</strong> (modelo{" "}
-                {estadoServicio.modelo}).
-              </>
-            )}
+            {aviso ?? "No podemos mostrar a quién se enviarían los datos. Por eso no los enviamos."}
           </p>
 
           {plegable && (

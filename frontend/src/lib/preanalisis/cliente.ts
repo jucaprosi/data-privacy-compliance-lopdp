@@ -79,13 +79,44 @@ async function solicitar<T>(ruta: string, init: RequestInit, identidad?: Record<
   }
 }
 
+function textoOnull(valor: string | null | undefined): string | null {
+  const limpio = typeof valor === "string" ? valor.trim() : "";
+  return limpio === "" ? null : limpio;
+}
+
+/** País y región ciertos del estado, o null si falta alguno (falla cerrado, IA-15 §4 regla 3). */
+export function destinoDelEstado(estado: EstadoServicioIA | null): { pais: string; region: string } | null {
+  const pais = textoOnull(estado?.ubicacion);
+  const region = textoOnull(estado?.region);
+  return estado?.disponible && pais && region ? { pais, region } : null;
+}
+
+function esEcuador(pais: string): boolean {
+  return pais.normalize("NFD").replace(/[̀-ͯ]/g, "").trim().toLowerCase() === "ecuador";
+}
+
+/** Aviso de envío completo (IA-15 §4), con destinatario, modelo, país y región del estado. Null si no hay destino. */
+export function avisoDeEnvio(estado: EstadoServicioIA | null): string | null {
+  const destino = destinoDelEstado(estado);
+  if (!estado || !destino) return null;
+  const quien = estado.proveedor && estado.modelo ? `a ${estado.proveedor} para procesarlos con el modelo ${estado.modelo}` : "al servicio de IA configurado";
+  const fuera = esEcuador(destino.pais) ? "" : ", fuera de Ecuador";
+  return `Estos fragmentos se envían ${quien}. Se procesan en ${destino.pais} (región ${destino.region})${fuera}.`;
+}
+
+/** Etiqueta corta del panel: «{destinatario} · {pais}, {region}». */
+export function etiquetaDeDestino(estado: EstadoServicioIA | null): string | null {
+  const destino = destinoDelEstado(estado);
+  return estado?.proveedor && destino ? `${estado.proveedor} · ${destino.pais}, ${destino.region}` : null;
+}
+
 export async function consultarEstadoServicio(): Promise<EstadoServicioIA> {
   try {
     const estado = await solicitar<EstadoServicioIA>("/preanalisis/estado", { method: "GET" });
-    return { ...estado, ubicacion: estado.ubicacion ?? null };
+    return { ...estado, ubicacion: textoOnull(estado.ubicacion), region: textoOnull(estado.region) };
   } catch (error) {
     const motivo = error instanceof ErrorPreanalisis && error.status !== 0 ? error.message : MENSAJE_SIN_CONEXION;
-    return { disponible: false, proveedor: null, modelo: null, motivo, ubicacion: null };
+    return { disponible: false, proveedor: null, modelo: null, motivo, ubicacion: null, region: null };
   }
 }
 
