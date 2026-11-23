@@ -18,7 +18,7 @@ rastros = ["¤ip", "¤arbitro"]
 **Origen.** Defecto de LEG-06 (#959), reportado por su ingeniero y comprobado por el CTO el 2026-11-23.
 
 ## Entrega
-- `*.bat` y `*.cmd` con `eol=crlf` en `.gitattributes`.
+- `*.bat` y `*.cmd` con `-text` en `.gitattributes` (el índice guarda CRLF tal cual; `text eol=crlf` lo guarda en LF).
 - Los seis `.bat` renormalizados a CRLF.
 - Una prueba que exige CRLF en todo `.bat` y `.cmd` versionado.
 

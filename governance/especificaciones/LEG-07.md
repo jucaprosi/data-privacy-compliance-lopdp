@@ -7,7 +7,7 @@ Sin tablas ni migraciones. Estado final:
 
 | Archivo | Estado final |
 | :--- | :--- |
-| `.gitattributes` | añade `*.bat text eol=crlf` y `*.cmd text eol=crlf`; `data/biblioteca/** -text` queda igual |
+| `.gitattributes` | añade `*.bat -text` y `*.cmd -text`; `data/biblioteca/** -text` queda igual |
 | `ejecutar_arnes_tres_pilares.bat` | CRLF, mismo contenido |
 | `ejecutar_arnes_verificacion.bat` | CRLF, mismo contenido |
 | `iniciar_backend.bat` | CRLF, mismo contenido |
@@ -42,7 +42,7 @@ No aplica.
 | Escenario | Prueba |
 | :--- | :--- |
 | **Dado** `git ls-files` con extensión `.bat` o `.cmd`, **entonces** cada archivo del árbol usa `\r\n` en todas sus líneas y no tiene ningún `\n` suelto. Mutación m1: pasar un `.bat` a LF da rojo con su nombre. | `tests/test_leg06_aviso_de_autor.py::test_bat_y_cmd_en_crlf` |
-| **Dado** `.gitattributes`, **entonces** declara `*.bat text eol=crlf` y `*.cmd text eol=crlf`, y conserva `data/biblioteca/** -text`. Mutación m2: quitar la línea de `.bat` da rojo. | `tests/test_leg06_aviso_de_autor.py::test_gitattributes_crlf_y_biblioteca` |
+| **Dado** `.gitattributes`, **entonces** declara `*.bat -text` y `*.cmd -text`, y conserva `data/biblioteca/** -text`. Mutación m2: quitar la línea de `.bat` da rojo. | `tests/test_leg06_aviso_de_autor.py::test_gitattributes_crlf_y_biblioteca` |
 | **Dado** cada `.bat`, **entonces** al ejecutarlo en cmd no aparece «no se reconoce como un comando». Lo comprueba el ingeniero en Windows y anota la salida en el PR. | prueba en físico |
 
 ## 6. Trazabilidad

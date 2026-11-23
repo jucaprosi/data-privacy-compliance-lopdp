@@ -20,7 +20,7 @@
 **Objetivo** (en este orden):
 
 1. `LEG-07` — Finales de línea CRLF en los .bat para que cmd lea el aviso de autor
-   - `.gitattributes`: añade `*.bat text eol=crlf` y `*.cmd text eol=crlf`. Conserva `data/biblioteca/** -text` tal cual.
+   - `.gitattributes`: añade `*.bat -text` y `*.cmd -text` (sin `text eol=crlf`: con esa opción el índice queda en LF y el árbitro exige i/crlf). Conserva `data/biblioteca/** -text` tal cual.
    - Renormaliza con `git add --renormalize` los seis `.bat` (`ejecutar_arnes_tres_pilares.bat`, `ejecutar_arnes_verificacion.bat`, `iniciar_backend.bat`, `iniciar_frontend.bat`, `iniciar_todo.bat`, `scripts/entorno.bat`) y comprueba que el diff solo cambia los finales de línea.
    - `tests/test_leg06_aviso_de_autor.py`: añade `test_bat_y_cmd_en_crlf` y `test_gitattributes_crlf_y_biblioteca` según §5 de la especificación.
 
