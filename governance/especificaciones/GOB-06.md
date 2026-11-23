@@ -31,7 +31,8 @@ Sin tablas ni migraciones. Estado final:
 | `governance/tareas/IA-14.md` | `tanda = 95` en la cabecera |
 | `governance/tareas/IA-15.md` | `tanda = 95` en la cabecera |
 | `governance/tareas/IA-16.md` | `tanda = 96` en la cabecera |
-| `governance/tareas/LEG-07.md` | sin `agente`; `tanda` si el Tech Lead ya le asignó una (R6) |
+| `governance/tareas/LEG-07.md` | `tanda` si sigue sin hacer y el Tech Lead le asignó una (R6); ya no tiene `agente` |
+| `governance/tareas/GCP-08c.md` | sin `agente`; `tanda = 95`, posterior a la de GCP-08b (R6) |
 | `governance/METODOLOGIAS.md` | remite a la carpeta local de R1 en lugar de a los briefs del repositorio |
 | `governance/Metodología de trabajo en equipo.md` | remite a la carpeta local de R1 en lugar de a los briefs del repositorio |
 | `governance/apoyo/DISENO_PORTALES_EXTERNOS.md` | remite a la carpeta local de R1 en lugar de a los briefs del repositorio |
@@ -42,7 +43,7 @@ Sin tablas ni migraciones. Estado final:
 
 Hecho medido en `origin/main` aa900e0d con `git grep -l -E "apoyo/briefs|BRIEFS_TAREAS_LIBRES|BRIEFS_POR_BLOQUE"`:
 - **Código y pruebas:** `verificar_reparto.py`, `verificar_alcance_pr.py`, `migrar_reparto_ci31.py`, `test_ci29_sin_generados_compartidos.py`, `test_ci31_reparto_por_ficha.py`, `test_reparto.py` y `test_verificar_alcance_pr.py`. `test_reparto_copias.py` importa `verificar_reparto` y comprueba las copias de los briefs.
-- **El campo `agente`:** lo define `generar_indice_tareas.py` (`AGENTES`, `Tarea.agente`) y solo lo usa `LEG-07.md`.
+- **El campo `agente`:** lo define `generar_indice_tareas.py` (`AGENTES`, `Tarea.agente`) y en `origin/main` 5d4aa36d solo lo usan `GCP-08c.md` y la propia `GOB-06.md`; `LEG-07.md` lo quitó al cerrarse (#971).
 - **Dónde vive hoy la tanda:** solo en la cabecera de cada brief, `### <ID> · título (tanda N)`. Sin briefs en el repositorio, hace falta un campo en la ficha.
 - **Briefs vivos:** `governance/apoyo/briefs/` tiene FE-29 e IA-13 a IA-16, en las tandas 93 a 96.
 - **Documentos vivos que remiten a los briefs:** los seis de la tabla.
@@ -74,11 +75,11 @@ Hecho medido en `origin/main` aa900e0d con `git grep -l -E "apoyo/briefs|BRIEFS_
 - **R6 · Ningún brief en el repositorio.** Decisión del propietario, 2026-11-23: ni los briefs ni los archivos de briefs se versionan.
   - El CTO ya copió a la carpeta de R1 los briefs vivos (FE-29 e IA-13 a IA-16, más LEG-07 del Tech Lead) y la hoja. GOB-06 no copia ni sobrescribe nada.
   - Antes de borrar, el ingeniero compara el SHA-256 de cada `governance/apoyo/briefs/<ID>.md` y de `BRIEFS_TAREAS_LIBRES.md` con su copia en la carpeta (`briefs\<ID>.md` y `TAREAS_LIBRES.md`), y pega la tabla en el PR. Si alguno difiere, no borra y avisa al CTO.
-  - Pone `tanda` en esas cinco fichas, y en LEG-07 si el Tech Lead le asignó una. Quita `agente` de LEG-07 y de la propia GOB-06, que es su archivo de cierre.
+  - Pone `tanda` en las fichas de §1 que sigan sin hacer al lanzar GOB-06; una ficha hecha no lleva `tanda` (R2). Quita `agente` de GCP-08c y de la propia GOB-06, que es su archivo de cierre.
   - Corre R5 para las tandas 93 a 96 contra la carpeta real y pega la salida en el PR.
   - Hasta que se fusione GOB-06, toda ficha nueva entra con `agente = "ninguno"` y su brief va solo a la carpeta.
 - **R6b · Partes de sesión.** Desde GOB-06 no se versiona ningún parte nuevo: van a `relevos\<rol>\` de R1. Si un parte contiene una decisión de diseño que debe vincular, la decisión va a la especificación que corresponda. Es una indicación en `governance/partes/README.md`, no un árbitro.
-- **R7 · Sin choques.** GOB-06 se lanza cuando ninguna ficha cuya cabecera edita está en `en_curso`.
+- **R7 · Sin choques.** GOB-06 se lanza cuando ninguna ficha cuya cabecera edita (FE-29, IA-13 a IA-16, LEG-07 y GCP-08c) está en `en_curso`.
 - **R8 · Riesgos asumidos.**
   - La carpeta no tiene historial: un brief sobrescrito se pierde. El Tech Lead no sobrescribe; añade una versión `<ID>.v2.md` y deja la anterior.
   - Una sesión en la nube, o Aleczandra y José en su equipo, no ven la carpeta. A ellos se les pega el brief en el chat.
