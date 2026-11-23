@@ -72,7 +72,7 @@ Hecho medido en `origin/main` aa900e0d con `git grep -l -E "apoyo/briefs|BRIEFS_
   El Tech Lead lo corre antes de lanzar la tanda, y una ficha sin brief no se lanza.
 - **R6 · Migración, en el mismo PR.**
   1. El ingeniero de GOB-06 copia los cinco briefs vivos a `briefs\` sin cambiar una letra, y `BRIEFS_TAREAS_LIBRES.md` a `TAREAS_LIBRES.md`.
-  2. Pone `tanda` en esas cinco fichas y quita `agente` de LEG-07.
+  2. Pone `tanda` en esas cinco fichas y quita `agente` de LEG-07 y de la propia GOB-06, que es su archivo de cierre.
   3. Borra lo que dice §1.
   4. Corre R5 para las tandas 93 a 96 y pega la salida en el PR.
 

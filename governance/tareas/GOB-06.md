@@ -9,6 +9,7 @@ propiedad = ["scripts/verificar_reparto.py", "scripts/verificar_alcance_pr.py", 
 crea = ["scripts/verificar_briefs_locales.py", "tests/test_verificar_briefs_locales.py"]
 arbitro = "pytest tests/test_reparto.py tests/test_verificar_briefs_locales.py tests/test_ci29_sin_generados_compartidos.py tests/test_verificar_alcance_pr.py tests/test_indice_tareas.py; verificar_reparto, índice, especificaciones y verificar_alcance_pr con código 0; git grep de «apoyo/briefs|BRIEFS_TAREAS_LIBRES|BRIEFS_POR_BLOQUE|agente =» vacío fuera de fichas hechas, especificaciones hechas, partes y aportes; verificar_briefs_locales en la carpeta real da OK para las tandas 93 a 96; mutaciones m1 a m5."
 rastros = ["¤arbitro"]
+agente = "ninguno"
 +++
 
 # GOB-06 · Briefs y partes de relevo fuera del repositorio
