@@ -70,13 +70,11 @@ Hecho medido en `origin/main` aa900e0d con `git grep -l -E "apoyo/briefs|BRIEFS_
   - su «Hecho si» es igual al `arbitro` de la ficha.
 
   El Tech Lead lo corre antes de lanzar la tanda, y una ficha sin brief no se lanza.
-- **R6 · Migración, en el mismo PR.**
-  1. El ingeniero de GOB-06 copia los cinco briefs vivos a `briefs\` sin cambiar una letra, y `BRIEFS_TAREAS_LIBRES.md` a `TAREAS_LIBRES.md`.
-  2. Pone `tanda` en esas cinco fichas y quita `agente` de LEG-07 y de la propia GOB-06, que es su archivo de cierre.
-  3. Borra lo que dice §1.
-  4. Corre R5 para las tandas 93 a 96 y pega la salida en el PR.
-
-  Si el Tech Lead fusiona antes un brief nuevo en el repositorio, por ejemplo el de LEG-07, se añade a esta propiedad y se migra igual.
+- **R6 · Ningún brief en el repositorio.** Decisión del propietario, 2026-11-23: ni los briefs ni los archivos de briefs se versionan.
+  - El CTO ya copió a la carpeta de R1 los briefs vivos (FE-29 e IA-13 a IA-16) y la hoja. GOB-06 no copia nada; solo borra del repositorio los archivos de §1.
+  - Pone `tanda` en esas cinco fichas, y en LEG-07 si el Tech Lead le asignó una. Quita `agente` de LEG-07 y de la propia GOB-06, que es su archivo de cierre.
+  - Corre R5 para las tandas 93 a 96 contra la carpeta real y pega la salida en el PR.
+  - Hasta que se fusione GOB-06, toda ficha nueva entra con `agente = "ninguno"` y su brief va solo a la carpeta.
 - **R7 · Sin choques.** GOB-06 se lanza cuando ninguna ficha cuya cabecera edita está en `en_curso`.
 - **R8 · Riesgos asumidos.**
   - La carpeta no tiene historial: un brief sobrescrito se pierde. El Tech Lead no sobrescribe; añade una versión `<ID>.v2.md` y deja la anterior.

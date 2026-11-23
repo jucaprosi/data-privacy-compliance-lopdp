@@ -25,4 +25,4 @@ agente = "ninguno"
 
 ## Límites
 - Se lanza sola, cuando ninguna de las fichas de la propiedad (FE-29, IA-13 a IA-16, LEG-07) está en `en_curso` (R7).
-- Mientras no se fusione, los briefs siguen yendo al repositorio.
+- Ningún brief se versiona, tampoco en este PR: los briefs vivos ya están en la carpeta (decisión del propietario, 2026-11-23).
