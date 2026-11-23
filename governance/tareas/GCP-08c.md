@@ -2,7 +2,7 @@
 id = "GCP-08c"
 titulo = "Datos de ICU completos en la imagen web para formatear en es-EC"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 95
 sala = "frontend, operaciones"
 depende_de = ["CI-36", "GCP-03", "GCP-03b", "GCP-08", "GCP-08b", "QA-12", "RET-05"]
