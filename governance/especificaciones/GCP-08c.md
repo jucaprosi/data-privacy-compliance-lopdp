@@ -9,6 +9,8 @@ Sin tablas ni migraciones. Estado final:
 | :--- | :--- |
 | `frontend/Dockerfile.cloudrun` | el runner trae datos de ICU completos, con la opción que elija R2 |
 | `tests/test_gcp08_proxy_e_imagen.py` | `test_08_intl_es_ec_en_la_imagen` (nuevo) y `PRESUPUESTO_BYTES` recalculado según R3 |
+| `tests/test_ci36_version_node.py` | con (b), `test_runner_alpine_trae_la_misma_version` describe el runner elegido (R2b); con (a), no cambia |
+| `tests/test_gcp03_frontend_cloudrun.py` | con (b), `test_dockerfile_multistage_non_root` describe el runner elegido (R2b); con (a), no cambia |
 
 **Medida del Arquitecto**, el 2026-11-23, en `alpine:3.21` con `apk add nodejs` (el mismo runner de main), formateando el 2026-11-23 y 1.234.567,891 USD:
 
@@ -33,8 +35,18 @@ No aplica.
   - (b) un runner sobre `node:22-alpine`, cuyo binario oficial lleva ICU completa, con el mismo usuario `nextjs` y el mismo `CMD`.
 
   Anota en §1 del PR la tabla con los bytes de las dos.
+- **R2b · Pruebas del runner, solo si se elige (b).** Hoy dos pruebas fijan el runner de (a):
+  - `tests/test_ci36_version_node.py:125-135` exige `alias == "runner"`, una base `alpine:` y el Node de apk de esa rama;
+  - `tests/test_gcp03_frontend_cloudrun.py:160-163` exige `runner.base == "alpine:3.21"` y `apk add … nodejs`.
+
+  Con (b) describen el estado final y no aceptan las dos formas:
+  - la primera exige `node:<esperada>-alpine` como base del runner, con la misma versión mayor que `engines` (CI-36), y el caso sintético rechaza una base `node:` de otra versión mayor;
+  - la segunda exige esa base, sin `apk add nodejs`, y mantiene el usuario `nextjs` no root.
+
+  Con (a), ninguna de las dos cambia.
 - **R3 · Presupuesto nuevo.** Aplica GCP-08b R2: la medida de la opción elegida + 15 %, redondeada a MB, en `PRESUPUESTO_BYTES`, con la tabla de capas en el PR.
-- **R-ADPA · Ortogonalidad ZERAG (`GCP-08c`).** Solo los dos archivos. Sin `import yaml`.
+- **R4 · Orden.** Depende de GCP-08b y va en una tanda posterior, porque las dos son dueñas de `tests/test_gcp08_proxy_e_imagen.py`. Con FE-29 no choca.
+- **R-ADPA · Ortogonalidad ZERAG (`GCP-08c`).** Solo los cuatro archivos. Sin `import yaml`.
 
 ## 4. Interfaz
 
@@ -46,9 +58,10 @@ No cambia ningún texto. La fecha y los números que hoy se pintan en el servido
 | :--- | :--- |
 | **Dado** la imagen construida, **entonces** `node -e` con `Intl.DateTimeFormat("es-EC", {dateStyle: "full", timeZone: "UTC"})` da «lunes, 23 de noviembre de 2026» y `Intl.NumberFormat("es-EC", {style: "currency", currency: "USD"})` da «$1.234.567,89». Mutación m1: volver a `icu-data-en` da rojo. | `tests/test_gcp08_proxy_e_imagen.py::test_08_intl_es_ec_en_la_imagen` |
 | **Dado** la imagen construida, **entonces** cabe en el `PRESUPUESTO_BYTES` nuevo. | `tests/test_gcp08_proxy_e_imagen.py::test_05_la_imagen_cabe_en_su_presupuesto` |
+| **Dado** el runner elegido, **entonces** las dos pruebas de R2b lo describen; con (b), un runner `node:` de otra versión mayor da rojo. Mutación m2: dejar `alpine:3.21` en la prueba con un runner (b) da rojo. | `tests/test_ci36_version_node.py::test_runner_alpine_trae_la_misma_version`, `tests/test_gcp03_frontend_cloudrun.py::test_dockerfile_multistage_non_root` |
 
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/GCP-08c.md`. Especificación de referencia: `governance/especificaciones/README.md`.
 - Hallazgo del Arquitecto al medir GCP-08b, aceptado por el CTO (2026-11-23).
-- Depende de GCP-08b, por el presupuesto y la prueba, y de las fichas hechas que comparten estos archivos: CI-36, GCP-03, GCP-03b, GCP-08 y QA-12.
+- Depende de GCP-08b, por el presupuesto y la prueba, y de las fichas hechas que comparten estos archivos: CI-36, GCP-03, GCP-03b, GCP-08, QA-12 y RET-05.
