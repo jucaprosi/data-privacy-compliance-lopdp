@@ -33,6 +33,11 @@ spec:
               value: demo
             - name: GOOGLE_CLOUD_PROJECT
               value: evydentia-demo
+            # Región de Vertex AI. Sin ella la inferencia no está disponible y la hoja de ruta no se
+            # genera (BRIEF_PROPIETARIO_VERTEX.md); us-central1 es la única región admitida
+            # (features/inferencia/domain/regiones.py).
+            - name: VERTEX_LOCATION
+              value: us-central1
             - name: PROJECT_ID
               value: evydentia-demo
             - name: HUELLA_PROYECTO_PRODUCCION

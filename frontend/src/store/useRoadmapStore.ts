@@ -176,7 +176,13 @@ export const useRoadmapStore = create<RoadmapState>()(
         try {
           const resultado = await roadmapApi.generate(variables, assessment);
           if (resultado.status === "failed") {
-            throw new Error(resultado.error || "Falló la generación del roadmap");
+            // El servidor responde 200 con el motivo del fallo; se eleva como ApiError para que la
+            // pantalla muestre ese motivo y no un mensaje genérico.
+            throw new ApiError(
+              502,
+              resultado.error || "Falló la generación de la hoja de ruta.",
+              resultado.codigo ?? "GENERACION_FALLIDA",
+            );
           }
           const roadmapId = resultado.roadmap_id;
           if (!roadmapId) {

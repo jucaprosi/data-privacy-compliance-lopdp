@@ -183,11 +183,19 @@ async def generate_roadmap_inline(
             await session.rollback()
             logger.exception("Error al marcar roadmap como failed en BD: %s", db_exc)
 
+        # Sin inferencia (falta configuración de Vertex AI) reintentar no sirve: se dice tal cual, con el
+        # motivo neutro de la sala de inferencia, que no expone detalles del proveedor.
+        InferenciaNoDisponible, motivo_neutro = pasillo_inferencia.errores()
+        if isinstance(generation_error, InferenciaNoDisponible):
+            codigo, mensaje = "INFERENCIA_NO_DISPONIBLE", motivo_neutro
+        else:
+            codigo, mensaje = "GENERACION_FALLIDA", "La IA no devolvió una hoja de ruta válida. Puede reintentar la generación."
         return {
             "job_id": job_id,
             "status": "failed",
             "roadmap_id": roadmap_id,
-            "error": "La IA no devolvió una hoja de ruta válida. Puede reintentar la generación.",
+            "error": mensaje,
+            "codigo": codigo,
         }
 
     # 5. Persistir olas y tareas estructuradas
