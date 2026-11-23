@@ -3288,3 +3288,29 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | Medir la imagen por capas con `docker history --human=false` antes de subir un presupuesto. | Es una práctica conocida de Docker y ya quedó escrita en GCP-08b R2. |
 | Los `.bat` con LF hacen que cmd lea mal una línea con caracteres multibyte (LEG-07). | El arreglo final fue `*.bat -text` (#969), distinto del que se especificó. La causa exacta en cmd no se aisló, así que no queda verificada. |
 | Abrir un PR que duplica uno del CTO (#960 frente a #961). | Es un fallo de coordinación entre chats, no un hallazgo técnico. |
+
+---
+
+### Aporte 172: Una Variable de Entorno que Llega Antes que el C?digo que la Reconoce Apaga en Silencio un Servicio con Lista Cerrada
+`?gemini-vertex` `?despliegue`
+
+* **Descripci?n:** Cloud Run deja cambiar las variables de entorno de un servicio sin cambiar su imagen: cada cambio crea una revisi?n nueva con la imagen vieja. Si el c?digo valida el valor contra una lista cerrada que falla cerrada, un valor nuevo que la imagen todav?a no conoce no da error de configuraci?n. El servicio deja de prestar la funci?n y responde ?no disponible? como si el proveedor estuviera ca?do. El orden correcto es el del cambio en paralelo: primero se despliega el c?digo que acepta el valor nuevo junto al viejo, despu?s se cambia la variable y al final se retira el valor viejo.
+* **Por qu? es ?til aqu?:** la decisi?n de la multirregi?n `us` (Aporte 171) cambi? las variables de la demo antes que el c?digo. La revisi?n `evydentia-backend-demo-00014-4v7` recibi? `VERTEX_LOCATION=us` con Antigravity, pero sigue con la imagen `backend:v1`. En esa imagen el mapa `UBICACION_POR_REGION` de `features/inferencia/domain/regiones.py` solo tiene `us-central1`, as? que la IA de la demo falla cerrada hasta que se despliegue IA-13. Las variables se cambian a mano con Antigravity y el c?digo llega con despliegues aparte, as? que el desfase se repetir? con cualquier variable que se valide contra un mapa cerrado.
+* **Verificabilidad:** medido el 2026-11-23 sobre `main` (e6dcb778):
+  - $\texttt{UBICACION\_POR\_REGION.get("us")} = \texttt{None} \wedge \texttt{UBICACION\_POR\_REGION.get("us-central1")} = \text{?Estados Unidos?}$;
+  - `_region_valida()` de `features/inferencia/inferencia_service.py` lanza `InferenciaNoDisponible` cuando la consulta da `None`.
+
+  La imagen y las variables de la revisi?n de la demo las inform? el propietario tras aplicarlas con Antigravity; en esta sesi?n no se leyeron con `gcloud`. Queda verificado cuando el propietario despliega IA-13 y `test_ia03_humo_vertex` da 200 en la demo.
+* **Soporte bibliogr?fico:**
+  - Sato, D. (2014). *ParallelChange*. martinfowler.com/bliki/ParallelChange.html. ? Un cambio incompatible se hace en tres fases: ampliar, migrar y contraer. Aqu? lo que se ampl?a es la lista de valores que acepta el c?digo, y debe ir antes que el cambio de la variable.
+  - Tang, C., Kooburat, T., Venkatachalam, P., Chander, A., Wen, Z., Narayanan, A., Dowell, P. y Karl, R. (2015). *Holistic Configuration Management at Facebook*. SOSP '15, ACM. ? La configuraci?n se trata como c?digo: se valida y se despliega por etapas, porque sus cambios causan incidentes igual que los del c?digo.
+* **Estado:** el desfase sigue abierto en la demo hasta desplegar IA-13 (orden IA-13 R4b). No introduce token nuevo.
+
+## Candidatos descartados de esta sesi?n (Parte XXXVII)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| `gh pr merge --match-head-commit` se niega a fusionar si la rama recibi? otro commit (?Head branch was modified?). | Es el comportamiento documentado de la opci?n, no un gotcha: protege de fusionar una cabeza que no se simul?. |
+| `sed -i` convierte a LF una ficha con CRLF. | Ya est? en la memoria operativa (write_text y CRLF) y en el descarte de `core.autocrlf` de una sesi?n anterior. |
+| Quitar `agente` de una ficha antes de tener brief rompe R1 (#969). | Regla propia de esta gobernanza, ya anotada en el relevo del Arquitecto; GOB-06 la sustituye. |
+| FE-29 cambi? tres pruebas de `frontend/tests/auth/` fuera de su propiedad. | Solapa con el Aporte 162: la propiedad declarada no cubre lo que la ficha necesita tocar. |
