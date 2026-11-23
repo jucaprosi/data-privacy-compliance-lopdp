@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Generador de Informes DIA-10: Informe Ejecutivo y Técnico post-diagnóstico.
 Soporta formatos Markdown estructurado y HTML corporativo de alta fidelidad.
 Invariantes: Cero dilución de brechas críticas, separación explícita de vectores ortogonales.

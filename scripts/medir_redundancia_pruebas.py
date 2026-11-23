@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Mide pruebas redundantes de pytest y de Playwright (TEST-05). Solo mide y propone: no borra ni edita pruebas.
 
 Pasos:

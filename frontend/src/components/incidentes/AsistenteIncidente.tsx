@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 // ¤incidentes ¤asistente
 // Asistente de ocho pasos de una vulneración (INC-02). Sigue las reglas del asistente de FE-23 (validar

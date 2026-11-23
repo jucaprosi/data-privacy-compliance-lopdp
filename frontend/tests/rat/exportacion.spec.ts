@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * RAT-06 (governance/especificaciones/RAT-06.md §4 y §5).
  *

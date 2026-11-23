@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤vpa
 # ¤arbitro
 """Árbitro del mapa de rastros (GOB-01).

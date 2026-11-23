@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤boveda-cloud ¤videovigilancia-cctv ¤dpo-cockpit ¤conservacion ¤adpa
 """Orquestador Comercial de las 10 Dimensiones LOPDP y Telemetría de Bóveda Cloud (BOV-04).
 

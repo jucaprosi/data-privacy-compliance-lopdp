@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # EP-04 · Proyecto de Google Cloud propio del entorno de pruebas (PRD EVYDENTIA §5.5, invariantes 54 y 55).
 # El identificador es un marcador: el real lo pone el propietario al crear el proyecto y nunca es el de
 # producción. Ninguna cuenta de servicio de este proyecto tiene permisos en el de producción, ni al revés.

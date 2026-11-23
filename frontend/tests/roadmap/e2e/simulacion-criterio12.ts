@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Simulación de la API de la Hoja de Ruta para el criterio 12 del PRD (QA-01): estado en memoria,
  * audit log, roles, generación, distribución y evidencias.

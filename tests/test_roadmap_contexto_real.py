@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Pruebas del contexto real para la generación de la hoja de ruta (RM-19).
 
 Verifica:

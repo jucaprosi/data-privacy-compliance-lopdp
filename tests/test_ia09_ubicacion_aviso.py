@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 """IA-09: ubicación real desde la compuerta de inferencia, propagación de org_id y textos sin encuadre.
 

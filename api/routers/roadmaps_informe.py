@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Descarga del informe PDF del estado de la hoja de ruta (RM-20)."""
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response

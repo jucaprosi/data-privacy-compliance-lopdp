@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Enrutador REST de la sala riesgos_mtge: cálculo de gran escala (Res. SPDP-SPD-2026-0005-R)."""
 from dataclasses import asdict
 

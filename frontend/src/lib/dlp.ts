@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Módulo DLP (Data Loss Prevention) Pre-Inferencia - Doctrina 7 del PRD
  * Detección y enmascaramiento de datos personales ecuatorianos (PII) antes de inferencia en LLMs.

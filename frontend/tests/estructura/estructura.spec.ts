@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Arnés de pruebas E2E de la pestaña «Estructura» de la administración (FE-09).
  *

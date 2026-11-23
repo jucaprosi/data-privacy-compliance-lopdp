@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Renombrar el rol encargado a coordinador (datos, check constraint y triggers).
 
 Revision ID: 20261019_rol_coordinador

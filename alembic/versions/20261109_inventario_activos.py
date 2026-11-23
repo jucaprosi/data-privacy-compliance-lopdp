@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """ORG-17: inventario de activos y sistemas, soportes y personas mínimas, por organización. ¤rbac-tenant ¤inventario"""
 from alembic import op

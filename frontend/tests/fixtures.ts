@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Fixtures reutilizables para tests de LOPDP 360.
  * Patrón importado de PDA: fixtures reales en lugar de mocks.

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤diagnostico-estados
 """Lectura de las tareas cerradas con evidencia validada (DIAG-12), para los estados del diagnóstico.
 

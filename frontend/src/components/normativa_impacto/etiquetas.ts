@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /** Textos de la pestaña «Impacto» (UX/UI NORM-03). Siempre con texto; el color solo refuerza. */
 import type { EstadoImpacto, TipoElemento } from "./cliente";
 

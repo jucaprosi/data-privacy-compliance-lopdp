@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo ¤seguridad ¤arbitro
 """DEMO-05d: purga de la demo frente a los triggers de inmutabilidad de biblioteca y consultas al DPO.
 

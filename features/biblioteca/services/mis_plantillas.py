@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant
 # ¤¤developer-architect
 """«Mi plantilla» (BIB-103): copia versionada de una plantilla SMARTCIDI para la organización de la sesión.

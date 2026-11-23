@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """FIRMA-02 · Matriz de permisos: aceptación simple con acuse.
 
 Formato de FILAS: (id_accion, metodo, ruta_con_prefijo_api_v1, conjunto_roles_permitidos).

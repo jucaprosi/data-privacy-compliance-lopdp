@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 """Protocolo de copia desde la plantilla «Cooperativa Demo» (DEMO-03a…03f, FLUJOS §1.1).
 

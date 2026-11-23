@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /** GCP-08 · Salud del contenedor del frontend: responde sin llamar al backend. */
 export const dynamic = "force-dynamic";
 

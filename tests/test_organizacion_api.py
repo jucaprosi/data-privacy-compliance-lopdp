@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Tests de integracion RBAC: administracion de la organizacion, SoD y alcance por area.
 
 Skip automatico si `redis` no esta disponible en el interprete actual.

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤diagnostico ¤dpo-independencia ¤arbitro
 """Filas de la matriz de permisos de DIAG-07 (objeciones del DPO a las respuestas del diagnóstico).
 

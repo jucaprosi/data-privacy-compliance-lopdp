@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Pruebas unitarias y de integración para crear_organizacion_dev.py (DEV-01).
 
 Valida:

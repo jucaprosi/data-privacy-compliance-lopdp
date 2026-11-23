@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Inscripción del delegado ante la SPDP: registro por organización con historial solo de alta. ¤dpo-informe-anual
 
 El tenant y quien registra llegan del contexto de la sesión (lo resuelve el router), nunca del

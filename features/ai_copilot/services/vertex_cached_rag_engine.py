@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤copiloto-ia ¤gemini-vertex ¤vertex-cache
 """Copiloto normativo sobre Gemini en Vertex AI con filtro DLP pre-vuelo y citación cerrada (VTX-01).
 

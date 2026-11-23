@@ -1,4 +1,5 @@
-﻿// ¤boveda-cloud ¤evidencias ¤adpa
+﻿// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+// ¤boveda-cloud ¤evidencias ¤adpa
 import React, { useState } from "react";
 import type { Pantalla } from "./base";
 

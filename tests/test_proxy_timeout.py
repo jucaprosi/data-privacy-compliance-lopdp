@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap
 # ¤arbitro
 """RM-18: el proxy del frontend espera a la generación síncrona de la hoja de ruta.

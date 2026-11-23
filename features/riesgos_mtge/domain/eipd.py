@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤riesgos-eipd ¤mtge-granescala
 # ¤¤backend-developer
 """MTGE-03: modelos de la EIPD guiada de ocho pasos.

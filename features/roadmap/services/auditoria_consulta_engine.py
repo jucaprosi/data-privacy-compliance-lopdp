@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤seguridad
 """Motor de consulta de auditoría para la Hoja de Ruta (sala ADPA: Hoja de Ruta)."""
 from typing import Any, Dict, List, Optional

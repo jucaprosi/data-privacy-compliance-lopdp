@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DLP-01: descubrimiento de datos en una muestra. La API se simula: del servidor solo llegan tipos y
  * conteos. Se comprueba que, tras el resultado, ningún nodo del DOM conserva un valor de la muestra y que

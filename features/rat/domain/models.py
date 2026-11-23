@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """Modelos de dominio del Módulo 2: RAT Maestro (Registro de Actividades de Tratamiento)."""
 from dataclasses import dataclass, field

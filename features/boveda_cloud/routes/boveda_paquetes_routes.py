@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤boveda-cloud ¤seguridad-tenant
 """Rutas /boveda-cloud/suscripcion. La consulta es del tenant del contexto; el alta, del operador de plataforma.
 

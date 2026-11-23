@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """RBAC: SoD del DPO, cuatro ojos en evidencia y auditoría de revocación.
 
 Revision ID: 20261008_rbac_sod

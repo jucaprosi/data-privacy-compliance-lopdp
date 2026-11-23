@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 """La suite toma su configuración del proceso, acepta solo bases locales y nunca imprime la URL ni secretos."""
 import os

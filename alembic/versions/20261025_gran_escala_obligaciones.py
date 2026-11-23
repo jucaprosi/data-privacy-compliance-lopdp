@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """MTGE-02: Tablas de obligaciones de tratamiento a gran escala.
 
 Res. SPDP-SPD-2026-0005-R:

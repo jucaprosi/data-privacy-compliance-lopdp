@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤dpo-independencia ¤rbac-tenant ¤arbitro
 """DIAG-03: el DPO responde y sella el diagnóstico; el resultado sellado no se edita ni se borra.
 

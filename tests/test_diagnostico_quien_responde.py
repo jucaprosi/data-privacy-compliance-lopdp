@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤dpo-independencia ¤rbac-tenant ¤arbitro
 """DIAG-07: quién responde, quién objeta y cuándo se puede sellar.
 

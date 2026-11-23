@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """DIAG-03: resultados sellados del diagnóstico, por organización, sin edición ni borrado. ¤diagnostico ¤rbac-tenant
 

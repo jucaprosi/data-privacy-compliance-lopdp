@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """DER-03 · derechos_arco_solicitudes: el tenant pasa a texto, como tenants.id (fase de expansión).
 
 Revision ID: 20261108_derechos_tenant_texto

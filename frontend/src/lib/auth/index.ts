@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 export { cabecerasDeRol, cabecerasDeTenant, type CabecerasIdentidad } from "./cabeceras";
 export { alExpirarLaSesion, fetchAutenticado, RUTA_LOGIN } from "./fetchAutenticado";
 export { cargarGoogle, olvidarCuentaDeGoogle } from "./google";

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Personas clave del alta (paso 6 de ORG-16): invitaciones de personas, por organización. ¤rbac-tenant
 
 Guarda solo nombre, cargo, área, correo y rol propuesto (D-6): ningún campo de identificación. La tabla

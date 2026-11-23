@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Consultas de la organización al DPO (DPO-03, governance/especificaciones/DPO-03.md §5 y los criterios de
  * prueba cerrados por UX/UI en governance/tareas/DPO-03.md). API simulada.

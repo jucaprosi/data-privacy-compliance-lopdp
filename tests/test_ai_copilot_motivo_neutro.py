@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """IA-02: el estado del asistente no revela proveedor, modelo ni variables de entorno."""
 import asyncio
 import json

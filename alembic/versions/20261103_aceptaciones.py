@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """FIRMA-02: tabla aceptaciones con RLS por organización y función SECURITY DEFINER para ruta pública. ¤firma-electronica ¤rbac-tenant
 

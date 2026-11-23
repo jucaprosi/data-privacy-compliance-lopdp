@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """SEC-10: lopdp_app sin DELETE sobre las tablas globales users y tenants.
 
 La aplicación nunca borra usuarios ni organizaciones (la baja de un usuario es lógica, con

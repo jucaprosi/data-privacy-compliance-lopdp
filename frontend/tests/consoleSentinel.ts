@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Monitoreo de consola y errores de página (inspirado en ERP).
  * Útil para detectar regresiones silenciosas que solo aparecen en consola.

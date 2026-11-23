@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 """Un PR de tarea no toca archivos ajenos; en las tareas estrictas eso lo rechaza el CI."""
 import importlib.util
@@ -300,3 +301,79 @@ def test_ci26_m3_rutas_con_espacio_y_salto_de_linea(tmp_path, monkeypatch):
     # Mutación m3: si partiera por '\n' en lugar de '\0', la lista se rompe
     rutas_partidas_por_nl = [r for r in salida_bytes.decode("utf-8").split("\n") if r]
     assert rutas_partidas_por_nl != rutas
+
+
+# LEG-06 R5 y R6 · alcance transversal del aviso de autor.
+_AV = vap._cargar_aviso()
+_PY = _AV.linea_de_aviso(".py")
+
+
+def _leg06(monkeypatch, archivos, base, cabeza, en_curso=(), tarea_id="LEG-06", transversal="aviso-de-autor"):
+    tarea = type("Tarea", (), {"id": tarea_id, "propiedad": ("LICENSE",), "estado": "en_curso",
+                               "transversal": transversal})
+    falso = type("Indice", (), {
+        "cargar_tareas": staticmethod(lambda: ([tarea], [])),
+        "rutas_se_solapan": staticmethod(indice.rutas_se_solapan),
+        "leer_cabecera": staticmethod(indice.leer_cabecera),
+    })
+    monkeypatch.setattr(vap, "_cargar_indice", lambda: falso)
+    monkeypatch.setattr(vap, "_archivos_del_diff", lambda b, c: archivos)
+    monkeypatch.setattr(vap, "_base_del_diff", lambda b, c: "mb")
+    monkeypatch.setattr(vap, "_fichas_en_curso_en_base", lambda b, i: list(en_curso))
+    monkeypatch.setattr(vap, "_textos_en", lambda rev, rutas: {r: (base if rev == "mb" else cabeza).get(r) for r in rutas})
+    return vap.main(["--rama", f"tarea/juan-carlos/{tarea_id.lower()}", "--base", "b", "--cabeza", "c"])
+
+
+def test_leg06_transversal(monkeypatch, capsys):
+    base = "# -*- coding: utf-8 -*-\nimport os\nx = 1\n"
+    bien = f"# -*- coding: utf-8 -*-\n{_PY}\nimport os\nx = 1\n"
+    otra_mas = f"# -*- coding: utf-8 -*-\n{_PY}\nimport os\nx = 2\n"
+    assert vap.condiciones_transversales("a.py", base, bien) == []
+    # m4: con una línea más cambiada solo la condición (b) la detecta; quitarla daría verde.
+    assert vap.condiciones_transversales("a.py", base, otra_mas) == ["(b) borra o modifica otras líneas"]
+    assert vap.condiciones_transversales("a.py", base, base + _PY + "\n")[0].startswith("(c)")
+    assert vap.condiciones_transversales("a.py", base, bien + "y = 2\n")[0].startswith("(a)")
+    assert vap.condiciones_transversales("a.py", base, f"# -*- coding: utf-8 -*-\n# otro aviso\nimport os\nx = 1\n")
+    assert vap.condiciones_transversales("a.py", None, bien)  # un alta fuera de la propiedad nunca cabe
+    assert vap.condiciones_transversales("a.json", "{}\n", "{}\n")
+    # El BOM no es una línea y se conserva; el final \r\n también.
+    assert vap.condiciones_transversales("b.tsx", "﻿export {}\r\n",
+                                         f"﻿{_AV.linea_de_aviso('.tsx')}\r\nexport {{}}\r\n") == []
+    assert vap.condiciones_transversales("b.tsx", "﻿export {}\n", f"{_AV.linea_de_aviso('.tsx')}\nexport {{}}\n")
+
+    assert _leg06(monkeypatch, ["LICENSE", "a.py"], {"a.py": base}, {"a.py": bien}) == 0
+    assert "solo añade el aviso en 1 archivo" in capsys.readouterr().out
+    assert _leg06(monkeypatch, ["LICENSE", "a.py"], {"a.py": base}, {"a.py": otra_mas}) == 1
+    salida = capsys.readouterr().out
+    assert "ALCANCE NO VÁLIDO" in salida and "a.py: (b)" in salida
+
+
+def test_leg06_otra_ficha_no_puede_declarar_transversal(monkeypatch, capsys):
+    base, bien = "x = 1\n", f"{_PY}\nx = 1\n"
+    assert _leg06(monkeypatch, ["a.py"], {"a.py": base}, {"a.py": bien}, tarea_id="FE-29") == 1
+    assert "solo puede LEG-06" in capsys.readouterr().out
+
+
+def test_leg06_sin_fichas_en_curso(monkeypatch, capsys):
+    base, bien = "x = 1\n", f"{_PY}\nx = 1\n"
+    # m5: con otra ficha en «en_curso» en la base da rojo; sin R6 daría verde.
+    assert _leg06(monkeypatch, ["a.py"], {"a.py": base}, {"a.py": bien}, en_curso=["FE-29"]) == 1
+    assert "FE-29" in capsys.readouterr().out
+    assert _leg06(monkeypatch, ["a.py"], {"a.py": base}, {"a.py": bien}, en_curso=["LEG-06"]) == 0
+
+
+def test_leg06_lee_la_base_con_git(tmp_path, monkeypatch):
+    env = dict(os.environ, GIT_AUTHOR_NAME="T", GIT_AUTHOR_EMAIL="t@e.com",
+               GIT_COMMITTER_NAME="T", GIT_COMMITTER_EMAIL="t@e.com")
+    tareas = tmp_path / "governance" / "tareas"
+    tareas.mkdir(parents=True)
+    (tareas / "README.md").write_text('estado = "en_curso"\n', encoding="utf-8")
+    for id_, estado in (("FE-29", "en_curso"), ("CI-36", "hecha")):
+        (tareas / f"{id_}.md").write_text(f'+++\nid = "{id_}"\nestado = "{estado}"\n+++\n', encoding="utf-8")
+    (tmp_path / "a.py").write_text("x = 1\n", encoding="utf-8")
+    subprocess.run(["git", "init", "-q", "-b", "main"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "add", "."], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-qm", "base"], cwd=tmp_path, env=env, check=True)
+    monkeypatch.setattr(vap, "RAIZ", tmp_path)
+    assert vap._fichas_en_curso_en_base("main", indice) == ["FE-29"]
+    assert vap._textos_en("main", ["a.py", "no.py"]) == {"a.py": "x = 1\n", "no.py": None}

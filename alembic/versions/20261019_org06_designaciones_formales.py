@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Tabla designaciones_formales con RLS, sin DELETE, y GRANT a lopdp_app.
 
 Revision ID: 20261019_org06_designaciones

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤incidentes ¤rbac-tenant ¤seguridad
 """API de la bitácora de incidentes de seguridad (INC-01).
 

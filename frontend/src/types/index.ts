@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Tipos de datos e interfaces para EVYDENTIA Plataforma LOPDP 360.
  * Abarca las 7 salas ADPA, scoring multidimensional, contexto multi-tenant y copiloto.

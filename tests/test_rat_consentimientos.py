@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Árbitro de RAT-07 contra PostgreSQL. ¤rat ¤evidencias ¤arbitro
 
 Contrato: governance/especificaciones/RAT-07.md §5.

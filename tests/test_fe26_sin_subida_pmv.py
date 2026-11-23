@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤evidencias ¤arbitro
 """FE-26: el PMV no sube archivos de evidencia a la hoja de ruta; el servidor rechaza esas subidas.
 

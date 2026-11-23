@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """DIAG-12: estados del diagnóstico, cortes sellados que parten del diagnóstico real. ¤diagnostico ¤rbac-tenant
 

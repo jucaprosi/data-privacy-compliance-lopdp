@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤ci-cd
 # ¤arbitro
 """Corre pytest con plugin_contar_consultas contra PostgreSQL local y escribe la tabla por archivo.

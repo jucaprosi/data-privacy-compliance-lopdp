@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤adpa ¤rbac-tenant ¤arbitro
 import { expect, test, type Page } from "@playwright/test";
 import { abrirAppLimpia, barraDeMenus, configurarProyecto } from "../utiles";

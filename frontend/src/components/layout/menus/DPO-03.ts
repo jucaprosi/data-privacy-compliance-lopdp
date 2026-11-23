@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 // ¤dpo-cockpit
 /** Submenús de DPO-03: Operación › Consultas al DPO y DPO › Consultas atendidas. Solo DPO-03 edita este archivo. */

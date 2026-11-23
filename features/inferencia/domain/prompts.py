@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex ¤arbitro
 """Prompts versionados (IA-10, invariante 64): cada texto vive bajo (id, versión) y no se edita en su lugar.
 

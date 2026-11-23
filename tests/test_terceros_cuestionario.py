@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Árbitro TER-02 contra PostgreSQL 16 local (TEST_DATABASE_URL).
 Contrato: governance/especificaciones/TER-02.md
 """

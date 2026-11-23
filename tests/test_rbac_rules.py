@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Reglas RBAC puras: SoD del DPO, cuatro ojos y contrato RoleGrant. Sin BD."""
 import pytest
 from pydantic import ValidationError

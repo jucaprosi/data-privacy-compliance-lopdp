@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Compuerta pública de la sala ADPA: Riesgos y MTGE Gran Escala."""
 from features.riesgos_mtge.domain.models import (
     AlcanceGeografico,

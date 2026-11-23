@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """BOV-01: catálogo de paquetes de Bóveda Cloud y suscripción por organización. ¤boveda-cloud ¤seguridad-tenant
 

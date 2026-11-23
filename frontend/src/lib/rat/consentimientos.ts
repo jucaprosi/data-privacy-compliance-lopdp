@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente HTTP de colectivos de titulares y consentimientos agregados (RAT-07).
  * Contrato: governance/especificaciones/RAT-07.md §2. Nunca datos de un titular individual.

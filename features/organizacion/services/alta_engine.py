@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Alta de la organización en siete pasos (sala ADPA: Organización). ¤rbac-tenant ¤alta-organizacion
 
 ORG-16. Cada paso se guarda en el servidor por la compuerta de su sala; el estado del asistente

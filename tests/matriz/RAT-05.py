@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤rat ¤arbitro
 """Filas de la matriz de permisos de RAT-05 (validaciones y versiones de una ficha).
 

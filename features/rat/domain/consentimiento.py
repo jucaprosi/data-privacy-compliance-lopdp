@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rat ¤evidencias
 """Modelos de colectivos y consentimientos agregados (RAT-07). Nunca datos de un titular individual.
 

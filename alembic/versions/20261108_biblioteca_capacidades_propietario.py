@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """BIB-117: el dueño de la base concede y revoca capacidades de la Biblioteca pese a la RLS forzada; nadie se las concede a sí mismo. ¤seguridad
 
 Revision ID: 20261108_bib_cap_propietario

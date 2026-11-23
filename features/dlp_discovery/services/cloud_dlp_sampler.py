@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤dlp-muestreo ¤seguridad-tenant
 """Motor de muestreo DLP-01: validador Módulo 10 local + puerto hacia Sensitive Data Protection (Cloud DLP).
 

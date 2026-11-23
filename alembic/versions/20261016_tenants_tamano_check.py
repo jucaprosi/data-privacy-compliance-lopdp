@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """check constraint sobre tenants.tamano y eliminacion de default.
 
 Revision ID: 20261016_tenants_tamano_check

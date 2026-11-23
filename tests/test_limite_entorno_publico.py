@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad
 """SEC-21 · Límite por IP en la ruta pública `GET /api/v1/entorno` y saltos de proxy.
 

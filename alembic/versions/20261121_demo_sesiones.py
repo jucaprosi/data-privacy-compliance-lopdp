@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """Tabla demo_sesiones y tenants.es_demo (DEMO-00, PRD EVYDENTIA §5.6.4, invariantes 60 a 63). ¤demo
 

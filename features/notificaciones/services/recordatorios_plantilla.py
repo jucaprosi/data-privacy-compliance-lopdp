@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤roadmap
 """Plantilla del correo de recordatorios de vencimiento (RM-23): un correo con todas las tareas del usuario."""

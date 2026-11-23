@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 """El arnés rápido solo conoce una base local; sin --base corre todas las pruebas y con --base declara su alcance."""
 import importlib.util

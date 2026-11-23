@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Usuarios y membresía por tenant (sala ADPA: Organización).
 
 Una asignación está activa cuando valid_to es nulo o futuro.

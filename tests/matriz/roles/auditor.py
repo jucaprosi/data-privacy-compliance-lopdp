@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤arbitro
 """Matriz del rol auditor (ORG-22): para cada id_accion, si el auditor puede.
 

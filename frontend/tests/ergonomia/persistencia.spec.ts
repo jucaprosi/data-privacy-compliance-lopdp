@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import { expect, test, type Page } from "@playwright/test";
 
 async function abrirLimpio(page: Page): Promise<void> {

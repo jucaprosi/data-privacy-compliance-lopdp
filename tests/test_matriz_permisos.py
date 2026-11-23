@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant
 # ¤arbitro
 """Matriz de permisos (RBAC) como prueba viva (PRD Módulo 5, §5.2).

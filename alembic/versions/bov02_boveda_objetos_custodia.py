@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """BOV-02: registro de custodia de objetos de la bóveda dual. ¤boveda-cloud ¤conservacion
 

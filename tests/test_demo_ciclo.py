@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo ¤seguridad-tenant
 """DEMO-02: ciclo de sesión demo (entrar, tope, reemplazo, terminar, vencimiento y orquestador de la copia).
 

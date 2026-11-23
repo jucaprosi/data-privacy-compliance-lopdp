@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant
 # ¤seguridad
 """Router REST para gestión de excepciones de separación de funciones (SoD) (ORG-02).

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Arnés de interfaz de FE-08: el tamaño de la ficha es el de la organización en el servidor.
  *

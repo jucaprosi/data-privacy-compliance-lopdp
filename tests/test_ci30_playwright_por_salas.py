@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤ci-cd ¤arbitro
 """CI-30 · Autodescubrimiento en playwright.config.ts y arnés de Playwright por salas en CI.
 

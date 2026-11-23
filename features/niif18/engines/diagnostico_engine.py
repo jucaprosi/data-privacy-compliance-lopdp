@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """
 Diagnóstico de la balanza de comprobación frente a la NIIF 18.
 [¤niif18-diagnostico]

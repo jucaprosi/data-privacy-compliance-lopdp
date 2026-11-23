@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Trigger encargado/responsable_area según el tamaño de la organización.
 
 Revision ID: 20261017_encargado_resp_trigger

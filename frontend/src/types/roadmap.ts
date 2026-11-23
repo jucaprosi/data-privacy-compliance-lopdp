@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Tipos TypeScript para el módulo Hoja de Ruta Inteligente y Organización.
  * Derivados automáticamente desde governance/contratos/hoja_de_ruta.openapi.json.

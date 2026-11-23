@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * FE-22 · NIIF 18 no entra en los nueve menús: conserva su navegación propia (R5).
  */

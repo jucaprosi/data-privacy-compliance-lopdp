@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * GCP-08 · Proxy de /api/v1 hacia el backend, con BACKEND_URL leída en cada petición.
  *

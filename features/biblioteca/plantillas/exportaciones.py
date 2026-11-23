@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤¤developer-architect
 """PLA-01 y RAT-01 frente a sus módulos canónicos (BIB-208): reglas puras, sin BD.

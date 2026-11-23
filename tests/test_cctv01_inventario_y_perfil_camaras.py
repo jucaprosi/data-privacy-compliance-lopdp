@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤videovigilancia-cctv ¤boveda-cloud ¤rat ¤seguridad-tenant ¤arbitro
 """CCTV-01: perfil técnico LOPDP de las cámaras (H.265, eventos, sin audio, máscara) y retención de 15 días.
 

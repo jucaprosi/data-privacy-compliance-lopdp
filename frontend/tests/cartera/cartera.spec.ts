@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * ORG-15: Inicio › Tablero de cartera. Una fila por organización de la persona, con las cuatro dimensiones
  * como semáforo, brechas, hallazgos abiertos y tareas vencidas; sin cifra única. Google y la API se simulan.

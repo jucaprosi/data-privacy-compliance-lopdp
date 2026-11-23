@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Vincula la cuenta de Google al usuario: users.google_sub (único, opcional).
 
 Revision ID: 20261017_users_google_sub

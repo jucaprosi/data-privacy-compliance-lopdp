@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤dpo-independencia
 """Resultado sellado del diagnóstico (DIAG-03): lo responde y lo sella el DPO.
 

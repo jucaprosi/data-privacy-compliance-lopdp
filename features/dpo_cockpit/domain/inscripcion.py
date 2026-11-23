@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Dominio de la inscripción del delegado ante la SPDP (DPO-02). ¤dpo-informe-anual"""
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone

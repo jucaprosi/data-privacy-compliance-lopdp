@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arquitectura ¤arbitro
 """RET-05 · Entrada única de la API (`main:app`) y salud de routers en Google Cloud Run."""
 from __future__ import annotations

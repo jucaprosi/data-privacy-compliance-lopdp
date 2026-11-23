@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """DLP de la sala: enmascarado PARCIAL de datos personales de Ecuador antes de enviar texto a un modelo."""
 from __future__ import annotations
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import os
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool

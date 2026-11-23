@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo ¤seguridad
 """`POST /api/v1/demo/persona` (DEMO-01, FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md §1.2 y §1.7).
 

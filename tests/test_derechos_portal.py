@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤developer-architect ¤derechos ¤seguridad ¤arbitro
 """Pruebas del portal público de solicitudes de titulares por organización (DER-02).
 

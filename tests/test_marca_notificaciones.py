@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """MARCA-03 · Nombre único EVYDENTIA en la plantilla de correo de notificaciones.
 
 `¤interfaz`

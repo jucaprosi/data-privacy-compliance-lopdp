@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤controles-periodicos ¤hallazgos ¤rbac-tenant ¤arbitro
 """CAPA-02: controles periódicos; el vencido produce un hallazgo y verificarlo lo cierra.
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤firma-electronica
 """Motor de aceptación simple con acuse (FIRMA-02).
 

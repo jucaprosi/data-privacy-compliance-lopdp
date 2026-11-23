@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤adpa
 """Suite de pruebas deterministas para la generación en línea (RM-13, Decisión D-1).
 

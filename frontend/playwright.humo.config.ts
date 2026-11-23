@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Pruebas de humo de extremo a extremo: compuerta de fallo rápido antes de Pytest y Playwright.
  * Metodología: governance/operaciones/PRUEBAS_DE_HUMO.md.

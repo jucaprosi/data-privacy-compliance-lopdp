@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Arnés de FE-21: quien pertenece a varias organizaciones elige con cuál trabajar y puede cambiar.
  *

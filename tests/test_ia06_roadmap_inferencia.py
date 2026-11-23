@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤arbitro
 """IA-06: Hoja de ruta generada por la compuerta de inferencia Vertex AI (gemini-2.5-pro), con cifras de código y traza."""
 from __future__ import annotations

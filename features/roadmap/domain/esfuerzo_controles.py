@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤arbitro
 """Prioridad y horas por nivel de control, y el plan cifrado (RM-26).
 

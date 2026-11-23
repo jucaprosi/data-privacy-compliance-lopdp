@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DIAG-07 · §5: el botón de sellar depende de quién sella, de punta a punta en el lienzo del diagnóstico.
  * ¤diagnostico ¤dpo-independencia

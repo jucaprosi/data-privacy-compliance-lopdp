@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """ADPA-08 · restaura terceros_encargados y transferencias_terceros con RLS forzada. ¤adpa ¤transferencias ¤seguridad-tenant
 

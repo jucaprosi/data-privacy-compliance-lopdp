@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DER-01 · Cliente de la verificación de identidad y de la respuesta a una solicitud de titular.
  *

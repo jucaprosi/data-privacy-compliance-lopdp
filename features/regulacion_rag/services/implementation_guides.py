@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤planes-implementacion-privacidad
 """Catálogo de implementación: propuestas operativas, separadas del fundamento legal."""
 from features.regulacion_rag.domain.corpus import fundamento

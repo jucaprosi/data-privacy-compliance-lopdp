@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """CAPA-04: Auditoría con grilla de verificación por dominio y acta por área. ¤auditoria-capa ¤hallazgos
 

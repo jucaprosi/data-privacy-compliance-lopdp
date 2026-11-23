@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤asistente ¤frontend-ide
 // Compuerta del patrón de asistente (FE-23): los flujos guiados importan solo desde aquí.
 export { default as Asistente } from "./Asistente";

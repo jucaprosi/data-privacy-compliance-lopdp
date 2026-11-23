@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 # ¤arbitro
 """DEP-01: Cloud Storage y Vertex AI (google-genai) en requirements.txt con versión exacta."""

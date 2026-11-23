@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤dlp-muestreo
 # === DLP-01 ===
 """Errores de la sala. Ningún mensaje lleva valores de la muestra: solo códigos y números de control."""

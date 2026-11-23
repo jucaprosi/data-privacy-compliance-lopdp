@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 # ¤¤qa-engineer
 """Árbitro ADPA-08: terceros_encargados y transferencias_terceros existen con RLS forzada. ¤adpa ¤transferencias ¤seguridad-tenant

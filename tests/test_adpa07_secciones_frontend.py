@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤frontend-ide
 """ADPA-07: secciones `INICIO <ID>` / `FIN <ID>` sembradas en registros y componentes compartidos del frontend.
 

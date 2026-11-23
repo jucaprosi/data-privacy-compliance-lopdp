@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 /**
  * Pantalla de ORG-15 que monta el panel: el tablero de cartera. Solo ORG-15 edita este archivo.

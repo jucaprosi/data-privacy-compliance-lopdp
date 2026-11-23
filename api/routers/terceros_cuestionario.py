@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤developer-architect ¤seguridad ¤terceros
 """Router privado de cuestionarios de garantías para encargados (TER-02).
 

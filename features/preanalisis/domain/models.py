@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Contrato de dominio de la sala Pre-análisis (pre-llenado asistido, la IA propone y el humano decide)."""
 from __future__ import annotations
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤evidencias ¤arbitro
 """DIAG-13: en el PMV el sello conserva la evidencia declarada por el DPO, marcada como no verificada.
 

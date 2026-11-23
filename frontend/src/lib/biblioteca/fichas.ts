@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤adpa ¤frontend-ide
 // ¤¤frontend-architect
 /** Cliente de la ficha de plantilla (BIB-103) y de «Usar en esta organización» (contrato de BIB-107). */

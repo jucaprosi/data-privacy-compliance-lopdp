@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-06 · Cloud CDN solo para activos estáticos y caché de lectura por tenant (INV_EDGE_CACHE_PUBLIC_STATIC_ONLY).
 
 `¤cloud-run-perf` `¤seguridad-tenant` `¤arbitro`

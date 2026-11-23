@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """EVI-02: vigencia y visibilidad de los documentos de evidencia. ¤evidencias ¤evidencias-vigencia ¤rbac-tenant
 

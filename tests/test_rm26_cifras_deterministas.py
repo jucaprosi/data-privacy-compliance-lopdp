@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤arbitro
 """RM-26: las cifras de la Hoja de Ruta las calcula código determinista. Sin base de datos.
 

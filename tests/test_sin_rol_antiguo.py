@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad
 # ¤arbitro
 """Árbitro permanente: el rol antiguo «encargado» no vuelve (ORG-08 / QA-13).

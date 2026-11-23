@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Pruebas de GOCA-01: Contrato del Agente Edge en Go para CCTV."""
 from __future__ import annotations
 

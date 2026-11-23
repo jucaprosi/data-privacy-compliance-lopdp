@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Compuerta pública de la sala ADPA: Organización (usuarios, áreas, roles, SoD y tamaños).
 
 Única vía por la que otras salas y la API acceden a la organización.

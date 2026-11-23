@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 

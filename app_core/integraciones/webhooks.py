@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤developer-architect
 # ¤api-integraciones ¤seguridad ¤seguridad-tenant
 """Webhooks salientes firmados HMAC-SHA256 con cifrado Fernet y techo del paquete (API-02b).

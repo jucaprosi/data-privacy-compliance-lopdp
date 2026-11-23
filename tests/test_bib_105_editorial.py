@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤¤developer-architect
 """Árbitro BIB-105: reglas puras y persistencia real contra PostgreSQL 16 local o servicio PostgreSQL 16 del CI.

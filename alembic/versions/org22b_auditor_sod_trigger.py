@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant
 """ORG-22: fn_utr_dpo_sod hace exclusivos a 'dpo' y 'auditor' (sin trigger nuevo).
 

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad ¤arbitro
 """Árbitro SEC-14: el frontend no publica mapas de fuente ni secretos en variables públicas.
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Motor del copiloto de mitigación: genera el plan solo por la compuerta de inferencia (IA-03), sin clave ni plan simulado."""
 import logging
 

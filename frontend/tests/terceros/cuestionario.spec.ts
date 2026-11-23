@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import { test, expect } from "@playwright/test";
 
 test.describe("TER-02: Portal externo y cuestionario de garantías", () => {

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Cálculo del Modelo Técnico de Gran Escala (MTGE), Res. SPDP-SPD-2026-0005-R.
 
 Un tratamiento es de gran escala si cae en un supuesto del art. 14 (sin necesidad de calcular) o

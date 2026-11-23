@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Audit trail y certificación notarial de screenshots (inspirado en ERP TRP).
  * Registra cada click con XPath, coordenadas y atributos para trazabilidad.

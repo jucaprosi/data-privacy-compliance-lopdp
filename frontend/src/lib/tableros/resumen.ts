@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Resumen del tablero de la organización (FE-24) a partir del último resultado sellado del
  * diagnóstico (DIAG-03). Doctrina 4 e INV_LOPDP_MULTIDIMENSIONAL_METRICS: cuatro dimensiones

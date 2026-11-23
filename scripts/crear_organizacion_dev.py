@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Script para crear organización de demostración y usuarios de desarrollo (DEV-01).
 
 Permite probar en físico la plataforma rol por rol en modo desarrollo (`AUTH_MODE=headers`).

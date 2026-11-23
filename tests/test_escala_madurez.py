@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico-scoring
 """La escala de madurez tiene un solo contrato: el árbitro y el motor del servidor lo cumplen."""
 import copy

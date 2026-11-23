@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 # ¤seguridad
 """DEMO-08 · Gancho de identidad demo en `usuario_verificado()`.

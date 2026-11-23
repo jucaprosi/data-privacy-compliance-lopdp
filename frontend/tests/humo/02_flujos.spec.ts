@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Humo 1, 2 y 4 con navegador: entrar, escribir una ficha del RAT que sobreviva a recargar y leer un módulo
  * con datos del servidor. El aislamiento de lo escrito se comprueba con la otra organización.

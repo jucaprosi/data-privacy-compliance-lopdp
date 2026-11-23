@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤arbitro
 """ORG-22: `dpo` y `auditor` son exclusivos (INV_LOPDP_AUDITOR_SOLE_ROLE, PRD EVYDENTIA §3; razón: INV_LOPDP_FOUR_EYES_CLOSURE; decisión del CTO, 2026-11-12).
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤hallazgos ¤rbac-tenant
 """Corrida diaria de recordatorios de tareas y cierre de hallazgos de una organización (RM-23).
 

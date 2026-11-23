@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤riesgos-eipd ¤arbitro
 """Filas de la matriz de permisos de MTGE-03 (EIPD guiada de ocho pasos)."""
 

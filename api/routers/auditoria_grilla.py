@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 # ¤rbac-tenant ¤auditoria-capa ¤hallazgos
 """Rutas de API para la auditoría con grilla de verificación por dominio y acta por área (CAPA-04)."""

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro ¤seguridad
 """RET-01 · Configuración solo por variables de entorno del proceso y guardia única de base local.
 

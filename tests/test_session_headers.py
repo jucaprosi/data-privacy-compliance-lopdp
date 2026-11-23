@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """get_session fija el contexto RLS desde las cabeceras X-Tenant-ID / X-User-ID."""
 import pytest
 from fastapi import Depends, FastAPI

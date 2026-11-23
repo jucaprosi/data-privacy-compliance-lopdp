@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤evidencias-vigencia
 """Vigencia y visibilidad de un documento de evidencia (EVI-02): reglas puras, sin base ni almacén."""
 from __future__ import annotations

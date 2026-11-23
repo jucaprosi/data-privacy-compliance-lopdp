@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Arbitro exogeno del motor de calculo del assessment SGPDP (escala SMARTCIDI, DIAG-08).
 
 Fija las reglas de la matriz de madurez frente a la hoja de calculo canonica

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   listarMisParticipaciones,

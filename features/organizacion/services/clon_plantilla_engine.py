@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo ¤adpa ¤seguridad-tenant
 """DEMO-03a: siembra de la plantilla y clonado de la sala `organizacion` (PRD EVYDENTIA §5.6.8).
 

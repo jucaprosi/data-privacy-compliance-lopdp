@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤boveda-cloud ¤videovigilancia-cctv ¤dpo-cockpit ¤conservacion
 """Rutas `/boveda-cloud/orquestador-10d`: centro de mando multidimensional (BOV-04).
 

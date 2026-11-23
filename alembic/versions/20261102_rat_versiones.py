@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """RAT-05: versiones inmutables de cada ficha y origen `rat` de los hallazgos. ¤rat ¤hallazgos ¤rbac-tenant
 

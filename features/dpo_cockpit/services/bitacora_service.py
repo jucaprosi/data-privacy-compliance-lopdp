@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Servicio de Bitácora Inviolable del DPO persistida en PostgreSQL (Art. 50 LOPDP)."""
 from datetime import datetime, timedelta, timezone
 import hashlib

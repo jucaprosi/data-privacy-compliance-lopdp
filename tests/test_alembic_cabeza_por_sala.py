@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro ¤adpa
 """CI-28: una rama de Alembic por sala (sustituye a test_alembic_una_cabeza.py).
 

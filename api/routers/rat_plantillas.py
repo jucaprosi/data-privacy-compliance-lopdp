@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Plantillas sectoriales del RAT (RAT-02).
 
 Mismos permisos que el RAT (RAT-01): consultan coordinador, implementador, DPO y administrador;

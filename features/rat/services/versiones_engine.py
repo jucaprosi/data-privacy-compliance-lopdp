@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rat ¤rbac-tenant
 """Versiones inmutables de cada ficha RAT (RAT-05, R3); la transacción pertenece al llamador."""
 from dataclasses import asdict

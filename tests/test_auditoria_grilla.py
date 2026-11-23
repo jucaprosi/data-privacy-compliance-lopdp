@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer ¤auditoria-capa ¤hallazgos ¤arbitro
 """Suite de pruebas y árbitro para CAPA-04: Auditoría con grilla de verificación por dominio y acta por área.
 

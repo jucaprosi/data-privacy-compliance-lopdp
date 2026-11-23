@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 """Errores RBAC y regla de cuatro ojos, neutrales respecto de cualquier sala (ADR 0001)."""
 from typing import Optional

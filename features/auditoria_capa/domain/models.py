@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Modelos de dominio del Módulo 3: Auditoría y Planes de Acción (CAPA)."""
 from dataclasses import dataclass, field
 from datetime import datetime, timezone

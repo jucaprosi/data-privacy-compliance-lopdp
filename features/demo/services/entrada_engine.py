@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 """Entrada del vendedor a su demo (DEMO-02, FLUJOS §1.1, invariantes 60 a 63).
 

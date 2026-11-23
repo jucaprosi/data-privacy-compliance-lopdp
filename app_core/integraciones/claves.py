@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 # ¤api-integraciones ¤seguridad ¤seguridad-tenant
 """Autenticación y ciclo de vida de claves de integración (API-02).

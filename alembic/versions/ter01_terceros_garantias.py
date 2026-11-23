@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """TER-01 · contrato, garantía y revisión de cada tercero en transferencias_terceros. ¤hallazgos ¤evidencias ¤transferencias
 

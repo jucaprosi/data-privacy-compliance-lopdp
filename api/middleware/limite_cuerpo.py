@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Middleware ASGI puro: corta con 413 cuerpos excesivos de /api/v1/preanalisis antes de que se procesen."""
 from __future__ import annotations
 

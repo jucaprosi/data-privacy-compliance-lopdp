@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Respuestas del diagnóstico guardadas por organización, con RLS (DIAG-01).
 
 Una fila por organización y pregunta del banco del diagnóstico (pregunta_id). Se guarda el nombre

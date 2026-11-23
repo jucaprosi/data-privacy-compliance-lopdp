@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias
 """EVI-04: custodia de documentos que genera el servidor (constancias, actas, informes) como evidencia.
 

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * API simulada del diagnóstico (DIAG-01 y DIAG-03), compartida por todas las pestañas del contexto.
  *

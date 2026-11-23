@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤ci-cd
 """Verificador de migraciones compatibles (expand/contract): una migración nueva no rompe la revisión en servicio.
 

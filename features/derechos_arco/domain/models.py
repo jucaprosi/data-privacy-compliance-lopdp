@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 from sqlalchemy import Column, String, DateTime, Enum, text
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime, timezone

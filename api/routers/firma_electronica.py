@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤firma-electronica ¤adpa ¤seguridad
 """API REST de la sala Firma Electrónica (FIRMA-04, BBAP paso 2).
 

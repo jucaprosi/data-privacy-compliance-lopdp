@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤controles-periodicos ¤evidencias-vigencia ¤hallazgos ¤rbac-tenant
 """Reapertura de controles periódicos por evidencia vencida (CAPA-03).
 

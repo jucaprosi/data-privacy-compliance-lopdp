@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """FIRMA-05 · Matriz de aceptación de FIRMA-03: persistencia de `firma_sessions` (10 casos, F03-01..F03-10).
 
 Se ejecuta por ruta (`pytest tests/matriz/FIRMA-03.py -v`) contra TEST_DATABASE_URL (PostgreSQL 16 local

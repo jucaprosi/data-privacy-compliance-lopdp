@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤rbac-tenant
 """Primera validación de la evidencia de una tarea por el Coordinador (RM-25a).
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤entorno-pruebas ¤cloud-run-perf
 """EP-04: cómputo, acceso y presupuesto del entorno de pruebas (PRD EVYDENTIA §5.5, invariantes 54, 55 y 56).
 

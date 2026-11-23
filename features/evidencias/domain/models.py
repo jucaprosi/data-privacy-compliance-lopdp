@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Modelos de dominio del Módulo de Evidencias (Bóveda de Evidencias)."""
 from __future__ import annotations
 

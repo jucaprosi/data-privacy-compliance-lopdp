@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Escenario de las pruebas de humo: dos organizaciones propias de la corrida y tokens firmados con la
  * clave temporal del arrancador (tests/humo/servidor_humo.py).

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤entorno-pruebas
 """Evidencias inventadas para el entorno de pruebas (EP-03): un PDF y un texto por organización.
 

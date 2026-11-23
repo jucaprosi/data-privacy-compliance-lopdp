@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente del Centro de Vigilancia Normativa (NORM-02). El corpus es global: lo leen los roles de una
  * organización y lo dispara y revisa solo el operador de la plataforma. El servidor autoriza cada llamada;

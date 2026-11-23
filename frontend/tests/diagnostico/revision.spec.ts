@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DIAG-07: Diagnóstico › Revisión del DPO. ¤diagnostico ¤dpo-independencia
  *

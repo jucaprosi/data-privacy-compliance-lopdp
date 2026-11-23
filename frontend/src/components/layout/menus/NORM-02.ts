@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 // ¤vigilancia-spdp
 /** Submenú de NORM-02: Conocimiento › Vigilancia normativa. Solo NORM-02 edita este archivo. */

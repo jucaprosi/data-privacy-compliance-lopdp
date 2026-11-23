@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """INC-02: asistente de vulneración en ocho secciones, en tablas que solo se agregan. ¤incidentes ¤hallazgos
 

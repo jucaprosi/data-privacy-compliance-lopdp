@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Crear tabla derechos_arco_solicitudes con RLS y GRANT a lopdp_app.
 
 Revision ID: 20261020_arco_solicitudes

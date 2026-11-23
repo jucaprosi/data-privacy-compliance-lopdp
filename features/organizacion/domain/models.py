@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Contratos tipados y errores para la administración de usuarios, áreas y roles por tenant."""
 from datetime import datetime
 from typing import Optional

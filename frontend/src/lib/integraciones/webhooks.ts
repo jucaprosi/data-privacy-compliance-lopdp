@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤api-integraciones ¤frontend-ide
 /**
  * Cliente HTTP para suscripciones de webhooks firmados (API-02b).

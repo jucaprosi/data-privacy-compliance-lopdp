@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad-tenant ¤arbitro
 """SEC-23b: el asistente pasa la organización autenticada al tope de inferencia.
 

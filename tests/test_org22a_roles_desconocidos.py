@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant
 """ORG-22a: el CHECK admite 'auditor' y las dos lecturas de roles toleran un valor que `Role` no conoce.
 

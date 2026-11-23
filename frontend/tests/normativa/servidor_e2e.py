@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤vigilancia-spdp ¤arbitro
 """Backend real para el Playwright de NORM-02: siembra datos en la base local y arranca la API con un lector de originales.
 

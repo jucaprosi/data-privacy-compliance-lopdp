@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 from features.diagnostico.services.reporte_service import exportar_pdf_diagnostico
 """Compuerta pública de la sala ADPA: Diagnóstico."""
 from typing import List

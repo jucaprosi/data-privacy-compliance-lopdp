@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Script generador de tipos TypeScript a partir de governance/contratos/hoja_de_ruta.openapi.json.
  * Ejecutable con Node.js sin dependencias externas.

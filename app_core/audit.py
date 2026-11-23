@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Registro inmutable de eventos que no son de una tarea.
 
 Maneja inserciones append-only sobre la tabla audit_events

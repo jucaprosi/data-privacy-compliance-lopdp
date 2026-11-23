@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 """Pruebas unitarias para el catálogo y manejador de excepciones de negocio (RM-00)."""
 import pytest

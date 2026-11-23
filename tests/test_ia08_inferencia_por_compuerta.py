@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex ¤adpa ¤arbitro
 """IA-08: toda inferencia Gemini en Vertex AI entra por una sola compuerta y un solo cliente SDK.
 

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Semáforos por dimensión de una fila de la cartera (ORG-15). ¤cartera ¤tablero-dimensiones
  *

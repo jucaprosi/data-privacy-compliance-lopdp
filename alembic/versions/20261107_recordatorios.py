@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """RM-23: recordatorios de vencimiento enviados, para no repetirlos. ¤roadmap ¤rbac-tenant
 

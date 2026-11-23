@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-11 · DATABASE_URL, JWT_SECRET y SESSION_SECRET salen de Secret Manager, nunca como valor en claro.
 
 `¤versionado-despliegue` `¤arbitro`. Sin `import yaml`: lector común de manifiestos.

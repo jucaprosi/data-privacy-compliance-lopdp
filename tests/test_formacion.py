@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer ¤formacion ¤arbitro
 """Suite de pruebas y árbitro para FOR-01: Módulo de Formación, exámenes y seguimiento de capacitación.
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Crear tabla sod_exceptions, trigger de verificacion de excepcion y migracion de datos.
 
 Revision ID: 20261020_sod_exceptions

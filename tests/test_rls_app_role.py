@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Aislamiento RLS real con el rol de aplicación lopdp_app (sin BYPASSRLS).
 
 Se conecta con el rol dueño de TEST_DATABASE_URL y hace SET LOCAL ROLE

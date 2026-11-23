@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import { cwd } from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import fs from "node:fs";

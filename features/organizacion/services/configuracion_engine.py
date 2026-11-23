@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Motor de configuración de la organización (sala ADPA: Organización).
 
 Gestiona la consulta y actualización de tamaño y sector del tenant,

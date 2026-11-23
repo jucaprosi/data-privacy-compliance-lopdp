@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex ¤seguridad-tenant ¤arbitro
 """IA-10: trazas_ia aislada por organización con RLS forzada, y escrita en la transacción del llamador."""
 import uuid

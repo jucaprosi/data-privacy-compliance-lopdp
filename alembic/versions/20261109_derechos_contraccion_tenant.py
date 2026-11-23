@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """DER-04 · derechos_arco_solicitudes: contracción de DER-03 (retira tenant_id uuid y el disparador).
 
 Revision ID: 20261109_der04_contraccion

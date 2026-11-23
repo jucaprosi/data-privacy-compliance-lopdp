@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /** Convierte la lista plana de áreas en un árbol ordenado, con su nivel de profundidad. */
 import type { AreaItem } from "../../../../types/roadmap";
 

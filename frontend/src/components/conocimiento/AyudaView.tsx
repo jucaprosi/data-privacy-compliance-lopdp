@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 
 /** Conocimiento › Ayuda (REG-02): cómo funciona el «?» de los formularios y consulta directa por control o artículo. */

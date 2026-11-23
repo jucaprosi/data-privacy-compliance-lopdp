@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant
 # ¤¤qa-engineer
 """Árbitro BIB-204: motor determinista de aplicabilidad de plantillas y recomendaciones explicables.

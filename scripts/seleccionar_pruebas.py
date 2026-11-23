@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤arbitro
 """Selección de pruebas por el alcance del cambio: salas o repositorio completo (ADPA §3, ADR 0001).
 

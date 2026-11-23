@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤entorno-pruebas ¤arbitro
 """EP-07: el verificador del entorno de pruebas, contra un servidor HTTP falso en localhost.
 

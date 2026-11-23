@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤videovigilancia-cctv ¤seguridad-tenant
 """Tabla `cctv_camaras_inventario` (RLS forzado por tenant_id)."""
 import uuid

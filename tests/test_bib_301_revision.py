@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant ¤arbitro
 """Contrato BIB-301; la persistencia real se acredita solo con el arnés PostgreSQL."""
 import importlib.util

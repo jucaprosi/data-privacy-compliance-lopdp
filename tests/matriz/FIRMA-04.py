@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """FIRMA-05 · Matriz de aceptación de FIRMA-04: router /api/v1/firma y webhook HMAC (11 casos, F04-01..F04-11).
 
 Se ejecuta por ruta (`pytest tests/matriz/FIRMA-04.py -v`) con HTTP real sobre la app y TEST_DATABASE_URL

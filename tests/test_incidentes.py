@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤incidentes ¤rbac-tenant ¤arbitro
 """INC-01: la bitácora de incidentes se guarda en la base por organización y no se edita ni borra.
 

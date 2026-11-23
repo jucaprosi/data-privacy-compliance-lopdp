@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Recorrido 3 de Integración (TEST-03):
  * Aislamiento: Una llamada sin X-Tenant-ID recibe 401 del backend real

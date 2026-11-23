@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤adpa ¤rbac-tenant
 /** BIB-208: cliente de los mapas de captura/salida de las ocho fichas iniciales. */
 import { httpBiblioteca } from "@/lib/biblioteca/http";

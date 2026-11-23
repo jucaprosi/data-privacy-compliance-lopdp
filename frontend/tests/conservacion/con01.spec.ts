@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * CON-01: conservación de datos. La API se simula. Se comprueban el semáforo con tres fechas, que registrar
  * exige marcar la casilla, que un segundo registro usa el texto fijo del código 409, que el DPO no ve botones,

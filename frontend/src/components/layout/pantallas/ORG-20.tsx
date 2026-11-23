@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 /**
  * Pantallas de ORG-20: la papelera y la exportación de los datos de la organización. Solo ORG-20 edita este

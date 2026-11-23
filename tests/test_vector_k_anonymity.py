@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 from features.diagnostico.services.ner_sanitizer import NERSanitizer
 
 def test_sanitizer_removes_pii():

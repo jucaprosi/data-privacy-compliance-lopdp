@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Respuestas del diagnóstico guardadas por organización (DIAG-01). ¤diagnostico-no-aplica
 
 DIAG-05: una respuesta «no aplica» exige una justificación de al menos 10 caracteres; se guarda con

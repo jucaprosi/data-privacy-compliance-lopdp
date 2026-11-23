@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤app_infrastructure_service
 """Compuerta pública de servicios de infraestructura y seguridad transversal."""
 from typing import Tuple

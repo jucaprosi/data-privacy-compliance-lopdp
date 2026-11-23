@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 /**
  * Diagnóstico › Estado actual (DIAG-12): los estados emitidos por el DPO a partir del diagnóstico real,

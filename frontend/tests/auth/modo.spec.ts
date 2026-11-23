@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Reglas puras de la identidad del frontend (FE-07): modo por defecto, tenant y lectura de la
  * credencial. No abren navegador: ejecutan el código real de lib/auth en Node.

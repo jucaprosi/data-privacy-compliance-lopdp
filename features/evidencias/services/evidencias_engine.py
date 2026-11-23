@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Lógica de verificación de integridad (SHA-256) y repositorio de evidencias."""
 from __future__ import annotations
 

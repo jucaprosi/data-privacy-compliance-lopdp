@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # GCP-04 · Balanceador HTTPS externo: un dominio, una IP, Cloud Armor y certificado administrado.
 # Mapa de URLs en formato de `gcloud compute url-maps import`. Lo aplica el propietario con Antigravity.
 # /api/v1/* va al backend y todo lo demás al frontend (incluidas /api/ai-copilot, /api/chat y /api/project/*, GCP-09): el navegador ve un solo origen y no hay CORS.

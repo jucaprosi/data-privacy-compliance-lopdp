@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤cloud-run-perf ¤seguridad-tenant
 """Caché de lectura en Memorystore con la clave siempre separada por tenant (GCP-06).
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad ¤seguridad-tenant ¤arbitro
 """SEC-23: toda ruta de la API bajo /api/v1 exige autenticación, salvo una lista blanca justificada.
 

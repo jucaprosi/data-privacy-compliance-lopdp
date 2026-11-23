@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤dpo-informe-anual
 # ¤arbitro
 """Árbitro de DPO-02: informe anual del DPO e inscripción ante la SPDP.

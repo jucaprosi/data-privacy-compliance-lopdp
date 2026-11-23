@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Recorrido 1 de Integración (TEST-03):
  * Roles reales: GET /api/v1/organizacion/me/roles con la identidad de desarrollo

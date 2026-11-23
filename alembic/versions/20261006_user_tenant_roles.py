@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Add areas and user_tenant_roles.
 
 Revision ID: 20261006_user_tenant_roles

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 """DEMO-06: con APP_ENV=demo y la lista de permitidos vacía no sale ningún correo (invariante 62).
 

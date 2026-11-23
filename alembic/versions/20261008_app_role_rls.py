@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """RLS efectivo: rol de aplicación sin BYPASSRLS y FORCE ROW LEVEL SECURITY.
 
 Revision ID: 20261008_app_role_rls

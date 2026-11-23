@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Controles periódicos (CAPA-02, governance/especificaciones/CAPA-02.md §5).
  *

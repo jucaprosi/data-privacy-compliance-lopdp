@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤mtge-granescala
 # ¤rbac-tenant
 """Motor de cálculo y persistencia de obligaciones de tratamiento a gran escala (MTGE-02).

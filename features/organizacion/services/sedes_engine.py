@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Sedes de la organización y clientes cuando actúa como encargada (sala ADPA: Organización). ¤rbac-tenant ¤inventario
 
 ORG-18. Dos colecciones por organización con RLS forzada: sedes (una sola principal vigente, R1) y clientes

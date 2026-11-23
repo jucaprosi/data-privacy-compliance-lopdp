@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤incidentes ¤rbac-tenant
 """Estado del incidente (INC-03): abierto o cerrado, como eventos que solo se agregan.
 

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤auditoria-capa ¤hallazgos
 /**
  * Cliente TypeScript para el módulo de Auditorías con Grilla y Actas por Área (CAPA-04).

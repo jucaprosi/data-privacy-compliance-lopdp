@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤dlp-muestreo
 /**
  * Pantalla de DLP-01: descubrimiento de datos personales en una muestra. Solo DLP-01 edita este archivo.

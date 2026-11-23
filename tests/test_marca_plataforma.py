@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """MARCA-01: la plataforma se llama solo EVYDENTIA en /health, OpenAPI y configuración."""
 from fastapi.testclient import TestClient
 

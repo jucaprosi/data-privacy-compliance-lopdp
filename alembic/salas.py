@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Mapa de salas de la base de datos para el grafo de migraciones por sala (CI-28).
 
 `BASE_COMUN` es la cabeza de `main` cuando se fusionó CI-28: toda la historia anterior queda

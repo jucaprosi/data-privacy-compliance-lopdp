@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 """Árbitro del reparto en bloques: los briefs coinciden con las tasks y los bloques de una tanda no se pisan.
 

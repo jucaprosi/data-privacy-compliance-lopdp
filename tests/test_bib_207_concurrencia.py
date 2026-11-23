@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant ¤arbitro
 # ¤¤qa-engineer
 """Árbitro BIB-207: guardado con revisión esperada atómica y trabajos de generación idempotentes.

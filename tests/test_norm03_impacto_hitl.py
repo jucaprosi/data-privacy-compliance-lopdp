@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤copiloto-ia ¤vertex-cache ¤dpo-independencia ¤arbitro
 """NORM-03: análisis de impacto de una resolución con modelo simulado, decidido solo por el DPO.
 

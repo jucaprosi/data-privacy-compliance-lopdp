@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤diagnostico-scoring ¤arbitro
 """DIAG-08: escala SMARTCIDI en el servidor (nivel asignado 1 a 5, evidencia 0 a 4, nivel por dimensión).
 

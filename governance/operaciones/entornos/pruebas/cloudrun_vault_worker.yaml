@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # EP-04 · Satélite vault_worker (Go) del entorno de pruebas (GOVW-01, aún pendiente).
 # Producción todavía no versiona su manifiesto: la referencia es GOVW-01 (Cloud Run, min-instances=0) y el
 # PRD EVYDENTIA §5.5 («los mismos servicios, con los mismos nombres»). Recibe eventos de Eventarc de los dos

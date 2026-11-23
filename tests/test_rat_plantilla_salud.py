@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rat ¤diagnostico ¤arbitro
 """RAT-02: plantilla sectorial de salud.
 

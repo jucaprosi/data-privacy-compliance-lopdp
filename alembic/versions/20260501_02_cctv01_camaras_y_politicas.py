@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """CCTV-01: inventario de cámaras de videovigilancia. ¤videovigilancia-cctv ¤seguridad-tenant
 
 Revision ID: cctv01_camaras_y_politicas

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """DPO sin roles operativos: actualiza trigger fn_utr_dpo_sod para abarcar todos los roles.
 
 Revision ID: 20261019_dpo_sin_roles_operativos

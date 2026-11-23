@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Flujo de subida de evidencia: URL prefirmada, subida del archivo y registro con su huella.
  *

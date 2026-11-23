@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤vertex-cache ¤copiloto-ia ¤gemini-vertex
 """VTX-01: caché del corpus por sha256, DLP Módulo 10 pre-vuelo y citación cerrada. Sin red: Vertex con doble."""
 from __future__ import annotations

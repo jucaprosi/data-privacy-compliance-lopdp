@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-03 · Next.js standalone en Cloud Run (INV_LOPDP_STANDALONE_FRONTEND_CONTAINER).
 
 `¤cloud-run-perf` `¤frontend-ide` `¤seguridad`

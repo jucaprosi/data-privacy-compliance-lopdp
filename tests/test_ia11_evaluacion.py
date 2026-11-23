@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex ¤arbitro
 """IA-11: conjunto fijo de evaluación. Sin red: Vertex es un doble; el CI nunca ejecuta el script contra Vertex."""
 import importlib.util

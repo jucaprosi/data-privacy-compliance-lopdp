@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤incidentes ¤rbac-tenant ¤arbitro
 """INC-03: el estado del incidente son eventos que solo se agregan; contador de abiertos.
 

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Ejemplos breves de lectura para cada control del diagnóstico.
  * Son situaciones ilustrativas; no sustituyen el requisito ni constituyen evidencia.

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 /**
  * DIAG-07: Diagnóstico › Revisión. El DPO revisa lo declarado por quien respondió, ve el nivel de

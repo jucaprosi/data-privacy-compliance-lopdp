@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤hallazgos ¤evidencias ¤rbac-tenant
 """Contrato y garantía de terceros con hallazgos automáticos (TER-01).
 

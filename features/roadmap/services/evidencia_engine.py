@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Evidencia de tareas: registro, listado y validación con cuatro ojos (sala ADPA: Hoja de Ruta)."""
 from typing import Optional
 from uuid import uuid4

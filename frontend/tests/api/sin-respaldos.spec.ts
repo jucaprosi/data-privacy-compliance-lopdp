@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";

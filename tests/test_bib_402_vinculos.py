@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant ¤rat ¤hallazgos ¤arbitro
 """Árbitro BIB-402: vínculos documento ↔ tratamiento, control y tarea (governance/especificaciones/BIB-402.md).
 

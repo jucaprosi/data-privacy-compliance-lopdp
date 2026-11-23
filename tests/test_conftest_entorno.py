@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """La suite se detiene con un solo mensaje cuando el interprete no tiene los requisitos del proyecto."""
 import os
 import shutil

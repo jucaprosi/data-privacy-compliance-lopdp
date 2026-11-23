@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤arbitro
 """EVI-01: la retención por objeto sale de un solo lugar y, si no se fija, el documento no se registra.
 

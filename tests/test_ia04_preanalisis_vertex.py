@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 """IA-04: el preanálisis usa la compuerta de inferencia sobre Vertex AI. Cliente simulado, sin red ni clave de API.
 

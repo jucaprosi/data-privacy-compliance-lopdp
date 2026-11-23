@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * FE-25 · Ficha resumen de la organización bajo el encabezado (governance/especificaciones/FE-25.md).
  *

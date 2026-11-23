@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 from features.regulacion_rag.services.rag_engine import responder_consulta_normativa
 from features.regulacion_rag.domain.models import ConsultaRAGInput
 

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DIAG-07: el administrador ve los controles de respuesta habilitados y guarda; el implementador sin
  * dominio asignado los ve deshabilitados. ¤diagnostico ¤dpo-independencia

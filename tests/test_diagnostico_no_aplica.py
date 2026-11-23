@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤diagnostico-no-aplica ¤arbitro
 """DIAG-05: «no aplica» exige una justificación en el assessment.
 

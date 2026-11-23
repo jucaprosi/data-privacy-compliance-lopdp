@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤roadmap ¤arbitro
 """Filas de la matriz de permisos de RM-25a (primera validación de la evidencia). Formato en tests/matriz/__init__.py.
 

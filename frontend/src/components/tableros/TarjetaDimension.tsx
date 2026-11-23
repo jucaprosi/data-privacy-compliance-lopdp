@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import type { TarjetaDimension as Tarjeta } from "@/lib/tableros/resumen";
 
 const ETIQUETA = { success: "Favorable", warning: "Atención", danger: "Crítico" } as const;

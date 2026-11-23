@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * MARCA-04 · Nombre único EVYDENTIA en el frontend:
  * Paleta de comandos, reporte de assessment, página de plataforma y configuración de proyecto.

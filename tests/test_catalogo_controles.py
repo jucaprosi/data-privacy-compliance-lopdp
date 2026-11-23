@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Pruebas del catálogo de controles P1-P80 de la hoja de ruta (RM-19).
 
 Verifica:

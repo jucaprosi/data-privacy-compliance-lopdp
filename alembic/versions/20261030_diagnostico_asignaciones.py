@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Asignación de dominios del assessment a encargados del diagnóstico, con RLS (DIAG-04). ¤diagnostico-asignacion
 
 Tabla append-only: la asignación vigente de una dimensión es su última fila (R2); un responsable nulo la

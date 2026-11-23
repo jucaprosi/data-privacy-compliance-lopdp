@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 """Un arnés por árbol (CI-37, R1): el push a main no repite el arnés que el PR ya pasó sobre el mismo árbol.
 

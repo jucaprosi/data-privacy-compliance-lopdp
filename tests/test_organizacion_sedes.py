@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant
 # ¤arbitro
 """Árbitro de ORG-18: sedes de la organización y clientes cuando actúa como encargada.

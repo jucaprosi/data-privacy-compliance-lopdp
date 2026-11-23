@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤domain ¤auditoria-capa
 """Entidades de dominio para la auditoría con grilla y actas por área (CAPA-04)."""
 from __future__ import annotations

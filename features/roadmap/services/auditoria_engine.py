@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Registro de acciones sobre tareas en task_audit_log (sala ADPA: Hoja de Ruta)."""
 import json
 from uuid import uuid4

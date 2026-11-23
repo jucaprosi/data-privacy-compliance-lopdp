@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 """Adaptador del puerto de avisos de impacto de Biblioteca (BIB-304) sobre la compuerta de Notificaciones.
 

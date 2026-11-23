@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DER-02 · Portal público de solicitudes de titulares por organización, con enlace de seguimiento.
  *

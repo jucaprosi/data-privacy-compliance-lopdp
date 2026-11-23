@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Tipos de lo que RM-21 añade a la hoja de ruta y que las vistas de RM-22 leen.
  * Forma de `GET /roadmaps/hallazgos` (governance/contratos/hoja_de_ruta.openapi.json): el contrato

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DEMO-04 · Interfaz demo: «Ver como», «Terminar demo» y pantallas de error. ¤demo
  *

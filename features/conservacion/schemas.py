@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤conservacion
 """Contratos de entrada y salida de la sala Conservación y Bloqueo."""
 from datetime import date, datetime

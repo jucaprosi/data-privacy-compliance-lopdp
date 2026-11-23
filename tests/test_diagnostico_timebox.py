@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Test de verificación de Diagnóstico en 60 min y Scoring Multidimensional.
 Invariantes: INV_LOPDP_60MIN_TIMEBOX_LIMIT, INV_LOPDP_MULTIDIMENSIONAL_METRICS.
 """

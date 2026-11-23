@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤demo
 """Compuerta pública de la sala demo (DEMO-00). Sus firmas son definitivas: nadie la edita después.

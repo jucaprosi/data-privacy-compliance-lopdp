@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """
 Compuerta ADPA pública para NIIF 18.
 [¤niif18-backend] Integra parser, clasificador, P&L, diagnóstico, recomendaciones, MPM y reportes.

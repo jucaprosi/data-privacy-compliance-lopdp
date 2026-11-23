@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Compuerta pública de la sala ADPA: Regulación y Copiloto RAG."""
 from features.regulacion_rag.domain.models import ConsultaRAGInput, RespuestaRAGOutput
 from features.regulacion_rag.services.rag_engine import responder_consulta_normativa

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤arbitro
 """Guardia de base local, detección de nube (Cloud Run) y huella Cloud SQL de producción (RET-01 / SEC-15 / SEC-20).
 

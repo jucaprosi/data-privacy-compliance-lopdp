@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤demo ¤seguridad-tenant
 # ¤¤developer-architect-adpa
 """Copia y siembra de la plantilla «Cooperativa Demo» en la sala videovigilancia (DEMO-03f).

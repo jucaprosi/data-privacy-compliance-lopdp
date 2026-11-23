@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Reglas puras de separación de funciones (sala ADPA: Organización).
 
 - SoD del DPO (Arts. 49-50 LOPDP; Arts. 15-18 Reglamento del Delegado): 'dpo' es incompatible

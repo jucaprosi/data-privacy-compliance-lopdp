@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 """Sesión de demo de un vendedor (DEMO-00, PRD EVYDENTIA §5.6, invariantes 60 a 63)."""
 from __future__ import annotations

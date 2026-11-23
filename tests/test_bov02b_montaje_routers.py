@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤arbitro ¤adpa
 """BOV-02b: la compuerta de Bóveda Cloud reúne sus tres routers y main.py la monta una sola vez (R1).
 

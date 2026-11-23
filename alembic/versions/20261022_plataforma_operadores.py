@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad
 # ¤rbac-tenant
 """ORG-09: Migración para operadores de plataforma, invitaciones y auditoría.

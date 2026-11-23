@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Google Identity Services: carga del script y tipos mínimos de lo que se usa.
  * https://developers.google.com/identity/gsi/web/reference/js-reference

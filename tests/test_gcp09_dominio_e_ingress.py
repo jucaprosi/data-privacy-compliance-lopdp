@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-09 · app.evydentia.com, ingress interno con el balanceador y opción 1 (sin IAM).
 
 `¤ci-cd` `¤arbitro`

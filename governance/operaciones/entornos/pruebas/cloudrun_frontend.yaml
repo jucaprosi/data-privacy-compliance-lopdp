@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # EP-04 · Frontend del entorno de pruebas. Variante de governance/operaciones/cloudrun_frontend_service.yaml (GCP-03).
 # Opción A del borde (decisión del propietario, 2026-11-08): IAP directo en el servicio, sin balanceador.
 # Solo en pruebas: PROXY_AUTH_CLOUD_RUN=token_servicio y BACKEND_URL igual a la URL run.app del backend

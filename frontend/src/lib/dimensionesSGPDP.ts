@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Catálogo canónico de las 10 dimensiones del SGPDP y su metodología de scoring.
  * Fuente: Matriz de Madurez SGPDP (modelo SMARTCIDI) alineada a LOPDP Ecuador.

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Humo 5, lo más lento: la exportación del RAT (RAT-06) descarga el archivo real. La huella que muestra la
  * pantalla debe ser la de los bytes descargados, no solo una cabecera con buen aspecto.

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤roadmap ¤seguridad-tenant ¤arbitro
 """RET-02 · Almacén de evidencias de hoja de ruta en Google Cloud Storage y clave por organización."""
 from __future__ import annotations

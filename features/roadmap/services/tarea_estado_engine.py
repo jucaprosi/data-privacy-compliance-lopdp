@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Cambio de estado de tareas con auditoría (sala ADPA: Hoja de Ruta)."""
 from datetime import datetime, timezone
 from typing import Optional

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Tipos estrictos para el RAT Maestro (Registro de Actividades de Tratamiento)
  * y el algoritmo MTGE conforme a la LOPDP, RGLOPDP y Resolucion SPDP-SPD-2026-0005-R.

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤vertex-cache ¤arbitro
 """IA-12: vectores y caché de contexto de Vertex AI por la compuerta de inferencia. Cliente falso; sin red.
 

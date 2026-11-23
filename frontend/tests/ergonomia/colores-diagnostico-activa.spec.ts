@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * FE-16 con la evidencia física encendida (EVYDENTIA, FE-26): contraste de la carga de evidencias y de
  * la bóveda en ambos temas.

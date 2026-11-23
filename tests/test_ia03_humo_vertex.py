@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex
 """IA-03: prueba de humo REAL contra Vertex. Opt-in (VERTEX_HUMO=1); la corre el propietario, no el CI."""
 import asyncio

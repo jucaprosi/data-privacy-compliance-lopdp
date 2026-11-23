@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤¤security-engineer
 """BIB-201: borradores de la organización (respuestas `contexto.*` y copia de la plantilla usada).

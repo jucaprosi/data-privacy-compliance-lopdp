@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 """Punto de entrada del Cloud Run Job: `python -m jobs.purga_demo`. Sale con 1 si se niega o falla.
 

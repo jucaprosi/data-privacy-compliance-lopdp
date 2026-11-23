@@ -1,3 +1,4 @@
+/* © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita. */
 .dialog { width: min(720px, calc(100vw - 28px)); max-height: min(88vh, 820px); margin: auto; padding: 0; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 20px; background: #fff; color: #172033; box-shadow: 0 28px 90px #10203a40; }
 .dialog::backdrop { background: #101d34b8; backdrop-filter: blur(4px); }
 .hero { padding: clamp(22px, 4vw, 34px); border-top: 7px solid var(--dimension-accent); background: linear-gradient(130deg, color-mix(in srgb, var(--dimension-accent) 10%, #fff), #fff 68%); }

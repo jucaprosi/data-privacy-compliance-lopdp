@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Persistencia PostgreSQL de EIPD y cálculo reproducible de riesgo."""
 from dataclasses import dataclass, field
 from datetime import datetime, timezone

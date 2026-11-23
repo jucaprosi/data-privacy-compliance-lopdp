@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """DPO-01: bitácora del DPO persistida en PostgreSQL con cadena SHA-256 y RLS por organización. ¤dpo ¤rbac-tenant"""
 from alembic import op

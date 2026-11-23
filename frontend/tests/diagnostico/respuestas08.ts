@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * API de respuestas de DIAG-08 simulada: recibe `nivel_asignado` y devuelve `estado` derivado.
  *

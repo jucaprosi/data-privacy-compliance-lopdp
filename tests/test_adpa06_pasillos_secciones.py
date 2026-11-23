@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 """ADPA-06: los pasillos tienen sus secciones reservadas y no importan features/ en el nivel superior."""
 from __future__ import annotations

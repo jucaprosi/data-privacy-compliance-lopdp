@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤vigilancia-spdp ¤inteligencia-normativa
 """Conector resiliente hacia las secciones oficiales de la SPDP (NORM-01, R4).
 

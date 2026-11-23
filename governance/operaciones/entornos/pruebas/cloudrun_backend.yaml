@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # EP-04 · Backend del entorno de pruebas. Variante de governance/operaciones/cloudrun_service.yaml (GCP-01).
 # Solo difiere de producción en proyecto, escala, acceso (§5.5) e identidad de entorno.
 # Opción A del borde (decisión del propietario, 2026-11-08): sin balanceador, URL run.app. El ingress es

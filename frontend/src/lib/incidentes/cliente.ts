@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente de la bitácora de incidentes (INC-01). Lee y registra en el servidor; nada se guarda en
  * un archivo ni en el navegador.

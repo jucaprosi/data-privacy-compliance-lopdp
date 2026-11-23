@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤videovigilancia-cctv
 """Capacidades de la sala Videovigilancia para otras salas (solo reexporta; se importa al usarla)."""
 # === CCTV-01 ===

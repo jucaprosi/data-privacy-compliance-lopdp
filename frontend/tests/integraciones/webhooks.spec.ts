@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤arbitro ¤api-integraciones ¤frontend-ide
 /**
  * Arnés de interfaz de API-02b: Webhooks firmados con techo del paquete.

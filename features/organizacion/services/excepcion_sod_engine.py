@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Motor de gestión de excepciones de separación de funciones (SoD) (ORG-02).
 
 Invariante: INV_LOPDP_COORDINADOR_RESPONSABLE_EXCEPCION.

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * QA-01: Pruebas E2E de punta a punta por rol (Criterio de aceptación 12 del PRD).
  *

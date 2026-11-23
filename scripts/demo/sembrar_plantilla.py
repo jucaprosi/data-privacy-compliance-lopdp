@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo ¤seguridad-tenant
 """Siembra idempotente de la plantilla «Cooperativa Demo» (DEMO-03, PRD EVYDENTIA §5.6.1.4).
 

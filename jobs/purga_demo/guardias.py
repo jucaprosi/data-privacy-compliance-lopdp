@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo ¤seguridad
 """Guardias del job: solo corre en el proyecto y la base de la demo, nunca en producción."""
 from __future__ import annotations

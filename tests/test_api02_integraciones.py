@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer ¤api-integraciones ¤seguridad ¤seguridad-tenant ¤arbitro
 """Árbitro de API-02: Claves de integración por organización con techo del paquete.
 

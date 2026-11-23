@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """
 Motor de resultados NIIF 18: naturaleza de cuentas, aporte al P&L, subtotales
 mandatorios y estructura del Estado de Resultados.

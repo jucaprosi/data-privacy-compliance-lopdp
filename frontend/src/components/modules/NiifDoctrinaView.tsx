@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import React, { useEffect, useState } from 'react';
 import { BookOpen, FileCheck } from 'lucide-react';
 import { useAuditStore } from "@/store/useAuditStore";

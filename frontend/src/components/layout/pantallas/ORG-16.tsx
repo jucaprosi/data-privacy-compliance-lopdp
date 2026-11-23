@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 /**
  * Pantalla de ORG-16 que monta el panel: el alta de la organización. Solo ORG-16 edita este archivo.

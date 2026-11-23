@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤regulation-code ¤seguridad ¤arbitro
 """Árbitro de LEG-03: estructura de governance/apoyo/CITAS_LEGALES_VERIFICADAS.md.
 

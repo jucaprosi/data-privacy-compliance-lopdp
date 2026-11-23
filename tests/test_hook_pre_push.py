@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 """El hook pre-push detiene main y un arnés en rojo, y solo avisa de lo que falte en la máquina.
 

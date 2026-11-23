@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤dpo-cockpit ¤arbitro
 """Filas de la matriz de permisos de DPO-03 (consultas de la organización al DPO).
 

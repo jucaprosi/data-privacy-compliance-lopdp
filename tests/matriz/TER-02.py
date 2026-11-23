@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤seguridad ¤arbitro
 """Filas de la matriz de permisos de TER-02 (cuestionario de garantías del encargado).
 

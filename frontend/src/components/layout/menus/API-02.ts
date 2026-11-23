@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus ¤api-integraciones
 /**
  * Submenú de API-02 en el menú CONFIGURACIÓN: claves de integración y techos de paquete.

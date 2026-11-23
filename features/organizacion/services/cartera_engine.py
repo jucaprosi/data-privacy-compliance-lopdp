@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤cartera ¤rbac-tenant
 """Cartera de organizaciones por pertenencia (ORG-15, `INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP`).

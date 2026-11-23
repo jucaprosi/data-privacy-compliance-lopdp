@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """Persistencia PostgreSQL del RAT; la transacción pertenece al llamador. ¤rat"""
 from dataclasses import asdict

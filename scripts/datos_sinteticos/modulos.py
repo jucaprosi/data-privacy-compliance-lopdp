@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤entorno-pruebas ¤seguridad-tenant
 """Datos de ejemplo de los demás módulos para el entorno de pruebas (EP-10).
 

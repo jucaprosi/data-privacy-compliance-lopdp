@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Compuerta ADPA de la sala Pre-análisis. Único punto de entrada para routers y otras salas."""
 from __future__ import annotations
 

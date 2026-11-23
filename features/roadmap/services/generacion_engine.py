@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤copiloto-ia
 """Motor de generación con IA de hojas de ruta (sala ADPA: Hoja de Ruta).
 

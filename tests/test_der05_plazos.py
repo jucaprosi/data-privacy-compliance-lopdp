@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """DER-05 · Plazo por tipo de solicitud: tabla única, unidad estimada y campos en la respuesta.
 
 `¤regulation-code` `¤arbitro`

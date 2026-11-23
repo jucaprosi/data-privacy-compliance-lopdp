@@ -1,3 +1,4 @@
+-- © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 -- ¤demo ¤seguridad
 -- DEMO-05c · Permisos y políticas del rol `purga_demo`, sin BYPASSRLS (PRD EVYDENTIA §5.6.4, invariantes 60 a 63).
 -- DEMO-05d · Función `purga_demo_borrar_inmutables` para las tablas con trigger de inmutabilidad (invariante 63).

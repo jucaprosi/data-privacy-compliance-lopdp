@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Inventario de activos y sistemas, soportes y personas mínimas (sala ADPA: Organización). ¤rbac-tenant ¤inventario
 
 ORG-17. Tres colecciones por organización, todas con RLS forzada: activos (sistemas y soportes físicos o

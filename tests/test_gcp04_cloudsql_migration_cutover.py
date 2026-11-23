@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-04 · Cloud SQL PostgreSQL 16 con RLS forzado y balanceador unificado.
 
 `¤cloud-run-perf` `¤seguridad-tenant` `¤ci-cd` — INV_LOPDP_CLOUD_SQL_AUTOPROXY

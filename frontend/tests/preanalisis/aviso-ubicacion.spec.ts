@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * IA-09 · Aviso de consentimiento del preanálisis con la ubicación real donde se procesa.
  *

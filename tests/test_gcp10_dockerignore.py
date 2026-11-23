@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-10 · El contexto de la imagen del frontend no lleva dependencias locales, compilados ni secretos.
 
 `¤navegacion-menus` `¤arbitro`. Prueba estática: no ejecuta Docker.

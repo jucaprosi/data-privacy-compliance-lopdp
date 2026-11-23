@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 # ¤¤qa-engineer
 """Cada trabajador de xdist clona su base de una plantilla migrada; sin -n la suite usa TEST_DATABASE_URL como siempre.

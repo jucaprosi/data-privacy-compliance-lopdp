@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤copiloto-ia ¤dpo-independencia ¤seguridad
 """Análisis de impacto de una resolución (NORM-03), bajo /api/v1/normativa.
 

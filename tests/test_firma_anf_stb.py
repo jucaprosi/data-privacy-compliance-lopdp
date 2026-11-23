@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Árbitro FIRMA-06: consumo de ANF STB v2 TEST y su API, contra TEST_DATABASE_URL (nunca producción).
 
 ANF se sustituye con `httpx.MockTransport` siguiendo su ficha técnica; la base es real. La prueba

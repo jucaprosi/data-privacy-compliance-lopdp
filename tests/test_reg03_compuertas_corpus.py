@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤vertex-cache ¤arbitro
 """REG-03: compuertas de vectores, caché y corpus citable de la sala regulacion_rag. Dobles; sin red.
 

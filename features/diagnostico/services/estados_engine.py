@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤diagnostico-estados ¤diagnostico-comparativo ¤roadmap
 """Estados del diagnóstico: el assessment actual (DIAG-12, invariante 58 de EVYDENTIA).
 

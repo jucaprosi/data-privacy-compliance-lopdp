@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 """Objetos de los tenants vencidos en Google Cloud Storage: se borran por prefijo `tenant_id/`."""
 from __future__ import annotations

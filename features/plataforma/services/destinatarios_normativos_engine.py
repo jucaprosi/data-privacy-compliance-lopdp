@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤seguridad-tenant ¤adpa
 """NORM-02b: destinatarios del aviso de novedades normativas, por organización (R1, R2).
 

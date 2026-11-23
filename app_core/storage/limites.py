@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤seguridad
 """Reglas de admisión y construcción de claves de objeto para evidencias en Cloud Storage (RET-02).
 

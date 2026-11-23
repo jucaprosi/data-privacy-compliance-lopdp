@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤riesgos-eipd ¤mtge-granescala ¤hallazgos ¤arbitro
 # ¤¤qa-engineer
 """Árbitro MTGE-03: EIPD guiada de ocho pasos (governance/especificaciones/MTGE-03.md §5).

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤models ¤evidencias ¤rbac-tenant
 """Modelos SQLAlchemy para la sala Formación (FOR-01)."""
 from sqlalchemy import (

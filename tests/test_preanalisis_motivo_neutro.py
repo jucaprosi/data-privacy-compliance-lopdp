@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """IA-01: el estado del preanálisis y sus errores de proveedor nunca nombran variables ni proyectos. Sin red."""
 from __future__ import annotations
 

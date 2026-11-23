@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Árbitro FIRMA-04: API HTTP de firma electrónica contra TEST_DATABASE_URL (nunca producción).
 
 Sin mocks de base de datos: cada prueba recorre el router, la compuerta y `firma_sessions` reales.

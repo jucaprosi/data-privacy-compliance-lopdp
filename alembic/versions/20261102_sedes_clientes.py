@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """ORG-18: sedes de la organización y clientes cuando actúa como encargada, por organización. ¤rbac-tenant ¤inventario"""
 from alembic import op

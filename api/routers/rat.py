@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """RAT persistido por organización. Permisos de RAT-01. ¤rat ¤rbac-tenant"""
 from typing import Annotated

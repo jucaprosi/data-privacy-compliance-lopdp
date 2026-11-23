@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 """IA-07: el asistente usa solo la compuerta de inferencia Vertex AI y emite avisos sin jerga."""
 from __future__ import annotations

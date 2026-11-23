@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """DER-03 · La solicitud ARCO queda en su organización: tenant recibido, sin uuid4 ni commit propio.
 
 `¤seguridad-tenant` `¤rbac-tenant`

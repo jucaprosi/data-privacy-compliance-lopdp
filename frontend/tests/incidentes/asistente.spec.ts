@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Asistente de vulneración en ocho pasos (INC-02, governance/especificaciones/INC-02.md §5 y los criterios
  * cerrados por UX/UI en governance/tareas/INC-02.md). API simulada con las reglas del servidor.

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 // ¤incidentes
 // Operación › Asistente de vulneración (INC-02): lista de vulneraciones con su avance y el asistente de

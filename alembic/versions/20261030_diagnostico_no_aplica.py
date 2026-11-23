@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """«No aplica» con justificación obligatoria en las respuestas del diagnóstico (DIAG-05). ¤diagnostico-no-aplica
 
 Columnas nuevas en `diagnostico_respuestas`: `no_aplica`, `justificacion_no_aplica`, `justificado_por` y

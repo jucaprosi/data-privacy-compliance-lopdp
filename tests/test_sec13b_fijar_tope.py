@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad-tenant
 """SEC-13b: fijar_tope es el alta idempotente del tope de IA, contra PostgreSQL de pruebas, como lopdp_app.
 

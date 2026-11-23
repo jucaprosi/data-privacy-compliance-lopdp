@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """/health informa qué routers cargaron y cuáles fallaron (Aporte 91)."""
 from types import SimpleNamespace
 

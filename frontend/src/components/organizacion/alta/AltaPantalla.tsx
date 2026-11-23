@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 // ¤asistente ¤frontend-ide ¤alta-organizacion
 // Pantalla del alta (ORG-16) en el menú Configuración: resuelve el rol con /organizacion/me/roles y monta

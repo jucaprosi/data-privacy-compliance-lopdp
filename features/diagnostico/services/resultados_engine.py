@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤dpo-independencia ¤rbac-tenant ¤evidencias
 """Sellado del diagnóstico por el DPO (DIAG-03).
 

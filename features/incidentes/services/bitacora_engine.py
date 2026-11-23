@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤incidentes ¤rbac-tenant ¤seguridad
 """Registro y consulta de la bitácora de incidentes en PostgreSQL (INC-01).
 

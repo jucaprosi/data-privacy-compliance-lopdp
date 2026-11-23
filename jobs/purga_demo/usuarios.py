@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 """Purga de personas ficticias de users huérfanas de demos vencidas (DEMO-05b, DEMO-05c).
 

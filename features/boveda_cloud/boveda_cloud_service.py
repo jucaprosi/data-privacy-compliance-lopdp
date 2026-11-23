@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤boveda-cloud ¤seguridad-tenant ¤adpa
 """Compuerta de la sala Bóveda Cloud. Fuera de la sala solo se importa este módulo (o el pasillo)."""
 # === BOV-01 ===

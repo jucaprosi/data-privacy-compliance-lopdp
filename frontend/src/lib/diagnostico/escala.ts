@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Escala de madurez SMARTCIDI en la pantalla (DIAG-09): única copia en el frontend.
  *

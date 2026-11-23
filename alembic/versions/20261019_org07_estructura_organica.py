@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Estructura orgánica: nivel en áreas y tabla cargos_organicos con RLS.
 
 Revision ID: 20261019_org07_estructura_organica

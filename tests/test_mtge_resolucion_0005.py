@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤mtge-granescala ¤arbitro
 """MTGE-01: el cálculo de gran escala sigue la Res. SPDP-SPD-2026-0005-R.
 

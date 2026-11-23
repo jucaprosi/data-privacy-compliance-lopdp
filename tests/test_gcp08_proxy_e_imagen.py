@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-08 · Proxy de /api/v1 en tiempo de ejecución, /health e imagen de menos de 120 MB.
 
 `¤arbitro` — contrato: governance/tareas/GCP-08.md (Arquitecto y Seguridad, 2026-11-08).

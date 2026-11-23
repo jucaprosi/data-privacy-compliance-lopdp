@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 /**
  * Submenús de REG-02: menú 8 «Conocimiento» (Normativa Ecuador, Resúmenes y guías, Ayuda). El Copiloto

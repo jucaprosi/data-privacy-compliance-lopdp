@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤boveda-cloud
 /**
  * Pantalla de BOV-01: espacio y descargas del plan de almacenamiento de la organización, en solo lectura.

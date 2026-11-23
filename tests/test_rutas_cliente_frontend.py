@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Contrato estático entre las llamadas HTTP del frontend y el OpenAPI real.
 
 No ejecuta el frontend ni el servidor. Inspecciona los clientes TypeScript y compara

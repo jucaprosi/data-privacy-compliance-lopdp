@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤asistente
 // Monta la página de prueba del asistente sin pasar por la aplicación (FE-23).
 //

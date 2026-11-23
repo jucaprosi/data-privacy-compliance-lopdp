@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤rbac-tenant ¤arbitro
 """RM-25a: primera validación de la evidencia por el Coordinador, contra PostgreSQL 16 local.
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤dlp-muestreo
 """Esquemas de entrada y salida. La entrada se valida a mano en la ruta para que ningún error devuelva la muestra."""
 from datetime import datetime

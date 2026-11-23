@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente del asistente de vulneración en ocho pasos (INC-02). Cada guardado es una versión nueva en
  * el servidor; aquí no se guarda nada en el navegador. Los plazos legales no se calculan.

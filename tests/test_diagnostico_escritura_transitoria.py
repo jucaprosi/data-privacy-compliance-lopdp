@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤rbac-tenant ¤arbitro
 """DIAG-07a: quién guarda respuestas del diagnóstico; DIAG-07 contrae la transición (el DPO ya no guarda).
 

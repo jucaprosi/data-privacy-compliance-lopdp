@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤rbac-tenant ¤arbitro
 """DIAG-01: las respuestas del diagnóstico se guardan en el servidor, por organización.
 

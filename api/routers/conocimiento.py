@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤regulation-code
 """Centro de conocimiento (REG-02): normativa del corpus y ayuda contextual con cita obligatoria."""

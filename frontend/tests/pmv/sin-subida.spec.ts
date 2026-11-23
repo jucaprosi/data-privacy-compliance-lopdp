@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * FE-26 · PMV sin subida de archivos: el caso por omisión, sin la variable `NEXT_PUBLIC_EVIDENCIA_FISICA`.
  *

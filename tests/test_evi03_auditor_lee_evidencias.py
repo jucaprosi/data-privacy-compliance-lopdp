@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤rbac-tenant ¤arbitro
 """EVI-03: el auditor lee todas las evidencias de su organización y no define atributos, contra PostgreSQL 16.
 

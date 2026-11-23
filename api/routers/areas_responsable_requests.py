@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant
 """Flujo de alta de responsables de área (PRD §5.3.1): el coordinador solicita, el implementador ejecuta.
 

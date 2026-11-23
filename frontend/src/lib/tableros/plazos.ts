@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Semáforos de plazos del tablero (FE-24): solo de lo que ya tiene fecha en el servidor, es decir,
  * las tareas de la hoja de ruta con fecha de fin. Solicitudes, vulneraciones, revisiones,

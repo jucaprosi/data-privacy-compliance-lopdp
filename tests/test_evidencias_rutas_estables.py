@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤arbitro
 """EVI-01: las rutas que la pantalla usa hoy no cambian de forma, y las nuevas nacen apagadas (sin base).
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤arbitro
 """EVI-04: subida de servidor en el almacén y custodia de documentos generados, contra PostgreSQL 16.
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤entorno-pruebas
 """Identidad del entorno (EP-01): única fuente de `APP_ENV` para el resto del backend."""
 from app_core.entorno.guardias import (

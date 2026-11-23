@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Grafo RAT/EIPD sobre persistencia real, sin dobles de riesgos."""
 from uuid import uuid4
 

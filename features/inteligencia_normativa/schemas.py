@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤adpa
 """Contratos tipados de la compuerta de Inteligencia Normativa (NORM-01)."""
 from __future__ import annotations

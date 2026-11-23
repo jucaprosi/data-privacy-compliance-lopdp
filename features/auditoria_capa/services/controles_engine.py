@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤controles-periodicos ¤auditoria-capa ¤hallazgos ¤rbac-tenant
 """Motor de controles periódicos (CAPA-02).
 

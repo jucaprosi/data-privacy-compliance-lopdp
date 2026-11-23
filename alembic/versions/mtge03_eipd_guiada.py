@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """MTGE-03: EIPD guiada de ocho pasos y sus puntos por corregir. ¤riesgos-eipd ¤mtge-granescala ¤hallazgos
 

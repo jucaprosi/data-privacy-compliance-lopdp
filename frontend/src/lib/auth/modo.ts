@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Modo de autenticación del frontend. Replica el del servidor (AUTH_MODE en app_core/security.py).
  *

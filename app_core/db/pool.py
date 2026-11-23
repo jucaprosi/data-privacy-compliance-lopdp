@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-05 · Tamaño del pool de conexiones del motor, leído del entorno.
 
 `¤cloud-run-perf`: presupuesto `maxScale × (pool_size + max_overflow) <= conexiones de la base`

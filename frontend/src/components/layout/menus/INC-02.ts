@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 // ¤incidentes
 /** Submenú de INC-02: Operación › Asistente de vulneración. Solo INC-02 edita este archivo. */

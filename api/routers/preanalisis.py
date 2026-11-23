@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Enrutador REST de la sala ADPA Pre-análisis: pre-llenado asistido (la IA propone, el humano decide).
 
 Contrato con el frontend: nombres de campo y formas JSON fijos. No se persiste ni registra contenido.

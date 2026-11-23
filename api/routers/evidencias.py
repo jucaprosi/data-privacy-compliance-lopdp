@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Enrutador REST para la Sala ADPA: Evidencias y Custodia Criptográfica.
 
 Contrato de integridad: el SHA-256 del documento se envía en ``sha256_hash`` (calculado

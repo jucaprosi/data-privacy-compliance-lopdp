@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Regla INV_LOPDP_COORDINADOR_RESPONSABLE_EXCEPCION (sala ADPA: Organización).
 
 Una misma persona solo puede ser `coordinador` y `responsable_area` en el mismo tenant

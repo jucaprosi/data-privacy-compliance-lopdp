@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤motor-go-hibrido ¤boveda-cloud ¤conservacion
 """Pasillo para el satélite Cloud Run en Go (vault_worker) (GOVW-01)."""
 # --- INICIO GOVW-01 ---

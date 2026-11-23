@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DER-01 · Ficha de la solicitud: verificación de identidad y respuesta registrada como evidencia.
  *

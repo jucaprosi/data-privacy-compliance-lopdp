@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 /**
  * Submenú de ORG-16 en el menú CONFIGURACIÓN: el alta de la organización en siete pasos. Solo ORG-16

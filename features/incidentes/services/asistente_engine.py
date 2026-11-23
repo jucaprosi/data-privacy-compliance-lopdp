@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤incidentes ¤hallazgos ¤rbac-tenant
 """Asistente de vulneración en PostgreSQL (INC-02): todo se agrega, nada se actualiza ni se borra (R6).
 

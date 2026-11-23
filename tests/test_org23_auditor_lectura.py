@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤arbitro
 """ORG-23: el auditor lee diagnóstico, incidentes y hallazgos de su organización y no escribe en ellos.
 

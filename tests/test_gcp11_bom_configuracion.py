@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-11 · `exigir_configuracion_en_la_nube` nombra el BOM al inicio de DATABASE_URL.
 
 `¤versionado-despliegue` `¤arbitro`. Solo URL ficticias (host `.invalid`) y contraseña aleatoria.

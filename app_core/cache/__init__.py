@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤cloud-run-perf ¤seguridad-tenant
 """Caché de lectura por tenant (GCP-06): núcleo compartido, disponible para cualquier sala."""
 from app_core.cache.cache_lectura import (

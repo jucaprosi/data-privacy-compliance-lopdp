@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """REP-01: lo que cada bloque copia de sus fichas (Hecho si, Depende de, Objetivo y Sala(s)) coincide con ellas."""
 import dataclasses
 import importlib.util

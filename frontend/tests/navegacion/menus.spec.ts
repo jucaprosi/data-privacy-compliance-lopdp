@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * FE-22 · Navegación por los nueve menús (governance/especificaciones/FE-22.md, R1, R2 y R4).
  *

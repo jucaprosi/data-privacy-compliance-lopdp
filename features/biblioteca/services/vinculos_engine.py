@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant ¤rat ¤hallazgos
 # ¤¤developer-architect
 """Vínculos de un documento de la organización con tratamientos, controles y tareas (BIB-402).

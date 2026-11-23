@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """IA-05: el motor del copiloto genera el plan solo por la compuerta de inferencia (sin cliente directo, sin clave, sin plan simulado)."""
 import asyncio
 import inspect

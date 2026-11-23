@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Enrutador REST para la Sala ADPA: Cockpit del DPD/DPO (Art. 48-50 LOPDP)."""
 from contextlib import asynccontextmanager
 from typing import Any, Dict, Optional

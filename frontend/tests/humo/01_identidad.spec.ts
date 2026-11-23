@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Humo 1 y 3, sin navegador por ser lo más rápido: la API real acepta el token correcto, rechaza cada
  * falsificación y no deja cruzar a otra organización.

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Exportación completa de los datos de la organización (sala ADPA: Organización). ¤rbac-tenant ¤seguridad
 
 ORG-20 · R2-R4. ZIP con un JSON por entidad con datos y `MANIFIESTO.sha256`, que declara `incluidas` y

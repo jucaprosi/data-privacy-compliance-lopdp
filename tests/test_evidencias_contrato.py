@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Contrato de la Bóveda de Evidencias: integridad SHA-256, vínculos y aislamiento."""
 from __future__ import annotations
 

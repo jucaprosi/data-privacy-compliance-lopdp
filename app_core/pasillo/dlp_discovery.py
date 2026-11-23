@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤dlp-muestreo
 """Capacidades de la sala Descubrimiento DLP Muestreado para otras salas (solo conteos, nunca la muestra)."""
 # === DLP-01 ===

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 /**
  * Submenús de DIAG-06. Solo DIAG-06 edita este archivo: Diagnóstico › Comparativo, que compara el

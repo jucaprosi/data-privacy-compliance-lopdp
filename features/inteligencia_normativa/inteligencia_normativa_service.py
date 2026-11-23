@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤vigilancia-spdp ¤adpa
 """Compuerta de la sala Inteligencia Normativa (NORM-01): monitoreo de la SPDP y lectura del corpus."""
 from __future__ import annotations

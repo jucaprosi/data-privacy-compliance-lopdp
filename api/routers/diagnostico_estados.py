@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤diagnostico-estados ¤dpo-independencia ¤rbac-tenant
 """API de los estados del diagnóstico: el assessment actual (DIAG-12).
 

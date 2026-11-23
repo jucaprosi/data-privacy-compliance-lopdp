@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 // ¤dpo-cockpit
 /** Pantallas de DPO-03 que monta el panel. Solo DPO-03 edita este archivo. */
