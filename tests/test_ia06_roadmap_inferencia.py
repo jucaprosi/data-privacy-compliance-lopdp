@@ -255,6 +255,10 @@ def test_sin_compuerta_no_hay_hoja(monkeypatch):
         res = asyncio.run(en_linea.generate_roadmap_inline(sesion, "org-1", "user-1", req))
 
     assert res["status"] == "failed"
+    # Sin inferencia, reintentar no sirve: la pantalla recibe el motivo neutro y su código, no
+    # «reintente la generación».
+    assert res["codigo"] == "INFERENCIA_NO_DISPONIBLE"
+    assert res["error"] == motivo_neutro
 
     # Verificar que no quedaron sentencias de inserción de olas ni tareas
     sentencias_str = " ".join(s for s, _ in sesion.sentencias)
@@ -265,6 +269,30 @@ def test_sin_compuerta_no_hay_hoja(monkeypatch):
     # Directamente sobre el cliente o motor, la compuerta no disponible levanta InferenciaNoDisponible
     with pytest.raises(no_disponible):
         call_roadmap_llm("sys", "user")
+
+
+def test_fallo_del_modelo_pide_reintentar():
+    """Dado un fallo del modelo que no es falta de inferencia, entonces el código es GENERACION_FALLIDA.
+
+    Mutación: devolver INFERENCIA_NO_DISPONIBLE para cualquier fallo hace fallar la prueba.
+    """
+    def _modelo_roto(sys_p, usr_p):
+        raise ValueError("respuesta inválida del modelo")
+
+    sesion = SesionFalsa()
+    req = GenerateRoadmapRequest(
+        tenant_id="org-1",
+        user_id="user-1",
+        variables=_variables_payload(),
+        assessment={"brechas": ["P1"]},
+    )
+
+    with patch("features.roadmap.services.generacion_en_linea.armar_contexto_generacion", return_value={"brechas": ["P1"]}):
+        res = asyncio.run(en_linea.generate_roadmap_inline(sesion, "org-1", "user-1", req, llm_caller=_modelo_roto))
+
+    assert res["status"] == "failed"
+    assert res["codigo"] == "GENERACION_FALLIDA"
+    assert "reintentar" in res["error"]
 
 
 def test_generacion_con_traza(monkeypatch):

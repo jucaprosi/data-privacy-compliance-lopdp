@@ -180,7 +180,7 @@ export const roadmapApi = {
     variables: PlanningVariables,
     assessment: Record<string, unknown> = {},
     options?: RequestOptions
-  ): Promise<{ job_id: string; status: string; roadmap_id: string; error?: string }> {
+  ): Promise<{ job_id: string; status: string; roadmap_id: string; error?: string; codigo?: string }> {
     const session = getCurrentSession();
     const payload: GenerateRoadmapRequest = {
       tenant_id: session.tenantId,
@@ -188,7 +188,7 @@ export const roadmapApi = {
       variables,
       assessment,
     };
-    return requestJson<{ job_id: string; status: string; roadmap_id: string; error?: string }>("/roadmaps/generate", {
+    return requestJson<{ job_id: string; status: string; roadmap_id: string; error?: string; codigo?: string }>("/roadmaps/generate", {
       method: "POST",
       body: JSON.stringify(payload),
       ...options,
