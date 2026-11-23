@@ -204,8 +204,8 @@ Probada en este repositorio entre el 2026-10-30 y el 2026-10-31 (PR #253 a #278)
     *   Cuando una investigación no encuentra la causa, se escribe «no se encontró el origen» y las salidas posibles, no una hipótesis disfrazada de hallazgo.
     *   Un commit cierra un proceso; las erratas y los paréntesis no abren uno.
 6.  **Archivos de gobernanza compartidos, un solo escritor:**
-    *   `governance/artefactos/TASKS.md` y `governance/apoyo/BRIEFS_POR_BLOQUE.md` los tocan varias ramas y chocan a diario. La fuente de verdad son las fichas de `governance/tareas/`, un archivo por tarea; el índice de `TASKS.md` se regenera con `scripts/generar_indice_tareas.py --escribir`.
-    *   Regla: los PR de tarea no editan ninguno de los dos. Los edita una sola persona por día, el coordinador, en un PR de gobernanza que cierra la tanda y regenera el índice; los demás cambian solo su ficha. Dos ediciones de gobernanza el mismo día se encadenan, no se cruzan.
+    *   `governance/artefactos/TASKS.md` lo tocan varias ramas y choca a diario. La fuente de verdad son las fichas de `governance/tareas/`, un archivo por tarea; el índice de `TASKS.md` se regenera con `scripts/generar_indice_tareas.py --escribir`.
+    *   Regla: los PR de tarea no lo editan. Los edita una sola persona por día, el coordinador, en un PR de gobernanza que cierra la tanda y regenera el índice; los demás cambian solo su ficha. Dos ediciones de gobernanza el mismo día se encadenan, no se cruzan.
 7.  **Delegar una tarea a un agente: se hace con un brief:**
     *   Toda tarea que se entrega a un agente (un chat nuevo o un subagente) se encarga con un **brief**, no con una instrucción libre. Un brief es un prompt estructurado de cinco líneas:
         - **Objetivo:** qué se quiere lograr, en una frase.
@@ -213,7 +213,7 @@ Probada en este repositorio entre el 2026-10-30 y el 2026-10-31 (PR #253 a #278)
         - **Hecho es cuando:** el criterio comprobable, es decir, el árbitro de la ficha y el CI.
         - **Límites:** sin commit, push ni PR sin autorización de la propietaria; solo su rama y su worktree; sin credenciales; las bases solo con la base local de pruebas propia.
         - **Informe:** qué hizo, qué comprobó (con SHA y «X de Y terminados, N en curso»), qué supuso, qué no pudo verificar y qué necesita de una persona.
-    *   La ficha manda: el brief resume `governance/tareas/<ID>.md` y su bloque de `BRIEFS_POR_BLOQUE.md` y nunca los contradice. Si el agente necesita tocar un archivo fuera de su lista, se detiene y pregunta.
+    *   La ficha manda: el brief resume `governance/tareas/<ID>.md` y nunca la contradice. Los briefs no se versionan (GOB-06): viven en la carpeta local `C:\Users\Juan Carlos\compartido\evydentia\`, en `briefs\<ID>.md`, y `python scripts/verificar_briefs_locales.py --tanda N` los compara con sus fichas antes de lanzar la tanda. Si el agente necesita tocar un archivo fuera de su lista, se detiene y pregunta.
     *   La plantilla está en `governance/Metodología de trabajo en equipo.md`, Parte 8, plantilla 1.
 
 ---
@@ -276,7 +276,7 @@ Vale para Juan Carlos, Aleczandra, José y para todo chat que trabaje en nombre 
     *   Tener la base local de pruebas: el contenedor PostgreSQL 16 del arnés en 127.0.0.1. Para el arnés rápido, PostgreSQL local según `verificadores/README.md`; es opcional, el CI sigue siendo el árbitro.
     *   **La carpeta principal del clon no se edita y no corre pruebas.** Sirve para `git fetch`, `git worktree` y para operar Cloud SQL vía `cloud-sql-proxy` en memoria de sesión.
 2.  **Al empezar una tarea, persona o chat:**
-    *   La tarea tiene ficha en `governance/tareas/<ID>.md` con su `propiedad`; el chat escribe solo dentro de ella y no toca `TASKS.md` ni `BRIEFS_POR_BLOQUE.md`.
+    *   La tarea tiene ficha en `governance/tareas/<ID>.md` con su `propiedad`; el chat escribe solo dentro de ella y no toca `TASKS.md` ni los briefs de la carpeta local `C:\Users\Juan Carlos\compartido\evydentia\` (GOB-06).
     *   La rama parte de la punta remota de `main`, nunca de la copia local (hasta el 2026-11-05 partía de `origin/dev/<persona>`):
 
         ```powershell

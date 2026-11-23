@@ -1,6 +1,7 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-"""El reparto en bloques de los briefs coincide con las tasks y los bloques de una tanda no se pisan."""
+"""El reparto en tandas, leído de las fichas (GOB-06): las de una tanda no se pisan y van después de lo que necesitan."""
 import importlib.util
+import subprocess
 import sys
 from pathlib import Path
 
@@ -12,94 +13,63 @@ _spec.loader.exec_module(vr)
 indice = vr._cargar_indice()
 
 
-def _t(tid, propiedad, depende=(), estado="pendiente", agente="asignable"):
+def _t(tid, propiedad, depende=(), estado="pendiente", tanda=None):
     return indice.Tarea(id=tid, titulo=tid, ola="A", estado=estado, sala="s", depende_de=tuple(depende),
-                        propiedad=tuple(propiedad), arbitro="pytest", agente=agente)
-
-
-def _bloque(bid, tanda, tareas, escribe):
-    cuerpo = "".join(f"{i}. `{t}` — x\n" for i, t in enumerate(tareas, 1))
-    rutas = "".join(f"  - `{e}`\n" for e in escribe)
-    return f"### {bid} · nombre  (tanda {tanda})\n\n**Objetivo** (en este orden):\n\n{cuerpo}\n**Rastro ¤**\n\n**Escribe** (lista):\n\n{rutas}\n**No hagas:**\n\n"
-
-
-def _briefs(*bloques):
-    return "".join(bloques)
+                        propiedad=tuple(propiedad), arbitro="pytest", tanda=tanda)
 
 
 def test_el_reparto_real_es_valido():
     tareas, errores = indice.cargar_tareas()
-    briefs = vr.BRIEFS.read_text(encoding="utf-8")
     assert errores == []
-    assert vr.revisar(briefs, tareas, indice) == []
+    assert vr.revisar(tareas, indice) == []
+    # GOB-06 R6: las fichas de las tandas 93 a 96 que siguen sin hacer llevan su tanda (FE-29, la 93, ya está hecha)
+    esperadas = {"IA-13": 94, "IA-14": 95, "IA-15": 95, "GCP-08c": 95, "IA-16": 96}
+    por_id = {t.id: t for t in tareas}
+    vivas = [tid for tid in esperadas if por_id[tid].estado != "hecha"]
+    assert {tid: por_id[tid].tanda for tid in vivas} == {tid: esperadas[tid] for tid in vivas}
+    salida = subprocess.run([sys.executable, str(_RAIZ / "scripts" / "verificar_reparto.py"), "--tandas"],
+                            cwd=_RAIZ, capture_output=True, text=True, encoding="utf-8")
+    assert salida.returncode == 0, salida.stdout
+    assert vr.vista_de_tandas(tareas) == [l for l in salida.stdout.splitlines() if l.startswith("Tanda ")]
 
 
-def test_una_task_hecha_o_repetida_o_sin_bloque_se_rechaza():
-    tareas = [_t("A-1", ["a.py"]), _t("B-1", ["b.py"], agente="ninguno"), _t("C-1", ["c.py"]),
-              _t("D-1", ["d.py"], estado="hecha")]
-    briefs = _briefs(_bloque("BL-01", 0, ["A-1", "D-1"], ["a.py", "d.py"]),
-                     _bloque("BL-02", 1, ["A-1", "Q-9"], ["a.py"]))
-    hallazgos = vr.revisar(briefs, tareas, indice)
-    assert "R1 D-1: está hecha y figura en BL-01" in hallazgos
-    assert "R1 A-1: debe figurar en un solo bloque y figura en 2 (BL-01, BL-02)" in hallazgos
-    assert "R1 Q-9: los briefs citan una task que no existe" in hallazgos
-    assert "R1 C-1: debe figurar en un solo bloque y figura en 0" in hallazgos
-    assert not [h for h in hallazgos if h.startswith("R1 B-1")]  # `agente = "ninguno"` cuenta como ubicación
+def test_r3_misma_tanda_no_se_pisa():
+    comun = [_t("A-1", ["f/**"], tanda=2), _t("B-1", ["f/x.py"], tanda=2)]
+    assert vr.revisar(comun, indice) == ["R3 A-1 y B-1 (tanda 2) escriben «f/**» / «f/x.py»"]
+    # m1: sin mirar la `tanda`, dos fichas de tandas distintas también chocarían
+    assert vr.revisar([_t("A-1", ["f/**"], tanda=2), _t("B-1", ["f/x.py"], tanda=3, depende=["A-1"])], indice) == []
+    secciones = [_t("C-1", ["g.py#C"], tanda=3), _t("D-1", ["g.py#D"], tanda=3)]
+    assert vr.revisar(secciones, indice) == []
+    # sin tanda, o hecha, no se planifica y no cuenta para R3
+    assert vr.revisar([_t("A-1", ["f/**"], tanda=2), _t("B-1", ["f/x.py"])], indice) == []
+    assert vr.revisar([_t("A-1", ["f/**"], tanda=2), _t("B-1", ["f/x.py"], tanda=2, estado="hecha")], indice) == []
 
 
-def test_escribe_debe_ser_exactamente_la_propiedad_de_sus_tasks():
-    tareas = [_t("A-1", ["a.py", "b.py"])]
-    briefs = _briefs(_bloque("BL-01", 0, ["A-1"], ["a.py", "ajeno.py"]))
-    assert vr.revisar(briefs, tareas, indice) == [
-        "R2 BL-01: «b.py» es propiedad de sus tasks y no está en «Escribe»",
-        "R2 BL-01: «ajeno.py» está en «Escribe» y no es propiedad de ninguna de sus tasks",
-    ]
+def test_r4_dependencia_antes():
+    def caso(tanda_dep, estado_dep="pendiente"):
+        return vr.revisar([_t("A-1", ["a.py"], tanda=tanda_dep, estado=estado_dep),
+                           _t("B-1", ["b.py"], depende=["A-1"], tanda=2)], indice)
+    assert caso(3) == ["R4 B-1 (tanda 2) depende de A-1 (tanda 3), que no está hecha ni va antes"]
+    assert caso(2) == ["R4 B-1 (tanda 2) depende de A-1 (tanda 2), que no está hecha ni va antes"]  # m2
+    assert caso(None) == ["R4 B-1 (tanda 2) depende de A-1 (sin tanda), que no está hecha ni va antes"]
+    assert caso(1) == []
+    assert caso(None, "hecha") == []
 
 
-def test_dos_bloques_de_una_tanda_no_escriben_el_mismo_archivo_salvo_secciones_distintas():
-    tareas = [_t("A-1", ["f/**"]), _t("B-1", ["f/x.py"]), _t("C-1", ["g.py#C"]), _t("D-1", ["g.py#D"])]
-    mismo = _briefs(_bloque("BL-01", 2, ["A-1"], ["f/**"]), _bloque("BL-02", 2, ["B-1"], ["f/x.py"]),
-                    _bloque("BL-03", 3, ["C-1"], ["g.py#C"]), _bloque("BL-04", 3, ["D-1"], ["g.py#D"]))
-    assert vr.revisar(mismo, tareas, indice) == ["R3 BL-01 y BL-02 (tanda 2) escriben «f/**» / «f/x.py»"]
-    distinta_tanda = _briefs(_bloque("BL-01", 2, ["A-1"], ["f/**"]), _bloque("BL-02", 3, ["B-1"], ["f/x.py"]),
-                             _bloque("BL-03", 3, ["C-1"], ["g.py#C"]), _bloque("BL-04", 3, ["D-1"], ["g.py#D"]))
-    assert vr.revisar(distinta_tanda, tareas, indice) == []
-
-
-def test_una_dependencia_debe_ir_antes_o_estar_hecha():
-    tareas = [_t("A-1", ["a.py"]), _t("B-1", ["b.py"], depende=["A-1"]), _t("C-1", ["c.py"], depende=["Z-1"]),
-              _t("Z-1", ["z.py"], estado="hecha")]
-    tarde = _briefs(_bloque("BL-01", 1, ["B-1"], ["b.py"]), _bloque("BL-02", 1, ["A-1"], ["a.py"]),
-                    _bloque("BL-03", 2, ["C-1"], ["c.py"]))
-    assert vr.revisar(tarde, tareas, indice) == [
-        "R4 B-1 (BL-01, tanda 1) depende de A-1, que no va antes ni en una tanda anterior"]
-    orden = _briefs(_bloque("BL-01", 1, ["B-1", "A-1"], ["a.py", "b.py"]), _bloque("BL-02", 2, ["C-1"], ["c.py"]))
-    assert vr.revisar(orden, tareas, indice) == [
-        "R4 B-1 (BL-01, tanda 1) depende de A-1, que no va antes ni en una tanda anterior"]
-    bien = _briefs(_bloque("BL-01", 0, ["A-1"], ["a.py"]), _bloque("BL-02", 1, ["B-1"], ["b.py"]),
-                   _bloque("BL-03", 2, ["C-1"], ["c.py"]))
-    assert vr.revisar(bien, tareas, indice) == []
-
-
-def test_el_diff_de_una_rama_debe_caber_en_su_escribe():
-    bloque = vr.Bloque("BL-01", 0, ["A-1"], ["f/**", "g.py#C"])
+def test_el_diff_de_una_rama_debe_caber_en_su_propiedad():
+    bloque = vr.bloque_de_ficha(_t("A-1", ["f/**", "g.py#C"]))
     assert vr.revisar_diff(["f/dentro/x.py", "g.py"], bloque, indice) == []
-    assert vr.revisar_diff(["f/x.py", "ajeno.py"], bloque, indice) == ["R5 BL-01: «ajeno.py» está fuera de su «Escribe»"]
+    assert vr.revisar_diff(["f/x.py", "ajeno.py"], bloque, indice) == ["R5 A-1: «ajeno.py» está fuera de su «Escribe»"]
 
 
-def test_agente_ninguno_admite_ids_con_sufijo_de_letra():
-    # DEMO-03f (PRD EVYDENTIA §5.6.8) no se asigna a un agente: lo dice su ficha, no la portada (CI-31).
-    tareas = [_t("DEMO-03f", ["features/videovigilancia/x.py"], agente="ninguno")]
-    assert vr.revisar(_briefs(), tareas, indice) == []
-
-def test_ninguna_tanda_supera_cuatro_bloques():
-    briefs = vr.BRIEFS.read_text(encoding="utf-8")
-    bloques = vr.leer_bloques(briefs)
+def test_ninguna_tanda_supera_cuatro_fichas():
+    tareas, _ = indice.cargar_tareas()
     por_tanda: dict[int, list[str]] = {}
-    for b in bloques:
-        por_tanda.setdefault(b.tanda, []).append(b.id)
-    excesos = {t: bs for t, bs in por_tanda.items() if len(bs) > 4}
-    assert excesos == {}, f"Tandas con más de 4 bloques en paralelo: {excesos}"
+    for t in vr.planificadas(tareas):
+        por_tanda.setdefault(t.tanda, []).append(t.id)
+    excesos = {t: ids for t, ids in por_tanda.items() if len(ids) > 4}
+    assert excesos == {}, f"Tandas con más de 4 fichas en paralelo: {excesos}"
+
 
 def test_ci26_m2_reparto_rama_con_tilde_no_da_hallazgo_r5(tmp_path, monkeypatch):
     import os, subprocess
@@ -196,16 +166,10 @@ def test_ci33_ficha_ajena(tmp_path, monkeypatch):
     assert hallazgos == ["R5 BL-01: «governance/tareas/OT-01.md» está fuera de su «Escribe»"]
 
 
-def test_ci33_brief_y_portada(tmp_path, monkeypatch):
+def test_ci33_tasks_no_es_de_cierre(tmp_path, monkeypatch):
     bloque = vr.Bloque("BL-01", 0, ["BL-01"], ["a.py"])
-    hallazgos = _r5_ci33(tmp_path, monkeypatch, bloque, {},
-                         {"governance/apoyo/briefs/BL-01.md": "brief\n", "governance/artefactos/TASKS.md": "t\n",
-                          "governance/apoyo/BRIEFS_POR_BLOQUE.md": "portada\n"})
-    assert hallazgos == [
-        "R5 BL-01: «governance/apoyo/BRIEFS_POR_BLOQUE.md» está fuera de su «Escribe»",
-        "R5 BL-01: «governance/apoyo/briefs/BL-01.md» está fuera de su «Escribe»",
-        "R5 BL-01: «governance/artefactos/TASKS.md» está fuera de su «Escribe»",
-    ]
+    hallazgos = _r5_ci33(tmp_path, monkeypatch, bloque, {}, {"governance/artefactos/TASKS.md": "t\n"})
+    assert hallazgos == ["R5 BL-01: «governance/artefactos/TASKS.md» está fuera de su «Escribe»"]
 
 
 def test_ci33_seccion_por_sembrar(tmp_path, monkeypatch):

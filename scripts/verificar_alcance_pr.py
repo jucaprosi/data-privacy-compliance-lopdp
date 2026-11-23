@@ -12,7 +12,7 @@ Para el propietario: en el workflow, pasar `--destino "${{ github.base_ref }}"` 
 `--estricto-sin-ficha`. Fuera de PREFIJOS_ESTRICTOS, salirse del alcance solo avisa: esa
 lista es una decisión del propietario y extenderla bloquea a todo el equipo.
 
-Mismo reparto que R5 de `verificar_reparto.py`, pero contra la ficha: una tarea cerrada ya no tiene bloque.
+Mismo reparto que R5 de `verificar_reparto.py`, contra la ficha de la tarea.
 
 LEG-06 R5 (alcance transversal): la ficha que declara `transversal = "aviso-de-autor"` (solo LEG-06) toca archivos
 fuera de su propiedad si el diff de cada uno contra la base (a) añade exactamente una línea igual a `linea_de_aviso`
@@ -35,7 +35,6 @@ _ID_EN_RAMA = re.compile(r"^(?:[^/]+/)*?([a-z]+-\d+[a-z]?)(?:-|$)")
 PREFIJO_SIN_FICHA = "pmv/"  # CI-23: ramas del PMV, sin ficha por decisión del CTO
 DESTINO_PMV = "pmv/consolidacion"  # solo hacia ella se eximen
 EXENCIONES = "governance/tareas/_exenciones_propiedad.txt"
-PORTADA = "governance/apoyo/BRIEFS_POR_BLOQUE.md"  # CI-31 R6: solo entra en el alcance de la ficha que la nombra
 TRANSVERSALES = {"LEG-06": "aviso-de-autor"}  # LEG-06 R5: ninguna otra ficha puede declarar `transversal`
 DIR_TAREAS_REL = "governance/tareas"
 
@@ -109,26 +108,16 @@ def retira_solo_exenciones_propias(diff: str, tarea_id: str, siembra: tuple[str,
 
 # ¤adpa
 def archivos_de_cierre(tarea_id: str) -> set[str]:
-    """Lo que cierra una tarea no es parte de su alcance funcional: su ficha y su brief (CI-29 R5).
-
-    TASKS.md y la portada de briefs ya no son de cierre: no los toca ninguna ficha común."""
-    return {
-        f"governance/apoyo/briefs/{tarea_id}.md",
-        f"governance/tareas/{tarea_id}.md",
-    }
+    """Lo que cierra una tarea no es parte de su alcance funcional: su ficha (GOB-06: los briefs no se versionan)."""
+    return {f"governance/tareas/{tarea_id}.md"}
 
 
 # ¤adpa
 def fuera_de_alcance(archivos: list[str], tarea_id: str, propiedad: tuple[str, ...], indice,
                      exenciones_propias: bool = False) -> list[str]:
     patrones = [p.partition("#")[0] for p in propiedad]
-    duena_de_portada = PORTADA in patrones  # un comodín («governance/**») no basta: la portada se nombra
     cierre = archivos_de_cierre(tarea_id) | ({EXENCIONES} if exenciones_propias else set())
-    return [
-        a for a in archivos
-        if a not in cierre and ((a == PORTADA and not duena_de_portada)
-                                or not any(indice.rutas_se_solapan(a, p) for p in patrones))
-    ]
+    return [a for a in archivos if a not in cierre and not any(indice.rutas_se_solapan(a, p) for p in patrones)]
 
 
 # ¤adpa

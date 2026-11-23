@@ -165,3 +165,27 @@ def test_el_indice_no_incluye_el_estado_para_no_forzar_ediciones_comunes():
 def test_el_resumen_de_estado_cuenta_por_estado():
     resumen = git.resumen_estado([_t("A-1", propiedad=("a",)), _t("A-2", propiedad=("b",), estado="hecha")])
     assert "1 pendiente" in resumen and "1 hecha" in resumen
+
+
+# ----------------------------------------------------------------- GOB-06: tanda y campo retirado
+
+def _ficha_gob06(tid, extra=""):
+    return (f'+++\nid = "{tid}"\ntitulo = "t"\nola = "A"\nestado = "pendiente"\nsala = "s"\n'
+            f'depende_de = []\npropiedad = ["{tid}.py"]\narbitro = "pytest"\n{extra}+++\n\n# {tid}\n')
+
+
+@pytest.mark.parametrize("extra, error", [
+    ("", None),
+    ("tanda = 3\n", None),
+    ("tanda = 0\n", "«tanda» debe ser un entero ≥ 1 y es 0"),  # m4: aceptar tanda = 0 da rojo
+    ("tanda = -2\n", "«tanda» debe ser un entero ≥ 1 y es -2"),
+    ('tanda = "3"\n', "«tanda» debe ser un entero ≥ 1 y es '3'"),
+    ("tanda = true\n", "«tanda» debe ser un entero ≥ 1 y es True"),
+    ("agente" + ' = "ninguno"\n', "el campo «agente» está retirado (GOB-06)"),
+])
+def test_gob06_tanda_entera_positiva_y_sin_agente(tmp_path, extra, error):
+    (tmp_path / "A-1.md").write_bytes(_ficha_gob06("A-1", extra).encode("utf-8"))
+    tareas, errores = git.cargar_tareas(tmp_path)
+    assert errores == ([] if error is None else [f"A-1.md: {error}"])
+    if error is None:
+        assert tareas[0].tanda == (3 if extra else None)

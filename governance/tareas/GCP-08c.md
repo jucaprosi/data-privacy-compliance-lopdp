@@ -3,13 +3,13 @@ id = "GCP-08c"
 titulo = "Datos de ICU completos en la imagen web para formatear en es-EC"
 ola = "D"
 estado = "pendiente"
+tanda = 95
 sala = "frontend, operaciones"
 depende_de = ["CI-36", "GCP-03", "GCP-03b", "GCP-08", "GCP-08b", "QA-12", "RET-05"]
 propiedad = ["frontend/Dockerfile.cloudrun", "tests/test_gcp08_proxy_e_imagen.py", "tests/test_ci36_version_node.py", "tests/test_gcp03_frontend_cloudrun.py"]
 crea = []
 arbitro = "pytest tests/test_gcp08_proxy_e_imagen.py con docker; test_08 da «lunes, 23 de noviembre de 2026» y «$1.234.567,89» dentro de la imagen; test_05 cabe en el presupuesto nuevo de §1; mutación m1 (quitar los datos de ICU) da rojo; pytest tests/test_ci36_version_node.py tests/test_gcp03_frontend_cloudrun.py; índice y especificaciones con código 0."
 rastros = ["¤arbitro"]
-agente = "ninguno"
 +++
 
 # GCP-08c · Datos de ICU completos en la imagen web para formatear en es-EC

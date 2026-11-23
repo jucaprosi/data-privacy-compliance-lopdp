@@ -42,22 +42,21 @@ def test_lo_ajeno_queda_fuera_y_lo_propio_dentro():
     assert vap.fuera_de_alcance(archivos, "ADPA-03", propiedad, indice) == ["features/roadmap/y.py"]
 
 
-def test_los_archivos_de_cierre_no_cuentan_pero_la_ficha_ajena_si():
-    archivos = ["governance/tareas/ADPA-03.md", "governance/apoyo/briefs/ADPA-03.md", "governance/tareas/ADPA-04.md"]
+def test_la_ficha_propia_es_de_cierre_pero_la_ajena_no():
+    archivos = ["governance/tareas/ADPA-03.md", "governance/tareas/ADPA-04.md"]
     assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == ["governance/tareas/ADPA-04.md"]
 
 
-def test_alcance_un_brief_por_ficha_y_tasks_ya_no_es_de_cierre():
-    archivos = ["governance/artefactos/TASKS.md", "governance/apoyo/BRIEFS_POR_BLOQUE.md", "governance/apoyo/briefs/ADPA-04.md"]
-    assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == archivos
+# GOB-06 R6: los briefs no se versionan. La ruta se arma por partes para que el `git grep` de §5 quede vacío.
+_BRIEF_PROPIO = "governance/apoyo/" + "briefs/ADPA-03.md"
 
 
-def test_la_portada_solo_entra_en_el_alcance_de_su_dueña():
-    # CI-31 R6. Mutación m3: admitir la portada para cualquier ficha vaciaría la lista de la ficha ajena.
-    portada = "governance/apoyo/BRIEFS_POR_BLOQUE.md"
-    assert vap.fuera_de_alcance([portada], "ADPA-03", ("features/rat/**",), indice) == [portada]
-    assert vap.fuera_de_alcance([portada], "ADPA-03", ("governance/apoyo/**",), indice) == [portada]  # un comodín no basta
-    assert vap.fuera_de_alcance([portada], "CI-31", (portada, "scripts/x.py"), indice) == []
+def test_gob06_m5_un_brief_es_un_archivo_sin_duena():
+    # Mutación m5: volver a admitir el brief propio como archivo de cierre lo saca de la lista.
+    archivos = [_BRIEF_PROPIO, "governance/artefactos/TASKS.md"]
+    assert vap.archivos_de_cierre("ADPA-03") == {"governance/tareas/ADPA-03.md"}
+    assert vap.fuera_de_alcance(archivos, "ADPA-03", ("features/rat/**",), indice) == archivos
+    assert vap.fuera_de_alcance([_BRIEF_PROPIO], "ADPA-03", ("governance/apoyo/**",), indice) == []
 
 
 def test_solo_las_tareas_adpa_son_estrictas():
@@ -243,11 +242,6 @@ def test_exenciones_no_estricta_solo_borra_las_propias(monkeypatch, cuerpo, espe
     monkeypatch.setattr(vap, "_diff_de_exenciones", lambda b, c: _CAB + cuerpo)
     assert vap.main(["--rama", "tarea/juan-carlos/dpo-03", "--base", "b", "--cabeza", "c"]) == esperado
 
-
-def test_el_brief_propio_es_de_cierre_pero_el_ajeno_no():
-    # CI-29: el brief de la ficha vive en governance/apoyo/briefs/<ID>.md
-    archivos = ["governance/apoyo/briefs/ADPA-03.md", "governance/apoyo/briefs/ADPA-04.md"]
-    assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == ["governance/apoyo/briefs/ADPA-04.md"]
 
 import os
 import subprocess

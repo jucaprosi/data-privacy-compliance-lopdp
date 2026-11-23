@@ -3,6 +3,8 @@
 
 > **Objetivo:** Ejecutar de manera ordenada y secuencial 6 tareas que comparten puntos de integración globales (menús del frontend y pasillos comunes), evitando conflictos de merge y sobrescritura de componentes compartidos.
 > **Motivo de Secuencialidad:** Estas tareas convergen en `frontend/src/components/layout/menus/index.ts`, `frontend/src/components/layout/pantallas/index.tsx` y compuertas comunes como `app_core/pasillo/organizacion.py` y `app_core/pasillo/evidencias.py`.
+>
+> **Briefs (GOB-06):** el brief de cada ficha no está en el repositorio: vive en la carpeta local `C:\Users\Juan Carlos\compartido\evydentia\`, en `briefs\<ID>.md` (la versión más alta, `<ID>.v2.md`, si la hay). Antes de lanzar una tanda, `python scripts/verificar_briefs_locales.py --tanda N` comprueba que cada brief coincide con su ficha.
 
 ## Orden de Relevos Recomendado
 

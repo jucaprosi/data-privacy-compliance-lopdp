@@ -60,7 +60,7 @@ Punto de extensión
 Copia de LOPDP (GOB-05)
     La API pública es la de LOPDP (``cargar_tareas()``, ``validar()``, ``rutas_se_solapan``, ``salas_del_prd``...),
     construida sobre las funciones del molde. Además del molde comprueba el catálogo de salas del PRD (apartado 5.2),
-    las olas, el campo ``agente`` (CI-31) y las secciones del archivo de exenciones (CI-22). El índice no se versiona:
+    las olas, el campo opcional ``tanda`` (GOB-06 R2: entero ≥ 1; el campo ``agente`` está retirado) y las secciones del archivo de exenciones (CI-22). El índice no se versiona:
     ``--escribir`` lo deja en ``governance/artefactos/_generado/`` (CI-29). Con 0 tareas no hechas es válido y con 0
     tareas cargadas da error (CI-35). Sin árbol de git es un error. ``--generar-exenciones`` sigue disponible
     (COORDINACION C.13 de ZERAG) y se niega si la lista ya existe.
@@ -102,7 +102,7 @@ ESTADO_HECHA = "hecha"
 CAMPOS = ("id", "titulo", "ola", "estado", "sala", "depende_de", "propiedad", "arbitro")
 CAMPOS_OPCIONALES = ("crea", "siembra")  # TICKET-277: vacíos por defecto
 
-# LOPDP: rutas, olas y agentes de esta copia. El molde recibe la raíz por ``main(--raiz)``; los consumidores de LOPDP
+# LOPDP: rutas y olas de esta copia. El molde recibe la raíz por ``main(--raiz)``; los consumidores de LOPDP
 #   (scripts/verificar_reparto.py, scripts/verificar_alcance_pr.py y las pruebas) usan estas constantes.
 RAIZ = Path(__file__).resolve().parent.parent
 DIR_TAREAS = RAIZ / "governance" / "tareas"
@@ -110,7 +110,7 @@ TASKS_MD = RAIZ / "governance" / "artefactos" / "TASKS.md"
 PRD_MD = RAIZ / "governance" / "artefactos" / "PRD.md"
 INDICE_GENERADO = RAIZ / "governance" / "artefactos" / "_generado" / "INDICE_TAREAS.md"
 OLAS = ("A", "B", "C", "D", "E", "indep", "backlog")
-AGENTES = ("asignable", "ninguno")  # CI-31: «ninguno» = ficha sin brief, que no se asigna a un agente
+CAMPOS_RETIRADOS = ("agente",)  # GOB-06 R6: los briefs no se versionan y ninguna ficha declara agente
 
 
 # --------------------------------------------------------------------------- tipos
@@ -129,7 +129,7 @@ class Tarea:
     archivo: str = ""
     crea: Tuple[str, ...] = ()
     siembra: Tuple[str, ...] = ()
-    agente: str = "asignable"  # LOPDP (CI-31): «ninguno» = ficha sin brief; el molde no tiene briefs
+    tanda: Optional[int] = None  # LOPDP (GOB-06 R2): tanda planificada de una ficha no hecha
 
 
 @dataclass(frozen=True)
@@ -225,7 +225,7 @@ def cargar_tareas(directorio: Path = DIR_TAREAS) -> Tuple[List[Tarea], List[str]
     """Devuelve (tareas, errores).
 
     LOPDP: con directorio por defecto, sin la lista de archivos leídos (que solo usa ``Base`` en ``generar``) y con el
-    campo ``agente`` (CI-31). Cinco consumidores de LOPDP llaman ``cargar_tareas()`` y esperan dos valores.
+    campo opcional ``tanda`` (GOB-06 R2). Cinco consumidores de LOPDP llaman ``cargar_tareas()`` y esperan dos valores.
     """
     tareas: List[Tarea] = []
     errores: List[str] = []
@@ -256,13 +256,21 @@ def cargar_tareas(directorio: Path = DIR_TAREAS) -> Tuple[List[Tarea], List[str]
                       estado=str(datos["estado"]), sala=str(datos["sala"]), depende_de=depende,
                       propiedad=propiedad, arbitro=str(datos["arbitro"]), archivo=ruta.name,
                       crea=opcionales["crea"], siembra=opcionales["siembra"],
-                      agente=str(datos.get("agente", "asignable")))  # LOPDP (CI-31)
+                      tanda=datos.get("tanda"))  # LOPDP (GOB-06 R2)
         if ruta.stem != tarea.id:
             errores.append(f"{ruta.name}: el nombre del archivo debe ser {tarea.id}.md")
-        if tarea.agente not in AGENTES:  # LOPDP (CI-31)
-            errores.append(f"{ruta.name}: agente «{tarea.agente}» no es uno de {list(AGENTES)}")
+        errores += [f"{ruta.name}: {e}" for e in errores_de_cabecera_lopdp(datos)]
         tareas.append(tarea)
     return tareas, errores
+
+
+def errores_de_cabecera_lopdp(datos: dict) -> List[str]:
+    """LOPDP (GOB-06): ``tanda``, si está, es un entero ≥ 1; ningún campo retirado (``agente``) sigue en la cabecera."""
+    errores = [f"el campo «{c}» está retirado (GOB-06)" for c in CAMPOS_RETIRADOS if c in datos]
+    tanda = datos.get("tanda")
+    if tanda is not None and (type(tanda) is not int or tanda < 1):
+        errores.append(f"«tanda» debe ser un entero ≥ 1 y es {tanda!r}")
+    return errores
 
 
 # --------------------------------------------------------------------------- grafo

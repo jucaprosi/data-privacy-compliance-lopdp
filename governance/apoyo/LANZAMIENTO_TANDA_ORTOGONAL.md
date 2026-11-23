@@ -3,6 +3,8 @@
 
 > **Objetivo:** Ejecutar concurrentemente 14 tareas 100% ortogonales sin riesgo de colisión en Git ni cruces de mamparos ADPA.
 > **Fuente de Verdad:** Cada tarea reside en `governance/tareas/<ID>.md`. Cada agente debe operar confinado exclusivamente en los archivos de su lista `propiedad`.
+>
+> **Briefs (GOB-06):** el brief de cada ficha no está en el repositorio: vive en la carpeta local `C:\Users\Juan Carlos\compartido\evydentia\`, en `briefs\<ID>.md` (la versión más alta, `<ID>.v2.md`, si la hay). Antes de lanzar una tanda, `python scripts/verificar_briefs_locales.py --tanda N` comprueba que cada brief coincide con su ficha.
 
 ## Matriz de Independencia y Concurrencia
 

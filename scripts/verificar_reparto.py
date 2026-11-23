@@ -1,32 +1,19 @@
 # -*- coding: utf-8 -*-
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
-"""Árbitro del reparto en bloques: los briefs coinciden con las tasks y los bloques de una tanda no se pisan.
+"""Árbitro del reparto en tandas: las fichas de una misma tanda no se pisan y cada una va después de lo que necesita.
 
-Función pura `revisar(briefs, tareas, indice)`: recibe el texto de los briefs y las tareas ya cargadas, y devuelve la
-lista de hallazgos (vacía = reparto válido). No lee el disco más que en `main`.
+GOB-06: los briefs no se versionan; la tanda es el campo opcional `tanda = N` de la ficha (R2). Función pura
+`revisar(tareas, indice)`: recibe las fichas ya cargadas y devuelve la lista de hallazgos (vacía = reparto válido).
+No lee el disco más que en `main`.
 
-CI-29: los bloques viven uno por archivo en `governance/apoyo/briefs/<ID>.md` (ID = primera ficha del bloque) y
-`governance/apoyo/BRIEFS_POR_BLOQUE.md` queda como portada (reglas comunes e informe final). `BRIEFS` lee la
-carpeta y devuelve el texto combinado, de modo que R1 a R8 se aplican igual que con el archivo único.
-
-Comprueba:
-  R1  toda task no hecha tiene un solo brief o `agente = "ninguno"` en su ficha, nunca las dos cosas; una hecha no tiene brief.
-  R2  la lista «Escribe» de un bloque es exactamente la unión de la `propiedad` de sus tasks.
-  R3  dos bloques de una misma tanda no escriben el mismo archivo (salvo secciones reservadas distintas).
-  R4  toda dependencia de una task está hecha, o va antes en su bloque, o cae en una tanda anterior.
-  R5  (con --rama) los archivos del diff de una rama caben en la lista «Escribe» de su bloque.
+Comprueba, sobre las fichas no hechas que llevan `tanda`:
+  R3  dos fichas de una misma tanda no comparten ningún archivo de su `propiedad` (salvo secciones reservadas distintas).
+  R4  cada `depende_de` está hecha o tiene una `tanda` menor.
+  R5  (con --rama) los archivos del diff de una rama caben en la `propiedad` de su ficha (--bloque es su id).
       CI-33: admite la ficha propia (salvo que pase a hecha) y las secciones por sembrar que declara.
-  R6  la línea «Hecho si» de cada task del bloque es igual al `arbitro` de su ficha (sin faltar, sobrar ni diferir).
-  R7  toda dependencia pendiente de las tasks del bloque, ajena al bloque, está citada en «Depende de» (citar de más avisa).
-  R8  el título de cada task del «Objetivo» es el de su ficha y «Sala(s)» es la unión de las `sala` de sus tasks.
-  R9  (CI-29) un bloque por archivo, con el nombre de su primera ficha, y ningún bloque en la portada.
-CI-31: el id del bloque es el de su ficha (`### <ID> · título (tanda N)`); la tanda se lee de la cabecera.
 
-`--regenerar` reescribe en el sitio las líneas «Hecho si» desde el `arbitro` (lo ejecuta la coordinadora).
-`--tandas` imprime la vista de tandas, reconstruida al leer las cabeceras (CI-31 R7; no escribe nada).
-`--repartir` migra el archivo único a la carpeta (una sola vez, CI-29): cada bloque pasa sin cambiar una letra.
-Los bloques sin «Contexto» ni «Hecho si» (los sintéticos de las pruebas) quedan fuera de R6 a R8.
+`--tandas` imprime la vista de tandas, calculada al leer el campo `tanda` de las fichas (no escribe nada).
 """
 from __future__ import annotations
 
@@ -38,10 +25,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
-PORTADA = RAIZ / "governance" / "apoyo" / "BRIEFS_POR_BLOQUE.md"
-DIR_BRIEFS = RAIZ / "governance" / "apoyo" / "briefs"
-NOTA_DE_PORTADA = ("Los bloques de cada ficha viven en `governance/apoyo/briefs/<ID>.md`, uno por archivo (CI-29); "
-                   "`ID` es la primera ficha del «Objetivo» del bloque. Esta portada no lleva bloques.\n\n")
 
 
 # ¤adpa
@@ -67,319 +50,50 @@ def _cargar_git_diff():
 # ¤adpa
 @dataclass
 class Bloque:
+    """Alcance de una rama para R5: sus fichas y los archivos que puede escribir (la `propiedad` de esas fichas)."""
     id: str
-    tanda: int
+    tanda: int | None
     tareas: list[str] = field(default_factory=list)
     escribe: list[str] = field(default_factory=list)
-    titulos: dict[str, str] = field(default_factory=dict)    # id -> título escrito en «Objetivo»
-    hecho_si: dict[str, str] = field(default_factory=dict)   # id -> texto de su línea «Hecho si»
-    con_hecho_si: bool = False
-    salas: list[str] | None = None                            # None: el bloque no tiene «Contexto»
-    depende: list[str] | None = None
-
-
-_CABECERA = re.compile(r"(?m)^### ([A-Za-z0-9][A-Za-z0-9-]*) · .+?\(tanda (\d+)\)\s*$")
-_TAREA = re.compile(r"(?m)^\d+\. `([A-Za-z0-9-]+)`")
-_RUTA = re.compile(r"(?m)^\s+- `([^`]+)`\s*$")
-_TITULO = re.compile(r"(?m)^\d+\. `([A-Za-z0-9-]+)` — ([^\r\n]*)")
-_HECHO = re.compile(r"(?m)^- `([A-Za-z0-9-]+)`: ([^\r\n]*)")
-_CONTEXTO = re.compile(r"(?m)^\*\*Contexto\.\*\* Sala(?:\(s\))?:\s*(.*?)\.\s+Depende de:\s*([^\r\n]*?)"
-                       r"(?:\.\s+Especificaciones:[^\r\n]*|\.?)\s*$")
-_ID_CITADO = re.compile(r"`([A-Z]+-\d+[a-z]?)`")
 
 
 # ¤adpa
-def _norm(texto: str) -> str:
-    return " ".join(texto.split())
+def bloque_de_ficha(tarea) -> Bloque:
+    """GOB-06: el alcance de una ficha es su propia `propiedad`; ya no hay brief del que leerlo."""
+    return Bloque(tarea.id, tarea.tanda, [tarea.id], list(tarea.propiedad))
 
 
 # ¤adpa
-def _nombres_de_sala(texto: str) -> list[str]:
-    return re.findall(r"[A-Za-z_]\w*", texto)
+def planificadas(tareas: list) -> list:
+    """Las fichas no hechas con `tanda` (R2), en orden de tanda e id."""
+    return sorted((t for t in tareas if t.estado != "hecha" and t.tanda is not None), key=lambda t: (t.tanda, t.id))
 
 
 # ¤adpa
-def leer_bloques(briefs: str) -> list[Bloque]:
-    marcas = list(_CABECERA.finditer(briefs))
-    bloques: list[Bloque] = []
-    for i, m in enumerate(marcas):
-        fin = marcas[i + 1].start() if i + 1 < len(marcas) else len(briefs)
-        cuerpo = briefs[m.end():fin]
-        cuerpo = re.split(r"(?m)^## ", cuerpo, maxsplit=1)[0]  # no arrastra la sección siguiente
-        objetivo = cuerpo.split("**Objetivo**", 1)[-1].split("**Rastro", 1)[0]
-        escribe = cuerpo.split("**Escribe**", 1)[-1].split("**No hagas", 1)[0] if "**Escribe**" in cuerpo else ""
-        bloque = Bloque(m.group(1), int(m.group(2)), _TAREA.findall(objetivo), _RUTA.findall(escribe))
-        bloque.titulos = {tid: _norm(t) for tid, t in _TITULO.findall(objetivo)}
-        bloque.con_hecho_si = "**Hecho si**" in cuerpo
-        if bloque.con_hecho_si:
-            bloque.hecho_si = {tid: _norm(t) for tid, t in _HECHO.findall(cuerpo.split("**Hecho si**", 1)[1])}
-        ctx = _CONTEXTO.search(cuerpo)
-        if ctx:
-            bloque.salas = _nombres_de_sala(ctx.group(1))
-            bloque.depende = _ID_CITADO.findall(ctx.group(2))
-        bloques.append(bloque)
-    return bloques
-
-
-# ¤adpa
-_SECCION = re.compile(r"(?m)^## ")
-
-
-# ¤adpa
-def _orden_de_bloque(texto: str) -> tuple[int, str]:
-    m = _CABECERA.search(texto)
-    return (int(m.group(2)), m.group(1)) if m else (10 ** 9, "")
-
-
-# ¤adpa
-def nombre_de_brief(bloque: str) -> str:
-    """Nombre (sin `.md`) del archivo de un bloque: su primera ficha del «Objetivo», o el id del bloque."""
-    objetivo = bloque.split("**Objetivo**", 1)[-1].split("**Rastro", 1)[0]
-    ids = _TAREA.findall(objetivo)
-    if ids:
-        return ids[0]
-    m = _CABECERA.search(bloque)
-    return m.group(1) if m else "SIN-BLOQUE"
-
-
-# ¤adpa
-def repartir(texto: str) -> tuple[str, dict[str, str]]:
-    """CI-29 R3. Separa el archivo único: (portada, {nombre: bloque}). Cada bloque es un corte exacto del texto.
-
-    Un bloque va de su encabezado al siguiente encabezado de bloque o al siguiente «## » (lo que llegue antes);
-    la portada es el resto, con la nota de remisión donde estaba el primer bloque.
-    """
-    marcas = list(_CABECERA.finditer(texto))
-    if not marcas:
-        return texto, {}
-    bloques: dict[str, str] = {}
-    trozos: list[str] = []
-    pos = 0
-    for i, m in enumerate(marcas):
-        siguiente = marcas[i + 1].start() if i + 1 < len(marcas) else len(texto)
-        seccion = _SECCION.search(texto, m.end())
-        fin = min(siguiente, seccion.start() if seccion else len(texto))
-        cuerpo = texto[m.start():fin]
-        nombre = nombre_de_brief(cuerpo)
-        if nombre in bloques:
-            raise ValueError(f"dos bloques darían el mismo archivo {nombre}.md")
-        bloques[nombre] = cuerpo
-        trozos.append(texto[pos:m.start()])
-        if i == 0 and not texto[:m.start()].endswith(NOTA_DE_PORTADA):
-            trozos.append(NOTA_DE_PORTADA)
-        pos = fin
-    trozos.append(texto[pos:])
-    return "".join(trozos), bloques
-
-
-# ¤adpa
-def combinar(portada: str, bloques: dict[str, str]) -> str:
-    """Inverso de `repartir`: los bloques, por tanda e id, al final de la sección «## Briefs» de la portada."""
-    if not bloques:
-        return portada
-    orden = [v if v.endswith("\n") else v + "\n" for v in sorted(bloques.values(), key=_orden_de_bloque)]
-    cabecera = re.search(r"(?m)^## Briefs\b.*$", portada)
-    if cabecera is None:
-        return portada + "".join(orden)
-    siguiente = _SECCION.search(portada, cabecera.end())
-    pos = siguiente.start() if siguiente else len(portada)
-    return portada[:pos] + "".join(orden) + portada[pos:]
-
-
-# ¤adpa
-def revisar_carpeta(portada: str, archivos: dict[str, str]) -> list[str]:
-    """R9: la portada no lleva bloques; cada archivo lleva uno solo y se llama como su primera ficha."""
-    hallazgos: list[str] = []
-    if _CABECERA.search(portada):
-        hallazgos.append("R9 la portada BRIEFS_POR_BLOQUE.md lleva bloques; van en governance/apoyo/briefs/<ID>.md")
-    vistos: dict[str, str] = {}
-    for nombre, texto in sorted(archivos.items()):
-        marcas = _CABECERA.findall(texto)
-        if len(marcas) != 1:
-            hallazgos.append(f"R9 briefs/{nombre}.md debe llevar exactamente un bloque y lleva {len(marcas)}")
-            continue
-        esperado = nombre_de_brief(texto)
-        if nombre != esperado:
-            hallazgos.append(f"R9 briefs/{nombre}.md lleva el bloque {marcas[0][0]} y debería llamarse {esperado}.md")
-        if marcas[0][0] in vistos:
-            hallazgos.append(f"R9 el bloque {marcas[0][0]} está en briefs/{vistos[marcas[0][0]]}.md y en briefs/{nombre}.md")
-        vistos[marcas[0][0]] = nombre
-    return hallazgos
-
-
-# ¤adpa
-class _BriefsEnCarpeta:
-    """Hace que `BRIEFS` se lea y se escriba como el archivo único de antes, sobre la portada y la carpeta."""
-
-    def __init__(self, portada: Path, carpeta: Path) -> None:
-        self.portada, self.carpeta = portada, carpeta
-
-    def texto_de_portada(self) -> str:
-        return self.portada.read_bytes().decode("utf-8")
-
-    def archivos(self) -> dict[str, str]:
-        if not self.carpeta.is_dir():
-            return {}
-        return {p.stem: p.read_bytes().decode("utf-8") for p in sorted(self.carpeta.glob("*.md"))}
-
-    def read_text(self, encoding: str = "utf-8") -> str:
-        return combinar(self.texto_de_portada(), self.archivos())
-
-    def read_bytes(self) -> bytes:
-        return self.read_text().encode("utf-8")
-
-    def write_bytes(self, datos: bytes) -> None:
-        portada, bloques = repartir(datos.decode("utf-8"))
-        self.portada.write_bytes(portada.encode("utf-8"))
-        if bloques:
-            self.carpeta.mkdir(parents=True, exist_ok=True)
-        for nombre, cuerpo in bloques.items():
-            (self.carpeta / f"{nombre}.md").write_bytes(cuerpo.encode("utf-8"))
-
-
-BRIEFS = _BriefsEnCarpeta(PORTADA, DIR_BRIEFS)
-
-
-# ¤adpa
-def revisar(briefs: str, tareas: list, indice) -> list[str]:
+def revisar(tareas: list, indice) -> list[str]:
     por_id = {t.id: t for t in tareas}
-    bloques = leer_bloques(briefs)
+    vivas = planificadas(tareas)
     hallazgos: list[str] = []
 
-    ubicacion: dict[str, list[str]] = {}
-    for b in bloques:
-        for tid in b.tareas:
-            ubicacion.setdefault(tid, []).append(b.id)
-    for t in tareas:  # CI-31: `agente = "ninguno"` es una ubicación más, que excluye a las demás
-        if getattr(t, "agente", "asignable") == "ninguno":
-            ubicacion.setdefault(t.id, []).append('agente "ninguno"')
-
-    for t in tareas:  # R1
-        donde = ubicacion.get(t.id, [])
-        if t.estado == "hecha" and donde:
-            hallazgos.append(f"R1 {t.id}: está hecha y figura en {', '.join(donde)}")
-        elif t.estado != "hecha" and len(donde) != 1:
-            hallazgos.append(f"R1 {t.id}: debe figurar en un solo bloque y figura en {len(donde)}"
-                             + (f" ({', '.join(donde)})" if donde else ""))
-    for tid in ubicacion:
-        if tid not in por_id:
-            hallazgos.append(f"R1 {tid}: los briefs citan una task que no existe")
-
-    for b in bloques:  # R2
-        propiedad = {p for tid in b.tareas if tid in por_id for p in por_id[tid].propiedad}
-        escribe = set(b.escribe)
-        for falta in sorted(propiedad - escribe):
-            hallazgos.append(f"R2 {b.id}: «{falta}» es propiedad de sus tasks y no está en «Escribe»")
-        for sobra in sorted(escribe - propiedad):
-            hallazgos.append(f"R2 {b.id}: «{sobra}» está en «Escribe» y no es propiedad de ninguna de sus tasks")
-
-    for i, a in enumerate(bloques):  # R3
-        for b in bloques[i + 1:]:
+    for i, a in enumerate(vivas):  # R3
+        for b in vivas[i + 1:]:
             if a.tanda != b.tanda:
                 continue
-            for pa in a.escribe:
-                for pb in b.escribe:
+            for pa in a.propiedad:
+                for pb in b.propiedad:
                     if indice.propiedades_se_solapan(pa, pb):
                         hallazgos.append(f"R3 {a.id} y {b.id} (tanda {a.tanda}) escriben «{pa}» / «{pb}»")
 
-    tanda_de = {tid: b.tanda for b in bloques for tid in b.tareas}  # R4
-    for b in bloques:
-        for pos, tid in enumerate(b.tareas):
-            if tid not in por_id:
+    for t in vivas:  # R4
+        for dep in t.depende_de:
+            if dep not in por_id or por_id[dep].estado == "hecha":
                 continue
-            for dep in por_id[tid].depende_de:
-                if dep not in por_id or por_id[dep].estado == "hecha":
-                    continue
-                if dep in b.tareas[:pos] or tanda_de.get(dep, b.tanda) < b.tanda:
-                    continue
-                hallazgos.append(f"R4 {tid} ({b.id}, tanda {b.tanda}) depende de {dep}, que no va antes ni en una tanda anterior")
-    hallazgos += revisar_copias(bloques, por_id)[0]  # R6 a R8
+            tanda_dep = por_id[dep].tanda
+            if tanda_dep is not None and tanda_dep < t.tanda:
+                continue
+            donde = "sin tanda" if tanda_dep is None else f"tanda {tanda_dep}"
+            hallazgos.append(f"R4 {t.id} (tanda {t.tanda}) depende de {dep} ({donde}), que no está hecha ni va antes")
     return hallazgos
-
-
-# ¤adpa
-def revisar_copias(bloques: list[Bloque], por_id: dict) -> tuple[list[str], list[str]]:
-    """R6, R7 y R8: lo que el bloque copia de sus fichas. Devuelve (hallazgos, avisos)."""
-    hallazgos: list[str] = []
-    avisos: list[str] = []
-    for b in bloques:
-        if not b.con_hecho_si and b.salas is None:
-            continue
-        tasks = [por_id[t] for t in b.tareas if t in por_id]
-        if b.con_hecho_si:  # R6
-            for t in tasks:
-                actual = b.hecho_si.get(t.id)
-                if actual is None:
-                    hallazgos.append(f"R6 {b.id}: falta la línea «Hecho si» de {t.id}")
-                elif actual != _norm(t.arbitro):
-                    hallazgos.append(f"R6 {b.id}: «Hecho si» de {t.id} difiere del `arbitro` de su ficha")
-            for tid in b.hecho_si:
-                if tid not in b.tareas:
-                    hallazgos.append(f"R6 {b.id}: «Hecho si» trae {tid}, que no está en el «Objetivo»")
-        for t in tasks:  # R8, títulos
-            if b.titulos and b.titulos.get(t.id) != _norm(t.titulo):
-                hallazgos.append(f"R8 {b.id}: el título de {t.id} en «Objetivo» difiere del de su ficha")
-        if b.salas is not None:  # R8, salas
-            esperadas = {s for t in tasks for s in _nombres_de_sala(t.sala)}
-            if set(b.salas) != esperadas:
-                hallazgos.append(f"R8 {b.id}: «Sala(s)» es {sorted(set(b.salas))} y la unión de sus tasks es {sorted(esperadas)}")
-        if b.depende is not None:  # R7
-            necesarias = {d for t in tasks for d in t.depende_de
-                          if d in por_id and por_id[d].estado != "hecha" and d not in b.tareas}
-            for d in sorted(necesarias - set(b.depende)):
-                hallazgos.append(f"R7 {b.id}: «Depende de» no cita {d}, pendiente y ajena al bloque")
-            for d in sorted(set(b.depende) - necesarias):
-                avisos.append(f"{b.id}: «Depende de» cita {d}, que ninguna task del bloque necesita ahora")
-    return hallazgos, avisos
-
-
-# ¤adpa
-def regenerar(briefs: str, tareas: list) -> str:
-    """Reescribe las líneas «Hecho si» de cada bloque desde el `arbitro` de sus fichas; conserva los saltos de línea."""
-    por_id = {t.id: t for t in tareas}
-    tasks_de = {b.id: [t for t in b.tareas if t in por_id] for b in leer_bloques(briefs.replace("\r\n", "\n"))}
-    lineas = briefs.splitlines(keepends=True)
-    salida: list[str] = []
-    i = 0
-    actual = None
-    while i < len(lineas):
-        linea = lineas[i]
-        cab = _CABECERA.match(linea.rstrip("\r\n"))
-        if cab:
-            actual = cab.group(1)
-        salida.append(linea)
-        i += 1
-        if actual and linea.startswith("**Hecho si**"):
-            fin = i
-            while fin < len(lineas) and not lineas[fin].startswith("#"):
-                fin += 1
-            salida += _regenerar_region(lineas[i:fin], tasks_de.get(actual, []), por_id,
-                                        "\r\n" if linea.endswith("\r\n") else "\n")
-            i = fin
-    return "".join(salida)
-
-
-# ¤adpa
-def _regenerar_region(region: list[str], ids: list[str], por_id: dict, eol: str) -> list[str]:
-    nuevas = {tid: f"- `{tid}`: {_norm(por_id[tid].arbitro)}{eol}" for tid in ids}
-    puestas: set[str] = set()
-    res: list[str] = []
-    for linea in region:
-        m = _HECHO.match(linea)
-        if m:
-            tid = m.group(1)
-            if tid in nuevas and tid not in puestas:
-                res.append(nuevas[tid])
-                puestas.add(tid)
-            continue  # sobra o repetida
-        res.append(linea)
-    faltan = [nuevas[t] for t in ids if t not in puestas]
-    if faltan:
-        pos = next((k for k, ln in enumerate(res) if ln.startswith("- `")), None)
-        if pos is None:
-            pos = next((k for k, ln in enumerate(res) if k > 0 and not ln.strip()), len(res))
-        res[pos:pos] = faltan
-    return res
 
 
 _MARCAS_DE_SECCION = (("=== {} ===", "=== fin {} ==="), ("--- INICIO {} ---", "--- FIN {} ---"))
@@ -437,7 +151,7 @@ def revisar_diff(archivos: list[str], bloque: Bloque, indice, leer_rama=None, li
                  leer_base=None) -> list[str]:
     """R5: cada archivo del diff cae dentro de «Escribe», con las excepciones de CI-33.
 
-    R1: la ficha propia de cada tarea del bloque entra sin declararla. R2: el brief, las portadas y TASKS.md no.
+    R1: la ficha propia de cada tarea del bloque entra sin declararla. R2: TASKS.md no.
     R3: un archivo fuera de «Escribe» entra si la ficha propia leída en la rama (`leer_rama`) declara `ruta#<ID>`
     de una tarea del bloque, el archivo tiene esa sección y todas sus `lineas_cambiadas(ruta)` caen dentro.
     R4: la ficha propia no pasa a `hecha` en la rama (`leer_base` lee la ficha en la base).
@@ -488,67 +202,41 @@ def revisar_rama(rama: str, base: str, bloque: Bloque, indice) -> list[str]:
 
 
 # ¤adpa
-def vista_de_tandas(bloques: list[Bloque]) -> list[str]:
-    """CI-31 R7: una línea por tanda, en orden, con los ids de sus bloques. Se calcula al leer; no se guarda."""
+def vista_de_tandas(tareas: list) -> list[str]:
+    """Una línea por tanda, en orden, con las fichas no hechas que la llevan. Se calcula al leer; no se guarda."""
     por_tanda: dict[int, list[str]] = {}
-    for b in bloques:
-        por_tanda.setdefault(b.tanda, []).append(b.id)
-    return [f"Tanda {n}: {', '.join(sorted(ids))}" for n, ids in sorted(por_tanda.items())]
+    for t in planificadas(tareas):
+        por_tanda.setdefault(t.tanda, []).append(t.id)
+    return [f"Tanda {n}: {', '.join(ids)}" for n, ids in sorted(por_tanda.items())]
 
 
 # ¤adpa
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--rama", help="rama cuyo diff se comprueba contra «Escribe» (R5)")
-    ap.add_argument("--bloque", help="bloque de la rama (id de su ficha), obligatorio con --rama")
+    ap.add_argument("--rama", help="rama cuyo diff se comprueba contra la `propiedad` de su ficha (R5)")
+    ap.add_argument("--bloque", help="id de la ficha de la rama, obligatorio con --rama")
     ap.add_argument("--base", default="main")
-    ap.add_argument("--regenerar", action="store_true",
-                    help="reescribe las líneas «Hecho si» desde el `arbitro` de las fichas")
-    ap.add_argument("--tandas", action="store_true",
-                    help="CI-31: imprime la vista de tandas reconstruida desde las cabeceras (no escribe)")
-    ap.add_argument("--repartir", action="store_true",
-                    help="CI-29: migra el archivo único a governance/apoyo/briefs/<ID>.md (una sola vez)")
+    ap.add_argument("--tandas", action="store_true", help="imprime la vista de tandas leída de las fichas (no escribe)")
     args = ap.parse_args(argv)
     indice = _cargar_indice()
     tareas, errores = indice.cargar_tareas()
-    if args.repartir:
-        crudo = PORTADA.read_bytes().decode("utf-8")
-        portada, bloques = repartir(crudo)
-        if not bloques:
-            print("REPARTIR: la portada ya no lleva bloques; nada que migrar.")
-            return 0
-        recompuesto = combinar(portada, bloques)
-        assert len(recompuesto) - len(NOTA_DE_PORTADA) == len(crudo), "el reparto perdería texto"
-        assert repartir(recompuesto) == (portada, bloques), "el reparto no se puede deshacer"
-        BRIEFS.write_bytes(crudo.encode("utf-8"))
-        print(f"REPARTIDO: {len(bloques)} bloques en {DIR_BRIEFS.relative_to(RAIZ).as_posix()}/.")
-    if args.regenerar:
-        crudo = BRIEFS.read_bytes().decode("utf-8")
-        nuevo = regenerar(crudo, tareas)
-        if nuevo != crudo:
-            BRIEFS.write_bytes(nuevo.encode("utf-8"))
-        print("REGENERADO: líneas «Hecho si» reescritas." if nuevo != crudo else "REGENERADO: sin cambios.")
-    briefs = BRIEFS.read_text(encoding="utf-8")
-    hallazgos = list(errores) + revisar(briefs, tareas, indice)
-    hallazgos += revisar_carpeta(BRIEFS.texto_de_portada(), BRIEFS.archivos())
+    hallazgos = list(errores) + revisar(tareas, indice)
     if args.rama:
-        bloque = next((b for b in leer_bloques(briefs) if b.id == args.bloque), None)
-        if bloque is None:
-            hallazgos.append(f"R5 el bloque «{args.bloque}» no existe en los briefs")
+        ficha = next((t for t in tareas if t.id == args.bloque), None)
+        if ficha is None:
+            hallazgos.append(f"R5 la ficha «{args.bloque}» no existe")
         else:
-            hallazgos += revisar_rama(args.rama, args.base, bloque, indice)
+            hallazgos += revisar_rama(args.rama, args.base, bloque_de_ficha(ficha), indice)
     if hallazgos:
         print("REPARTO NO VÁLIDO:")
         for h in hallazgos:
             print(f"  - {h}")
         return 1
-    bloques = leer_bloques(briefs)
-    for a in revisar_copias(bloques, {t.id: t for t in tareas})[1]:
-        print(f"  aviso: {a}")
+    vivas = planificadas(tareas)
     if args.tandas:
-        for linea in vista_de_tandas(bloques):
+        for linea in vista_de_tandas(tareas):
             print(linea)
-    print(f"REPARTO OK: {len(bloques)} bloques, {len({b.tanda for b in bloques})} tandas.")
+    print(f"REPARTO OK: {len(vivas)} fichas planificadas, {len({t.tanda for t in vivas})} tandas.")
     return 0
 
 

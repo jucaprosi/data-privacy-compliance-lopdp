@@ -84,7 +84,7 @@ Las tres primeras se resuelven preguntando a quien corresponde; la cuarta se inv
 
 ### 1. Unidades de trabajo
 - **Ficha** (`governance/tareas/*.md`): una tarea con sus dependencias y los archivos que le pertenecen.
-- **Tanda / bloque**: agrupación de fichas (`governance/apoyo/BRIEFS_POR_BLOQUE.md`).
+- **Tanda**: agrupación de fichas que se lanzan juntas; es el campo `tanda = N` de cada ficha (GOB-06). El brief de cada ficha vive fuera del repositorio, en `briefs\<ID>.md` de la carpeta local `C:\Users\Juan Carlos\compartido\evydentia\`.
 - **Regla:** solo se toma una ficha cuando **todas sus dependencias están «hecha»**.
 - **Solo la coordinadora cierra fichas.**
 
