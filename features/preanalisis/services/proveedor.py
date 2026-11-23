@@ -15,7 +15,7 @@ from features.preanalisis.domain.models import (
 
 logger = logging.getLogger(__name__)
 
-MODELO_POR_DEFECTO = "gemini-2.5-flash"
+MODELO_POR_DEFECTO = pasillo_inferencia.MODELO_GENERACION
 PROVEEDOR_NOMBRE = "Google Vertex AI"
 TIMEOUT_SEGUNDOS = 60.0
 MOTIVO_NO_DISPONIBLE = (

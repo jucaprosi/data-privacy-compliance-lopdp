@@ -15,6 +15,7 @@ from features.ai_copilot.services import vertex_cached_rag_engine as motor
 from features.inferencia import inferencia_service as svc
 from features.regulacion_rag.domain.corpus import CORPUS_NORMATIVO_OFICIAL, fundamento
 from features.regulacion_rag.services import vertex_context_cache as cache
+from app_core.pasillo.inferencia import MODELO_EMBEDDING, MODELO_GENERACION
 
 CEDULA = "1710034065"
 CEDULA_2 = "0926687856"
@@ -95,24 +96,24 @@ def test_modelo_por_modo(entorno):
     doble = DobleVertex('{"respuesta": "x", "citas": ["L7"]}')
     _consultar("a", doble, modo="dictamen")
     _consultar("b", doble, modo="rapida")
-    assert [e["model"] for e in doble.enviados] == ["gemini-2.5-pro", "gemini-2.5-flash"]
-    assert {ll[0] for ll in entorno.llamadas} == {"gemini-2.5-pro", "gemini-2.5-flash"}
+    assert [e["model"] for e in doble.enviados] == [MODELO_GENERACION, MODELO_GENERACION]
+    assert {ll[0] for ll in entorno.llamadas} == {MODELO_GENERACION}
 
 
 def test_reforma_normativa_invalida_la_cache(entorno):
-    d1 = cache.obtener_o_crear("gemini-2.5-flash")
+    d1 = cache.obtener_o_crear(MODELO_GENERACION)
     reformado = list(CORPUS_NORMATIVO_OFICIAL)
     reformado[0] = replace(reformado[0], texto_oficial=reformado[0].texto_oficial + " Reforma.")
-    d2 = cache.obtener_o_crear("gemini-2.5-flash", corpus=reformado, corpus_version="reforma-1")
+    d2 = cache.obtener_o_crear(MODELO_GENERACION, corpus=reformado, corpus_version="reforma-1")
     assert d1.corpus_sha256 != d2.corpus_sha256 and d1.cache_name != d2.cache_name
     assert len(entorno.llamadas) == 2
 
 
 def test_ttl_vencido_recrea(entorno):
     t = [0.0]
-    cache.obtener_o_crear("gemini-2.5-flash", ttl_seconds=10, reloj=lambda: t[0])
+    cache.obtener_o_crear(MODELO_GENERACION, ttl_seconds=10, reloj=lambda: t[0])
     t[0] = 11.0
-    cache.obtener_o_crear("gemini-2.5-flash", ttl_seconds=10, reloj=lambda: t[0])
+    cache.obtener_o_crear(MODELO_GENERACION, ttl_seconds=10, reloj=lambda: t[0])
     assert len(entorno.llamadas) == 2
 
 
@@ -166,13 +167,13 @@ def test_creador_por_defecto_falla_cerrado():
     cache.vaciar_registro()
     cache.configurar_creador(None)
     with pytest.raises(ErrorNegocio) as exc:
-        cache.obtener_o_crear("gemini-2.5-flash")
+        cache.obtener_o_crear(MODELO_GENERACION)
     assert "VTX_CACHE_NO_DISPONIBLE" in str(exc.value.__dict__) or "VTX_CACHE_NO_DISPONIBLE" in repr(exc.value)
 
 
 def test_modelo_fuera_de_lista_falla_cerrado(entorno):
     with pytest.raises(ErrorNegocio):
-        cache.obtener_o_crear("text-embedding-005")
+        cache.obtener_o_crear(MODELO_EMBEDDING)
     assert entorno.llamadas == []
 
 

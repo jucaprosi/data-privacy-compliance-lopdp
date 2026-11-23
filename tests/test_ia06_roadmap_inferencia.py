@@ -1,6 +1,6 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤arbitro
-"""IA-06: Hoja de ruta generada por la compuerta de inferencia Vertex AI (gemini-2.5-pro), con cifras de código y traza."""
+"""IA-06: Hoja de ruta generada por la compuerta de inferencia Vertex AI (modelo único del pasillo), con cifras de código y traza."""
 from __future__ import annotations
 
 import ast
@@ -17,6 +17,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from app_core.errors import ErrorNegocio
+from app_core.pasillo.inferencia import MODELO_GENERACION
 
 _client = importlib.import_module("features.roadmap.ai.client")
 DEFAULT_TIMEOUT_SECONDS = _client.DEFAULT_TIMEOUT_SECONDS
@@ -302,8 +303,8 @@ def test_generacion_con_traza(monkeypatch):
         id="traza-123",
         sala="roadmap",
         tenant_id="org-1",
-        modelo_version="gemini-2.5-pro@001",
-        modelo_solicitado="gemini-2.5-pro",
+        modelo_version=f"{MODELO_GENERACION}@001",
+        modelo_solicitado=MODELO_GENERACION,
         prompt_id=PROMPT_ID,
         prompt_version=PROMPT_VERSION,
         corpus_sha256=None,
@@ -324,17 +325,17 @@ def test_generacion_con_traza(monkeypatch):
             prompt=VIGENTE,
             valores={"assessment_json": "{}", "variables_usuario_json": "{}", "idioma": "ES"},
             org_id="org-1",
-            modelo="gemini-2.5-pro",
+            modelo=MODELO_GENERACION,
         )
     )
 
     assert isinstance(res, RoadmapDocument)
     assert traza.prompt_id == "roadmap.generacion"
     assert traza.prompt_version == 1
-    assert traza.modelo_solicitado == "gemini-2.5-pro"
-    assert traza.modelo_version == "gemini-2.5-pro@001"
+    assert traza.modelo_solicitado == MODELO_GENERACION
+    assert traza.modelo_version == f"{MODELO_GENERACION}@001"
     assert len(llamadas) == 1
-    assert llamadas[0]["modelo"] == "gemini-2.5-pro"
+    assert llamadas[0]["modelo"] == MODELO_GENERACION
 
 
 def test_roadmap_solo_por_la_compuerta():
@@ -435,8 +436,8 @@ def test_truncamiento_de_salida():
 
 
 def test_cliente_usa_gemini_2_5_pro(monkeypatch):
-    """Comprueba que el modelo invocado es gemini-2.5-pro."""
-    assert MODELO_POR_DEFECTO == "gemini-2.5-pro"
+    """Comprueba que el modelo invocado es el del pasillo."""
+    assert MODELO_POR_DEFECTO == MODELO_GENERACION
     llamadas = []
 
     async def falsa_gen(sistema, usuario, esquema, *, modelo, org_id):
@@ -448,5 +449,5 @@ def test_cliente_usa_gemini_2_5_pro(monkeypatch):
 
     call_roadmap_llm("sys", "usr", org_id="org-test")
     assert len(llamadas) == 1
-    assert llamadas[0]["modelo"] == "gemini-2.5-pro"
+    assert llamadas[0]["modelo"] == MODELO_GENERACION
     assert llamadas[0]["org_id"] == "org-test"

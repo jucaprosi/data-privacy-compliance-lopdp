@@ -14,6 +14,7 @@ from features.ai_copilot.domain.models import (
     AnalisisDiagnosticoRequest, PlanMitigacionResponse, TareaMitigacionIA,
 )
 from features.ai_copilot.services import inference_engine as motor
+from app_core.pasillo.inferencia import MODELO_GENERACION
 
 CENTINELA = "sk-proj-CENTINELA-0123456789abcdef"
 PLAN = PlanMitigacionResponse(
@@ -65,7 +66,7 @@ def test_el_motor_llama_a_la_compuerta_con_esquema_modelo_y_org(monkeypatch):
     assert len(llamadas) == 1
     assert llamadas[0]["prompt"] is VIGENTE
     assert llamadas[0]["esquema"] is PlanMitigacionResponse
-    assert llamadas[0]["modelo"] == "gemini-2.5-flash"
+    assert llamadas[0]["modelo"] == MODELO_GENERACION
     assert llamadas[0]["org_id"] == "org-1"
 
 

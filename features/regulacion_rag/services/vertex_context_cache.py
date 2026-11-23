@@ -21,11 +21,12 @@ from dataclasses import dataclass
 from typing import Callable, Iterable, Protocol
 
 from app_core.errors import ErrorNegocio
+from app_core.pasillo import inferencia as pasillo_inferencia
 from features.regulacion_rag.domain.corpus import CORPUS_NORMATIVO_OFICIAL, CORPUS_VERSION
 from features.regulacion_rag.domain.errores import VTX_CACHE_NO_DISPONIBLE
 from features.regulacion_rag.domain.models import UnidadNormativa
 
-MODELOS_CACHE: frozenset[str] = frozenset({"gemini-2.5-pro", "gemini-2.5-flash"})
+MODELOS_CACHE: frozenset[str] = frozenset({pasillo_inferencia.MODELO_GENERACION})
 TTL_POR_DEFECTO = 3600
 
 

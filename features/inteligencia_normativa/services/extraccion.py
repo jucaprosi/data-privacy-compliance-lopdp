@@ -3,7 +3,7 @@
 """NORM-03: texto del original de una resolución, fragmentos y citas de artículos.
 
 El original sale de NORM-01 (PDF custodiado). El texto se divide en fragmentos con solape para indexarlos con
-`text-embedding-005` por el pasillo de `regulacion_rag`; sin indexador disponible el análisis sigue, porque el modelo
+el modelo de vectores del pasillo, por el pasillo de `regulacion_rag`; sin indexador disponible el análisis sigue, porque el modelo
 recibe el texto completo y los vectores solo sirven para recuperar.
 """
 from __future__ import annotations
@@ -14,7 +14,9 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Optional, Protocol
 
-MODELO_EMBEDDING = "text-embedding-005"
+from app_core.pasillo import inferencia as pasillo_inferencia
+
+MODELO_EMBEDDING = pasillo_inferencia.MODELO_EMBEDDING
 LARGO_FRAGMENTO = 1500
 SOLAPE = 150
 MAXIMO_PAGINAS = 400
@@ -95,7 +97,7 @@ def fragmentar(texto: str, largo: int = LARGO_FRAGMENTO, solape: int = SOLAPE) -
 
 
 async def indexar(fragmentos: list[Fragmento], indexador: Optional[Indexador]) -> int:
-    """Vectoriza con `text-embedding-005`; devuelve cuántos vectores obtuvo (0 si no hay indexador o falla)."""
+    """Vectoriza con el modelo de vectores del pasillo; devuelve cuántos vectores obtuvo (0 si no hay indexador o falla)."""
     if indexador is None or not fragmentos:
         return 0
     try:

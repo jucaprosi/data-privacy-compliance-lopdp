@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_TOKENS = 8192
 DEFAULT_TIMEOUT_SECONDS = 60.0
-MODELO_POR_DEFECTO = "gemini-2.5-pro"
+MODELO_POR_DEFECTO = pasillo_inferencia.MODELO_GENERACION
 
 
 class TruncatedOutputError(RuntimeError):

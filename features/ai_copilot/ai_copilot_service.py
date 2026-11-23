@@ -75,7 +75,7 @@ from pydantic import BaseModel, Field
 
 from features.ai_copilot.services.vertex_cached_rag_engine import redactar_cedulas
 
-MODELO_IMPACTO = "gemini-2.5-pro"
+MODELO_IMPACTO = pasillo_inferencia.MODELO_GENERACION
 PROMPT_IMPACTO = pasillo_inferencia.prompt_versionado(
     "ai_copilot.impacto_normativo",
     1,

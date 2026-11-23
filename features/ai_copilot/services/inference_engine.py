@@ -10,7 +10,7 @@ from app_core.pasillo import inferencia as pasillo_inferencia
 
 logger = logging.getLogger("jubys_lopdp_json_logger")
 
-MODELO = "gemini-2.5-flash"
+MODELO = pasillo_inferencia.MODELO_GENERACION
 
 
 async def _invocar_compuerta(valores: dict, org_id: str):

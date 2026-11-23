@@ -16,6 +16,7 @@ from features.ai_copilot.services.implementation_assistant import responder_impl
 from features.inferencia import inferencia_service
 from features.regulacion_rag.domain.corpus import CORPUS_VERSION
 from features.regulacion_rag.services.implementation_guides import obtener_guia_brecha
+from app_core.pasillo.inferencia import MODELO_GENERACION
 
 RAIZ = Path(__file__).resolve().parents[1]
 PROVEEDOR = RAIZ / "features/ai_copilot/services/assistant_provider.py"
@@ -73,7 +74,7 @@ def test_solo_importa_la_compuerta_desde_el_pasillo():
     modulos |= {a.name for n in ast.walk(arbol) if isinstance(n, ast.Import) for a in n.names}
     assert "app_core.pasillo" in modulos
     assert not any(m and m.startswith("features.inferencia") for m in modulos)
-    assert assistant_provider.MODELO == "gemini-2.5-pro"
+    assert assistant_provider.MODELO == MODELO_GENERACION
 
 
 def test_enriquecer_implementacion_vertex_exitoso(monkeypatch):

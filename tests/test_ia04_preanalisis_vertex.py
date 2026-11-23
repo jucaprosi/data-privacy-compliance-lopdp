@@ -31,6 +31,7 @@ from features.preanalisis.domain.models import PropuestaModelo, ProveedorFallo, 
 from features.preanalisis.preanalisis_service import restablecer_proveedor_entorno
 from features.preanalisis.services import proveedor as mod
 from main import app
+from app_core.pasillo.inferencia import MODELO_GENERACION
 
 URL = "/api/v1/preanalisis"
 HDR = {"X-Tenant-ID": "tenant-ia04"}
@@ -100,7 +101,7 @@ def test_estado_con_compuerta_nombra_vertex_y_modelo_cerrado(consumos, monkeypat
     j = r.json()
     assert r.status_code == 200 and j["disponible"] is True and j["motivo"] is None
     assert j["proveedor"] == "Google Vertex AI"
-    assert j["modelo"] == "gemini-2.5-flash" and j["modelo"] in MODELOS_PERMITIDOS
+    assert j["modelo"] == MODELO_GENERACION and j["modelo"] in MODELOS_PERMITIDOS
     _sin_filtraciones(r.text)
 
 
@@ -127,7 +128,7 @@ def test_proponer_pasa_por_la_compuerta_con_el_modelo_y_la_org(consumos, monkeyp
     assert isinstance(proveedor, mod.ProveedorVertex)
     p = asyncio.run(proveedor.proponer("sis", "usu", org_id=ORG))
     assert isinstance(p, PropuestaModelo) and p.estado == "Conforme"
-    assert len(modelos.llamadas) == 1 and modelos.llamadas[0]["model"] == "gemini-2.5-flash"
+    assert len(modelos.llamadas) == 1 and modelos.llamadas[0]["model"] == MODELO_GENERACION
     assert consumos == [ORG]
 
 
@@ -178,7 +179,7 @@ def test_la_org_explicita_y_el_modelo_llegan_tal_cual_al_pasillo(monkeypatch) ->
 
     monkeypatch.setattr(mod.pasillo_inferencia, "generar_estructurado", espia)
     asyncio.run(mod.ProveedorVertex().proponer("sis", "usu", org_id=ORG))
-    assert vistos == [("gemini-2.5-flash", ORG)]
+    assert vistos == [(MODELO_GENERACION, ORG)]
 
 
 def test_fuente_solo_usa_el_pasillo_de_inferencia() -> None:

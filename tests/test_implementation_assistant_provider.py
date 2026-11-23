@@ -20,6 +20,7 @@ from features.ai_copilot.services import assistant_provider
 from features.ai_copilot.services.implementation_assistant import responder_implementacion
 from features.regulacion_rag.domain.corpus import CORPUS_VERSION
 from features.regulacion_rag.services.implementation_guides import obtener_guia_brecha
+from app_core.pasillo.inferencia import MODELO_GENERACION
 
 
 ORG = "org-prueba-ia07"
@@ -110,7 +111,7 @@ async def test_compuerta_recibe_contexto_minimo_sanitizado_y_fusiona_salida(monk
 
     assert len(compuerta.llamadas) == 1
     llamada = compuerta.llamadas[0]
-    assert llamada["modelo"] == "gemini-2.5-pro"
+    assert llamada["modelo"] == MODELO_GENERACION
     assert llamada["org_id"] == ORG
     cuerpo = llamada["usuario"]
     for dato_privado in (
