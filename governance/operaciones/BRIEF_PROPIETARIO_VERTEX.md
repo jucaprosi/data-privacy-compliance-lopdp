@@ -1,112 +1,100 @@
-# Brief del propietario · Habilitar Vertex AI para EVYDENTIA
+# Brief del propietario · Vertex AI para EVYDENTIA en `us` y `us-central1` (IA-16)
 
-> **Aplica a PRODUCCIÓN. No ejecutar hasta el despliegue real (GCP-07) y con autorización del propietario. Para el humo de IA-03b use `EVIDENCIA_HUMO_VERTEX.md` (proyecto de pruebas con guarda).**
->
-> Guarda invertida obligatoria antes de cualquier comando de este brief: si el proyecto es el de producción, la ejecución se detiene salvo confirmación escrita del propietario.
->
-> ```powershell
-> $PROYECTO = "evydentia"
-> if ($PROYECTO -eq "evydentia") { throw "PRODUCCIÓN: no ejecutar sin autorización escrita del propietario (GCP-07)." }
-> ```
-
-Fecha: 2026-11-09. Redactado por el Arquitecto ADPA para el Tech Lead. Lo ejecuta el propietario (con Antigravity o desde PowerShell). El Arquitecto y los ingenieros no ejecutan nada de esto.
+> **Lo ejecuta el propietario** (con Antigravity o desde PowerShell), **después de fusionar IA-13 e IA-14**. Ninguna sesión de IA toca GCP.
+> Este brief reemplaza al anterior (solo producción, generaba en `us-central1` y no corría el humo en `evydentia`).
+> Los pasos que cambian producción (`evydentia`) requieren su autorización escrita (GCP-07).
 
 ## Qué se hace y por qué
-La IA de EVYDENTIA (preanálisis, plan de mitigación, roadmap y asistente) debe correr solo sobre Gemini en Vertex AI, sin ninguna clave de API. El backend se identifica con la cuenta de servicio `sa-evydentia-backend` (credenciales por defecto de Cloud Run). Hoy la API de Vertex AI no está habilitada y esa cuenta no tiene ningún rol de Vertex, así que hay que hacer dos cosas.
+Los modelos gemini-2.5 se retiraron y Vertex responde 404. Decisión del propietario, confirmada al CTO (2026-11-23): un solo modelo, `gemini-3.8-flash`, en la multirregión `us` para generar, y los vectores en `us-central1`. El backend lo lee de dos variables, sin ninguna clave de API (credenciales por defecto de Cloud Run):
 
-Qué no hace este brief: no crea claves, no cambia el ingress, no toca la base de datos ni las demás cuentas de servicio.
+| Variable | Valor | Uso |
+| :--- | :--- | :--- |
+| `VERTEX_LOCATION` | `us` | generación (preanálisis, plan de mitigación, hoja de ruta, asistente) |
+| `VERTEX_LOCATION_EMBEDDING` | `us-central1` | vectores |
 
-## Valores
-- Proyecto: `evydentia`
-- Cuenta de servicio: `sa-evydentia-backend@evydentia.iam.gserviceaccount.com`
-- Región de la inferencia: `us-central1`
+Entornos con inferencia:
 
-## Pasos (PowerShell, copiar y pegar completos)
+| Entorno | Proyecto | Servicio de Cloud Run |
+| :--- | :--- | :--- |
+| Demo | `evydentia-demo` | `evydentia-backend-demo` |
+| Pruebas | `evydentia-pruebas` | `evydentia-backend` |
+| Producción | `evydentia` | `evydentia-backend` |
 
-### 1. Comprobar el estado actual (solo lectura)
+## Lo que ya pasó en el humo (2026-11-23, propietario, código de `main` bef495e0)
+- `3 passed` en `evydentia-demo`, `evydentia-pruebas` y `evydentia` (dos esquemas de generación y uno de vectores).
+- En `evydentia-pruebas` la primera corrida dio `403 SERVICE_DISABLED` porque `aiplatform.googleapis.com` no estaba habilitada. Se habilitó con `gcloud services enable aiplatform.googleapis.com --project=evydentia-pruebas` y la repetición dio `3 passed`. Por eso el paso 1 comprueba la API en los tres proyectos antes del humo.
+
+## Pasos (PowerShell, cada bloque completo y pegable)
+
+### 1. Comprobar que la API de Vertex AI está habilitada en los tres proyectos (solo lectura)
 ```powershell
-$PROYECTO = "evydentia"
-$SA = "sa-evydentia-backend@evydentia.iam.gserviceaccount.com"
-gcloud services list --enabled --project=$PROYECTO --filter="config.name:aiplatform.googleapis.com" --format="value(config.name)"
-gcloud projects get-iam-policy $PROYECTO --flatten="bindings[].members" --filter="bindings.members:serviceAccount:$SA" --format="table(bindings.role)"
+foreach ($PROYECTO in "evydentia-demo", "evydentia-pruebas", "evydentia") {
+  "== $PROYECTO"
+  gcloud services list --enabled --project=$PROYECTO --filter="config.name:aiplatform.googleapis.com" --format="value(config.name)"
+}
 ```
-Resultado esperado hoy: el primer comando no imprime nada y el segundo no lista `roles/aiplatform.user`.
-
-### 2. Habilitar la API de Vertex AI
+Resultado esperado: `aiplatform.googleapis.com` bajo cada proyecto. Si falta alguno, habilítala (no genera costo por sí sola):
 ```powershell
-$PROYECTO = "evydentia"
+$PROYECTO = "evydentia-pruebas"
 gcloud services enable aiplatform.googleapis.com --project=$PROYECTO
 ```
 
-### 3. Dar el rol mínimo a la cuenta de servicio del backend
+### 2. Variables del servicio de Cloud Run
+La demo ya las declara en `governance/operaciones/entornos/demo/cloudrun_backend.yaml`: aplica ese manifiesto por la vía habitual del despliegue (el valor vivo de la revisión 00011-4s5 era `us-central1` y faltaba la segunda variable). En pruebas y producción faltan las dos; añádelas al servicio:
 ```powershell
-$PROYECTO = "evydentia"
-$SA = "sa-evydentia-backend@evydentia.iam.gserviceaccount.com"
-gcloud projects add-iam-policy-binding $PROYECTO --member="serviceAccount:$SA" --role="roles/aiplatform.user" --condition=None
-```
-`roles/aiplatform.user` basta para llamar a los modelos. No des `roles/aiplatform.admin` ni `roles/owner`.
-
-### 4. Comprobar que quedó
-```powershell
-$PROYECTO = "evydentia"
-$SA = "sa-evydentia-backend@evydentia.iam.gserviceaccount.com"
-gcloud services list --enabled --project=$PROYECTO --filter="config.name:aiplatform.googleapis.com" --format="value(config.name)"
-gcloud projects get-iam-policy $PROYECTO --flatten="bindings[].members" --filter="bindings.members:serviceAccount:$SA AND bindings.role:roles/aiplatform.user" --format="value(bindings.role)"
-```
-Resultado esperado: `aiplatform.googleapis.com` y `roles/aiplatform.user`.
-
-### 5. Variables del servicio de Cloud Run
-Dos variables, sin ninguna clave. Las aplica el propietario por la vía habitual del despliegue (el brief de GCP):
-- `GOOGLE_CLOUD_PROJECT=evydentia`
-- `VERTEX_LOCATION=us-central1`
-
-Las únicas variables de inferencia requeridas en Cloud Run son `GOOGLE_CLOUD_PROJECT` y `VERTEX_LOCATION`, usando Application Default Credentials (ADC) de la cuenta de servicio.
-
-## Verificación de variables de inferencia en Cloud Run
-Todos los servicios de inferencia de EVYDENTIA (backend, jobs y pruebas) operan únicamente mediante Vertex AI y `features/inferencia`. Para inspeccionar las variables declaradas en solo lectura:
-```powershell
-$PROYECTO = "evydentia"
+$PROYECTO = "evydentia-pruebas"
 $REGION = "us-central1"
-gcloud run services list --project=$PROYECTO --region=$REGION --format="value(metadata.name)"
+gcloud run services update evydentia-backend --project=$PROYECTO --region=$REGION --update-env-vars="VERTEX_LOCATION=us,VERTEX_LOCATION_EMBEDDING=us-central1"
+```
+Repite con `$PROYECTO = "evydentia"` (producción, con tu autorización escrita). Comprueba lo que quedó (solo lectura):
+```powershell
+$PROYECTO = "evydentia-pruebas"
+$REGION = "us-central1"
 gcloud run services describe evydentia-backend --project=$PROYECTO --region=$REGION --format="yaml(spec.template.spec.containers[0].env)"
 ```
-En la lista de variables solo deben figurar `GOOGLE_CLOUD_PROJECT` y `VERTEX_LOCATION` para inferencia, sin claves API estáticas.
+En las variables de inferencia solo deben figurar `GOOGLE_CLOUD_PROJECT`, `VERTEX_LOCATION` y `VERTEX_LOCATION_EMBEDDING`, sin claves de API.
 
-## Prueba de humo y evidencia (IA-03b)
-La prueba de humo de la compuerta (`tests/test_ia03_humo_vertex.py`, de IA-03) se corre **en el proyecto de pruebas, no en `evydentia`**. El procedimiento completo (API, rol, credencial suplantada sin clave JSON, prueba y limpieza) está en `governance/operaciones/EVIDENCIA_HUMO_VERTEX.md`, pasos 1 a 7. Requisito previo: la credencial de Application Default suplantando la cuenta de servicio de pruebas (paso 5 de ese documento).
-
-Comando completo para pegar tal cual en PowerShell. Corre en un worktree propio fijado a `origin/main` (lo crea si no existe), nunca en la carpeta principal ni con su `.env`; activa el `.venv` del proyecto y solo pide el id del proyecto de pruebas, que no se escribe en el repositorio:
-
+### 3. Humo real en cada proyecto
+En un worktree fijado a `origin/main` y con el `.venv` del proyecto, nunca en la carpeta principal ni con su `.env`. Repite el bloque con cada id de proyecto (`evydentia-demo`, `evydentia-pruebas`, `evydentia`):
 ```powershell
 $REPO = "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
 $WT = "C:\Users\Juan Carlos\worktrees-evydentia\humo-vertex"
-if (-not (Test-Path $WT)) { git -C $REPO fetch origin main; git -C $REPO worktree add --detach $WT origin/main }
+if (-not (Test-Path $WT)) { git -C $REPO fetch origin main; git -C $REPO worktree add --detach $WT origin/main } else { git -C $WT fetch origin main; git -C $WT checkout --detach origin/main }
 cd $WT
 & "$REPO\.venv\Scripts\Activate.ps1"
-$PROYECTO = Read-Host "Id del proyecto de pruebas (nunca evydentia)"
-if ([string]::IsNullOrWhiteSpace($PROYECTO) -or $PROYECTO -eq "evydentia") { throw "Proyecto vacío o de producción: no sigas." }
-$env:GOOGLE_CLOUD_PROJECT = $PROYECTO
-$env:VERTEX_LOCATION = "us-central1"
+$env:GOOGLE_CLOUD_PROJECT = "evydentia-pruebas"
+$env:VERTEX_LOCATION = "us"
+$env:VERTEX_LOCATION_EMBEDDING = "us-central1"
 $env:VERTEX_HUMO = "1"
 python -m pytest tests/test_ia03_humo_vertex.py -v -rs | Tee-Object -FilePath "$env:USERPROFILE\evidencia-humo-vertex.txt"
-Remove-Item Env:VERTEX_HUMO, Env:GOOGLE_CLOUD_PROJECT, Env:VERTEX_LOCATION
+Remove-Item Env:VERTEX_HUMO, Env:GOOGLE_CLOUD_PROJECT, Env:VERTEX_LOCATION, Env:VERTEX_LOCATION_EMBEDDING
 ```
+Resultado esperado: `3 passed` (`test_humo_esquema[esquema_ruta0]` y `[esquema_ruta1]` generan; `test_humo_vectores` da los vectores). `skipped` significa que `VERTEX_HUMO` no quedó en `1` y la corrida no vale. Antes de enviar la salida al CTO, sustituye el id del proyecto y cualquier correo por `<proyecto>` y `<cuenta>`. El procedimiento de credencial suplantada está en `governance/operaciones/EVIDENCIA_HUMO_VERTEX.md`.
 
-Resultado esperado: `2 passed`. `test_humo_esquema[esquema_ruta0]` es `PropuestaModelo` (preanálisis) y `test_humo_esquema[esquema_ruta1]` es `PlanMitigacionResponse` (plan de mitigación). `2 skipped` significa que `VERTEX_HUMO` no quedó en `1` y la corrida no vale. La salida queda en `%USERPROFILE%\evidencia-humo-vertex.txt`. Antes de enviarla al CTO, sustituye el id del proyecto y cualquier correo por `<proyecto-de-pruebas>` y `<cuenta>`.
+### 4. Mínimo privilegio (decisión del propietario)
+Hoy `roles/editor` basta para llamar a Vertex (los 404 previos no fueron 403). Para dejar el mínimo, concede `roles/aiplatform.user` a la cuenta de servicio de cada servicio y **retira `roles/editor` solo después de que el humo del paso 3 dé `3 passed` sin él**. Obtén la cuenta y concede el rol:
+```powershell
+$PROYECTO = "evydentia-demo"
+$REGION = "us-central1"
+$SERVICIO = "evydentia-backend-demo"
+$SA = gcloud run services describe $SERVICIO --project=$PROYECTO --region=$REGION --format="value(spec.template.spec.serviceAccountName)"
+gcloud projects add-iam-policy-binding $PROYECTO --member="serviceAccount:$SA" --role="roles/aiplatform.user" --condition=None
+```
+No des `roles/aiplatform.admin` ni `roles/owner`. Repite con cada proyecto y su servicio (pruebas y producción: `evydentia-backend`).
 
-**Hasta que el CTO reciba esa evidencia, `IA-04` a `IA-11` no se usan con Vertex real en producción** (ficha `governance/tareas/IA-03b.md`).
-
-## Cómo se comprueba que funciona
-La prueba de humo de la sección anterior la ejecuta el propietario. El Tech Lead anota el resultado en la sección «Registro» de `governance/operaciones/EVIDENCIA_HUMO_VERTEX.md`. Ese resultado es evidencia, no árbitro. Si falla con «permission denied» o «API not enabled», se repite el paso 1 de ese documento.
+### 5. Anotar la latencia
+Anota la latencia de generación y de vectores que mide la ficha IA-13 (R5) en cada entorno y entrégala al CTO junto con la evidencia del humo.
 
 ## Si algo sale mal
-- «Permission denied» al habilitar la API: la cuenta del propietario necesita `roles/serviceusage.serviceUsageAdmin` o ser propietaria del proyecto.
-- «Model not found» en la prueba de humo: avisa al Arquitecto antes de cambiar la región; no se prueban otras regiones por cuenta propia.
+- `403 SERVICE_DISABLED`: la API no está habilitada en ese proyecto; repite el paso 1.
+- `403 permission denied`: falta `roles/aiplatform.user` en la cuenta de servicio, o tu cuenta necesita `roles/serviceusage.serviceUsageAdmin` para habilitar la API.
+- `404 model not found`: avisa al Arquitecto antes de cambiar de región o de modelo; no se prueban otras por cuenta propia.
+- «inferencia no disponible» en la demo: faltan las variables del paso 2 o el código de IA-13 e IA-14 no está desplegado.
 
 ## Reversión
 ```powershell
-$PROYECTO = "evydentia"
-$SA = "sa-evydentia-backend@evydentia.iam.gserviceaccount.com"
-gcloud projects remove-iam-policy-binding $PROYECTO --member="serviceAccount:$SA" --role="roles/aiplatform.user"
+$PROYECTO = "evydentia-pruebas"
+$REGION = "us-central1"
+gcloud run services update evydentia-backend --project=$PROYECTO --region=$REGION --remove-env-vars="VERTEX_LOCATION,VERTEX_LOCATION_EMBEDDING"
 ```
-La API puede quedar habilitada sin riesgo: no genera costo por sí sola.
+La API puede quedar habilitada sin riesgo.
