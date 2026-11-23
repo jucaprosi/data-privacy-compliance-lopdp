@@ -16,7 +16,6 @@ import {
   leerCredencial,
   leerSesion,
   modoAutenticacion,
-  olvidarCredencialPendiente,
   olvidarCuentaDeGoogle,
   RUTA_ORGANIZACIONES,
   useSesion,
@@ -226,8 +225,7 @@ export default function LoginPage() {
   const usarOtraCuenta = React.useCallback(() => {
     olvidarCuentaDeGoogle();
     credencialActual.current = null;
-    olvidarCredencialPendiente();
-    cerrarSesion();
+    cerrarSesion(); // sesión, organizaciones y credencial pendiente del navegador
     setEstado(null);
     pintarBotonGoogle();
     enfocarGoogle();

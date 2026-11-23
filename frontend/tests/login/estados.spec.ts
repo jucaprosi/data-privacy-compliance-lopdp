@@ -10,7 +10,8 @@
  *    «el código manda, no el texto».
  *  - m3: tratar el 503 como `no_registrado` ⟹ rojo en «503 y red con Reintentar».
  *  - m4: dejar sin aviso el camino de `entrarComoOperador` en «no» ⟹ rojo en «cada camino navega o avisa».
- *  - m5: no borrar la credencial pendiente en «Usar otra cuenta de Google» ⟹ rojo en «otra cuenta».
+ *  - m5: no borrar la credencial pendiente en «Usar otra cuenta de Google» (quitar `cerrarSesion()`, que la
+ *    borra con la sesión) ⟹ rojo en «otra cuenta».
  */
 import { expect, test, type Page, type Route } from "@playwright/test";
 
