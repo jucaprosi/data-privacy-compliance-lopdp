@@ -3247,3 +3247,44 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 * **Verificabilidad:** el predicado es $\text{primeros\_3\_bytes}(\texttt{DATABASE\_URL}) \neq \texttt{EF BB BF}$. La comprobación debe leer solo los bytes y nunca imprimir el valor de la URL ni de un secreto.
 * **Soporte bibliográfico:** sin fuente verificada. El estándar Unicode define el BOM como U+FEFF, pero no hay una fuente específica sobre valores de entorno que citar.
 * **Estado:** aplicado en `app_core/config.py:101-112` y `app_core/db/session.py:26`. Extiende el Aporte 102 a valores de entorno; no introduce token nuevo.
+
+---
+
+### Aporte 170: En Alpine, `apk add nodejs` Solo Trae los Datos de ICU en Inglés y `Intl` Cae a `en-US` en Silencio
+`¤frontend` `¤contenedores`
+
+* **Descripción:** el paquete `nodejs` de Alpine enlaza con la ICU del sistema, y Alpine reparte los datos de ICU en `icu-data-en` (solo inglés, unos 2,7 MiB) y `icu-data-full` (29 MiB). `apk add nodejs` instala solo el primero. Con él, `Intl.DateTimeFormat("es-EC")` no da error ni aviso: `resolvedOptions().locale` vale `en-US` y la salida sale en inglés. El binario oficial de Node (`node:22-alpine`) trae la ICU completa y no tiene el problema.
+* **Por qué es útil aquí:** el runner de `frontend/Dockerfile.cloudrun` usa `alpine:3.21` con `apk add nodejs`. Next también renderiza en el servidor los componentes `"use client"`, así que los 45 archivos de `frontend/src` que usan `Intl` o `toLocale*` pintan en inglés en el servidor y en español en el navegador, con el consiguiente desajuste de hidratación. Las pruebas de la imagen solo medían tamaño y arranque, no el idioma. Reaparece en cualquier imagen Alpine que ejecute Node con el paquete del sistema.
+* **Verificabilidad:** medido el 2026-11-23 en un contenedor `alpine:3.21` limpio. Formateando el 2026-11-23 con `dateStyle: "full"` y `timeZone: "UTC"`:
+  - solo con `icu-data-en`: $\texttt{format} = \text{«Monday, November 23, 2026»} \wedge \texttt{resolvedOptions().locale} = \texttt{en-US}$;
+  - con `icu-data-full`: $\texttt{format} = \text{«lunes, 23 de noviembre de 2026»}$, y la moneda sale como «$1.234.567,89».
+
+  La prueba que lo fija es `tests/test_gcp08_proxy_e_imagen.py::test_08_intl_es_ec_en_la_imagen`, definida en la especificación GCP-08c.
+* **Soporte bibliográfico:**
+  - OpenJS Foundation, documentación oficial de Node.js, *Internationalization support*, secciones «Options for building Node.js» (`system-icu`, `small-icu`, `full-icu`) y «Detecting internationalization support». Un Node enlazado con la ICU del sistema solo soporta los idiomas cuyos datos tenga el sistema, y un idioma que falta cae al predeterminado sin error. No se releyó la página en esta sesión: se cita de la estructura conocida de la documentación.
+* **Estado:** especificado en GCP-08c (PR #974, sin fusionar). Las opciones son (a) `icu-data-full` o (b) un runner `node:22-alpine`, y se elige la que pese menos. No introduce token nuevo.
+
+---
+
+### Aporte 171: En Vertex, la Ubicación `us` es una Multirregión con su Propio Endpoint; Generar en `us-central1` Da 404 aunque los Vectores Funcionen Ahí
+`¤ia` `¤residencia`
+
+* **Descripción:** en Vertex AI, la generación con Gemini responde en la multirregión `us` y no en la región `us-central1`. El SDK `google-genai` 2.34.0 trata `us` y `eu` como multirregiones (`_MULTI_REGIONAL_LOCATIONS = {'us', 'eu'}`) y las dirige a `aiplatform.us.rep.googleapis.com`. Los modelos de vectores, en cambio, sí responden en `us-central1` (`text-embedding-005`). Una sola variable de ubicación no sirve para las dos cosas. El endpoint `global` responde, pero la documentación de Google no le da garantía de residencia de datos.
+* **Por qué es útil aquí:** la plataforma tratará datos personales, y la LOPDP exige informar al titular del país del tratamiento. Antes de este hallazgo la especificación de IA-13 usaba `us-central1` para todo, y la demo vivía con `global`. La partición en `VERTEX_LOCATION=us` y `VERTEX_LOCATION_EMBEDDING=us-central1`, con las dos etiquetadas «Estados Unidos» y cualquier otra ubicación fallando cerrada, viene de esta medida.
+* **Verificabilidad:** medido con el proyecto de la demo el 2026-11-23:
+  - $\forall m \in M_{10}: \text{generar}(m, \texttt{us-central1}) = 404$, donde $M_{10}$ son los diez modelos Gemini probados (de `gemini-3.8-flash` a `gemini-2.0-flash-001`);
+  - $\text{generar}(\texttt{gemini-3.8-flash}, \texttt{us}) = 200$.
+
+  Tras desplegar IA-13, lo repite el propietario con `test_ia03_humo_vertex` en demo, pruebas y producción (IA-13 R4b).
+* **Soporte bibliográfico:**
+  - Google Cloud, documentación oficial de Vertex AI, *Data residency* (generative AI). Un endpoint multirregional mantiene el procesamiento de ML dentro de su multirregión; `gemini-3.8-flash` está disponible en la multirregión de EE. UU.; el endpoint `global` no garantiza residencia. La página se leyó en esta sesión con un subagente. No dice nada sobre los datos en reposo.
+* **Estado:** aplicado en las especificaciones IA-13..16 (#961, #963 y #965). El código llega con IA-13. No introduce token nuevo.
+
+## Candidatos descartados de esta sesión (Parte XXXVI)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| Una prueba de humo que exige 200 a través del código que la ficha todavía no tiene crea un bucle de lanzamiento (IA-13 R4b). | Es un error de orden en una especificación, ya corregido en #965. Es propio de esta gobernanza y no se repetirá en otra parte. |
+| Medir la imagen por capas con `docker history --human=false` antes de subir un presupuesto. | Es una práctica conocida de Docker y ya quedó escrita en GCP-08b R2. |
+| Los `.bat` con LF hacen que cmd lea mal una línea con caracteres multibyte (LEG-07). | El arreglo final fue `*.bat -text` (#969), distinto del que se especificó. La causa exacta en cmd no se aisló, así que no queda verificada. |
+| Abrir un PR que duplica uno del CTO (#960 frente a #961). | Es un fallo de coordinación entre chats, no un hallazgo técnico. |
