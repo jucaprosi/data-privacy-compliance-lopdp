@@ -2,7 +2,7 @@
 id = "LEG-06"
 titulo = "Licencia propietaria y aviso de derechos de autor en todo archivo de código versionado"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["CI-19", "CI-22", "CI-23", "CI-25", "CI-26", "CI-29", "CI-31", "CI-36", "GCP-07", "PRD-01", "PRD-03", "QA-11", "RET-05", "RET-09"]
 propiedad = ["LICENSE", "frontend/package.json", "scripts/poner_aviso_de_autor.py", "scripts/verificar_alcance_pr.py", "tests/test_verificar_alcance_pr.py", "tests/test_leg06_aviso_de_autor.py"]
