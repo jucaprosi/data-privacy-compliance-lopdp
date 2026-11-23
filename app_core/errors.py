@@ -194,3 +194,6 @@ class ErrorNegocio(Exception):
 
         super().__init__(self.detail)
 # --- FIN ADPA-02 ---
+
+# === FE-29 ===
+# === fin FE-29 ===
