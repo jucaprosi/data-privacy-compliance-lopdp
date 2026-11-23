@@ -84,15 +84,74 @@ export function olvidarCredencialPendiente(): void {
   almacen()?.removeItem(CLAVE_PENDIENTE);
 }
 
+// === FE-29 ===
+/**
+ * Por qué no se pudieron consultar las organizaciones (FE-29 R2). Se decide por el `code` estable del
+ * servidor, nunca por el texto de `detail` (R1):
+ * - `no_registrado`: 403 `USUARIO_NO_REGISTRADO`;
+ * - `vinculada_otra`: 403 `CUENTA_VINCULADA_OTRA_IDENTIDAD`;
+ * - `sin_permiso`: cualquier otro 403;
+ * - `sesion`: 401;
+ * - `servidor`: 5xx, otro estado o un cuerpo ilegible;
+ * - `red`: `fetch` lanzó (sin conexión o petición abortada).
+ */
+export type TipoErrorDeAcceso = "no_registrado" | "vinculada_otra" | "sin_permiso" | "sesion" | "servidor" | "red";
+
+export class ErrorDeAcceso extends Error {
+  constructor(
+    readonly estado: number | null,
+    readonly codigo: string | null,
+    readonly tipo: TipoErrorDeAcceso,
+  ) {
+    super(tipo);
+    this.name = "ErrorDeAcceso";
+  }
+}
+
+const TIPO_POR_CODIGO: Record<string, TipoErrorDeAcceso> = {
+  USUARIO_NO_REGISTRADO: "no_registrado",
+  CUENTA_VINCULADA_OTRA_IDENTIDAD: "vinculada_otra",
+};
+
+/** Clasifica una respuesta que no es 200 (R2). `codigo` es undefined si el cuerpo no se pudo leer. */
+export function clasificarRespuesta(estado: number, codigo: string | null | undefined): TipoErrorDeAcceso {
+  if (estado === 401) return "sesion";
+  if (estado >= 500 || codigo === undefined) return "servidor";
+  if (estado === 403) return (codigo && TIPO_POR_CODIGO[codigo]) || "sin_permiso";
+  return "servidor";
+}
+
+/** El `code` del cuerpo; null si el cuerpo es JSON sin código y undefined si no es JSON legible. */
+async function leerCodigo(respuesta: Response): Promise<string | null | undefined> {
+  try {
+    const cuerpo = (await respuesta.json()) as { code?: unknown } | null;
+    return typeof cuerpo?.code === "string" ? cuerpo.code : null;
+  } catch {
+    return undefined;
+  }
+}
+// === fin FE-29 ===
+
 /**
  * Consulta las organizaciones de la persona con su token. No envía organización ni rol: el
- * servidor solo devuelve las suyas.
+ * servidor solo devuelve las suyas. Si no puede, lanza `ErrorDeAcceso` (FE-29).
  */
 export async function consultarMisOrganizaciones(token: string): Promise<Organizacion[]> {
-  const respuesta = await fetch(RUTA, { headers: { Authorization: `Bearer ${token}` } });
-  if (!respuesta.ok) {
-    throw new Error(`el servidor respondió ${respuesta.status}`);
+  let respuesta: Response;
+  try {
+    respuesta = await fetch(RUTA, { headers: { Authorization: `Bearer ${token}` } });
+  } catch {
+    throw new ErrorDeAcceso(null, null, "red");
   }
-  const cuerpo = (await respuesta.json()) as { organizaciones?: unknown[] };
-  return (cuerpo.organizaciones ?? []).filter(esOrganizacion);
+  if (!respuesta.ok) {
+    const codigo = await leerCodigo(respuesta);
+    throw new ErrorDeAcceso(respuesta.status, codigo ?? null, clasificarRespuesta(respuesta.status, codigo));
+  }
+  let cuerpo: { organizaciones?: unknown[] };
+  try {
+    cuerpo = (await respuesta.json()) as { organizaciones?: unknown[] };
+  } catch {
+    throw new ErrorDeAcceso(respuesta.status, null, "servidor");
+  }
+  return (Array.isArray(cuerpo?.organizaciones) ? cuerpo.organizaciones : []).filter(esOrganizacion);
 }
