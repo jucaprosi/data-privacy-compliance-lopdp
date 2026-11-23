@@ -2,14 +2,13 @@
 id = "GCP-08b"
 titulo = "Presupuesto de tamaño de la imagen web"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "frontend, operaciones"
 depende_de = ["CI-36", "GCP-08", "QA-12"]
 propiedad = ["tests/test_gcp08_proxy_e_imagen.py"]
 crea = []
 arbitro = "pytest tests/test_gcp08_proxy_e_imagen.py con docker; la imagen de main cabe en el presupuesto y test_05 da rojo con una imagen que lo supere (mutación m1); índice y especificaciones con código 0."
 rastros = ["¤arbitro"]
-agente = "ninguno"
 +++
 
 # GCP-08b · Presupuesto de tamaño de la imagen web
