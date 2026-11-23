@@ -10,7 +10,6 @@ crea = ["LICENSE", "scripts/poner_aviso_de_autor.py", "tests/test_leg06_aviso_de
 transversal = "aviso-de-autor"
 arbitro = "pytest tests/test_leg06_aviso_de_autor.py tests/test_verificar_alcance_pr.py; python -m compileall -q .; npx tsc --noEmit y npm run lint en frontend; arnés completo; verificar_alcance_pr, reparto, índice y especificaciones con código 0; mutaciones m1 a m5."
 rastros = ["¤ip", "¤arbitro"]
-agente = "ninguno"
 +++
 
 # LEG-06 · Licencia propietaria y aviso de derechos de autor en todo archivo de código versionado
