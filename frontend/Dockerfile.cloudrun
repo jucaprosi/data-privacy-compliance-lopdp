@@ -32,8 +32,11 @@ RUN mv next.config.ts next.config.base.ts \
  && npx next build
 
 # --- Etapa 3: ejecución mínima (alpine + Node de apk), sin node_modules completos ni privilegios ---
+# GCP-08c · icu-data-full: con los datos de ICU solo en inglés (icu-data-en, el que trae nodejs), Node
+# formatea es-EC en en-US y el render del servidor no coincide con el del navegador (hidratación).
+# Medida en el PR de GCP-08c contra un runner sobre node:22-alpine: esta opción pesa menos.
 FROM alpine:3.21 AS runner
-RUN apk add --no-cache nodejs \
+RUN apk add --no-cache nodejs icu-data-full \
  && addgroup -S -g 1001 nodejs \
  && adduser -S -u 1001 -G nodejs nextjs
 WORKDIR /app

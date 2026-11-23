@@ -26,9 +26,9 @@ import pytest
 
 RAIZ = Path(__file__).resolve().parents[1]
 FRONTEND = RAIZ / "frontend"
-# Presupuesto de GCP-08b §1: medida de main por capas (119.984.128 B) + 15 %, redondeado a MB.
-# Subirlo exige una ficha nueva que mida de nuevo (GCP-08b R2).
-PRESUPUESTO_BYTES = 138 * 1000 * 1000
+# Presupuesto de GCP-08c R3 (regla de GCP-08b R2): medida por capas del runner con icu-data-full
+# (147.984.384 B) + 15 %, redondeado a MB. Subirlo exige una ficha nueva que mida de nuevo.
+PRESUPUESTO_BYTES = 170 * 1000 * 1000
 BINARIO = bytes(range(256)) * 4  # 1024 bytes, con bytes que no son UTF-8 válido
 
 
@@ -267,6 +267,21 @@ def test_08_x_request_id_de_ida_y_vuelta(nube, backends):
     assert _ultima(backends[0], "/api/v1/eco?rid=1")["cabeceras"]["x-request-id"] == rid
     assert cabeceras["x-request-id"] == rid
     assert "set-cookie" not in cabeceras and "x-interna" not in cabeceras
+
+
+def test_08_intl_es_ec_en_la_imagen(imagen):
+    """GCP-08c · El Node de la imagen formatea es-EC con datos de ICU completos, sin caer en en-US."""
+    guion = (
+        'const d = new Date(Date.UTC(2026, 10, 23, 12));'
+        'console.log(new Intl.DateTimeFormat("es-EC", {dateStyle: "full", timeZone: "UTC"}).format(d));'
+        'console.log(new Intl.NumberFormat("es-EC", {style: "currency", currency: "USD"}).format(1234567.891));'
+    )
+    salida = subprocess.run(["docker", "run", "--rm", "--entrypoint", "no" + "de", imagen, "-e", guion],
+                            capture_output=True, text=True, encoding="utf-8", check=True).stdout
+    fecha, numero = salida.strip().splitlines()
+    assert fecha == "lunes, 23 de noviembre de 2026", fecha
+    # Intl puede separar con espacio duro; se normaliza para comparar el texto visible.
+    assert numero.replace("\u00a0", " ") == "$1.234.567,89", numero
 
 
 def test_09_en_la_nube_x_user_id_no_llega_al_backend(nube, local, backends):
