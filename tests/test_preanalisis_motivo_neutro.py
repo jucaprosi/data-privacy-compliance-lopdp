@@ -87,7 +87,7 @@ def client(monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
 
 def _configurar(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", PROYECTO)
-    monkeypatch.setenv("VERTEX_LOCATION", "us-central1")
+    monkeypatch.setenv("VERTEX_LOCATION", "us")
 
 
 def test_estado_sin_proveedor_es_neutro(client: TestClient) -> None:
@@ -112,6 +112,7 @@ def test_estado_con_proveedor_no_filtra_variables_en_el_motivo(
     assert r.status_code == 200 and cuerpo["disponible"] is True
     assert cuerpo["modelo"] in MODELOS_PERMITIDOS
     assert cuerpo["motivo"] is None
+    assert cuerpo["region"] == "us"
     for t in (*PROHIBIDOS, PROYECTO, "us-central1"):
         assert t not in r.text, f"{t!r} aparece en: {r.text}"
 

@@ -78,6 +78,7 @@ class EstadoResponse(BaseModel):
     modelo: Optional[str] = None
     motivo: Optional[str] = None
     ubicacion: Optional[str] = None
+    region: Optional[str] = None
 
 
 class FragmentoRelevanteOut(BaseModel):
@@ -140,6 +141,7 @@ def obtener_estado(tenant_id: str = Depends(obtener_tenant_id_actual)) -> Estado
         modelo=e.modelo,
         motivo=e.motivo,
         ubicacion=e.ubicacion,
+        region=e.region,
     )
 
 
