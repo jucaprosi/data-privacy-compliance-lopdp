@@ -35,7 +35,7 @@ async function simularApi(page: Page, rol = "dpo", servidor = false): Promise<Su
       return;
     }
     if (ruta.endsWith("/preanalisis/estado")) {
-      await route.fulfill({ json: { disponible: true, proveedor: "simulado", modelo: "qa-08", motivo: null } });
+      await route.fulfill({ json: { disponible: true, proveedor: "simulado", modelo: "qa-08", motivo: null, ubicacion: "Estados Unidos", region: "us" } });
       return;
     }
     if (ruta.endsWith("/preanalisis/preparar")) {

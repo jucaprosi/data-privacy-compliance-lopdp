@@ -41,7 +41,7 @@ const PROHIBIDOS_AVISO = /adecuad|conforme|provisional|por confirmar|pendiente|s
 const MENSAJE_FALLA_CERRADO = "El preanálisis no está disponible: falta configurar dónde se procesan los datos.";
 const ESTADO_US: EstadoSimulado = {
   disponible: true,
-  proveedor: "Google Cloud",
+  proveedor: "Google Vertex AI",
   modelo: "gemini-3.8-flash",
   motivo: null,
   ubicacion: "Estados Unidos",
@@ -136,8 +136,8 @@ test.describe("IA-15 · aviso de país y región en preanálisis", () => {
       await abrirDiagnostico(page);
 
       const fraseEsperada =
-        "Estos fragmentos se envían a Google Cloud para procesarlos con el modelo gemini-3.8-flash. Se procesan en Estados Unidos (región us), fuera de Ecuador.";
-      const etiqueta = page.getByText("Google Cloud · Estados Unidos, us", { exact: true });
+        "Estos fragmentos se envían a Google Vertex AI para procesarlos con el modelo gemini-3.8-flash. Se procesan en Estados Unidos (región us), fuera de Ecuador.";
+      const etiqueta = page.getByText("Google Vertex AI · Estados Unidos, us", { exact: true });
       await expect(etiqueta).toBeVisible();
       await expect(etiqueta).toHaveAttribute("title", fraseEsperada);
 
@@ -158,7 +158,7 @@ test.describe("IA-15 · aviso de país y región en preanálisis", () => {
       await abrirDiagnostico(page);
       const dialogo = await abrirDialogoConsentimiento(page);
       await expect(dialogo.getByTestId("consentimiento-destino")).toHaveText(
-        "Estos fragmentos se envían a Google Cloud para procesarlos con el modelo gemini-3.8-flash. Se procesan en Ecuador (región quito)."
+        "Estos fragmentos se envían a Google Vertex AI para procesarlos con el modelo gemini-3.8-flash. Se procesan en Ecuador (región quito)."
       );
     } finally {
       await context.close();
