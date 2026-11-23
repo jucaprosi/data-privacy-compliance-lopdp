@@ -51,3 +51,11 @@ def test_pruebas_en_fisico_documenta_el_humo_en_dos_regiones():
     assert "VERTEX_LOCATION=us" in texto or '$env:VERTEX_LOCATION = "us"' in texto
     assert "VERTEX_LOCATION_EMBEDDING" in texto
     assert "VERTEX_LOCATION=us-central1" not in texto
+
+
+def test_brief_cubre_las_tres_variables_el_rol_de_pruebas_y_el_aviso_del_workflow():
+    texto = BRIEF.read_text(encoding="utf-8")
+    assert 'GOOGLE_CLOUD_PROJECT=evydentia,VERTEX_LOCATION=us,VERTEX_LOCATION_EMBEDDING=us-central1' in texto
+    assert "sa-backend-pruebas" in texto
+    assert "--set-env-vars" in texto and "deploy-gcp.yml" in texto
+    assert "no el servicio desplegado" in texto

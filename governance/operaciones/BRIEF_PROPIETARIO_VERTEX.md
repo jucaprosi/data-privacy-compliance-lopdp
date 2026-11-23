@@ -39,14 +39,34 @@ $PROYECTO = "evydentia-pruebas"
 gcloud services enable aiplatform.googleapis.com --project=$PROYECTO
 ```
 
-### 2. Variables del servicio de Cloud Run
-La demo ya las declara en `governance/operaciones/entornos/demo/cloudrun_backend.yaml`: aplica ese manifiesto por la vía habitual del despliegue (el valor vivo de la revisión 00011-4s5 era `us-central1` y faltaba la segunda variable). En pruebas y producción faltan las dos; añádelas al servicio:
+### 2. Variables y rol del servicio de Cloud Run
+Estado vivo leído por el CTO el 2026-11-23 (solo lectura):
+
+| Proyecto | Variables de Vertex vivas | Cuenta de servicio y roles |
+| :--- | :--- | :--- |
+| `evydentia` | ninguna (solo `APP_ENV` y `PROJECT_ID`) | `sa-evydentia-backend`, con `roles/aiplatform.user` |
+| `evydentia-pruebas` | solo `GOOGLE_CLOUD_PROJECT` | `sa-backend-pruebas`, sin `aiplatform.user` ni `editor` |
+| `evydentia-demo` | las tres, correctas | cuenta de cómputo por defecto, con `roles/editor` |
+
+La demo ya las declara en `governance/operaciones/entornos/demo/cloudrun_backend.yaml`: no hace falta tocarla. El backend lee `GOOGLE_CLOUD_PROJECT` (`cliente_vertex.py`), no `PROJECT_ID`, así que en producción faltan las **tres** variables y en pruebas faltan las dos de región.
+
+**Pruebas.** Variables y rol (el rol es **obligatorio**: sin él el servicio desplegado da 403 aunque el humo con tu credencial pase):
 ```powershell
 $PROYECTO = "evydentia-pruebas"
 $REGION = "us-central1"
-gcloud run services update evydentia-backend --project=$PROYECTO --region=$REGION --update-env-vars="VERTEX_LOCATION=us,VERTEX_LOCATION_EMBEDDING=us-central1"
+gcloud run services update evydentia-backend --project=$PROYECTO --region=$REGION --update-env-vars="GOOGLE_CLOUD_PROJECT=$PROYECTO,VERTEX_LOCATION=us,VERTEX_LOCATION_EMBEDDING=us-central1"
+$SA = gcloud run services describe evydentia-backend --project=$PROYECTO --region=$REGION --format="value(spec.template.spec.serviceAccountName)"
+gcloud projects add-iam-policy-binding $PROYECTO --member="serviceAccount:$SA" --role="roles/aiplatform.user" --condition=None
 ```
-Repite con `$PROYECTO = "evydentia"` (producción, con tu autorización escrita). Comprueba lo que quedó (solo lectura):
+**Producción** (con tu autorización escrita; `sa-evydentia-backend` ya tiene el rol):
+```powershell
+$PROYECTO = "evydentia"
+$REGION = "us-central1"
+gcloud run services update evydentia-backend --project=$PROYECTO --region=$REGION --update-env-vars="GOOGLE_CLOUD_PROJECT=evydentia,VERTEX_LOCATION=us,VERTEX_LOCATION_EMBEDDING=us-central1"
+```
+> **Aviso: el despliegue por el workflow las borra.** `.github/workflows/deploy-gcp.yml` publica producción con `--set-env-vars`, que reemplaza todas las variables y no incluye las de Vertex. Hasta que el propietario añada al workflow `,GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }},VERTEX_LOCATION=us,VERTEX_LOCATION_EMBEDDING=us-central1` (commit del propietario, R4; el workflow no lo toca ninguna sesión de IA), repón las variables con el comando de producción tras cada despliegue.
+
+Comprueba lo que quedó (solo lectura; repite con cada proyecto):
 ```powershell
 $PROYECTO = "evydentia-pruebas"
 $REGION = "us-central1"
@@ -69,10 +89,10 @@ $env:VERTEX_HUMO = "1"
 python -m pytest tests/test_ia03_humo_vertex.py -v -rs | Tee-Object -FilePath "$env:USERPROFILE\evidencia-humo-vertex.txt"
 Remove-Item Env:VERTEX_HUMO, Env:GOOGLE_CLOUD_PROJECT, Env:VERTEX_LOCATION, Env:VERTEX_LOCATION_EMBEDDING
 ```
-Resultado esperado: `3 passed` (`test_humo_esquema[esquema_ruta0]` y `[esquema_ruta1]` generan; `test_humo_vectores` da los vectores). `skipped` significa que `VERTEX_HUMO` no quedó en `1` y la corrida no vale. Antes de enviar la salida al CTO, sustituye el id del proyecto y cualquier correo por `<proyecto>` y `<cuenta>`. El procedimiento de credencial suplantada está en `governance/operaciones/EVIDENCIA_HUMO_VERTEX.md`.
+Resultado esperado: `3 passed` (`test_humo_esquema[esquema_ruta0]` y `[esquema_ruta1]` generan; `test_humo_vectores` da los vectores). `skipped` significa que `VERTEX_HUMO` no quedó en `1` y la corrida no vale. Antes de enviar la salida al CTO, sustituye el id del proyecto y cualquier correo por `<proyecto>` y `<cuenta>`. El procedimiento de credencial suplantada está en `governance/operaciones/EVIDENCIA_HUMO_VERTEX.md`. El humo corre con la credencial del propietario y prueba el acceso del proyecto al modelo, no el servicio desplegado: lo que confirma el servicio es entrar en la app y ver el preanálisis disponible.
 
-### 4. Mínimo privilegio (decisión del propietario)
-Hoy `roles/editor` basta para llamar a Vertex (los 404 previos no fueron 403). Para dejar el mínimo, concede `roles/aiplatform.user` a la cuenta de servicio de cada servicio y **retira `roles/editor` solo después de que el humo del paso 3 dé `3 passed` sin él**. Obtén la cuenta y concede el rol:
+### 4. Retirar `roles/editor` de la demo (decisión del propietario)
+Solo en la demo `roles/editor` basta para llamar a Vertex (los 404 previos no fueron 403). Para dejar el mínimo, concede `roles/aiplatform.user` a su cuenta de cómputo y **retira `roles/editor` solo después de que el humo del paso 3 dé `3 passed` y la app muestre el preanálisis disponible sin él**:
 ```powershell
 $PROYECTO = "evydentia-demo"
 $REGION = "us-central1"
@@ -80,7 +100,7 @@ $SERVICIO = "evydentia-backend-demo"
 $SA = gcloud run services describe $SERVICIO --project=$PROYECTO --region=$REGION --format="value(spec.template.spec.serviceAccountName)"
 gcloud projects add-iam-policy-binding $PROYECTO --member="serviceAccount:$SA" --role="roles/aiplatform.user" --condition=None
 ```
-No des `roles/aiplatform.admin` ni `roles/owner`. Repite con cada proyecto y su servicio (pruebas y producción: `evydentia-backend`).
+No des `roles/aiplatform.admin` ni `roles/owner`. Pruebas y producción ya quedan con `roles/aiplatform.user` por el paso 2.
 
 ### 5. Anotar la latencia
 Anota la latencia de generación y de vectores que mide la ficha IA-13 (R5) en cada entorno y entrégala al CTO junto con la evidencia del humo.
