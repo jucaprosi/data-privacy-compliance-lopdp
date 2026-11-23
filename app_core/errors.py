@@ -197,4 +197,38 @@ class ErrorNegocio(Exception):
 # --- FIN ADPA-02 ---
 
 # === FE-29 ===
+# ¤seguridad
+# Códigos estables de los 403 de identidad (FE-29 R1): el frontend decide por `code`; `detail` conserva el
+# texto de siempre, el que ya leen los clientes.
+USUARIO_NO_REGISTRADO = CodigoErrorNegocio(
+    'USUARIO_NO_REGISTRADO', 403, 'Usuario no registrado en la plataforma.'
+)
+CUENTA_VINCULADA_OTRA_IDENTIDAD = CodigoErrorNegocio(
+    'CUENTA_VINCULADA_OTRA_IDENTIDAD', 403, 'La cuenta está vinculada a otra identidad de Google.'
+)
+OPERADOR_NO_AUTORIZADO = CodigoErrorNegocio(
+    'OPERADOR_NO_AUTORIZADO', 403, 'Acceso restringido: no tiene permisos de operador de la plataforma.'
+)
+CATALOGO_ERRORES.update({
+    'USUARIO_NO_REGISTRADO': USUARIO_NO_REGISTRADO,
+    'CUENTA_VINCULADA_OTRA_IDENTIDAD': CUENTA_VINCULADA_OTRA_IDENTIDAD,
+    'OPERADOR_NO_AUTORIZADO': OPERADOR_NO_AUTORIZADO,
+})
+
+from fastapi import HTTPException as _HTTPException  # noqa: E402  (solo lo usa esta sección)
+
+
+class ErrorDeAcceso(ErrorNegocio, _HTTPException):
+    """Un 403 de identidad con código estable que sigue siendo un `HTTPException`.
+
+    Starlette elige el manejador por el MRO: el de `ErrorNegocio` va primero y responde
+    `{detail, code, action_required}`. Los llamadores que ya capturan el 403 de `verificar_operador`
+    con `except HTTPException` (bóveda y paquetes normativos) lo siguen capturando igual.
+    """
+
+    def __init__(self, codigo: CodigoErrorNegocio):
+        # No se llama a ErrorNegocio.__init__: su super() pasaría el texto como status_code a HTTPException.
+        _HTTPException.__init__(self, status_code=codigo.status_code, detail=codigo.mensaje_defecto)
+        self.code = codigo.codigo
+        self.action_required = codigo.action_required
 # === fin FE-29 ===

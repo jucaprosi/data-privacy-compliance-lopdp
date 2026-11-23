@@ -181,10 +181,13 @@ async def usuario_de_identidad(session, identidad: IdentidadVerificada) -> str:
         text("SELECT id, google_sub FROM users WHERE lower(email) = :email AND activo AND deleted_at IS NULL"),
         {"email": identidad.email},
     )).first()
+    # FE-29: códigos estables; el texto de `detail` es el de siempre.
+    from app_core.errors import CUENTA_VINCULADA_OTRA_IDENTIDAD, USUARIO_NO_REGISTRADO, ErrorDeAcceso
+
     if fila is None:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Usuario no registrado en la plataforma.")
+        raise ErrorDeAcceso(USUARIO_NO_REGISTRADO)
     if fila[1] and fila[1] != identidad.sub:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "La cuenta está vinculada a otra identidad de Google.")
+        raise ErrorDeAcceso(CUENTA_VINCULADA_OTRA_IDENTIDAD)
     await session.execute(
         text("UPDATE users SET google_sub = :sub WHERE id = :id AND google_sub IS NULL"),
         {"sub": identidad.sub, "id": fila[0]},

@@ -97,10 +97,10 @@ async def verificar_operador(session: AsyncSession, email: str, sub: Optional[st
     ).mappings().first()
 
     if not fila:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Acceso restringido: no tiene permisos de operador de la plataforma.",
-        )
+        # FE-29: código estable OPERADOR_NO_AUTORIZADO con el texto de siempre; sigue siendo un HTTPException.
+        from app_core.errors import OPERADOR_NO_AUTORIZADO, ErrorDeAcceso
+
+        raise ErrorDeAcceso(OPERADOR_NO_AUTORIZADO)
 
     # Si tenía sub nulo y ahora viene sub, vincularlo
     if sub and not fila["google_sub"]:
