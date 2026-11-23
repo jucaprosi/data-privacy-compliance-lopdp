@@ -2,7 +2,7 @@
 id = "LEG-07"
 titulo = "Finales de línea CRLF en los .bat para que cmd lea el aviso de autor"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "gobernanza"
 depende_de = ["ENT-01", "LEG-06", "MARCA-05", "QA-02"]
 propiedad = [".gitattributes", "ejecutar_arnes_tres_pilares.bat", "ejecutar_arnes_verificacion.bat", "iniciar_backend.bat", "iniciar_frontend.bat", "iniciar_todo.bat", "scripts/entorno.bat", "tests/test_leg06_aviso_de_autor.py"]
@@ -19,7 +19,7 @@ agente = "ninguno"
 **Origen.** Defecto de LEG-06 (#959), reportado por su ingeniero y comprobado por el CTO el 2026-11-23.
 
 ## Entrega
-- `*.bat` y `*.cmd` con `eol=crlf` en `.gitattributes`.
+- `*.bat` y `*.cmd` con `-text` en `.gitattributes` (el índice guarda CRLF tal cual; `text eol=crlf` lo guarda en LF).
 - Los seis `.bat` renormalizados a CRLF.
 - Una prueba que exige CRLF en todo `.bat` y `.cmd` versionado.
 
