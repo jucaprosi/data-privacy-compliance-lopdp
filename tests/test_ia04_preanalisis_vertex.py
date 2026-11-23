@@ -91,7 +91,7 @@ def consumos(monkeypatch: pytest.MonkeyPatch) -> Iterator[list[str]]:
 
 def _disponible(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", PROYECTO)
-    monkeypatch.setenv("VERTEX_LOCATION", "us-central1")
+    monkeypatch.setenv("VERTEX_LOCATION", "us")
 
 
 def test_estado_con_compuerta_nombra_vertex_y_modelo_cerrado(consumos, monkeypatch) -> None:
@@ -102,6 +102,7 @@ def test_estado_con_compuerta_nombra_vertex_y_modelo_cerrado(consumos, monkeypat
     assert r.status_code == 200 and j["disponible"] is True and j["motivo"] is None
     assert j["proveedor"] == "Google Vertex AI"
     assert j["modelo"] == MODELO_GENERACION and j["modelo"] in MODELOS_PERMITIDOS
+    assert j["region"] == "us" and j["ubicacion"] == "Estados Unidos"
     _sin_filtraciones(r.text)
 
 

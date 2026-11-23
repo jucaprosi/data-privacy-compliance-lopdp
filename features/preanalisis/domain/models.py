@@ -138,3 +138,4 @@ class EstadoProveedor:
     modelo: str | None
     motivo: str | None
     ubicacion: str | None = None
+    region: str | None = None

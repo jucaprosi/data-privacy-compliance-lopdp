@@ -110,21 +110,21 @@ def test_ubicacion_sale_de_la_compuerta(entorno_limpio: list[str], monkeypatch: 
     with TestClient(app) as client:
         r_us = client.get(f"{URL}/estado", headers=HDR_ESTADO)
         assert r_us.status_code == 200
-        assert r_us.json()["ubicacion"] == "servidores en Estados Unidos"
+        assert r_us.json()["ubicacion"] == "Estados Unidos" and r_us.json()["region"] == "us"
 
         # Otra región en el mapa de regiones debe devolver su propia etiqueta.
         monkeypatch.setitem(UBICACION_POR_REGION, "europe-west1", "Irlanda")
         monkeypatch.setenv("VERTEX_LOCATION", "europe-west1")
         r_ie = client.get(f"{URL}/estado", headers=HDR_ESTADO)
         assert r_ie.status_code == 200
-        assert r_ie.json()["ubicacion"] == "servidores en Irlanda"
+        assert r_ie.json()["ubicacion"] == "Irlanda" and r_ie.json()["region"] == "europe-west1"
 
         # Mutación en memoria del mapa para verificar que `us` no está cableado en router ni proveedor.
         monkeypatch.setitem(UBICACION_POR_REGION, "us", "Canadá")
         monkeypatch.setenv("VERTEX_LOCATION", "us")
         r_mut = client.get(f"{URL}/estado", headers=HDR_ESTADO)
         assert r_mut.status_code == 200
-        assert r_mut.json()["ubicacion"] == "servidores en Canadá"
+        assert r_mut.json()["ubicacion"] == "Canadá" and r_mut.json()["region"] == "us"
 
         # Proveedor inyectado sin atributo `ubicacion` -> None.
         class _ProveedorSinUbicacion:
@@ -137,29 +137,29 @@ def test_ubicacion_sale_de_la_compuerta(entorno_limpio: list[str], monkeypatch: 
         inyectar_proveedor_de_prueba(_ProveedorSinUbicacion())
         r_sin_attr = client.get(f"{URL}/estado", headers=HDR_ESTADO)
         assert r_sin_attr.status_code == 200
-        assert r_sin_attr.json()["ubicacion"] is None
+        assert r_sin_attr.json()["ubicacion"] is None and r_sin_attr.json()["region"] is None
 
         restablecer_proveedor_entorno()
         # Compuerta disponible pero sin etiqueta de ubicación -> None.
         monkeypatch.setattr(
             mod.pasillo_inferencia,
             "estado",
-            lambda: SimpleNamespace(disponible=True, proveedor="vertex-ai", modelo=None, motivo=None, ubicacion=None),
+            lambda: SimpleNamespace(disponible=True, proveedor="vertex-ai", modelo=None, motivo=None, ubicacion=None, region=None),
         )
         r_sin_ubic = client.get(f"{URL}/estado", headers=HDR_ESTADO)
         assert r_sin_ubic.status_code == 200
-        assert r_sin_ubic.json()["ubicacion"] is None
+        assert r_sin_ubic.json()["ubicacion"] is None and r_sin_ubic.json()["region"] is None
 
         # Compuerta no disponible -> disponible=False y ubicacion=None.
         monkeypatch.setattr(
             mod.pasillo_inferencia,
             "estado",
-            lambda: SimpleNamespace(disponible=False, proveedor=None, modelo=None, motivo="No disponible", ubicacion=None),
+            lambda: SimpleNamespace(disponible=False, proveedor=None, modelo=None, motivo="No disponible", ubicacion=None, region=None),
         )
         r_off = client.get(f"{URL}/estado", headers=HDR_ESTADO)
         assert r_off.status_code == 200
         assert r_off.json()["disponible"] is False
-        assert r_off.json()["ubicacion"] is None
+        assert r_off.json()["ubicacion"] is None and r_off.json()["region"] is None
 
 
 def test_org_llega_al_proveedor(entorno_limpio: list[str], monkeypatch: pytest.MonkeyPatch) -> None:
@@ -270,6 +270,13 @@ def _buscar_prohibidos_ia09(ruta_relativa: str, contenido: str) -> list[str]:
         if frase in bajo:
             hallazgos.append(f"{ruta_relativa}: frase prohibida {frase!r}")
 
+    if not ruta_relativa.endswith((".tsx", ".ts")):
+        # IA-17 R1: ni el prefijo «servidores» ni una región escrita a mano en el código de la sala.
+        if "servidores" in bajo:
+            hallazgos.append(f"{ruta_relativa}: encuadre «servidores» escrito a mano")
+        if re.search(r"[\"'](?:us|us-central1|europe-west1)[\"']", bajo):
+            hallazgos.append(f"{ruta_relativa}: región escrita a mano")
+
     if "PENDIENTE" in contenido:
         hallazgos.append(f"{ruta_relativa}: marcador provisional 'PENDIENTE'")
 
@@ -334,8 +341,11 @@ def test_sin_ubicacion_ni_encuadre_escritos_a_mano() -> None:
 
     proveedor = "features/preanalisis/services/proveedor.py"
     assert _buscar_prohibidos_ia09(proveedor, contenidos[proveedor] + '\n"Estados Unidos"\n')
+    assert _buscar_prohibidos_ia09(proveedor, contenidos[proveedor] + '\nf"servidores en {x}"\n')
+    assert _buscar_prohibidos_ia09(proveedor, contenidos[proveedor] + '\nREGION = "us"\n')
     router = "api/routers/preanalisis.py"
     assert _buscar_prohibidos_ia09(router, contenidos[router] + '\n"Estados Unidos"\n')
+    assert _buscar_prohibidos_ia09(router, contenidos[router] + '\nregion = "us"\n')
 
 
 def test_ia13_multirregion_us(entorno_limpio: list[str], monkeypatch: pytest.MonkeyPatch) -> None:
