@@ -106,3 +106,24 @@ def test_licencia_y_package_json():
     assert _package_json_declara_unlicensed(datos)
     sin_campo = {k: v for k, v in datos.items() if k != "license"}  # m3: quitar el campo da rojo
     assert not _package_json_declara_unlicensed(sin_campo)
+
+
+def test_bat_y_cmd_en_crlf():
+    """LEG-07 §5: cada .bat y .cmd versionado guarda CRLF en el índice, sin ningún LF suelto."""
+    rutas = subprocess.run(["git", "ls-files", "--", "*.bat", "*.cmd"], cwd=RAIZ, capture_output=True,
+                           text=True, check=True).stdout.split()
+    assert len(rutas) >= 6, "faltan los .bat de LEG-07 en el índice"
+    malos = []
+    for ruta in rutas:
+        datos = subprocess.run(["git", "show", f":{ruta}"], cwd=RAIZ, capture_output=True, check=True).stdout
+        if datos.count(b"\n") != datos.count(b"\r\n"):
+            malos.append(f"{ruta}: tiene LF sin CR en el índice")
+    assert not malos, "\n".join(malos)
+
+
+def test_gitattributes_crlf_y_biblioteca():
+    """LEG-07 §5: .gitattributes declara -text para .bat y .cmd y conserva data/biblioteca/** -text."""
+    lineas = {linea.strip() for linea in (RAIZ / ".gitattributes").read_text(encoding="utf-8").splitlines()}
+    assert "*.bat -text" in lineas and "*.cmd -text" in lineas, "falta *.bat -text o *.cmd -text"
+    assert "data/biblioteca/** -text" in lineas
+    assert not any("eol=crlf" in linea for linea in lineas), "text eol=crlf guarda LF en el índice"
