@@ -9,7 +9,7 @@ from pydantic import BaseModel
 
 from app_core.pasillo import inferencia as pasillo_inferencia
 
-MODELO = "gemini-2.5-pro"
+MODELO = pasillo_inferencia.MODELO_GENERACION
 ENFOQUES = ("plan", "pasos", "evidencias", "responsable", "seguimiento", "fundamento")
 AVISO_NO_DISPONIBLE = "El apoyo con IA no está disponible ahora. Se usó el respaldo local."
 AVISO_NO_VERIFICABLE = "El apoyo con IA no respondió de forma verificable. Se usó el respaldo local."

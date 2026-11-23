@@ -17,6 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app_core.db.session import fijar_contexto_rls
 from features.inteligencia_normativa import inteligencia_normativa_service as svc
 from features.inteligencia_normativa.services import extraccion
+from app_core.pasillo.inferencia import MODELO_EMBEDDING, MODELO_GENERACION
 
 pytestmark = pytest.mark.asyncio
 
@@ -226,7 +227,7 @@ async def test_indexacion_usa_text_embedding_005(mundo, cliente):
     inyectar(ELEMENTOS_CON_SUSTENTO, indexador=Indexador())
     r = await pedir(cliente, mundo)
     assert r.status_code == 202, r.text
-    assert pedidos and pedidos[0][1] == "text-embedding-005"
+    assert pedidos and pedidos[0][1] == MODELO_EMBEDDING
 
 
 async def test_propuesta_cita_articulos_y_no_modifica_nada(mundo, cliente):
@@ -242,7 +243,7 @@ async def test_propuesta_cita_articulos_y_no_modifica_nada(mundo, cliente):
     assert r.status_code == 202, r.text
     cuerpo = r.json()
     assert cuerpo["estado"] == "propuesta" and cuerpo["sin_base_normativa"] is False
-    assert cuerpo["modelo"] == "gemini-2.5-pro"
+    assert cuerpo["modelo"] == MODELO_GENERACION
     assert {(e["tipo"], e["referencia_id"]) for e in cuerpo["propuesta"]} == {("pregunta", "P12"), ("tratamiento", "rat-uno")}
     assert all(e["articulos_citados"] for e in cuerpo["propuesta"])
     assert modelo.llamadas[0][2] == mundo["ta"]
@@ -320,8 +321,8 @@ async def test_impacto_aislamiento_rls(mundo, cliente):
         with pytest.raises(Exception):  # WITH CHECK: no se inserta a nombre de otra organización
             await s.execute(text(
                 "INSERT INTO normativa_analisis_impacto (tenant_id, resolucion_id, modelo, corpus_sha256, "
-                "sin_base_normativa, solicitada_por) VALUES (:t, CAST(:r AS uuid), 'gemini-2.5-pro', :h, TRUE, 'x')"),
-                {"t": mundo["tb"], "r": mundo["resolucion"], "h": SHA})
+                "sin_base_normativa, solicitada_por) VALUES (:t, CAST(:r AS uuid), :m, :h, TRUE, 'x')"),
+                {"t": mundo["tb"], "r": mundo["resolucion"], "h": SHA, "m": MODELO_GENERACION})
         await s.rollback()
 
 
