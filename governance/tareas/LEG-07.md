@@ -2,14 +2,13 @@
 id = "LEG-07"
 titulo = "Finales de línea CRLF en los .bat para que cmd lea el aviso de autor"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["ENT-01", "LEG-06", "MARCA-05", "QA-02"]
 propiedad = [".gitattributes", "ejecutar_arnes_tres_pilares.bat", "ejecutar_arnes_verificacion.bat", "iniciar_backend.bat", "iniciar_frontend.bat", "iniciar_todo.bat", "scripts/entorno.bat", "tests/test_leg06_aviso_de_autor.py"]
 crea = []
 arbitro = "pytest tests/test_leg06_aviso_de_autor.py; git ls-files --eol muestra i/crlf en los seis .bat; cada .bat arranca en cmd sin «no se reconoce como un comando»; reparto, índice y especificaciones con código 0; mutaciones m1 y m2."
 rastros = ["¤ip", "¤arbitro"]
-agente = "ninguno"
 +++
 
 # LEG-07 · Finales de línea CRLF en los .bat para que cmd lea el aviso de autor
