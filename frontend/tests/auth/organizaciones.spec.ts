@@ -73,7 +73,7 @@ test.describe("Elegir y cambiar de organización (FE-21)", () => {
     await page.getByRole("button", { name: BOTON_GOOGLE }).click();
     // === fin ORG-21 ===
 
-    await expect(page.getByTestId("login-error")).toContainText("Tu cuenta no pertenece a ninguna organización; pide una invitación.");
+    await expect(page.getByRole("heading", { name: "Aún no perteneces a ninguna organización" })).toBeVisible(); // FE-29 §4
     await expect(page).toHaveURL(/\/login/);
     expect(await page.evaluate((c) => window.sessionStorage.getItem(c), CLAVE_SESION)).toBeNull();
     // === ORG-21 ===

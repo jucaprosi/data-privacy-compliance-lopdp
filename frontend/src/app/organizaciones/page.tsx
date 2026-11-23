@@ -22,9 +22,16 @@ import {
   leerOrganizacionActiva,
   leerSesion,
   modoAutenticacion,
+  olvidarCuentaDeGoogle,
   RUTA_LOGIN,
   type Organizacion,
 } from "@/lib/auth";
+// === FE-29 ===
+import EstadoLogin, { type TipoAviso } from "@/components/login/EstadoLogin";
+import { ErrorDeAcceso } from "@/lib/auth/organizacion";
+
+const NOTA_LISTA_GUARDADA = "Lista guardada en este navegador; puede no estar al día.";
+// === fin FE-29 ===
 import { useAuditStore } from "@/store/useAuditStore";
 import { cambiarDeOrganizacion, entrarEnOrganizacion, resolverCambiosSinGuardar } from "@/store/datosDeTrabajo";
 
@@ -49,6 +56,10 @@ export default function OrganizacionesPage() {
   const [organizaciones, setOrganizaciones] = React.useState<Organizacion[] | null>(null);
   const [activa, setActiva] = React.useState<Organizacion | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  // FE-29: por qué no se pudieron consultar las organizaciones (§4), y si se está reintentando.
+  const [fallo, setFallo] = React.useState<TipoAviso | null>(null);
+  const [reintentando, setReintentando] = React.useState(false);
+  const salirRef = React.useRef<HTMLButtonElement>(null);
   const [pendienteDeCambio, setPendienteDeCambio] = React.useState<Organizacion | null>(null);
 
   React.useEffect(() => {
@@ -67,21 +78,50 @@ export default function OrganizacionesPage() {
     setAcceso({ token, email, conSesion: Boolean(sesion) });
     setActiva(sesion ? leerOrganizacionActiva() : null);
     let vigente = true;
-    consultarMisOrganizaciones(token)
-      .then((lista) => {
-        if (!vigente) return;
-        guardarMisOrganizaciones(lista);
-        setOrganizaciones(lista);
-      })
-      .catch((err: unknown) => {
-        if (!vigente) return;
-        setError(`No se pudieron consultar tus organizaciones: ${err instanceof Error ? err.message : "error de conexión"}.`);
-        setOrganizaciones(leerMisOrganizaciones());
-      });
+    void consultar(token, () => vigente);
     return () => {
       vigente = false;
     };
   }, [router]);
+
+  // === FE-29 ===
+  /** Consulta las organizaciones; si no puede, el aviso de su tipo (R2) y la lista guardada debajo. */
+  async function consultar(token: string, vigente: () => boolean = () => true): Promise<void> {
+    try {
+      const lista = await consultarMisOrganizaciones(token);
+      if (!vigente()) return;
+      guardarMisOrganizaciones(lista);
+      setFallo(null);
+      setOrganizaciones(lista);
+    } catch (err: unknown) {
+      if (!vigente()) return;
+      setFallo(err instanceof ErrorDeAcceso ? err.tipo : "red");
+      setOrganizaciones(leerMisOrganizaciones());
+    }
+  }
+
+  const reintentar = async () => {
+    if (!acceso) return;
+    const credencial = leerCredencial(acceso.token);
+    if (!credencial || credencial.exp * 1000 <= Date.now()) {
+      setFallo("sesion");
+      return;
+    }
+    setReintentando(true);
+    try {
+      await consultar(acceso.token);
+    } finally {
+      setReintentando(false);
+    }
+  };
+
+  /** R5: olvida la cuenta elegida, la credencial pendiente y la sesión, y vuelve al botón de Google. */
+  const usarOtraCuenta = () => {
+    olvidarCuentaDeGoogle();
+    cerrarSesion();
+    router.replace(RUTA_LOGIN);
+  };
+  // === fin FE-29 ===
 
   const cambiar = (org: Organizacion) => {
     if (!acceso) return;
@@ -93,7 +133,7 @@ export default function OrganizacionesPage() {
     if (!acceso) return;
     if (!acceso.conSesion) {
       if (!entrarEnOrganizacion(acceso.token, acceso.email, org)) {
-        setError("Tu identificación de Google caducó. Vuelve a iniciar sesión.");
+        setFallo("sesion");
         return;
       }
       window.location.assign("/dashboard");
@@ -121,7 +161,7 @@ export default function OrganizacionesPage() {
   };
 
   return (
-    <main className="flex min-h-screen w-screen items-center justify-center bg-white px-4 text-zinc-800">
+    <main className="flex min-h-screen w-full items-center justify-center bg-white px-4 text-zinc-800">
       <section
         aria-labelledby="titulo-organizaciones"
         className="flex w-full max-w-md flex-col gap-5 rounded-xl border border-[#e8dcf5] p-8 shadow-sm"
@@ -140,13 +180,34 @@ export default function OrganizacionesPage() {
           </p>
         )}
 
-        {organizaciones && organizaciones.length === 0 && (
-          <p role="status" className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
-            Tu cuenta no pertenece a ninguna organización; pide una invitación.
-          </p>
+        {/* === FE-29 === */}
+        {acceso && fallo && (
+          <EstadoLogin
+            tipo={fallo}
+            correo={acceso.email}
+            reintentando={reintentando}
+            onOtraCuenta={usarOtraCuenta}
+            onReintentar={() => void reintentar()}
+            enfocarGoogle={() => salirRef.current?.focus()}
+            testId="organizaciones-error"
+          />
         )}
 
-        {organizaciones && organizaciones.length > 0 && (
+        {acceso && !fallo && organizaciones && organizaciones.length === 0 && (
+          <EstadoLogin
+            tipo="sin_organizaciones"
+            correo={acceso.email}
+            onOtraCuenta={usarOtraCuenta}
+            testId="organizaciones-error"
+          />
+        )}
+
+        {(fallo === "servidor" || fallo === "red") && organizaciones && organizaciones.length > 0 && (
+          <p className="text-xs text-zinc-700">{NOTA_LISTA_GUARDADA}</p>
+        )}
+        {/* === fin FE-29 === */}
+
+        {organizaciones && organizaciones.length > 0 && (!fallo || fallo === "servidor" || fallo === "red") && (
           <ul aria-label="Tus organizaciones" className="flex flex-col gap-2">
             {organizaciones.map((org) => {
               const esActiva = activa?.tenant_id === org.tenant_id;
@@ -173,6 +234,7 @@ export default function OrganizacionesPage() {
         )}
 
         <button
+          ref={salirRef}
           type="button"
           onClick={() => {
             cerrarSesion();

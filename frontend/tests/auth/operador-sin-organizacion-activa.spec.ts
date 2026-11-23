@@ -126,9 +126,8 @@ test.describe("Operador de la plataforma sin organización (ORG-21)", () => {
   test("mis-organizaciones 403 y plataforma 403: se queda en la entrada con el mensaje de hoy y sin sesión", async ({ page }) => {
     const llamadas = await entrar(page, { misOrganizaciones: 403, plataforma: 403 });
 
-    await expect(page.getByTestId("login-error")).toHaveText(
-      "No se pudieron consultar tus organizaciones: el servidor respondió 403.",
-    );
+    // FE-29 §4: el aviso de «no registrado», sin el estado HTTP.
+    await expect(page.getByRole("heading", { name: "Esta cuenta no tiene acceso" })).toBeVisible();
     await expect.poll(() => aPlataforma(llamadas).length).toBe(1);
     await expect(page).toHaveURL(/\/login$/);
     expect(await leer(page, CLAVE_SESION)).toBeNull();

@@ -235,7 +235,7 @@ test.describe("Identidad en las llamadas a la API (FE-07)", () => {
     await page.goto("/");
 
     await expect(page).toHaveURL(/\/login\?motivo=expirada/);
-    await expect(page.getByTestId("login-aviso")).toContainText("expiró");
+    await expect(page.getByTestId("login-aviso")).toContainText("Tu sesión terminó."); // FE-29 §4
     expect(await sesionGuardada(page)).toBeNull();
   });
 });
