@@ -10,18 +10,34 @@ from features.inferencia.domain.errores import InferenciaNoDisponible
 TIMEOUT_MS = 60_000
 
 
-def configuracion() -> tuple[str, str]:
-    """(proyecto, región) del entorno; sin valores implícitos."""
+VARIABLE_GENERACION = "VERTEX_LOCATION"
+VARIABLE_EMBEDDING = "VERTEX_LOCATION_EMBEDDING"
+
+
+def _leer(variable: str) -> tuple[str, str]:
     proyecto = (os.environ.get("GOOGLE_CLOUD_PROJECT") or "").strip()
-    region = (os.environ.get("VERTEX_LOCATION") or "").strip()
+    region = (os.environ.get(variable) or "").strip()
     if not proyecto or not region:
         raise InferenciaNoDisponible()
     return proyecto, region
 
 
-def crear_cliente():
-    """Crea `genai.Client(vertexai=True, ...)`. Nunca recibe `api_key`."""
-    proyecto, region = configuracion()
+def configuracion() -> tuple[str, str]:
+    """(proyecto, ubicación de generación) del entorno; sin valores implícitos (IA-13 R2)."""
+    return _leer(VARIABLE_GENERACION)
+
+
+def configuracion_embedding() -> tuple[str, str]:
+    """(proyecto, ubicación de vectores) del entorno; independiente de la de generación (IA-13 R3)."""
+    return _leer(VARIABLE_EMBEDDING)
+
+
+def crear_cliente(vectores: bool = False):
+    """Crea `genai.Client(vertexai=True, ...)` en la ubicación de generación o de vectores. Nunca recibe `api_key`.
+
+    El SDK resuelve el host de una multirregión (`us`) por sí solo; aquí no se escribe ningún host.
+    """
+    proyecto, region = configuracion_embedding() if vectores else configuracion()
     from google import genai
     from google.genai import types
 

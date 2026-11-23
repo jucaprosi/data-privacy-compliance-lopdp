@@ -267,13 +267,14 @@ def registrar_estado_orquestador_tenant(
 def _consultar_estado_cache_normativo() -> str:
     """Consulta el estado del caché normativo vía pasillo de regulación sin crear recursos en GCP."""
     try:
+        from app_core.pasillo import inferencia as pasillo_inf
         from app_core.pasillo import regulacion_rag as pasillo_reg
 
         corpus = pasillo_reg.corpus_citable()
         if not corpus:
             return "SIN_CORPUS"
         try:
-            descriptor = pasillo_reg.obtener_o_crear_cache_normativo("gemini-2.5-flash")
+            descriptor = pasillo_reg.obtener_o_crear_cache_normativo(pasillo_inf.MODELO_GENERACION)
             if getattr(descriptor, "cache_name", None):
                 return "ACTIVO"
         except Exception:

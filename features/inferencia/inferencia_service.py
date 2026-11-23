@@ -12,7 +12,12 @@ from pydantic import BaseModel
 from app_core.dlp_sanitizer import sanitizar_texto_pii
 from app_core.errors import CodigoErrorNegocio, ErrorNegocio
 from features.inferencia.domain.errores import MOTIVO_NEUTRO, InferenciaNoDisponible
-from features.inferencia.domain.modelos_permitidos import MODELOS_EMBEDDING, MODELOS_PERMITIDOS
+from features.inferencia.domain.modelos_permitidos import (
+    MODELO_EMBEDDING,
+    MODELO_GENERACION,
+    MODELOS_EMBEDDING,
+    MODELOS_PERMITIDOS,
+)
 from features.inferencia.domain.prompts import PromptVersionado
 from features.inferencia.domain.regiones import UBICACION_POR_REGION
 from features.inferencia.domain.traza import Traza
@@ -23,6 +28,8 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "EstadoProveedor",
     "InferenciaNoDisponible",
+    "MODELO_EMBEDDING",
+    "MODELO_GENERACION",
     "MODELOS_EMBEDDING",
     "MODELOS_PERMITIDOS",
     "MOTIVO_NEUTRO",
@@ -55,6 +62,7 @@ class EstadoProveedor:
 
 
 _cliente = None
+_cliente_vectores = None
 _cliente_de_prueba = None
 _consumidor_de_prueba: Callable | None = None
 
@@ -71,17 +79,27 @@ def inyectar_consumidor_de_prueba(consumidor: Callable | None) -> None:
     _consumidor_de_prueba = consumidor
 
 
-def _region_valida() -> tuple[str, str]:
-    """(región, ubicación) o InferenciaNoDisponible si falta o no tiene etiqueta."""
-    _, region = cliente_vertex.configuracion()
+def _etiquetar(region: str) -> tuple[str, str]:
     ubicacion = UBICACION_POR_REGION.get(region)
     if ubicacion is None:
         raise InferenciaNoDisponible()
     return region, ubicacion
 
 
+def _region_valida() -> tuple[str, str]:
+    """(región de generación, país) o InferenciaNoDisponible si falta o no tiene etiqueta (IA-13 R2 y R4)."""
+    _, region = cliente_vertex.configuracion()
+    return _etiquetar(region)
+
+
+def _region_vectores_valida() -> tuple[str, str]:
+    """(región de vectores, país) o InferenciaNoDisponible; no depende de la de generación (IA-13 R3)."""
+    _, region = cliente_vertex.configuracion_embedding()
+    return _etiquetar(region)
+
+
 def estado() -> EstadoProveedor:
-    """Sin conectar: solo mira configuración y mapa de regiones."""
+    """Sin conectar: solo mira configuración y mapa de regiones. `region` y `ubicacion` son las de generación."""
     try:
         region, ubicacion = _region_valida()
     except InferenciaNoDisponible:
@@ -97,6 +115,16 @@ def _obtener_cliente():
     if _cliente is None:
         _cliente = cliente_vertex.crear_cliente()
     return _cliente
+
+
+def _obtener_cliente_vectores():
+    global _cliente_vectores
+    _region_vectores_valida()
+    if _cliente_de_prueba is not None:
+        return _cliente_de_prueba
+    if _cliente_vectores is None:
+        _cliente_vectores = cliente_vertex.crear_cliente(vectores=True)
+    return _cliente_vectores
 
 
 async def _consumir_tope(org_id: str) -> None:
@@ -209,7 +237,7 @@ async def vectorizar(textos: list[str], modelo: str) -> list[list[float]]:
     if modelo not in MODELOS_EMBEDDING:
         raise ErrorNegocio(IA_MODELO_EMBEDDING_NO_PERMITIDO)  # no llega al cliente
     lista = list(textos)
-    cliente = _obtener_cliente()  # InferenciaNoDisponible sin configuración
+    cliente = _obtener_cliente_vectores()  # InferenciaNoDisponible sin VERTEX_LOCATION_EMBEDDING
     if not lista:
         return []
     try:

@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from app_core.errors import ErrorNegocio, IA_TOPE_ORGANIZACION
 from features.inferencia import inferencia_service as svc
 from features.inferencia.domain.errores import MOTIVO_NEUTRO, InferenciaNoDisponible
+from features.inferencia.domain.modelos_permitidos import MODELO_EMBEDDING, MODELO_GENERACION, MODELOS_PERMITIDOS
 from features.inferencia.domain.regiones import UBICACION_POR_REGION
 from features.inferencia.services import cliente_vertex
 
@@ -41,8 +42,10 @@ class ClienteFalso:
 @pytest.fixture(autouse=True)
 def entorno(monkeypatch):
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "proyecto-prueba")
-    monkeypatch.setenv("VERTEX_LOCATION", "us-central1")
+    monkeypatch.setenv("VERTEX_LOCATION", "us")
+    monkeypatch.setenv("VERTEX_LOCATION_EMBEDDING", "us-central1")
     monkeypatch.setattr(svc, "_cliente", None)
+    monkeypatch.setattr(svc, "_cliente_vectores", None)
     consumos = []
 
     async def consumir(org):
@@ -54,7 +57,7 @@ def entorno(monkeypatch):
     svc.inyectar_consumidor_de_prueba(None)
 
 
-def _gen(cliente, usuario="hola", sistema="s", modelo="gemini-2.5-flash"):
+def _gen(cliente, usuario="hola", sistema="s", modelo=MODELO_GENERACION):
     svc.inyectar_cliente_de_prueba(cliente)
     return asyncio.run(svc.generar_estructurado(sistema, usuario, Esquema, modelo=modelo, org_id="org-1"))
 
@@ -124,7 +127,7 @@ def test_cliente_vertex_sin_clave(monkeypatch):
     cliente_vertex.crear_cliente()
     assert capturado["vertexai"] is True
     assert "api_key" not in capturado
-    assert capturado["location"] == "us-central1"
+    assert capturado["location"] == "us"
 
 
 def test_sin_configuracion_no_disponible_y_sin_conectar(monkeypatch):
@@ -136,7 +139,7 @@ def test_sin_configuracion_no_disponible_y_sin_conectar(monkeypatch):
 
 def test_estado_region_y_ubicacion():
     e = svc.estado()
-    assert e.disponible and e.region == "us-central1" and e.ubicacion == "Estados Unidos"
+    assert e.disponible and e.region == "us" and e.ubicacion == "Estados Unidos"
 
 
 def test_region_sin_etiqueta_no_disponible(monkeypatch):
@@ -148,6 +151,17 @@ def test_region_sin_etiqueta_no_disponible(monkeypatch):
 
 def test_cada_region_permitida_tiene_etiqueta():
     assert UBICACION_POR_REGION and all(v.strip() for v in UBICACION_POR_REGION.values())
+
+
+def test_un_solo_modelo_de_generacion_y_de_vectores():
+    """IA-13 R1 y mutación m1: una sola fuente del modelo; añadir un segundo modelo da rojo."""
+    from app_core.pasillo import inferencia
+
+    assert MODELOS_PERMITIDOS == frozenset({"gemini-3.8-flash"})
+    assert inferencia.MODELO_GENERACION == MODELO_GENERACION == "gemini-3.8-flash"
+    assert inferencia.MODELO_EMBEDDING == MODELO_EMBEDDING == "text-embedding-005"
+    with pytest.raises(AttributeError):
+        inferencia.MODELO_INEXISTENTE  # noqa: B018
 
 
 def test_pasillo_solo_reexporta():

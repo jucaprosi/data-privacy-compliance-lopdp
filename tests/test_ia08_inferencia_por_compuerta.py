@@ -371,3 +371,50 @@ def test_escaner_puerta_detecta_todas_las_formas_de_salto(tmp_path: Path, ruta: 
     _escribir_modulo(tmp_path, "features/ai_copilot/ai/prompts.py", "from app_core.pasillo import inferencia\n")
     _escribir_modulo(tmp_path, "scripts/evaluar_ia.py", "from features.inferencia import inferencia_service\n")
     assert escanear_imports_directos_inferencia(tmp_path) == {ruta}
+
+
+# ---- IA-13 R1 · una sola fuente del modelo (m4; cubre también a IA-14)
+
+FUENTE_DEL_MODELO = "features/inferencia/domain/modelos_permitidos.py"
+DIRECTORIOS_MODELO: tuple[str, ...] = ("features", "api")
+_PREFIJOS_DE_MODELO: tuple[str, ...] = ("gemini-", "text-embedding-")
+FICHA_IA14 = RAIZ / "governance" / "tareas" / "IA-14.md"
+
+
+def escanear_literales_de_modelo(raiz: Path, excluir: frozenset[str] = frozenset()) -> set[str]:
+    """Archivos de `features/` y `api/` con una cadena `gemini-` o `text-embedding-` (los comentarios no cuentan)."""
+    hallados: set[str] = set()
+    for ruta, rel in _iterar_py(raiz, DIRECTORIOS_MODELO):
+        if rel == FUENTE_DEL_MODELO or rel in excluir:
+            continue
+        arbol = ast.parse(ruta.read_text(encoding="utf-8"), filename=rel)
+        if any(
+            isinstance(nodo, ast.Constant)
+            and isinstance(nodo.value, str)
+            and any(prefijo in nodo.value for prefijo in _PREFIJOS_DE_MODELO)
+            for nodo in ast.walk(arbol)
+        ):
+            hallados.add(rel)
+    return hallados
+
+
+def _propiedad_de_ia14_sin_lanzar() -> frozenset[str]:
+    """Las salas consumidoras dejan sus literales en IA-14: mientras su ficha no esté `hecha`, quedan fuera."""
+    import tomllib
+
+    ficha = tomllib.loads(FICHA_IA14.read_text(encoding="utf-8").split("+++")[1])
+    return frozenset(ficha["propiedad"]) if ficha["estado"] != "hecha" else frozenset()
+
+
+def test_modelo_escrito_solo_en_su_fuente(tmp_path: Path) -> None:
+    """IA-13 R1 y mutación m4: fuera de `modelos_permitidos.py` nadie escribe el nombre de un modelo."""
+    assert escanear_literales_de_modelo(RAIZ, _propiedad_de_ia14_sin_lanzar()) == set()
+
+    _escribir_modulo(tmp_path, FUENTE_DEL_MODELO, 'MODELO_GENERACION = "gemini-3.8-flash"\n')
+    _escribir_modulo(tmp_path, "features/roadmap/ai/client.py", "# ¤gemini-vertex\nfrom app_core.pasillo import inferencia\n")
+    assert escanear_literales_de_modelo(tmp_path) == set()
+
+    # Mutación m4: un literal en otra sala da rojo.
+    _escribir_modulo(tmp_path, "features/roadmap/ai/client.py", 'MODELO = "gemini-3.8-flash"\n')
+    _escribir_modulo(tmp_path, "api/routers/vectores.py", 'EMB = f"text-embedding-{5:03d}"\n')
+    assert escanear_literales_de_modelo(tmp_path) == {"features/roadmap/ai/client.py", "api/routers/vectores.py"}

@@ -18,11 +18,12 @@ from typing import Callable, Literal
 from pydantic import BaseModel, Field
 
 from app_core.app_service import validar_cedula_ecuatoriana
+from app_core.pasillo import inferencia as pasillo_inferencia
 
 logger = logging.getLogger(__name__)
 
 MARCA_CEDULA = "[CEDULA-REDACTADA]"
-MODELO_POR_MODO = {"dictamen": "gemini-2.5-pro", "rapida": "gemini-2.5-flash"}
+MODELO_POR_MODO = {"dictamen": pasillo_inferencia.MODELO_GENERACION, "rapida": pasillo_inferencia.MODELO_GENERACION}
 INCERTIDUMBRE = (
     "No encuentro en el corpus normativo vigente un artículo que respalde una respuesta. "
     "Consulte al delegado de protección de datos."
