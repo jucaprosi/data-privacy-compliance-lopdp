@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Contexto de sesión por tenant para RLS (sala ADPA: Organización)."""
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession

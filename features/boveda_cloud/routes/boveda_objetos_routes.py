@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤boveda-cloud ¤seguridad-tenant ¤conservacion
 """Rutas /boveda-cloud/objetos: URLs firmadas V4 directas a Cloud Storage (BOV-02).
 

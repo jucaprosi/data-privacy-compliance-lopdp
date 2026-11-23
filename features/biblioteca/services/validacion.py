@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤¤developer-architect
 """Validación en servidor de las respuestas `contexto.*` y de la entrada a revisión (BIB-201).

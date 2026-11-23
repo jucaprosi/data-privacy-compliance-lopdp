@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex
 """Cliente Gemini en Vertex AI con credenciales por defecto, sin clave de API. Se crea al primer uso."""
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """Tabla ia_tope_organizacion de SEC-13a: tope total de generaciones de IA por tenant. ¤seguridad-tenant
 

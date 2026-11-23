@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # GCP-03b · Imagen web de EVYDENTIA etiquetada por commit. Se lanza desde frontend/:
 #   gcloud builds submit --config cloudbuild.yaml --substitutions=_ETIQUETA=$(git rev-parse --short HEAD) .
 # _ETIQUETA no tiene valor por defecto y substitutionOption es MUST_MATCH: sin ella, Cloud Build rechaza la

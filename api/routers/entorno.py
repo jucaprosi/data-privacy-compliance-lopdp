@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤entorno-pruebas
 """GET /entorno (EP-01): identidad pública del entorno, sin autenticación."""
 from fastapi import APIRouter

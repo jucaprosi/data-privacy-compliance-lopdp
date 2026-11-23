@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤dpo-independencia
 """Diagnóstico de prueba y diagnóstico real (DIAG-11, invariantes 58 y 59 de EVYDENTIA).
 

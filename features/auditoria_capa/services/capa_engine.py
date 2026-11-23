@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Motor de Acciones Correctivas y Preventivas (CAPA) con Segregación de Funciones (SoD) persistido en PostgreSQL."""
 from datetime import datetime, timezone
 from typing import List, Optional

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 // ¤frontend-ide ¤inventario
 // Pantalla del inventario (ORG-17) en el menú Inventario: sistemas, soportes y personas mínimas de la

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤firma-electronica
 """Rutas públicas de aceptación (FIRMA-02) — sin autenticación de usuario.
 

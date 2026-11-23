@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 // ¤incidentes
 // Campos de los pasos 1 a 6 del asistente de vulneración (INC-02). Solo presentación: el borrador vive

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤controles-periodicos ¤auditoria-capa
 """Control periódico (CAPA-02): qué se revisa, cada cuánto, quién responde y cuándo toca.
 

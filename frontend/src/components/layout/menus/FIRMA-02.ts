@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus ¤firma-electronica
 /**
  * Submenús de FIRMA-02: «Firmas» en BIBLIOTECA (envíos a aceptación) y «Verificar documento» en

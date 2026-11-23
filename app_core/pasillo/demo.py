@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤demo
 """Capacidades de la sala demo para otras salas (pasillo central, ADPA §3).

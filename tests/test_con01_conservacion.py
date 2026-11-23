@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤conservacion ¤seguridad-tenant ¤arbitro
 """CON-01: políticas de conservación, acta de ejecución con SHA-256 y aislamiento RLS entre inquilinos.
 

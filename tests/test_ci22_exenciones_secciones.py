@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 # ¤arbitro
 """CI-22: secciones de governance/tareas/_exenciones_propiedad.txt (governance/tareas/CI-22.md).

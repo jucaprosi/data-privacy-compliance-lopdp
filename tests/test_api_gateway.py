@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Suite de Pruebas de Integración para la Pasarela REST API Gateway.
 Verifica que los endpoints HTTP expongan adecuadamente las 7 salas ADPA manteniendo aislamiento y contratos.
 """

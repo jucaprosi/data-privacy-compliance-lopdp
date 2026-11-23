@@ -1,3 +1,4 @@
+/* © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita. */
 .panel { --tasks-bg: #17172b; --tasks-card: #21213a; --tasks-border: #424268; --tasks-text: #f7f5ff; --tasks-muted: #c5c5dc; --tasks-accent: #a7dfd2; color: var(--tasks-text); background: var(--tasks-bg); border: 1px solid var(--tasks-border); border-radius: 18px; padding: 28px; }
 .header, .heading, .stepHeading, .status { display: flex; align-items: center; gap: 12px; }
 .header, .stepHeading { justify-content: space-between; }

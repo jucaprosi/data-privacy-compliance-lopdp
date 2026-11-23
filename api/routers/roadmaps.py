@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Router de la Hoja de Ruta Inteligente con RBAC.
 
 Auth por headers: X-User-ID, X-Tenant-ID, X-Role.

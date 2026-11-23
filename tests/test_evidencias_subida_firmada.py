@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤arbitro
 """EVI-01: URL firmada de subida con escritura única, almacén que falla cerrado y reglas del archivo (sin base).
 

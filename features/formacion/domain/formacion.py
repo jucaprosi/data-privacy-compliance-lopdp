@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤domain ¤evidencias ¤rbac-tenant
 """Entidades de dominio para la sala Formación (FOR-01)."""
 from __future__ import annotations

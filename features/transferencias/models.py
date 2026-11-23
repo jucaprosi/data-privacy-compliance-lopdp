@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Modelos propios de la sala transferencias (ADPA-08). ¤adpa ¤transferencias
 
 Tabla `transferencias_terceros`, creada por la migración 20260420_01_terceros_rls.

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Contrato tipado y validación anti-alucinación para hojas de ruta."""
 from datetime import date, datetime
 from enum import Enum

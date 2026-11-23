@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 // ¤asistente ¤frontend-ide
 // Patrón único de asistente para los flujos guiados (FE-23, optimización O-6).

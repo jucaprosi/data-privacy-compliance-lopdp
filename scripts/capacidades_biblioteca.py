@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤seguridad
 """BIB-117: conceder, revocar y listar capacidades editoriales de la Biblioteca en una rama de prueba.
 

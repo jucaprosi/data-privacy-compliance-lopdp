@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 // ¤frontend-ide ¤seguridad
 // Pantalla «Papelera» (ORG-20) en Configuración: elementos retirados que se pueden restaurar.

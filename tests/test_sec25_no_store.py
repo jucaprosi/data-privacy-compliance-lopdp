@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """SEC-25: Cache-Control no-store por defecto en /api/v1. Sin base de datos."""
 from pathlib import Path
 

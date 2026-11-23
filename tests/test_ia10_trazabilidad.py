@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex ¤arbitro
 """IA-10: cada resultado de IA lleva su traza (invariante 64). Cliente falso; nunca llama a Vertex."""
 import asyncio

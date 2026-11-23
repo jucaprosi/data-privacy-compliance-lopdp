@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 
 /** Conocimiento › Normativa Ecuador (REG-02): corpus versionado de `regulacion_rag`, por fuente y artículo. */

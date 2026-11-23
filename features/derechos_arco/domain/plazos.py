@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Plazo de respuesta por tipo de solicitud de derechos (DER-05).
 `¤regulation-code` `¤derechos`
 

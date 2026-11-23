@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤hallazgos ¤rbac-tenant
 """Hallazgos con origen y su conversión en tareas del plan de acción único (RM-21).
 

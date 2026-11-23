@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤entorno-pruebas ¤seguridad ¤arbitro
 """EP-01 · Identidad del entorno y guardias de arranque (PRD EVYDENTIA §5.5 y §5.6.2).
 

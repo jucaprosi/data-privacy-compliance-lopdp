@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-01 · RLS en 1 RTT, PgBouncer sin sentencias preparadas y chasis Cloud Run.
 
 `¤cloud-run-perf` `¤seguridad-tenant` — INV_LOPDP_SINGLE_RTT_RLS_PGBOUNCER

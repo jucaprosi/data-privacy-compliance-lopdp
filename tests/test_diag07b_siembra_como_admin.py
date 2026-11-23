@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤dpo-independencia ¤arbitro
 """DIAG-07b: las pruebas siembran las respuestas del diagnóstico como administrador.
 

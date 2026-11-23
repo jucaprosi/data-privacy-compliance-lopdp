@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """SEC-22: la clave de API no aparece en ningún registro del motor de inferencia.
 
 El detector revisa las cuatro vías por las que una clave llega a un registro: texto formateado

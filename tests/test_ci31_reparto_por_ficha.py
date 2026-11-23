@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """CI-31 · Reparto sin numeración global ni tabla de tandas compartida (especificaciones/CI-31.md §5).
 
 Prueba de mutación documentada (cada mutación se aplica en la propia prueba y debe hacerla fallar):

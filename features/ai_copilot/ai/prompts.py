@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex ¤arbitro
 """Prompts versionados del copiloto de mitigación (IA-10, invariante 64). Las versiones anteriores no se borran."""
 from app_core.pasillo import inferencia as pasillo_inferencia

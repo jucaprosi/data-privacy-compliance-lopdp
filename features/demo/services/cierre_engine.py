@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 """Cierre lógico de las demos (DEMO-02): terminar y vencer por inactividad. Nunca borra (invariante 63).
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad-tenant ¤copiloto-ia
 """Tope total de generaciones de IA por organización (SEC-13a).
 

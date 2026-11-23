@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo ¤seguridad ¤rbac-tenant
 """DEMO-01: persona activa y «Ver como» de la demo (resolutor, 403 si es ajena, auditoría con el vendedor real).
 

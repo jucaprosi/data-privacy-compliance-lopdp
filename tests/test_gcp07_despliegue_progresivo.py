@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 """GCP-07: escalones crecientes hasta 100 % con reversión por SLO, y migraciones expand/contract
 (INV_PROGRESSIVE_DELIVERY_EXPAND_CONTRACT)."""

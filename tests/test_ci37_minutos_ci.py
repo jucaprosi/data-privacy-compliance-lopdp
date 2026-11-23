@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 # ¤arbitro
 """CI-37: minutos de GitHub Actions por fusión reducidos a la mitad sin perder árbitros (§5 de la especificación).

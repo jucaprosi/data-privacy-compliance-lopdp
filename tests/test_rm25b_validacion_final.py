@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤rbac-tenant ¤arbitro
 """RM-25b: la validación final de la evidencia exige la primera, un rol dpo o auditor y tres personas distintas.
 

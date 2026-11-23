@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 """Árbitro de codificación: ningún .py ni .md lleva BOM y ningún .py deja una huella abierta.
 

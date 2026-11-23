@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤firma-electronica
 """Estados de una sesión de firma mientras ANF la procesa (FIRMA-06, BBAP paso 2).

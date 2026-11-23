@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import type { TaskStatus } from "../../../../types/roadmap";
 import type { OrigenHallazgo, TareaConOrigen } from "./tipos";
 

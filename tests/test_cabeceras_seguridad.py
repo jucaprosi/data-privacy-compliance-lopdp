@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad
 """Cabeceras HTTP de seguridad en Next.js (`frontend/next.config.ts`) y presupuesto de tiempo en Cloud Run.
 

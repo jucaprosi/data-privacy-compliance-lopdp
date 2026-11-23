@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤¤qa-engineer
 """Árbitro BIB-201: formulario por versión (rellenado determinista, faltantes, condicionales y borradores).

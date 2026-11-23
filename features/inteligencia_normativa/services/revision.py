@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤vigilancia-spdp ¤adpa
 """NORM-02: catálogo con filtros, bitácora, revisión humana y lectura del original.
 

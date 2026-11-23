@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 /**
  * Submenú de ORG-17 en el menú INVENTARIO: activos y sistemas, soportes y personas. Solo ORG-17 edita

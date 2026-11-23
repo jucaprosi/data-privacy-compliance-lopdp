@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * MTGE-01: la calculadora de gran escala envía las seis variables de la Res. SPDP-SPD-2026-0005-R
  * al servidor y muestra su resultado; si el servidor falla, muestra el error y no inventa nada.

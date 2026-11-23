@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """CI-29 · Sin archivos generados compartidos en los PR de fichas (especificaciones/CI-29.md)."""
 import importlib.util
 import subprocess

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤dpo-cockpit ¤evidencias ¤arbitro
 """Árbitro de DPO-03: consultas de la organización al DPO con su historial como evidencia de asesoría.
 

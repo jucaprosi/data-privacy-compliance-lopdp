@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤vigilancia-spdp ¤inteligencia-normativa
 """Corrida de monitoreo de la SPDP (NORM-01): descarga, valida, guarda el original y registra la corrida.
 

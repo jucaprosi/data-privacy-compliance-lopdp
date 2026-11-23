@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤firma-electronica ¤adpa ¤seguridad
 """API REST del firmado con ANF STB v2 en ambiente TEST (FIRMA-06, BBAP paso 2).
 

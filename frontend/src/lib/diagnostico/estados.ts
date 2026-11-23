@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente de los estados del diagnóstico, el assessment actual (DIAG-12). El DPO emite un estado a
  * partir del diagnóstico real; los demás roles consultan. La suma y la comparación las calcula el

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant
 # ¤¤developer-architect
 """GET /biblioteca/plantillas: catálogo de la pestaña «Plantillas». La organización sale de la sesión."""

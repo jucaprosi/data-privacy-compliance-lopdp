@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤alta-organizacion
 """Router del alta de la organización en siete pasos (ORG-16).
 

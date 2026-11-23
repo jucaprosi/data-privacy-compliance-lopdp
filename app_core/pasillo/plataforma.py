@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤seguridad
 """Capacidades de la sala Plataforma para otras salas (solo reexporta; se importa al usarla)."""
 # === BOV-01 ===

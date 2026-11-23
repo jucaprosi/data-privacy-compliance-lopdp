@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤dlp-muestreo ¤seguridad-tenant
 """Tabla `dlp_escaneos_muestreados` (RLS forzado por tenant_id). Solo tipos y conteos, nunca el dato hallado."""
 import uuid

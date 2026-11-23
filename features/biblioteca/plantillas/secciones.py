@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤¤developer-architect
 """Asistentes por secciones de AVI-01, EIPD-00 y PRO-01 (BIB-208).

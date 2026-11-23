@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Compuerta del motor MTGE (Res. SPDP-SPD-2026-0005-R).
 
 Los bordes de la norma están en tests/test_mtge_resolucion_0005.py; aquí, los tres caminos del

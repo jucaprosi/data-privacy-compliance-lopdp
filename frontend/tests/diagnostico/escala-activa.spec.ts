@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DIAG-09 con la evidencia física encendida (EVYDENTIA, FE-26): la propuesta de la IA sobre un archivo
  * subido a la carga de evidencias marca el rango del estado y deja el nivel sin elegir.

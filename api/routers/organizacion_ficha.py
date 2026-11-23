@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant
 """Ficha de la organización activa (ORG-24, governance/tareas/ORG-24.md): `GET /organizacion/ficha`.
 

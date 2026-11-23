@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente de las designaciones formales de la organización (DPD y Coordinador).
  *

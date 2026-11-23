@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤¤developer-architect
 """Árbitro BIB-109: plantillas Markdown del PMV en el catálogo.

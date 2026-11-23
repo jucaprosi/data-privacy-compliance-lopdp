@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤cartera ¤arbitro
 """ORG-15: cartera de organizaciones por pertenencia, sin abrir la RLS.
 

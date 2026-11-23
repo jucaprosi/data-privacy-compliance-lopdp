@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """ORG-05: un único camino para dar `responsable_area` y rastro de cada concesión directa.
 
 - Arranque (sin implementador activo): el administrador concede `responsable_area` directo.

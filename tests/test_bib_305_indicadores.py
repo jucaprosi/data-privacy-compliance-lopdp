@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant ¤arbitro
 # ¤¤qa-engineer
 """Árbitro BIB-305: indicadores verificables. La persistencia/RLS se acredita contra PostgreSQL 16 local

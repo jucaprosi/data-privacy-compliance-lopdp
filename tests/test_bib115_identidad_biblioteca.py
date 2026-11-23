@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant ¤frontend-ide ¤arbitro
 """BIB-115 · Biblioteca envía la identidad completa.
 

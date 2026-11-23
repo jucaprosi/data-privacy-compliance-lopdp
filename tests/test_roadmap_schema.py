@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Tests unitarios del schema de roadmap. Sin base de datos."""
 from datetime import date, timedelta
 

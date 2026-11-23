@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤arbitro
 """Las secciones de tests/matriz/roles/auditor.py no declaran la misma clave dos veces."""
 from pathlib import Path

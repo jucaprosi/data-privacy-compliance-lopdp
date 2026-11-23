@@ -1,4 +1,5 @@
-﻿/**
+﻿// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+/**
  * INC-03f: Insignia de estado y botones Cerrar y Reabrir en la bitácora de incidentes.
  *
  * Contrato: governance/especificaciones/INC-03f.md §5.

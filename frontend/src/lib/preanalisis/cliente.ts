@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import { fetchAutenticado } from "@/lib/auth";
 import { cabecerasComo, rolParaResponder, rolesDelUsuario } from "@/lib/diagnostico/roles";
 import type {

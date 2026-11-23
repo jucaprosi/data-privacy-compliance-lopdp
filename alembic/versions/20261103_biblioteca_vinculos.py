@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant ¤rat
 """BIB-402: vínculos de un documento con tratamientos (RAT), controles (P1–P80) y tareas.
 

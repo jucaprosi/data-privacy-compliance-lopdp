@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤firma-electronica
 """Cliente HTTP de ANF STB v2 en su ambiente TEST (FIRMA-06, BBAP paso 2).

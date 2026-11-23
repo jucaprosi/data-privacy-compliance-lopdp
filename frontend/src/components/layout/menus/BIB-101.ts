@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus ¤adpa
 /**
  * Submenú de BIB-101 en el menú BIBLIOTECA: la vista con las pestañas «Documentos de la organización»

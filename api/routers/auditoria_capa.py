@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Router FastAPI para la Sala ADPA: Auditoría Anual y Planes de Acción (CAPA)."""
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator, List, Optional

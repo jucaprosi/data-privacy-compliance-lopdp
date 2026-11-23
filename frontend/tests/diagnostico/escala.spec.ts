@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DIAG-09: la escala SMARTCIDI en la pantalla, con la API de DIAG-08 simulada.
  *

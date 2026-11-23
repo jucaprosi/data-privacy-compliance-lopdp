@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente HTTP de los controles periódicos (CAPA-02) y su semáforo.
  * Contrato: governance/especificaciones/CAPA-02.md §2 y §4.

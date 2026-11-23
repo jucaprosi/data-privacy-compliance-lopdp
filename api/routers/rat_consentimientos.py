@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Colectivos de titulares y registro agregado de consentimientos (RAT-07). ¤rat ¤evidencias ¤rbac-tenant
 
 Contrato: governance/especificaciones/RAT-07.md §2. Nunca datos de un titular individual. Organización e

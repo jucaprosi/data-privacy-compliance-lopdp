@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro ¤seguridad
 """El arrancador de humo vive solo en pruebas y se detiene ante un despliegue o ante producción.
 

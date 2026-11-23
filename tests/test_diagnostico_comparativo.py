@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤diagnostico-comparativo ¤tablero-dimensiones ¤arbitro
 """DIAG-06: comparativo del diagnóstico de prueba con el real, por dimensión y por control.
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤vigilancia-spdp ¤arbitro
 """NORM-01: ingesta de la SPDP, SHA-256, deduplicación en tres capas y custodia del original.
 

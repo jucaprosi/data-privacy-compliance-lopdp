@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant
 """El estado del documento solo cambia por funciones acotadas (SECURITY DEFINER): lopdp_app no tiene UPDATE (estado)."""
 from __future__ import annotations

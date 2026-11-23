@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Datos de la ficha resumen de la organización (FE-25). ¤frontend-ide ¤tablero-dimensiones
  *

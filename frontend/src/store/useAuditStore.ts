@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { useState, useEffect } from "react";

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤conservacion ¤seguridad-tenant
 """Rutas /conservacion/politicas. Matriz propia: consulta para ROLES_CONSULTA; alta y ejecución, para ROLES_EJECUCION.
 

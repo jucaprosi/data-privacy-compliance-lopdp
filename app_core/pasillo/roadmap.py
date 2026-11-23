@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 """Capacidades de la sala Hoja de Ruta para otras salas."""
 from typing import Optional

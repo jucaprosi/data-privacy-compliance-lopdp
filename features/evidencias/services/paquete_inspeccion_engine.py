@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤evidencias-vigencia
 """Paquete para inspección de la SPDP, ordenado por requisito (EVI-02).
 

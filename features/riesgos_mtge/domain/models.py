@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Tipos del Modelo Técnico de Gran Escala (MTGE), Res. SPDP-SPD-2026-0005-R.
 
 Las seis variables del art. 7. Titulares y tipos de datos se reciben como cifras (el art. 8 las

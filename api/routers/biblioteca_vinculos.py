@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant
 """API BIB-402: vínculos de un documento con tratamientos, controles y tareas."""
 from typing import Annotated

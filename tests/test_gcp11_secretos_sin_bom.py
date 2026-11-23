@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-11 · El árbitro de secretos sin BOM, con secretos simulados (no toca Google Cloud).
 
 `¤versionado-despliegue` `¤arbitro`

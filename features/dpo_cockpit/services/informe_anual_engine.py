@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Informe anual del DPO armado desde su bitácora (DPO-02). ¤dpo-informe-anual ¤dpo-cockpit
 
 El informe resume lo que el delegado dejó asentado en la bitácora de UNA organización durante

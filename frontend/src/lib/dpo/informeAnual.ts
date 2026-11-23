@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente HTTP tipado del informe anual del DPO y de la inscripción ante la SPDP (DPO-02).
  * Solo fetchAutenticado; la organización y la identidad las resuelve el servidor, no el cuerpo.

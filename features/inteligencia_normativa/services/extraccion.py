@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤vertex-cache ¤adpa
 """NORM-03: texto del original de una resolución, fragmentos y citas de artículos.
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤¤developer-architect
 """BIB-109: versiones maestras en Markdown (formato MD) y lectura de publicadas por miembros.

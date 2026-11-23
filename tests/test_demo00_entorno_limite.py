@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 # ¤seguridad
 """DEMO-00: `GET /api/v1/entorno` es pública, pero no ilimitada.

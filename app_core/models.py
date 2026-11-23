@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Modelos base y tipos transversales para multi-tenancy y auditoría."""
 from dataclasses import dataclass, field
 from datetime import datetime, timezone

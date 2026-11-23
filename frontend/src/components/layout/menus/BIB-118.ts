@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus ¤adpa
 /**
  * Submenú de BIB-118 en el menú BIBLIOTECA: «Administración editorial», visible solo con al menos una

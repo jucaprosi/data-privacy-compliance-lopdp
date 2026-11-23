@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * FE-26 · Con la evidencia física encendida (EVYDENTIA) la pantalla queda como antes de FE-26.
  *

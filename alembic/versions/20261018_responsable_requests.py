@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Flujo de alta de responsables de área: area_responsable_requests y user_tenant_roles.request_id.
 
 Revision ID: 20261018_responsable_requests

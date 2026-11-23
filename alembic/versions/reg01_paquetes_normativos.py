@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤regulation-code
 # ¤paquete-normativo
 """REG-01: paquete normativo como dato, editable solo por el operador de la plataforma.

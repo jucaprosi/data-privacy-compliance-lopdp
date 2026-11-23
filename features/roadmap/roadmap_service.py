@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Compuerta pública de la sala ADPA: Hoja de Ruta (generación, olas y tareas, evidencia, KPIs, auditoría).
 
 Todas las operaciones reciben tenant_id y user_id explícitos; cada consulta fija

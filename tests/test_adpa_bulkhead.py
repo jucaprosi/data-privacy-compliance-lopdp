@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Mamparos ADPA de todas las salas de ``features/`` (análisis AST, sin BD).
 
 Invariante: fuera de una sala, lo único que se importa de ella es su compuerta

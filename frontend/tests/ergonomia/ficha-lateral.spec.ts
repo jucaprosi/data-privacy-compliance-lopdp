@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Pie de la barra lateral: las etiquetas de la ficha no se montan sobre su valor.
  *

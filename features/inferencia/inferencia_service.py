@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex ¤arbitro ¤vertex-cache
 """Compuerta de inferencia Gemini en Vertex AI sin clave (IA-03): DLP previo, tope de organización, falla cerrada."""
 from __future__ import annotations

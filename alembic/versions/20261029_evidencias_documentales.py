@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """EVI-01: documentos de evidencia guardados y comprobados por el servidor. ¤evidencias ¤rbac-tenant
 

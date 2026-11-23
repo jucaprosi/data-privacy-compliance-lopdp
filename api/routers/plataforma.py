@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad
 # ¤rbac-tenant
 """Router API para operaciones del Operador de la Plataforma e Invitaciones (ORG-09).

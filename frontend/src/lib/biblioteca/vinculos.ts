@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤adpa ¤rbac-tenant
 /** Cliente de vínculos de un documento con tratamientos, controles y tareas (BIB-402). */
 import { cabecerasDeTenant, fetchAutenticado } from "@/lib/auth";

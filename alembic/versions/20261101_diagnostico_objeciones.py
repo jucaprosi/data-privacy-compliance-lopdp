@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Objeciones del DPO a las respuestas del diagnóstico, con RLS (DIAG-07). ¤diagnostico ¤dpo-independencia
 
 Tabla append-only salvo `resuelta_en`, que el servidor fija cuando el respondiente vuelve a guardar la

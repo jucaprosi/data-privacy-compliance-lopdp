@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro ¤adpa
 """Reglas del grafo de Alembic por sala (CI-28), como funciones puras sobre un `ScriptDirectory`.
 

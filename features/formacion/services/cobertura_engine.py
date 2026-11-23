@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤engine ¤evidencias ¤rbac-tenant
 """Motor de cálculo de cobertura de formación (FOR-01)."""
 from __future__ import annotations

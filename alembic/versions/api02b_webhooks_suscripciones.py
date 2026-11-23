@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤developer-architect
 """API-02b: Suscripciones a webhooks firmados HMAC-SHA256 con RLS forzada. ¤api-integraciones ¤seguridad-tenant
 

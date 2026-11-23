@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤molde
 # ¤arbitro
 # Justificación: copia de LOPDP del molde de ZERAG (governance/molde/generar_indice_tareas.py, TICKET-270), adoptada en

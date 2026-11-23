@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # EP-05 · Buckets de la bóveda del entorno de pruebas (PRD EVYDENTIA §5.5 e invariante 55).
 # Los mismos dos buckets que producción (BOV-02): misma retención y mismo ciclo de vida, pero la política
 # de retención NUNCA se bloquea. Bloquearla es irreversible y deja un lien que impide borrar el proyecto.

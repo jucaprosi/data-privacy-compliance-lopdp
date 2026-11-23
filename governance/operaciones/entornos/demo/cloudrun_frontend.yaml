@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # DEMO-07 · Frontend del entorno de demostración (evydentia-web-demo).
 # Ingress all, acceso público (allUsers invoker). Se comunica con el backend privado
 # mediante autenticación interna con token de servicio (PROXY_AUTH_CLOUD_RUN=token_servicio).

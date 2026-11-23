@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 # ¤frontend-ide ¤arbitro
 """FE-28: textos de interfaz sin jerga técnica, sin navegador (governance/tareas/FE-28.md, árbitro 2 a 4).

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤frontend-architect
 """Respuestas trazables a las brechas, con DLP y recomendaciones reproducibles."""
 import unicodedata

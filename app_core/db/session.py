@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Async session factory para FastAPI.
 
 La infraestructura queda aislada de las migraciones y no abre ninguna

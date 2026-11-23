@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤copiloto-ia ¤adpa ¤evidencias
 """Armado del contexto real en el servidor para la generación de la hoja de ruta (RM-19).
 

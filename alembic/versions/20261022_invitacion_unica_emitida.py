@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Una sola invitación emitida por organización y comprobación de administrador activo (ORG-11).
 
 Revision ID: 20261022_invitacion_unica

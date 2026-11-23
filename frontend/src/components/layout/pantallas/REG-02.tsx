@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 /** Pantallas de REG-02 que monta el panel (menú Conocimiento). Un submenú solo se muestra si su vista está aquí (R4). */
 import React from "react";

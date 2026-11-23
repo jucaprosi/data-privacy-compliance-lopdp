@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Test de verificación de Segregación de Funciones (SoD) del DPO.
 Invariante: INV_LOPDP_DPO_INDEPENDENCE.
 """

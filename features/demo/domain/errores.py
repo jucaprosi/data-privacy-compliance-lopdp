@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 # ¤adpa
 """Códigos de error de la sala demo (FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md §1.7, PRD §5.6.1).

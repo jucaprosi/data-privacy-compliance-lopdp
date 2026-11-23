@@ -1,4 +1,5 @@
 @echo off
+REM © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 REM Resuelve y valida el entorno de ejecucion del proyecto. Es la UNICA pieza que decide el
 REM interprete: ningun otro .bat lleva rutas de una maquina concreta.
 REM

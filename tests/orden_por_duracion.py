@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 # ¤¤qa-engineer
 """Orden de ejecución de más lenta a más rápida para Pytest en paralelo.

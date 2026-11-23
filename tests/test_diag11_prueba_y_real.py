@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤dpo-independencia ¤arbitro
 """DIAG-11: el diagnóstico se sella dos veces como máximo; el primero es de prueba y el segundo, el real.
 

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 // ¤asistente ¤frontend-ide
 // Lista de pasos con su progreso (FE-23, R5 y §4): el actual lleva aria-current="step".

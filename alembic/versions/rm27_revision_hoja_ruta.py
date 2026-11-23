@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap
 """RM-27: revisión humana antes de que la Hoja de Ruta valga, con cuatro ojos.
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Árbitro de RAT-05 contra PostgreSQL. ¤rat ¤hallazgos ¤arbitro
 
 Contrato: governance/especificaciones/RAT-05.md §5.

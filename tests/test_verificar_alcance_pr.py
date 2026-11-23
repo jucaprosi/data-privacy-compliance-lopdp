@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 """Un PR de tarea no toca archivos ajenos; en las tareas estrictas eso lo rechaza el CI."""
 import importlib.util

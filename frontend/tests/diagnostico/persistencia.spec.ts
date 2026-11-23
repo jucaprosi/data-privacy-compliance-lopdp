@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DIAG-01: el diagnóstico se guarda en el servidor y se lee de él.
  *

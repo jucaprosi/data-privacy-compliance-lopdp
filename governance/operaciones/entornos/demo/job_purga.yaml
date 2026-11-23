@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # DEMO-07 · Cloud Run Job de purga determinista de la demo (purga-demo).
 # Implementa DEMO-05: eliminación de evidencias y registros de tenants vencidos.
 # Ejecutado en contenedor propio con imagen compilada y subida a Artifact Registry.

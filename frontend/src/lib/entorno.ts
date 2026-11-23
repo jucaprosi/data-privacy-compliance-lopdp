@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Identidad del entorno en el frontend (EP-02, PRD §5.5 y §5.6.1.6). ¤entorno-pruebas
  *

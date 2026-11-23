@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 # ¤ci-cd
 """Lector YAML de las pruebas (CI-21), sin dependencias: PyYAML no está en requirements.txt.

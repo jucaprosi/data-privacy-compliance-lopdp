@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Estado compartido de la demo entre las dos ranuras del aviso (DEMO-04). ¤demo
  */

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤arbitro
 """ORG-22: el rol auditor existe, lee, registra y verifica en CAPA, y no ejecuta ni cierra.
 

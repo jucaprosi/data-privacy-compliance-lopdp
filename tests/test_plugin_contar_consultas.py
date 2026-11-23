@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤ci-cd
 # ¤¤qa-engineer
 """El conteo de consultas por prueba, con SQLite en memoria: sin red y sin base remota."""

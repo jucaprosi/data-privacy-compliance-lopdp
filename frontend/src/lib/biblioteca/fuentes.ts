@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤adpa ¤rbac-tenant
 // ¤¤frontend-architect
 /** Reutilización y procedencia (BIB-202): origen de cada dato, instantánea emitida y aviso de cambios. */

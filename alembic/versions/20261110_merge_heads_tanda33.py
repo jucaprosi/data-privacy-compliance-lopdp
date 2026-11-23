@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """Fusión de las tres cabezas de la tanda 33 de Biblioteca (BIB-107, BIB-201 y BIB-103). ¤rbac-tenant
 

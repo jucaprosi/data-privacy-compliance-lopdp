@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente del comparativo del diagnóstico de prueba con el real (DIAG-06). Solo lectura: la
  * comparación la calcula el servidor (features/diagnostico/services/comparativo_engine.py).

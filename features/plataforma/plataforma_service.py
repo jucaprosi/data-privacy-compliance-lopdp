@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad
 # ¤rbac-tenant
 """Compuerta pública de la sala ADPA: Plataforma (Operador e Invitaciones).

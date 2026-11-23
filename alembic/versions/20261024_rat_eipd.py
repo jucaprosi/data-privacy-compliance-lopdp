@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """RAT-03: EIPD y riesgos persistentes con aislamiento forzado por tenant."""
 from alembic import op
 import sqlalchemy as sa

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤frontend-architect
 # ¤seguridad-tenant
 """Orquesta compuertas ADPA; el contexto de cada organización vive en la petición.

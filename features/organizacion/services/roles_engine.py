@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Asignación y revocación de roles por tenant (sala ADPA: Organización).
 
 Reglas: SoD del DPO (ver sod_engine); no se puede revocar el último

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤arbitro
 """ADPA-12: pruebas y mutaciones del cargador modular de compuerta y pasillo (sala roadmap).
 

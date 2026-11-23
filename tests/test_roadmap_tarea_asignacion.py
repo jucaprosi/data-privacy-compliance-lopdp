@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Tests de integración y árbitro para RM-08: Distribuir tareas a los responsables.
 `¤roadmap` `¤rbac-tenant`
 

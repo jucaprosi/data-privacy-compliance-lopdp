@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤vertex-cache ¤gemini-vertex ¤regulation-code
 """Caché de contexto de Vertex AI para el corpus normativo público (VTX-01).
 

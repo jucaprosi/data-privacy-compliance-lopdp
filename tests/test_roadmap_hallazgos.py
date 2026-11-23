@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤hallazgos ¤rbac-tenant ¤arbitro
 """RM-21: hallazgos con origen y una sola compuerta que los convierte en tareas del plan de acción.
 

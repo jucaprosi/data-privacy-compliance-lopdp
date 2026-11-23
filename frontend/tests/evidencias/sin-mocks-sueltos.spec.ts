@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * EVI-01b: guardia. Ningún spec mockea por su cuenta las rutas nuevas de evidencias ni el almacén: solo
  * `simularSubidaFirmada` de `tests/utiles.ts`. Un `page.route` suelto deja a los demás specs probando un

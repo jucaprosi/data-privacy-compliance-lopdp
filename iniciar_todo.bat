@@ -1,4 +1,5 @@
 @echo off
+REM © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 title EVYDENTIA Plataforma LOPDP 360 - Lanzador Integral
 echo ============================================================
 echo   Iniciando EVYDENTIA Plataforma LOPDP 360 (Backend + Frontend)

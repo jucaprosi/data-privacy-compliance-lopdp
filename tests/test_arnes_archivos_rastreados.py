@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 """El arnés solo mira el árbol que rastrea git, no lo que haya en el disco."""
 import importlib.util

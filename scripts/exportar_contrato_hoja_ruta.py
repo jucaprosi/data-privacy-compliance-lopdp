@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap
 """Script de exportación del contrato OpenAPI para el módulo Hoja de Ruta Inteligente.
 

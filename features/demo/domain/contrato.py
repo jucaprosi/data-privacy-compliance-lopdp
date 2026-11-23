@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 """Forma congelada de `GET /api/v1/demo/estado` y del 201 de `POST /api/v1/demo/entrar`.
 

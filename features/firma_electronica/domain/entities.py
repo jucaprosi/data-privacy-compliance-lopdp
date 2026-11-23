@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤firma-electronica
 """Entidades de dominio de la sala Firma Electrónica (FIRMA-03, BBAP paso 2)."""

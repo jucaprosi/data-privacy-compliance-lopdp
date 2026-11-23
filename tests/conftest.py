@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Fixtures compartidos. Fuerza las pruebas contra una base local (contenedor PostgreSQL 16 del arnés).
 
 IMPORTANTE: en Windows, psycopg async requiere SelectorEventLoop,

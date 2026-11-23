@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import type { BrechaDetectada, ResultadoDimension } from "@/store/useAuditStore";
 
 /** El responsable habilita el trabajo; después se atienden los controles estructurales. */

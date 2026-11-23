@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤asistente ¤frontend-ide
 // Contrato del patrón único de asistente (FE-23). Fuente: governance/especificaciones/FE-23.md §1.
 import type React from "react";

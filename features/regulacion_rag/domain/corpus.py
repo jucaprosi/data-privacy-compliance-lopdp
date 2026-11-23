@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤corpus-normativo-versionado
 """Corpus cerrado: resúmenes editoriales trazables, no transcripciones legales."""
 from features.regulacion_rag.domain.models import TipoNorma, UnidadNormativa

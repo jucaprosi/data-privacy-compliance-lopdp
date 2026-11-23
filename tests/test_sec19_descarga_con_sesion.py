@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad ¤arbitro
 # ¤¤qa-engineer
 """Árbitro SEC-19: la descarga con token exige sesión, y el token es de quien la usa.

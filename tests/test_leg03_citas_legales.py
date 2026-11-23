@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤regulation-code ¤seguridad ¤arbitro
 """LEG-03: el documento de citas legales cumple su estructura y su inventario coincide con el git grep."""
 import importlib.util

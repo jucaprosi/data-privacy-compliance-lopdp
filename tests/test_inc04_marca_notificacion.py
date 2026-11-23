@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤incidentes ¤seguridad-tenant ¤arbitro
 """INC-04: la marca «notificación pendiente» del cierre dice la verdad.
 

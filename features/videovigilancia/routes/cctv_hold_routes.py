@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤videovigilancia-cctv ¤incidentes ¤derechos ¤conservacion ¤seguridad-tenant ¤rbac-tenant ¤adpa
 """Rutas de Congelamiento Forense (Hold Legal) y Purga Quincenal CCTV (CCTV-02)."""
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant
 # ¤¤developer-architect
 """Lectura de los documentos de la organización. El tenant sale de la sesión y se filtra siempre,

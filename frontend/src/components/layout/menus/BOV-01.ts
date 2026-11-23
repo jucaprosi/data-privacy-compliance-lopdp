@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 /**
  * Submenú de BOV-01 en el menú CONFIGURACIÓN: el plan de almacenamiento de la organización. Solo BOV-01 edita

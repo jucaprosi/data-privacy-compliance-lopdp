@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Áreas de la organización y alcance por área (sala ADPA: Organización).
 
 'responsable_area' puede acotarse a un área; el alcance incluye sus subáreas.

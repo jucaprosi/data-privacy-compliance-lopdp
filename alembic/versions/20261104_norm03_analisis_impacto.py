@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """NORM-03 · tabla normativa_analisis_impacto por organización, con RLS forzada. ¤inteligencia-normativa ¤dpo-independencia
 

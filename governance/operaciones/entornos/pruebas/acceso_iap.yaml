@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # EP-04 · Acceso del entorno de pruebas: opción A del §5.5 (decisión del propietario, 2026-11-08).
 # IAP en el servicio del frontend, sin balanceador y con las URLs run.app. Nunca IAP en el balanceador y en el
 # servicio a la vez (Google no lo admite). Cloud Armor y Cloud CDN no se prueban en este entorno.

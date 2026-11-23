@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """CORE-01 · Una sola zona de negocio: solo app_core/zona_negocio.py define el desfase de Ecuador.
 
 `¤arbitro`

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """Fusión de las dos cabezas: la cadena de main (RAT-05, RM-23) y la de dev/aleczandra (DIAG-08, DPO-02, ORG-16). ¤rbac-tenant
 

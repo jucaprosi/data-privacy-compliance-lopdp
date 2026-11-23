@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant
 # ¤¤developer-architect
 """Ficha de plantilla y «Mi plantilla» (BIB-103). La organización sale de la sesión verificada, nunca del cuerpo.

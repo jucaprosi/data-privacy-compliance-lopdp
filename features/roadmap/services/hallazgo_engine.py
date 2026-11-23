@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤hallazgos ¤rbac-tenant
 """Motor de hallazgos (RM-21): registrar hallazgos con origen y convertirlos en tareas del plan único.
 

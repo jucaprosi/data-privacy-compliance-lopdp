@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Arnés de interfaz de RM-22: vistas de lista, tablero y cronograma.
  *

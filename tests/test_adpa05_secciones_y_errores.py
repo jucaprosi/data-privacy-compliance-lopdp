@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 """ADPA-05: cada sala tiene su domain/errores.py con registrar() y las secciones reservadas sembradas."""
 from __future__ import annotations

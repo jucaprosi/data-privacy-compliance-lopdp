@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Contraste del diagnóstico en ambos temas (FE-16): API simulada y medición por pantalla.
  *

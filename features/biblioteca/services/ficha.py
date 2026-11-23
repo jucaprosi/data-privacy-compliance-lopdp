@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant
 # ¤¤developer-architect
 """Ficha de una plantilla (BIB-103): metadatos, variables con su disponibilidad y vista previa demostrativa.

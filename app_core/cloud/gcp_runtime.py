@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Runtime de Cloud Run: pooler, clientes perezosos y secretos por ADC (GCP-01).
 
 `¤cloud-run-perf` `¤seguridad-tenant` `¤adpa`

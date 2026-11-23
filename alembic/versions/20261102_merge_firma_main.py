@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """Fusión de las dos cabezas: la cadena principal (hasta merge_heads_rat_org16) y la de firma_sessions (FIRMA-03). ¤rbac-tenant ¤firma-electronica
 

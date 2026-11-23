@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤schemas ¤evidencias ¤rbac-tenant
 """Esquemas Pydantic para la sala Formación (FOR-01)."""
 from datetime import date, datetime

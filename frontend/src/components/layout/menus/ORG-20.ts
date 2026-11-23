@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 /**
  * Submenús de ORG-20 en el menú CONFIGURACIÓN: la papelera y la exportación de los datos. Solo ORG-20

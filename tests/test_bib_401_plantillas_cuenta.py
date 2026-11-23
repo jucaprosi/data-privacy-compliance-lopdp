@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant ¤arbitro
 # ¤¤qa-engineer
 """Árbitro BIB-401: plantillas de la cuenta profesional (tercera capa entre la maestra y la de la organización).

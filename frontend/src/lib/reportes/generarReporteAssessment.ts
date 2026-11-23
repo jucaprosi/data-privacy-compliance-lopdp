@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Generador del Reporte de Assessment de Madurez SGPDP.
  * Produce un documento HTML autocontenido, descargable e imprimible a PDF

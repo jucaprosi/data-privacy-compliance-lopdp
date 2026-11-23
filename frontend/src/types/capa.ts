@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Tipos estrictos para el modulo de Gestion de Hallazgos y CAPA
  * (Acciones Correctivas y Preventivas Auditadas con SoD).

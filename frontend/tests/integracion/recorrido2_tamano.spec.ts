@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Recorrido 2 de Integración (TEST-03):
  * Tamaño de la organización: PATCH /api/v1/organizacion/configuracion como administrador

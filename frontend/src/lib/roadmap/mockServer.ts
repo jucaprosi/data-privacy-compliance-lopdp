@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Servidor simulado en memoria (Mock) del contrato OpenAPI para Hoja de Ruta y Organización.
  * Permite desarrollo frontend desacoplado y pruebas unitarias deterministas sin base de datos.

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Pruebas de GOVW-01: Satélite Cloud Run en Go para Ingesta Eventarc y Purga Masiva."""
 from __future__ import annotations
 

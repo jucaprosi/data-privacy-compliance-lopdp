@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * EP-02 · Aviso fijo del entorno y `noindex` fuera de producción (PRD §5.5 y §5.6.1.6).
  *

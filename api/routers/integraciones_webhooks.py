@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤developer-architect
 # ¤rbac-tenant ¤seguridad ¤api-integraciones
 """Rutas de gestión de suscripciones a webhooks firmados HMAC-SHA256 (API-02b).

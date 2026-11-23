@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Contrato de seguridad del endpoint ARCO+ persistente."""
 
 from unittest.mock import AsyncMock, Mock

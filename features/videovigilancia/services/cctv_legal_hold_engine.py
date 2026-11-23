@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤videovigilancia-cctv ¤incidentes ¤derechos ¤conservacion ¤adpa
 """Motor de Congelamiento Forense (Hold Legal) de clips CCTV y Actas Quincenales SHA-256 (CCTV-02).
 

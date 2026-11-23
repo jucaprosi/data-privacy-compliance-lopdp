@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤ci-cd ¤arbitro
 """CI-16 · Ninguna prueba de interfaz queda fuera de todos los proyectos del CI.
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤inteligencia-normativa
 """Capacidades de la sala Inteligencia Normativa para otras salas (solo reexporta; se importa al usarla)."""
 

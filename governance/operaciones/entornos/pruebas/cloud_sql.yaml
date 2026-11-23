@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # EP-05 · Instancia Cloud SQL PostgreSQL 16 del entorno de pruebas (formato de `gcloud sql instances describe`).
 # Variante de governance/operaciones/cloud_sql_instance.yaml (GCP-04). Según PRD EVYDENTIA §5.5, solo
 # difiere en proyecto y tamaño: mismo motor, esquema, pgvector, rol lopdp_app y RLS forzado.

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import fs from "fs";
 import path from "path";
 import { defineConfig, devices } from "@playwright/test";

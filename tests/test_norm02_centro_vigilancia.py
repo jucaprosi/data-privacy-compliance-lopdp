@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤vigilancia-spdp ¤arbitro
 """NORM-02: catálogo, filtros, revisión humana del operador, original por el backend, bitácora y aviso técnico.
 

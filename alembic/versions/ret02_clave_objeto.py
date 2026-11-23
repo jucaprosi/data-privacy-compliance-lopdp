@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤organizacion ¤almacenamiento
 """RET-02: renombra las columnas `r2_key` a `clave_objeto` en `task_evidence` y `exportaciones`."""
 from typing import Sequence, Union

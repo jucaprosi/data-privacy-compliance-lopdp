@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * EVI-01b: la pantalla de evidencias guarda y comprueba los documentos en el servidor.
  *

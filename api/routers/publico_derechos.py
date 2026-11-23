@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤developer-architect ¤derechos ¤seguridad ¤adpa
 """Router público de solicitudes ARCO+ y configuración del portal (DER-02).
 

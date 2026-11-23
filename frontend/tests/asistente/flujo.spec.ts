@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤asistente ¤frontend-ide
 // Aceptación del patrón de asistente (FE-23). Contrato: governance/especificaciones/FE-23.md §5.
 import { expect, test, type Page } from "@playwright/test";

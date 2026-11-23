@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤arbitro
 """Filas de la matriz de permisos de CAPA-04 (Auditoría con grilla de verificación y acta por área).
 

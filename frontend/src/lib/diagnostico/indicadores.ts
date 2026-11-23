@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Qué entra en un resultado sellado del diagnóstico (DIAG-03) y con qué forma vuelven sus
  * indicadores. Los calcula el servidor al sellar (features/diagnostico/services/resultados_engine.py)

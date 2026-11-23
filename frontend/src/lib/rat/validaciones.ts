@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente HTTP de las validaciones y versiones de una ficha del RAT (RAT-05).
  * Contrato: governance/especificaciones/RAT-05.md §2.

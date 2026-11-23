@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * scripts/exportar_banco_preguntas.mjs
  *

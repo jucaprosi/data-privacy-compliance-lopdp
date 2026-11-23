@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤hallazgos ¤evidencias ¤arbitro
 # ¤¤qa-engineer
 """Árbitro TER-01: hallazgos automáticos de terceros (especificación TER-01 §5).

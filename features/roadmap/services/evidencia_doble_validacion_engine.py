@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Primera validación de la evidencia por el Coordinador (RM-25a, sala ADPA: Hoja de Ruta). ¤roadmap
 
 Quien subió la evidencia no puede validarla primero (cuatro ojos); solo cuenta una por evidencia. Desde RM-25b

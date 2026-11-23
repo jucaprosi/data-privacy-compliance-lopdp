@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant
 # ¤¤developer-architect
 """Tablas de captura (BIB-203): filas de inventarios, RAT y LEG dentro de un borrador estructurado.

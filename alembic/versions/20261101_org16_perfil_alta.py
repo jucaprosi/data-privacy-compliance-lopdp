@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """ORG-16: perfil ampliado de la organización y personas clave del paso 6, por organización. ¤rbac-tenant ¤alta-organizacion"""
 from alembic import op

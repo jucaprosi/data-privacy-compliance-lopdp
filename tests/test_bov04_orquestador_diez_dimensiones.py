@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤boveda-cloud ¤videovigilancia-cctv ¤dpo-cockpit ¤conservacion ¤arbitro
 """Pruebas de BOV-04: Orquestador Comercial de las 10 Dimensiones LOPDP y Bóveda Cloud.
 

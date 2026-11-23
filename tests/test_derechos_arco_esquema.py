@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Pruebas de esquema, RLS y permisos de derechos_arco_solicitudes (SEC-09).
 
 Verifica contra la base de datos real:

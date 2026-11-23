@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Recuperación léxica determinista (BM25) de pasajes relevantes para un control. Sin ML ni red."""
 from __future__ import annotations
 

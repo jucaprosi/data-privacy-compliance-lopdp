@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 from fastapi.testclient import TestClient
 from main import app
 from app_core.db.session import get_tenant_session

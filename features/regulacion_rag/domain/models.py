@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤modelos-regulacion-rag
 """Modelos de dominio del Módulo de Regulación como Código y Copiloto RAG."""
 from dataclasses import dataclass, field

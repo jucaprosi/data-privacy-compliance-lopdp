@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 /**
  * Pantalla de ORG-17 que monta el panel: el inventario de activos, soportes y personas. Solo ORG-17

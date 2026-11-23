@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rat ¤hallazgos ¤rbac-tenant
 """Efectos de guardar una ficha RAT (RAT-05): versión y hallazgos, en la transacción del guardado.
 

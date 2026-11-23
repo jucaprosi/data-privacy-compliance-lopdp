@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad-tenant ¤arbitro
 # ¤¤qa-engineer
 """SEC-20 · La huella de producción también cubre Cloud SQL.

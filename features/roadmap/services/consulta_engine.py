@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Consulta de la hoja de ruta y sus KPIs (sala ADPA: Hoja de Ruta)."""
 from typing import Optional
 

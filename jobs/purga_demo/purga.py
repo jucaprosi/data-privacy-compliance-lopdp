@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 """Purga física de las demos vencidas (DEMO-05, DEMO-05c, DEMO-05d).
 

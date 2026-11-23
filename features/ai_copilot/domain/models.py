@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rat ¤evidencias ¤rbac-tenant
 """Colectivos de titulares y registro agregado de consentimientos (RAT-07); la transacción es del llamador.
 

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * FE-24: tablero de la organización con las cuatro dimensiones y las brechas críticas, sin cifra
  * única (Doctrina 4, INV_LOPDP_MULTIDIMENSIONAL_METRICS). API simulada.

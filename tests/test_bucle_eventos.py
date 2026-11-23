@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Pruebas unitarias para app_core/bucle_eventos.py y su invocación en main.py.
 `¤arbitro` `¤seguridad`
 

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Árbitro de interfaz de MTGE-03: asistente de ocho pasos de la evaluación de impacto.
  *

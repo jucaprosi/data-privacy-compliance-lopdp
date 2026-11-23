@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤evidencias ¤arbitro
 """Filas de la matriz de permisos de EVI-03 (vigencia, visibilidad y paquete de inspección de evidencias).
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤riesgos-eipd ¤rbac-tenant
 """MTGE-03: API de la EIPD guiada de ocho pasos.
 

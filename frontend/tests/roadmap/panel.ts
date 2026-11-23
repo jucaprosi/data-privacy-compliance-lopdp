@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Panel de la Hoja de Ruta simulado (FE-06): API sobre /api/v1/**, ficha completa y entrada en la sala.
  *

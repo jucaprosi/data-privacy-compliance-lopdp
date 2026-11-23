@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad ¤seguridad-tenant ¤copiloto-ia
 """Middleware ASGI de SEC-13: límite de peticiones por IP, usuario y organización.
 

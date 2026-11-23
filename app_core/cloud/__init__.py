@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Chasis de ejecución en Google Cloud (GCP-01). `¤cloud-run-perf`
 
 Importar este paquete no abre conexiones ni crea clientes de Google Cloud:

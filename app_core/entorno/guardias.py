@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤entorno-pruebas ¤seguridad
 """Guardias de arranque del entorno de pruebas y de la demo (PRD EVYDENTIA §5.5 y §5.6.2).
 

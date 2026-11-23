@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Objeciones del DPO a las respuestas del diagnóstico y datos de la revisión (DIAG-07).
  *

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # DEMO-07 · Bucket de almacenamiento del entorno de demo (PRD §5.6 y BRIEF_PROPIETARIO_BUCKET_DEMO.md).
 # Invariante 63 y DEMO-05: NUNCA tiene política de retención ni bloqueo de objetos (WORM),
 # permitiendo a purga-demo la eliminación determinista de evidencias ficticias de demos vencidas.

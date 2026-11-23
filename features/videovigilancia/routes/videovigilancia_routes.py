@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤videovigilancia-cctv ¤seguridad-tenant ¤rbac-tenant
 """Rutas /videovigilancia/camaras. La identidad y los roles salen de app_core.security (ADPA: la sala no importa api)."""
 from typing import Optional

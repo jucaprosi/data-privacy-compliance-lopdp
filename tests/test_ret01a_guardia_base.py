@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 """Pruebas unitarias y por AST de la guardia única de base local `exigir_base_de_pruebas`."""
 import ast

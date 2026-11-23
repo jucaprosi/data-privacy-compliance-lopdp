@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente del análisis de impacto de una resolución (NORM-03). La organización y la persona salen de la sesión;
  * el servidor autoriza cada llamada: pide el análisis la administración o el DPO, y decide solo el DPO.

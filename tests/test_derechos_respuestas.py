@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤rbac-tenant ¤arbitro
 """DER-01 · verificación de identidad, modelos de respuesta y la respuesta como evidencia.
 

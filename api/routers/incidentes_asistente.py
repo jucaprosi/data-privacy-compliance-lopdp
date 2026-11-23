@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤incidentes ¤hallazgos ¤rbac-tenant ¤seguridad
 """Asistente de vulneración en ocho secciones e informes (INC-02).
 

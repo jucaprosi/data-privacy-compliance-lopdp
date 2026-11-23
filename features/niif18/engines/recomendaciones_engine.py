@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """
 Recomendaciones para implementar la NIIF 18 a partir del diagnóstico.
 [¤niif18-recomendaciones]

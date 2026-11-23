@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤rbac-tenant
 """Rutas de revisión humana y activación de la Hoja de Ruta con cuatro ojos (RM-27)."""
 from fastapi import APIRouter, Depends, HTTPException, status

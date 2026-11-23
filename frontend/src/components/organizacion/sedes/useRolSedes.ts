@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 // ¤frontend-ide ¤inventario
 // Resuelve el rol con el que se consulta (ORG-18): /organizacion/me/roles; sin sesión no hay servidor.

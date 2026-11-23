@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 /**
  * DIAG-04: el administrador asigna cada dominio del assessment (D01 a D10) a un encargado del diagnóstico.

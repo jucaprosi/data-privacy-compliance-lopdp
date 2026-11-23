@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import { cabecerasDePlataforma } from "@/lib/auth/cabeceras";
 import { fetchAutenticado } from "@/lib/auth/fetchAutenticado";
 

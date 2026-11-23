@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Dependencias RBAC por tenant para los routers de la API.
 
 Identidad (ver app_core/security.py): en modo `oidc` (por defecto) el usuario sale del token de

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * FE-06 con la evidencia física encendida (EVYDENTIA, FE-26): la «Custodia de Evidencias» del panel.
  *

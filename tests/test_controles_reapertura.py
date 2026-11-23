@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤controles-periodicos ¤evidencias-vigencia ¤hallazgos ¤rbac-tenant ¤arbitro
 """CAPA-03: la evidencia vencida reabre el control periódico y produce un hallazgo.
 

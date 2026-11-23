@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Mapeo del tamaño de la organización (FE-08): una sola fuente para la ficha, el banco de preguntas y
  * el panel de administración. Pruebas sin navegador sobre el código real.

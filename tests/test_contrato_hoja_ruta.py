@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap
 """Contrato OpenAPI congelado para la Hoja de Ruta Inteligente: compatibilidad hacia atrás.
 

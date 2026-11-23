@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-04b · Exclusión de la firma 942421 en Cloud Armor y registro permanente del balanceador.
 
 `¤seguridad` `¤arbitro` — contrato: governance/especificaciones/GCP-04b.md

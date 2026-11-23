@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 """Pasillo central entre salas (ADR 0001): sin ciclos al cargar y sin tipos internos en la salida."""
 import ast

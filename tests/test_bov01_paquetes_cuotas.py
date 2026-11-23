@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤boveda-cloud ¤seguridad-tenant ¤arbitro
 """BOV-01: catálogo de paquetes, cuotas de espacio y descargas, y aislamiento RLS de la suscripción.
 

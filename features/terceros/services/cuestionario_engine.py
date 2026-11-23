@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Motor de cuestionarios de garantías de encargados (TER-02).
 `¤terceros` `¤seguridad` `¤evidencias`
 """

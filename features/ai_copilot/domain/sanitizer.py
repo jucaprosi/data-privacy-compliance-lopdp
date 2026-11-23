@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤llm_data_sanitizer
 """Redacción de datos de entrada antes de enviarlos al proveedor de inferencia."""
 

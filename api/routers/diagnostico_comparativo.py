@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤diagnostico-comparativo ¤rbac-tenant
 """API del comparativo del diagnóstico de prueba con el real (DIAG-06). Solo lectura.
 

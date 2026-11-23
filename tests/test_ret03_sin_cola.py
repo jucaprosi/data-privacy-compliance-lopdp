@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤arbitro
 """RET-03 · Generación síncrona en línea de la hoja de ruta y caché Redis (GCP-06).
 

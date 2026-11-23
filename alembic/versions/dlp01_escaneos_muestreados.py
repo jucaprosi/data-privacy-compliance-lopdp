@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """DLP-01: escaneos muestreados de datos personales. ¤dlp-muestreo ¤seguridad-tenant
 

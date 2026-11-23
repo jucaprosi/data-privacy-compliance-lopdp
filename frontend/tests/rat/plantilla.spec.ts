@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * RAT-02: la plantilla de salud aparece solo si el servidor la ofrece, se carga con confirmación
  * explícita y envía exactamente las actividades elegidas.

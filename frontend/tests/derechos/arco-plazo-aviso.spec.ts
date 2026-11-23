@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DER-07 · Plazo legal estimado y aviso provisional en la pantalla de derechos de los titulares.
  *

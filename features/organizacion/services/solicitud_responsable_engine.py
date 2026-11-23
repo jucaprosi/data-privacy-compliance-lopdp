@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Flujo de alta de responsables de área (sala ADPA: Organización). PRD §5.3.1.
 
 Regla base: *el coordinador solicita, el implementador ejecuta.* Ningún rol completa el flujo solo ni

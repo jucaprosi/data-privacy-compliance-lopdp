@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """Fusión de las dos cabezas que dejó el cierre de las ramas dev/<persona> en main. ¤rbac-tenant
 

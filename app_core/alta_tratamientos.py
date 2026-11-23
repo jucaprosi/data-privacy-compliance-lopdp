@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 """Adaptador del puerto de tratamientos del alta de la organización (ORG-16) sobre la compuerta de RAT.
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex ¤vertex-cache
 """Listas cerradas de modelos permitidos: Gemini para generación y caché; vectores para embeddings (IA-12)."""
 

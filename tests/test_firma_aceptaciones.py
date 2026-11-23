@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Árbitro FIRMA-02 contra TEST_DATABASE_URL (PostgreSQL 16 local o servicio PostgreSQL 16 del CI).
 
 Cubre los cuatro escenarios de aceptación exigidos por la especificación:

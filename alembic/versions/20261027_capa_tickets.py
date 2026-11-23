@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """CAPA-01: casos de acciones correctivas (CAPA) persistidos en PostgreSQL con RLS por organización. ¤capa ¤rbac-tenant"""
 from alembic import op

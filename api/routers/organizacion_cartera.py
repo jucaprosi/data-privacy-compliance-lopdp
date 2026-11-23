@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤cartera ¤rbac-tenant
 """Cartera de organizaciones por pertenencia (ORG-15, governance/especificaciones/ORG-15.md).
 

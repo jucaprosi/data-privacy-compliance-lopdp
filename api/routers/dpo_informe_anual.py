@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤dpo-informe-anual
 """Informe anual del DPO e inscripción del delegado ante la SPDP (DPO-02).
 

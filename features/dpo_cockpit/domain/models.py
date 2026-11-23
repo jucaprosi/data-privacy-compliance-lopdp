@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Modelos de dominio del Módulo 4: Cockpit del DPD/DPO y Bitácora Inviolable."""
 from dataclasses import dataclass, field
 from datetime import datetime, timezone

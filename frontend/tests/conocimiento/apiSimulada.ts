@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /** API simulada del centro de conocimiento (REG-02): el contrato vive en governance/especificaciones/REG-02.md. */
 import type { Page } from "@playwright/test";
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 # ¤versionado-despliegue
 """GCP-11 · Árbitro de secretos sin BOM. LO EJECUTA EL PROPIETARIO; ninguna IA ni el CI lo corre.

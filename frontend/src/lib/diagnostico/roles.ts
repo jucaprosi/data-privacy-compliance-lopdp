@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Quién responde, sella y consulta el diagnóstico (DIAG-03, sustituido por DIAG-07).
  *

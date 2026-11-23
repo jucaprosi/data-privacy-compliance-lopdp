@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤firma-electronica
 """Entidades de dominio y códigos de error de FIRMA-02: aceptación simple con acuse."""
 from __future__ import annotations

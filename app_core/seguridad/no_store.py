@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad-tenant
 """Middleware ASGI puro (SEC-25): toda respuesta de /api/v1/* sale sin caché salvo que la ruta fije la suya."""
 from __future__ import annotations

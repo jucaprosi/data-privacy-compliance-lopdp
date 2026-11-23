@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Compuerta pública de la sala ADPA: Terceros (gestión de terceros y encargados de tratamiento).
 `¤adpa`
 

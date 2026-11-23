@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Compuerta pública de la sala ADPA: AI Copilot."""
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 # ¤api-integraciones ¤boveda-cloud
 """Techos de uso y consumo de integraciones por organización (API-02).

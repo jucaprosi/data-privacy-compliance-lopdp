@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente para los endpoints de aceptación (FIRMA-02).
  * Las rutas autenticadas usan fetchAutenticado; la ruta pública usa fetch nativo.

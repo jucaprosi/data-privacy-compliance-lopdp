@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex ¤arbitro
 """IA-03: compuerta de inferencia Gemini en Vertex AI sin clave. Cliente falso; nunca llama a Vertex."""
 import asyncio

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Cierre verificado de tareas: puerto del verificador externo (sala ADPA: Hoja de Ruta). ¤roadmap
 
 RM-24. La hoja de ruta no sabe quién verifica: define el puerto `VerificadorDeCierre` y guarda

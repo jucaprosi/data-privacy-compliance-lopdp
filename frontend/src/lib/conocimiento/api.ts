@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente tipado del centro de conocimiento (REG-02). Solo lee el corpus versionado de `regulacion_rag`.
  * Contrato: governance/especificaciones/REG-02.md §2.

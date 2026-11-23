@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤diagnostico ¤rbac-tenant ¤arbitro
 """EVI-01: documentos guardados y comprobados por el servidor, contra PostgreSQL 16 (almacén simulado).
 

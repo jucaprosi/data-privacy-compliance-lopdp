@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Lógica de negocio e independencia del DPD/DPO (Invariante INV_LOPDP_DPO_INDEPENDENCE)."""
 from datetime import datetime, timezone
 from typing import List, Optional

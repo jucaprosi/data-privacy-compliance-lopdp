@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """Punto de entrada principal y Pasarela REST Gateway de EVYDENTIA.
 Conecta de forma desacoplada las 7 salas ADPA con el Frontend e interfaces externas.

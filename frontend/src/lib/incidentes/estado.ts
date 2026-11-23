@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Estado del incidente en la bitácora (INC-03f): abierto o cerrado, y el cierre con la decisión de
  * notificar pendiente. Cierra y reabre en el servidor (api/routers/incidentes_estado.py); la pantalla

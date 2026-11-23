@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤vigilancia-spdp ¤seguridad
 """Router del Centro de Vigilancia Normativa (NORM-02), bajo /api/v1/normativa.
 

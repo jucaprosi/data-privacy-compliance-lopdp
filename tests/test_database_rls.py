@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import pytest
 from sqlalchemy import text
 from app_core.db.session import current_tenant_id, fijar_contexto_rls, get_tenant_session

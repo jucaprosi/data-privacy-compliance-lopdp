@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 export { AdminPanel } from "./AdminPanel";
 export type { AdminPanelProps, SeccionAdmin } from "./AdminPanel";
 export { construirArbol, aplanar } from "./arbolAreas";

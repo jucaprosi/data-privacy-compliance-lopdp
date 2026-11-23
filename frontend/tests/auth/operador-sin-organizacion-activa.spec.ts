@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * ORG-21: el operador de la plataforma entra aunque no pertenezca a ninguna organización.
  *

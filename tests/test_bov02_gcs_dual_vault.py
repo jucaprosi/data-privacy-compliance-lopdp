@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤boveda-cloud ¤conservacion ¤evidencias ¤arbitro
 """BOV-02: enrutamiento de la bóveda dual y URLs firmadas V4 directas a Cloud Storage.
 

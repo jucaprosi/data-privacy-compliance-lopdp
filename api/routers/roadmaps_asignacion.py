@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Router de asignación de tareas a responsables de área (sala ADPA: Hoja de Ruta).
 `¤roadmap` `¤rbac-tenant`
 

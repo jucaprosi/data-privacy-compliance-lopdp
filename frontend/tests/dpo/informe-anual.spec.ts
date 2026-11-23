@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Arnés de pruebas E2E del informe anual del DPO y la inscripción ante la SPDP (DPO-02).
  *

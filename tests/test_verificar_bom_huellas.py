@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 # ¤¤qa-engineer
 """El lint de BOM y huellas vive en un script: un BOM y una huella abierta fallan, y las exclusiones se conservan."""

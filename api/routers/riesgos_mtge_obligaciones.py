@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤mtge-granescala
 # ¤rbac-tenant
 """Router API para las obligaciones del tratamiento a gran escala (MTGE-02).

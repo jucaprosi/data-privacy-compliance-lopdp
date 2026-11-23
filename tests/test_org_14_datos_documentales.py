@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant
 # ¤arbitro
 """Árbitro de ORG-14: datos de la organización para documentos.

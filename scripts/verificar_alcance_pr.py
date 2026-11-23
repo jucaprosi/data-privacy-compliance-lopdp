@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 """Árbitro de alcance de un PR: los archivos que cambia caben en la `propiedad` de la ficha de su tarea.
 
@@ -12,6 +13,11 @@ Para el propietario: en el workflow, pasar `--destino "${{ github.base_ref }}"` 
 lista es una decisión del propietario y extenderla bloquea a todo el equipo.
 
 Mismo reparto que R5 de `verificar_reparto.py`, pero contra la ficha: una tarea cerrada ya no tiene bloque.
+
+LEG-06 R5 (alcance transversal): la ficha que declara `transversal = "aviso-de-autor"` (solo LEG-06) toca archivos
+fuera de su propiedad si el diff de cada uno contra la base (a) añade exactamente una línea igual a `linea_de_aviso`
+de su extensión, (b) no borra ni modifica ninguna otra línea y (c) la deja en la posición de R2. El BOM no es una
+línea: se compara el texto que le sigue. LEG-06 R6: en la base del PR no puede haber otra ficha en `en_curso`.
 """
 from __future__ import annotations
 
@@ -30,6 +36,18 @@ PREFIJO_SIN_FICHA = "pmv/"  # CI-23: ramas del PMV, sin ficha por decisión del 
 DESTINO_PMV = "pmv/consolidacion"  # solo hacia ella se eximen
 EXENCIONES = "governance/tareas/_exenciones_propiedad.txt"
 PORTADA = "governance/apoyo/BRIEFS_POR_BLOQUE.md"  # CI-31 R6: solo entra en el alcance de la ficha que la nombra
+TRANSVERSALES = {"LEG-06": "aviso-de-autor"}  # LEG-06 R5: ninguna otra ficha puede declarar `transversal`
+DIR_TAREAS_REL = "governance/tareas"
+
+
+# ¤adpa
+def _cargar_aviso():
+    """LEG-06: `scripts/poner_aviso_de_autor.py`, dueño de `linea_de_aviso` y de la posición de R2."""
+    ruta = Path(__file__).resolve().parent / "poner_aviso_de_autor.py"
+    spec = importlib.util.spec_from_file_location("poner_aviso_de_autor", ruta)
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return modulo
 
 
 # ¤adpa
@@ -145,6 +163,136 @@ def _diff_de_exenciones(base: str, cabeza: str) -> str:
                           capture_output=True, text=True, encoding="utf-8", check=True).stdout
 
 
+# ¤ip
+def transversal_de(tarea, indice) -> str | None:
+    """El campo `transversal` de la ficha (LEG-06 R5); el índice no lo carga, así que se lee de su cabecera."""
+    if hasattr(tarea, "transversal"):
+        return getattr(tarea, "transversal") or None
+    archivo = getattr(tarea, "archivo", "")
+    if not archivo:
+        return None
+    ruta = Path(getattr(indice, "DIR_TAREAS", RAIZ / DIR_TAREAS_REL)) / archivo
+    try:
+        return indice.leer_cabecera(ruta.read_text(encoding="utf-8")).get("transversal") or None
+    except (OSError, ValueError):
+        return None
+
+
+# ¤ip
+def _lineas_sin_bom(texto: str, aviso) -> tuple[str, list[str]]:
+    bom = aviso.BOM if texto.startswith(aviso.BOM) else ""
+    return bom, aviso.trozos(texto[len(bom):])
+
+
+# ¤ip
+def condiciones_transversales(ruta: str, texto_base: str | None, texto_cabeza: str | None, aviso=None) -> list[str]:
+    """LEG-06 R5: las condiciones que incumple el diff de `ruta`; vacía si cumple (a), (b) y (c).
+
+    (a) la cabeza tiene una línea más que la base y una línea de aviso más;
+    (b) quitando esa línea de aviso de la cabeza queda la base, línea a línea con su final y su BOM;
+    (c) esa línea está en `posicion_de_aviso` de la base.
+    """
+    aviso = aviso or _cargar_aviso()
+    if not aviso.es_de_r1(ruta):
+        return ["no es un archivo de código de R1"]
+    if texto_base is None or texto_cabeza is None:
+        return ["solo se admite modificar un archivo existente, no crearlo ni borrarlo"]
+    extension = aviso.extension_de(ruta)
+    linea = aviso.linea_de_aviso(extension)
+    bom_b, base = _lineas_sin_bom(texto_base, aviso)
+    bom_c, cabeza = _lineas_sin_bom(texto_cabeza, aviso)
+    limpias_b = [x.rstrip("\r\n") for x in base]
+    limpias_c = [x.rstrip("\r\n") for x in cabeza]
+    fallos = []
+    if not (len(cabeza) == len(base) + 1 and limpias_c.count(linea) == limpias_b.count(linea) + 1):
+        fallos.append("(a) no añade exactamente una línea de aviso")
+    i = limpias_c.index(linea) if linea in limpias_c else -1
+    sin_aviso = cabeza[:i] + cabeza[i + 1:] if i >= 0 else cabeza
+    if bom_b != bom_c or sin_aviso != base:
+        fallos.append("(b) borra o modifica otras líneas")
+    if i != aviso.posicion_de_aviso(base, extension):
+        fallos.append(f"(c) el aviso no está en la posición de R2 (línea {aviso.posicion_de_aviso(base, extension) + 1})")
+    return fallos
+
+
+# ¤ip
+def _git(*args: str, entrada: bytes | None = None) -> bytes:
+    return subprocess.run(["git", "-c", "core.quotepath=off", *args], cwd=RAIZ, input=entrada,
+                          capture_output=True, check=True).stdout
+
+
+# ¤ip
+def _textos_en(revision: str, rutas: list[str]) -> dict[str, str | None]:
+    """El texto de cada ruta en `revision` (None si ahí no existe), con un solo `git cat-file --batch`."""
+    if not rutas:
+        return {}
+    salida = _git("cat-file", "--batch", entrada="".join(f"{revision}:{r}\n" for r in rutas).encode("utf-8"))
+    textos: dict[str, str | None] = {}
+    pos = 0
+    for ruta in rutas:
+        fin = salida.index(b"\n", pos)
+        cabecera = salida[pos:fin].decode("utf-8", errors="replace")
+        pos = fin + 1
+        if cabecera.endswith((" missing", " ambiguous")):
+            textos[ruta] = None
+            continue
+        tamano = int(cabecera.rsplit(" ", 1)[1])
+        textos[ruta] = salida[pos:pos + tamano].decode("utf-8", errors="replace")
+        pos += tamano + 1
+    return textos
+
+
+# ¤ip
+def _base_del_diff(base: str, cabeza: str) -> str:
+    """La revisión contra la que compara `base...cabeza`: su ancestro común."""
+    return _git("merge-base", base, cabeza).decode("utf-8").strip()
+
+
+# ¤ip
+def _fichas_en_curso_en_base(base: str, indice) -> list[str]:
+    """LEG-06 R6: los ids de las fichas con `estado = "en_curso"` en la revisión base del PR."""
+    nombres = _git("ls-tree", "-z", "--name-only", f"{base}:{DIR_TAREAS_REL}").decode("utf-8").split("\0")
+    rutas = [f"{DIR_TAREAS_REL}/{n}" for n in nombres
+             if n.endswith(".md") and n.lower() != "readme.md" and not n.lower().startswith("plantilla")]
+    en_curso = []
+    for ruta, texto in _textos_en(base, rutas).items():
+        try:
+            datos = indice.leer_cabecera(texto or "")
+        except ValueError:
+            continue
+        if datos.get("estado") == "en_curso":
+            en_curso.append(str(datos.get("id", Path(ruta).stem)))
+    return sorted(en_curso)
+
+
+# ¤ip
+def comprobar_transversal(tarea, transversal: str, fuera: list[str], args, indice) -> int:
+    """LEG-06 R5 y R6: el alcance de la ficha transversal; da rojo con el nombre de cada archivo que incumple."""
+    if TRANSVERSALES.get(tarea.id) != transversal:
+        print(f"ALCANCE NO VÁLIDO: {tarea.id} declara «transversal = {transversal}»; solo puede "
+              f"{', '.join(f'{k} («{v}»)' for k, v in TRANSVERSALES.items())}.")
+        return 1
+    otras = [i for i in _fichas_en_curso_en_base(args.base, indice) if i != tarea.id]
+    if otras:
+        print(f"ALCANCE NO VÁLIDO: {tarea.id} es transversal y en la base hay fichas en «en_curso» (R6): "
+              f"{', '.join(otras)}.")
+        return 1
+    if not fuera:
+        print(f"ALCANCE OK: {tarea.id} solo toca su propiedad.")
+        return 0
+    base = _base_del_diff(args.base, args.cabeza)
+    textos_base, textos_cabeza = _textos_en(base, fuera), _textos_en(args.cabeza, fuera)
+    aviso = _cargar_aviso()
+    malos = {a: f for a in fuera if (f := condiciones_transversales(a, textos_base[a], textos_cabeza[a], aviso))}
+    if malos:
+        print(f"ALCANCE NO VÁLIDO: {tarea.id} toca archivos ajenos sin cumplir R5:")
+        for archivo, fallos in malos.items():
+            print(f"  - {archivo}: {'; '.join(fallos)}")
+        return 1
+    print(f"ALCANCE OK: {tarea.id} toca su propiedad y solo añade el aviso en {len(fuera)} archivo(s) ajeno(s) (R5).")
+    return 0
+
+
 # ¤adpa
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -179,6 +327,9 @@ def main(argv: list[str] | None = None) -> int:
         # Regla del CTO (2026-11-13): en las exenciones solo se borran líneas propias; lo demás es ERROR siempre.
         print(f"ALCANCE NO VÁLIDO: {tarea.id} cambia {EXENCIONES} sin limitarse a borrar sus líneas «{tarea.id}|…».")
         return 1
+    transversal = transversal_de(tarea, indice)
+    if transversal:
+        return comprobar_transversal(tarea, transversal, fuera, args, indice)
     if not fuera:
         print(f"ALCANCE OK: {tarea.id} solo toca su propiedad.")
         return 0

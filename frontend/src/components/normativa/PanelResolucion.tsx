@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 /**
  * Panel lateral de una norma: documento, historial de versiones y, para el operador, el registro de la revisión.

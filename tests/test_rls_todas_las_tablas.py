@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad-tenant
 # ¤rbac-tenant
 """Árbitro del criterio 11 del MVP (QA-04): RLS en todas las tablas con datos de organización.

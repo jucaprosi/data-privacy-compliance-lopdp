@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Bloque 3 del banco de preguntas del assessment SGPDP (controles 49-80).
  *

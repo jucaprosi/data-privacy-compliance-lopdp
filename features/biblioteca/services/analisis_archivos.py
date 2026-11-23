@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤¤security-engineer
 """Controles de un archivo externo (BIB-106): contenido OOXML real, límites ZIP, macros y enlaces externos.

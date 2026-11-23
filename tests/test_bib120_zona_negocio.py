@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 # ¤¤qa-engineer
 """Árbitro BIB-120: la fecha de negocio de la Biblioteca es la de America/Guayaquil.

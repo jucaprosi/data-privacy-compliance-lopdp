@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """API de la asignación de dominios del assessment a encargados del diagnóstico (DIAG-04). ¤diagnostico-asignacion"""
 from fastapi import APIRouter, Depends, Path, Query
 from pydantic import BaseModel, ConfigDict

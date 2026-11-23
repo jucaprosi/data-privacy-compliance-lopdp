@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤boveda-cloud ¤adpa
 """Errores de dominio de la sala Bóveda Cloud. Se lanzan como ErrorNegocio con código estable y estado HTTP."""
 # === BOV-01 ===

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Motor de los datos de la organización para documentos (sala ADPA: Organización). ¤rbac-tenant
 
 ORG-14. Guarda en `tenants` el domicilio, los contactos y el representante legal que las plantillas

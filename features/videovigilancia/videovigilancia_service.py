@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤videovigilancia-cctv ¤boveda-cloud ¤rat ¤seguridad-tenant ¤adpa
 """Compuerta de la sala Videovigilancia. Fuera de la sala solo se importa este módulo (o el pasillo)."""
 # === CCTV-01 ===

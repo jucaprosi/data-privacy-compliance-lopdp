@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 # ¤¤qa-engineer
 """Árbitro SEC-18: lopdp_app inserta en columnas identity sin permiso sobre sus secuencias. ¤seguridad

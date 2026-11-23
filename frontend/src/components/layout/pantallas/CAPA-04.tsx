@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus ¤auditoria-capa ¤hallazgos
 /**
  * Pantallas de CAPA-04 que monta el dashboard.

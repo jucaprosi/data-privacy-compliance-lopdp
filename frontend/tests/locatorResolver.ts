@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Resolutor de localizadores con Jerarquía PCP (Priority/Confidence/Precision).
  * Inspirado en la implementación ERP: reduce duplicación de selectores.

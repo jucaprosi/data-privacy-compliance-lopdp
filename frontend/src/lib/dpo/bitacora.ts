@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Cliente HTTP tipado para el Cockpit DPD/DPO y la Bitácora Inviolable (DPO-01).
  * Utiliza exclusivamente fetchAutenticado sin modificar frontend/src/lib/api.ts.

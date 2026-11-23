@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤conservacion ¤seguridad-tenant
 """Tabla de la sala: `politicas_conservacion` (RLS por tenant_id; la FK a tenants la crea la migración)."""
 import uuid

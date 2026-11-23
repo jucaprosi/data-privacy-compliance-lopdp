@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Las especificaciones de tareas son válidas, independientes y su índice está al día."""
 import importlib.util
 import sys

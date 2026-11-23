@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant ¤arbitro
 # ¤¤qa-engineer
 """Árbitro BIB-102: catálogo de plantillas (`GET /biblioteca/plantillas?fuente=&tipo=&ola=`).

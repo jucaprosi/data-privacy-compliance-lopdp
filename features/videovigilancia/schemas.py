@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤videovigilancia-cctv
 """Esquemas de entrada y salida de la sala Videovigilancia."""
 from datetime import datetime

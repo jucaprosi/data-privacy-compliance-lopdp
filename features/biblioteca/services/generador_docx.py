@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤¤developer-architect
 """Generador DOCX (BIB-205) sin dependencias nuevas: OOXML escrito con la biblioteca estándar.

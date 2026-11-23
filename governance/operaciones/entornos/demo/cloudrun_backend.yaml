@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # DEMO-07 · Backend del entorno de demostración (evydentia-backend-demo).
 # Ingress all pero protegido por IAM: allUsers removido, solo la cuenta del frontend
 # (517105327086-compute@developer.gserviceaccount.com) tiene rol roles/run.invoker.

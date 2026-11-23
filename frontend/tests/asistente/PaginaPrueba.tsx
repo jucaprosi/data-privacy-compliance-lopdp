@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤asistente
 // Página de prueba del asistente, solo para Playwright (FE-23): no forma parte de la aplicación.
 // La monta tests/asistente/montaje.ts en una página en blanco. El comportamiento de `guardar`

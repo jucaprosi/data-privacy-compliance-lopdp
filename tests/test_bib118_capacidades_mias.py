@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 # ¤¤qa-engineer
 """Árbitro BIB-118: GET /api/v1/biblioteca/capacidades/mias.

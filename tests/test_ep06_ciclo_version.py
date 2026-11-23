@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤entorno-pruebas ¤ci-cd
 """EP-06: ciclo de una versión en el entorno de pruebas.
 

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """CI-36 · Una sola versión mayor de Node en imágenes, engines y CI.
 
 `¤arbitro`

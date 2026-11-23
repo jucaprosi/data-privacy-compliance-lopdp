@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Test de validación del banco canónico de 80 preguntas del SGPDP (DIAG-02).
 
 Invariantes validadas:

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Reglas del panel de evidencia: qué archivos se aceptan y qué puede hacer cada rol.
  *

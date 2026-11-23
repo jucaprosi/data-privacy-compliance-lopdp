@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤hallazgos ¤rbac-tenant ¤arbitro
 """RM-23: el hallazgo se cierra con sus tareas y los recordatorios de vencimiento no se repiten.
 

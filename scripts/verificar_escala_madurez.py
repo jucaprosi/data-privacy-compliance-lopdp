@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico-scoring
 """Árbitro de la escala de madurez: un solo contrato, sin copias ni consumidores olvidados.
 

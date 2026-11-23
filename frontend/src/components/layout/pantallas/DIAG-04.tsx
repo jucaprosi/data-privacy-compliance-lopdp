@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤navegacion-menus
 // ¤diagnostico-asignacion
 /** Pantallas de DIAG-04 que monta el panel. Solo DIAG-04 edita este archivo. */

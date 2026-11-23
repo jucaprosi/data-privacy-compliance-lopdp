@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """Fusión de cabezas de Alembic tras sincronizar main en dev/jose (FIRMA-02 y tanda 35 de Biblioteca). ¤rbac-tenant
 

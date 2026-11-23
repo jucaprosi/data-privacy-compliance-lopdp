@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 # ¤diagnostico
 """DIAG-16: cada cita normativa del banco de preguntas está contrastada con el texto oficial.

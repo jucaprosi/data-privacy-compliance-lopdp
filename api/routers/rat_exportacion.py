@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Exportación del RAT a XLSX y PDF (RAT-06). ¤rat ¤rbac-tenant
 
 Contrato: governance/especificaciones/RAT-06.md §2. Organización e identidad salen del contexto autenticado.

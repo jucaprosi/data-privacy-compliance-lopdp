@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 # ¤¤developer-architect
 """Reglas puras de las plantillas Markdown del PMV (docs/biblioteca-pmv.md, apartados a y b).

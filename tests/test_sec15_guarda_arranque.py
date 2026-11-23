@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤arbitro
 """SEC-15 / RET-01 · Guarda de arranque: AUTH_MODE=headers solo arranca fuera de Cloud Run y contra base local.
 

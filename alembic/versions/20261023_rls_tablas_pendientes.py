@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """RLS forzado en las dos tablas con tenant_id que no lo tenían (QA-04).
 
 Revision ID: 20261023_rls_pendientes

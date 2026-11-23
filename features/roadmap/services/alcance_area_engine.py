@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Alcance por área sobre tareas de la hoja de ruta (sala ADPA: Hoja de Ruta).
 
 El alcance del usuario lo decide la sala Organización (compuerta); la pertenencia

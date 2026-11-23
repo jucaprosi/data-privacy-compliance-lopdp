@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Router de administración de la organización: usuarios, áreas y roles por tenant.
 
 Las operaciones de escritura exigen 'admin_organizacion'.

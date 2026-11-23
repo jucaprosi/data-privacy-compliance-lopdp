@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤adpa
 """Modelos de la sala Inteligencia Normativa (NORM-01). Tablas globales: el corpus es público y común.
 

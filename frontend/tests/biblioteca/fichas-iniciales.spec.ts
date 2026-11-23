@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤adpa ¤arbitro
 /**
  * BIB-208 · Cobertura de las ocho fichas iniciales (pestaña «Plantillas»). API simulada: comprueba que

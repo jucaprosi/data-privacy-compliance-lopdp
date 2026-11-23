@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * TER-01 · Módulo Terceros: contrato, garantía y distintivo de hallazgo (especificación TER-01 §4-§5).
  *

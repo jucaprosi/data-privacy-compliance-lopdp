@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * MTGE-02: panel de obligaciones de gran escala en la sala «Riesgos & MTGE».
  *

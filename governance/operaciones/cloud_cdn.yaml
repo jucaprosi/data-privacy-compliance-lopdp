@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # GCP-06 · Cloud CDN solo para activos estáticos inmutables (INV_EDGE_CACHE_PUBLIC_STATIC_ONLY).
 # Se activa sobre el servicio backend del frontend de GCP-04 (evydentia-web-bs). Lo aplica el propietario con Antigravity.
 # /api/v1/* nunca entra en el CDN: sus respuestas son datos de organización y no se almacenan en el borde.

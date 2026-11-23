@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """El reparto en bloques de los briefs coincide con las tasks y los bloques de una tanda no se pisan."""
 import importlib.util
 import sys

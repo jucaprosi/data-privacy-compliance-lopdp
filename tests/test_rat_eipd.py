@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Árbitro RAT-03 contra PostgreSQL.
 
 Mutación documentada: en features/rat/services/eipd_engine.py se cambió temporalmente

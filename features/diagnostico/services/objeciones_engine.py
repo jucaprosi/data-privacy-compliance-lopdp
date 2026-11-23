@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Objeciones del DPO a las respuestas del diagnóstico (DIAG-07). ¤diagnostico ¤dpo-independencia
 
 El DPO objeta una respuesta con un motivo antes de sellar; la objeción queda abierta (resuelta_en nulo)

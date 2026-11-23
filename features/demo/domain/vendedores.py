@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 """Lista de vendedores autorizados (`DEMO_VENDEDORES`, secreto del proyecto demo; DEMO-02)."""
 from __future__ import annotations

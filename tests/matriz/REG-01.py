@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤rbac-tenant ¤paquete-normativo ¤arbitro
 """Filas de la matriz de permisos de REG-01 (paquete normativo como dato).
 

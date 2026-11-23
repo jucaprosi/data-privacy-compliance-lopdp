@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤engine ¤auditoria-capa ¤hallazgos
 """Motor de auditoría con grilla de verificación por dominio y acta por área (CAPA-04)."""
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """DER-04 · Contracción de DER-03: se retiran tenant_id uuid y el disparador de las solicitudes ARCO.
 
 `¤arbitro` `¤seguridad-tenant`

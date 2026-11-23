@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DIAG-03: paridad de los cuatro indicadores entre la pantalla y el servidor.
  *

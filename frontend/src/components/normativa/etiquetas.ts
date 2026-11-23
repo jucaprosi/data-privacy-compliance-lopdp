@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /** Textos y tonos de las etiquetas de estado (UX/UI NORM-02). Siempre con texto; el color solo refuerza. */
 import type { Corrida, EstadoResolucion } from "./cliente";
 

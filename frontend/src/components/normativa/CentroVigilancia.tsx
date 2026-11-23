@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 /**
  * NORM-02: Centro de Vigilancia Normativa. Catálogo de resoluciones de la SPDP con filtros, panel con el

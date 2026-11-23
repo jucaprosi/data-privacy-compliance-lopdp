@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * FE-28 · Textos de interfaz sin jerga técnica (governance/tareas/FE-28.md, árbitro 1).
  *

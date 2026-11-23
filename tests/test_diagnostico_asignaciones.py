@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤diagnostico-asignacion ¤rbac-tenant ¤arbitro
 """DIAG-04: el administrador asigna los dominios (D01-D10) a encargados del diagnóstico.
 

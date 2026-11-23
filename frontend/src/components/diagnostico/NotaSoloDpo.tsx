@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 /**
  * DIAG-14, retirada por DIAG-07: la nota por pregunta duplicaba la franja del lienzo, que ya dice a cada

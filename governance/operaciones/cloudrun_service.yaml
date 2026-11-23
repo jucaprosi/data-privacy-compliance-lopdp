@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # GCP-01 · Servicio Cloud Run del backend (Knative serving v1).
 # Equivale a: gcloud run deploy evydentia-backend --cpu-boost --concurrency=80
 # Lo aplica una persona: gcloud run services replace governance/operaciones/cloudrun_service.yaml

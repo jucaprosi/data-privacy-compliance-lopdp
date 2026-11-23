@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤rbac-tenant
 """API de revisión documental; una autoridad explícita manda sobre el nombre del rol."""
 from typing import Annotated

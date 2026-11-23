@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤incidentes ¤rbac-tenant ¤seguridad
 """Cambios de estado del incidente y contador de abiertos en PostgreSQL (INC-03).
 

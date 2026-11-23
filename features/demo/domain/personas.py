@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 # ¤rbac-tenant
 """Las seis personas de la demo, en el orden fijo de UX_DEMO_EVYDENTIA.md §2."""

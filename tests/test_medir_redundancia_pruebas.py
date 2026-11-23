@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """TEST-05: el medidor de pruebas redundantes marca candidatas, mutantes, duraciones y rutas sin tocar pruebas."""
 # ¤arbitro
 # ¤¤qa-engineer

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤entorno-pruebas ¤boveda-cloud
 """EP-05: Cloud SQL, buckets y secretos del entorno de pruebas (PRD EVYDENTIA §5.5, invariantes 53, 55 y 56).
 

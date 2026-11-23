@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """DPO-03: consultas de la organización al DPO y su hilo de mensajes, con RLS por organización. ¤dpo-cockpit ¤rbac-tenant"""
 from alembic import op

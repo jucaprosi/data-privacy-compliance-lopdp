@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # GCP-03 · Servicios Cloud Run del frontend Next.js (standalone), uno por entorno.
 # Una sola imagen (IMAGEN = digest) para los tres; solo cambian las variables del servicio.
 # Lo aplica una persona, por entorno:

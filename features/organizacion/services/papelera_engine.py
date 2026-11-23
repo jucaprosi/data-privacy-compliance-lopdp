@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Papelera de la organización: listar y restaurar lo retirado (sala ADPA: Organización). ¤rbac-tenant ¤seguridad
 
 ORG-20 · R1. Nada se borra desde la aplicación: retirar marca `retirado_en` y restaurar la vuelve a NULL.

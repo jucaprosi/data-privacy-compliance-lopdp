@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤cloud-run-perf ¤adpa ¤arbitro
 """GCP-02: el selector TIA es determinista, conservador y nunca omite lo innegociable.
 

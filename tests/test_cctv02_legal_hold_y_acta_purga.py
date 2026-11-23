@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤videovigilancia-cctv ¤incidentes ¤derechos ¤conservacion ¤seguridad-tenant ¤arbitro
 """CCTV-02: Congelamiento Forense (Hold Legal) y Actas Quincenales SHA-256.
 

@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Arnés de interfaz de FE-07: inicio de sesión con Google y una sola identidad para todo el panel.
  *

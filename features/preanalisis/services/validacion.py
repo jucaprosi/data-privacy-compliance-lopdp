@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Reglas deterministas de integridad (2-4) como funciones puras. Son la defensa real contra alucinación e inyección."""
 from __future__ import annotations
 

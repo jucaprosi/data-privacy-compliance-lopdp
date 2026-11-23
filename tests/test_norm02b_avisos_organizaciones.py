@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤inteligencia-normativa ¤vigilancia-spdp ¤seguridad-tenant ¤arbitro
 """NORM-02b: aviso a cada organización de las resoluciones nuevas o con versión nueva de una corrida.
 

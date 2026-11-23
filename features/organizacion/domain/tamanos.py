@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Vocabulario cerrado de tamaños de organización (sala ADPA: Organización)."""
 from enum import Enum
 

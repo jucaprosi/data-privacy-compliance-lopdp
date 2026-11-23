@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 import { test, expect } from "@playwright/test";
 
 test("BIB-301 muestra separación entre asesoría y aprobación", async ({ page }) => {

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤incidentes ¤evidencias ¤rbac-tenant
 """Informes de vulneración para la Autoridad y para los titulares (INC-02, R3).
 

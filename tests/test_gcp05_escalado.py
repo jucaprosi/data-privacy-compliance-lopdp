@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """GCP-05 · Escalado verificable en Cloud Run: límites explícitos, presupuesto de conexiones y prueba de carga.
 
 `¤cloud-run-perf` `¤arbitro`

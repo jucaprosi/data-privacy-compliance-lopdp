@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """INC-03: estado del incidente (abierto o cerrado) como eventos que solo se agregan. ¤incidentes ¤rbac-tenant
 

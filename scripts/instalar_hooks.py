@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro ¤ci-cd
 """Instala el hook pre-push versionado, en un paso, en Windows, Mac y Linux: python scripts/instalar_hooks.py
 

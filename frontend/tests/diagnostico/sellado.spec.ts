@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * DIAG-03, con la regla de DIAG-07: responde el administrador (o la persona asignada), el DPO sella y
  * los demás roles lo ven en modo lectura; el historial muestra lo sellado en el servidor.

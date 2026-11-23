@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤evidencias ¤evidencias-vigencia ¤rbac-tenant ¤arbitro
 """EVI-02: vigencia, visibilidad y paquete para inspección, contra PostgreSQL 16 (almacén simulado).
 

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Sensor persistente de deriva de la EIPD; la transacción pertenece al llamador."""
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession

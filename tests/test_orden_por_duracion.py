@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤arbitro
 # ¤¤qa-engineer
 """El orden por duración: de más lenta a más rápida, solo si hay archivo, y que xdist de verdad lo respete."""

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """ADPA-10 · R-PROP-EXISTE: la propiedad de cada ficha se comprueba contra el árbol (¤arbitro).
 
 GOB-05: el generador es el del molde de ZERAG (governance/molde/generar_indice_tareas.py) con las

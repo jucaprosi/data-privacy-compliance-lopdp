@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo
 # ¤rbac-tenant
 """DEMO-00: contrato de la sala demo (compuerta, dominio, repositorio, pasillo y migración).

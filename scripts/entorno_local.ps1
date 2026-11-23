@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 <#
 .SYNOPSIS
     Fija en la ventana actual de PowerShell las variables de entorno locales para LOPDP 360.

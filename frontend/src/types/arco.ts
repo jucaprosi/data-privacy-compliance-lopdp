@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Tipos estrictos para el modulo de Gestion de Derechos ARCO+
  * conforme a la Ley Organica de Proteccion de Datos Personales (LOPDP, arts. 13 a 16 y 62),

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤gemini-vertex ¤arbitro
 """IA-10: huellas de prompts versionados (invariante 64). Editar un texto sin subir la versión da rojo."""
 import importlib.util

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo ¤seguridad ¤rbac-tenant ¤adpa
 """DEMO-01: personas de la demo y «Ver como» (FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md §1.2, invariante 61).
 

@@ -1,4 +1,5 @@
 @echo off
+REM © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 REM Arnes de verificacion. El interprete y su validacion los resuelve scripts\entorno.bat.
 setlocal
 chcp 65001 > nul

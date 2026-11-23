@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Helper de base de datos para pruebas de integración contra backend real (TEST-03).
  * Ejecuta comandos SQL de forma determinista usando el Python del sistema con psycopg.

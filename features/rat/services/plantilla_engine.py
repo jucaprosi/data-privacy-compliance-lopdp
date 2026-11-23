@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Plantillas sectoriales del RAT (RAT-02).
 
 Una plantilla es un catálogo de actividades típicas de un sector que el coordinador puede cargar en

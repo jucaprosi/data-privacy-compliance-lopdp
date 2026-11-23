@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """Compuerta pública de la sala ADPA: RAT Maestro."""
 # === RAT-01 ===

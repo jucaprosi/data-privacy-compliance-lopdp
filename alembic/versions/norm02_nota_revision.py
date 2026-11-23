@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """NORM-02: nota de la revisión humana en `normativa_resoluciones`. ¤inteligencia-normativa ¤vigilancia-spdp
 

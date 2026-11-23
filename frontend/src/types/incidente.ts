@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Bitácora de incidentes de seguridad (INC-01): forma de los datos que intercambia la pantalla con
  * el servidor (api/routers/incidentes.py).

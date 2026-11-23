@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """RM-21: hallazgos con origen y tareas que guardan el hallazgo que las originó. ¤hallazgos ¤roadmap ¤rbac-tenant
 

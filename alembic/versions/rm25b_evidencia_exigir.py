@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """RM-25b: la validación final de la evidencia exige la primera (paso «contraer» de RM-25a). ¤roadmap
 

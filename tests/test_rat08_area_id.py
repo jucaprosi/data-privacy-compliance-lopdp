@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Árbitro RAT-08 contra PostgreSQL 16 local (TEST_DATABASE_URL).
 Contrato: governance/especificaciones/RAT-08.md
 Mutaciones m1 a m4.

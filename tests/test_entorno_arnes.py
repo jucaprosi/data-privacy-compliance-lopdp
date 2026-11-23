@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """El entorno de ejecucion de los .bat se resuelve en un unico sitio y se comprueba.
 
 Estas pruebas impiden volver a dos defectos: que cada .bat decida el interprete por su cuenta

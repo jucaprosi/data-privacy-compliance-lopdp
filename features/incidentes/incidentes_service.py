@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤incidentes
 """Compuerta pública de la sala ADPA: Incidentes y vulneraciones (INC-01)."""
 from features.incidentes.domain.models import (

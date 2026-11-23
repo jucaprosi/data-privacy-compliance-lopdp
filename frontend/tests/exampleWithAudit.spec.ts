@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Ejemplo de test con auditoría completa.
  * Demuestra el uso de ConsoleSentinel, AuditTrail y LocatorResolver.

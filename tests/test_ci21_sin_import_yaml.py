@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 # ¤arbitro
 """CI-21: ninguna prueba ni script importa `yaml` (PyYAML no está en requirements.txt), y el lector común

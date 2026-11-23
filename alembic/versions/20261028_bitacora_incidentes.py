@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤security-engineer
 """INC-01: bitácora de incidentes por organización, sin edición ni borrado. ¤incidentes ¤rbac-tenant
 

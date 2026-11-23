@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * FE-15: Pantallas de la hoja de ruta legibles en los dos temas (theme-light y theme-dark).
  *

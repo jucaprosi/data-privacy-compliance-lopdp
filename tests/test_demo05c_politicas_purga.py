@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤demo ¤seguridad ¤arbitro
 """DEMO-05c: purga de la demo con políticas explícitas por rol `purga_demo`, sin BYPASSRLS.
 

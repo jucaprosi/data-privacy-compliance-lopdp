@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Revisión y aprobación documental BIB-301. ¤rbac-tenant"""
 from alembic import op
 

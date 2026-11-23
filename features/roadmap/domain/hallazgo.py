@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤roadmap ¤hallazgos ¤rbac-tenant
 """Hallazgo con origen (RM-21): lo que las salas productoras encuentran y solo `roadmap` convierte en tarea.
 

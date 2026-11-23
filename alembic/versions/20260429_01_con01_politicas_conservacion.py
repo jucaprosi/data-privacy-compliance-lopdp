@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤backend-developer
 """CON-01: políticas de conservación y bloqueo vinculadas a las actividades del RAT. ¤conservacion ¤rat
 

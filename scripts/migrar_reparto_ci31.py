@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa
 """CI-31 R5 · Traslado de una sola vez del reparto a «un brief por ficha, sin numeración global».
 

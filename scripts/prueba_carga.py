@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤¤qa-engineer
 # ¤cloud-run-perf
 """GCP-05 · Prueba de carga de lectura contra el entorno de PRUEBAS (nunca producción).

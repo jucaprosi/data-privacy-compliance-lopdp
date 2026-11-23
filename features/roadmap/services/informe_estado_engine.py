@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Informe PDF del estado de una hoja de ruta, generado en el servidor como constancia (RM-20).
 
 Los datos salen de la base de la organización del usuario, nunca del navegador. El alcance depende

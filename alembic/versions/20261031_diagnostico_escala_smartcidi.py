@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Escala SMARTCIDI en las respuestas del diagnóstico (DIAG-08).
 
 `nivel_asignado` (1 a 5, nulo = sin responder con la escala nueva) y evidencia de 0 a 4. Las filas

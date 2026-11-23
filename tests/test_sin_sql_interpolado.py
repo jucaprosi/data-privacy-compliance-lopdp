@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Cero SQL interpolado y una sola fuente de sesión de BD (análisis AST, sin BD).
 
 Habilita INV_LOPDP_SESSION_SINGLE_SOURCE. Una sentencia SQL llega a la BD solo como texto

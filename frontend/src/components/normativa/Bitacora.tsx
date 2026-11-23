@@ -1,3 +1,4 @@
+// © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 "use client";
 /** Bitácora de las búsquedas de novedades; el operador las lanza con «Buscar novedades ahora». */
 import { useCallback, useEffect, useState } from "react";

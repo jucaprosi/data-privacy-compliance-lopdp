@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """DER-01 · identidad verificada, resultado y respuesta como evidencia en derechos_arco_solicitudes; derechos_modelos.
 
 `¤evidencias` `¤rbac-tenant` `¤arbitro`

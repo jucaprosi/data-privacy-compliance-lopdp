@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤dlp-muestreo ¤seguridad-tenant ¤arbitro
 """DLP-01: muestreo acotado, validador Módulo 10 y cero persistencia del dato personal hallado.
 

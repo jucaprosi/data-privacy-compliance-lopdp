@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # EP-04 · Presupuestos de Cloud Billing del proyecto de pruebas (PRD EVYDENTIA §5.5, OPS-07, pilar 10).
 # Un presupuesto solo AVISA: no corta el gasto. El tope real lo ponen el máximo de instancias de Cloud Run
 # (maxScale) y la cuota de IA por organización (SEC-13). Se calcula sobre el costo antes de créditos.

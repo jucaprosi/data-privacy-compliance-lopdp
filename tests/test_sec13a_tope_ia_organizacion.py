@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤seguridad-tenant ¤copiloto-ia
 """SEC-13a: tope total de generaciones de IA por organización, contra PostgreSQL de pruebas."""
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Motor de evaluación adaptativa y scoring por dimensión para Diagnóstico en 60 min."""
 import json
 from pathlib import Path
