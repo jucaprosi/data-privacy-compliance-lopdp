@@ -123,7 +123,12 @@ async def test_lopdp_app_no_adopta_el_rol_del_monitoreo(como_app):
     """Mutación m2 (c): `GRANT lopdp_normativa TO lopdp_app` en la migración da rojo."""
     async with como_app() as s:
         miembro = (await s.execute(text("SELECT pg_has_role('lopdp_app', 'lopdp_normativa', 'MEMBER')"))).scalar_one()
-    assert miembro is False, "hay una membresía de lopdp_app en lopdp_normativa que viene de fuera del repositorio"
+        atributos = tuple((await s.execute(
+            text("SELECT rolsuper, rolcreaterole FROM pg_roles WHERE rolname = 'lopdp_app'"))).one())
+        puede_set = (await s.execute(text("SELECT pg_has_role('lopdp_app', 'lopdp_normativa', 'SET')"))).scalar_one()
+    diagnostico = f"(rolsuper, rolcreaterole)={atributos}; MEMBER={miembro}; SET={puede_set}"
+    assert not miembro, f"membresía de lopdp_app en lopdp_normativa que viene de fuera del repositorio: {diagnostico}"
+    assert not puede_set, f"lopdp_app puede hacer SET ROLE lopdp_normativa (¿ADMIN por haberlo creado?): {diagnostico}"
     await _debe_fallar(como_app, "SET LOCAL ROLE lopdp_normativa")
 
 
