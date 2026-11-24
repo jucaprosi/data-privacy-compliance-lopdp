@@ -12,7 +12,7 @@ rastros = ["¤diagnostico", "¤diagnostico-no-aplica"]
 
 # DIAG-05 · «No aplica» exige justificación en el assessment
 
-**Origen.** Conflicto D-8 de `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`: se adopta la justificación obligatoria de «no aplica» (escala SMARTCIDI 1 a 5 desde la decisión del propietario del 2026-10-29, DIAG-08).
+**Origen.** Conflicto D-8 de `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`: se adopta la justificación obligatoria de «no aplica» (escala de madurez de 1 a 5 desde la decisión del propietario del 2026-10-29, DIAG-08).
 
 ## Entrega
 - Una respuesta «no aplica» sin justificación (texto no vacío, con longitud mínima) se rechaza en el servidor con 422; la justificación se guarda con la respuesta y su autor.

@@ -41,8 +41,8 @@ La acción del plan es la tarea del roadmap (`roadmap_tasks`) vinculada al halla
 
 ## 3. Reglas
 
-- **R0 · Escala única.** `declarado` y `verificado` usan la escala SMARTCIDI del diagnóstico (`NIVELES_ASIGNADOS`, 1 a 5, DIAG-08). Esta sala lee la escala y sus etiquetas por la compuerta de diagnóstico (`app_core/pasillo/diagnostico.py#CAPA-04`) y no copia etiquetas ni topes.
-  - **Sin nivel 0.** En el assessment de SMARTCIDI, el nivel 1 ya significa «No existe o se gestiona informalmente». La falta de evidencia es otra escala, `NIVELES_EVIDENCIA` (0 «Verbal: sin evidencia»), y se registra con `evidencia_sha256` nulo, no con un nivel de madurez.
+- **R0 · Escala única.** `declarado` y `verificado` usan la escala de madurez de 1 a 5 del diagnóstico (`NIVELES_ASIGNADOS`, 1 a 5, DIAG-08). Esta sala lee la escala y sus etiquetas por la compuerta de diagnóstico (`app_core/pasillo/diagnostico.py#CAPA-04`) y no copia etiquetas ni topes.
+  - **Sin nivel 0.** En el assessment, el nivel 1 ya significa «No existe o se gestiona informalmente». La falta de evidencia es otra escala, `NIVELES_EVIDENCIA` (0 «Verbal: sin evidencia»), y se registra con `evidencia_sha256` nulo, no con un nivel de madurez.
   - Por eso no se propone ninguna etiqueta «Sin evidencia verificable».
 - **R1 · Precarga.** `declarado = nivel_sellado` del último resultado por control. `riesgo_inicial = (5 − declarado) × criticidad`, la misma fórmula del diagnóstico, con el tope 5 leído de la compuerta (`NIVEL_ASIGNADO_MAX`).
 - **R2 · Hallazgo.** Si `verificado < declarado`, se llama a `registrar_hallazgo` con:

@@ -11,7 +11,7 @@ Escenarios verificados:
 5. test_get_acta_roles_y_huella: Auditor, DPO y admin_organizacion reciben 200; implementador 403. Huella coincide con contenido.
 6. test_hallazgo_cerrado_solo_con_verificacion: Hallazgo pasa a 'cerrado' solo con verificación conforme. cerrar_por_tareas no lo cierra.
 7. test_verificador_no_cierra: Quien cerró la acción no puede verificar el cierre -> 403 AUDITOR_EJECUTOR.
-8. test_escala_unica_diagnostico: Escala SMARTCIDI 1 a 5; verificado = 0 rechazado. Mutación documentada.
+8. test_escala_unica_diagnostico: escala de madurez de 1 a 5; verificado = 0 rechazado. Mutación documentada.
 9. test_rls_auditorias: Aislamiento estricto por tenant en las 4 tablas con lopdp_app.
 10. test_sin_palabra_prohibida: El término 'certificado' está terminantemente ausente.
 """
@@ -51,7 +51,7 @@ async def test_escala_unica_diagnostico():
             user_id="auditor-1",
             auditoria_id="aud-1",
             control_ref="P12",
-            verificado=0,  # INV_LOPDP_SMARTCIDI_MATURITY_SCALE
+            verificado=0,  # INV_LOPDP_MATURITY_SCALE_1_5
             riesgo_final=15,
         )
 

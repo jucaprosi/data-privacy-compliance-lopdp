@@ -21,7 +21,7 @@
 | `¤inventario` | G2 | Inventario relacional de activos, sistemas, soportes, personas mínimas, sedes y clientes como encargado | `¤¤lead-implementer` | `features/organizacion` (`ORG-17`, `ORG-18`) |
 | `¤diagnostico` | G1 | Assessment adaptativo en 60 minutos sobre el banco canónico de 80 preguntas (`P1–P80`) | `¤¤consultant` | `features/diagnostico` (`DIAG-01..10`) |
 | `¤diagnostico-motor` | G2 | Motor de poda condicional y antecedencia paramétrica ($\le 80$ preguntas) | `¤¤backend-developer` | `features/diagnostico` |
-| `¤diagnostico-scoring` | G2 | Motor de calificación en escala SMARTCIDI 1–5 y nivel de evidencia 0–4 por dimensión y dominio | `¤¤backend-developer` | `features/diagnostico` (`DIAG-08`, `DIAG-09`, `DIAG-10`) |
+| `¤diagnostico-scoring` | G2 | Motor de calificación en escala de madurez de 1 a 5 y nivel de evidencia 0–4 por dimensión y dominio | `¤¤backend-developer` | `features/diagnostico` (`DIAG-08`, `DIAG-09`, `DIAG-10`) |
 | `¤diagnostico-asignacion` | G2 | Asignación colaborativa de dominios del assessment a responsables por unidad orgánica | `¤¤backend-developer` | `features/diagnostico` (`DIAG-04`) |
 | `¤diagnostico-no-aplica` | G2 | Regla de justificación obligatoria para respuestas «No aplica» y grilla Declarado/Verificado del DPO | `¤¤backend-developer` | `features/diagnostico` (`DIAG-05`, `DIAG-07`) |
 | `¤diagnostico-comparativo` | G2 | Comparativo histórico de un assessment sellado frente a la línea base por dimensión y dominio | `¤¤backend-developer` | `features/diagnostico` (`DIAG-06`) |

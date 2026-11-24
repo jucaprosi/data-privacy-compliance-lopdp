@@ -6,13 +6,13 @@
 
 ---
 
-## 1. Invariantes de Dominio LOPDP, Escala SMARTCIDI y Segregación de Funciones
+## 1. Invariantes de Dominio LOPDP, escala de madurez de 1 a 5 y Segregación de Funciones
 <!-- ¤adpa -->
 1. **`INV_LOPDP_DIAG_MAX_80_QUESTIONS`**: El árbol condicional del Assessment filtra y poda el banco maestro (`P1–P80`) de modo que ningún perfil organizacional reciba más de **80 preguntas efectivas** ($\le 60$ minutos de evaluación).
 2. **`INV_LOPDP_EVIDENCE_REQUIRED_FOR_CONFORMITY`**: Ningún control en diagnóstico, auditoría o plan de acción alcanza estado de conformidad verificada si su nivel de evidencia es `E0` (autodeclaración sin soporte), exigiendo evidencia válida ($E1, E2, E3$) o justificación formal auditada.
 3. **`INV_LOPDP_NO_APPLICABLE_REQUIRES_JUSTIFICATION`**: Toda pregunta del assessment marcada como «No aplica» exige justificación textual obligatoria persistida junto con la respuesta y sujeta a revisión del DPO (`DIAG-05`).
 4. **`INV_LOPDP_DPO_DECLARED_VERIFIED_SEAL`**: Las respuestas del assessment son registradas por el Administrador y los encargados de dominio (valor *declarado*); el DPO las revisa en la grilla Declarado/Verificado, puede objetarlas y es el único rol facultado para emitir el sello criptográfico `SHA-256` que vuelve inmutable el resultado (`DIAG-03`, `DIAG-07`).
-5. **`INV_LOPDP_SMARTCIDI_MATURITY_SCALE`**: La madurez se mide exclusivamente en la **escala SMARTCIDI de 1 a 5** (`1 Inicial`, `2 Repetible`, `3 Definido`, `4 Gestionado`, `5 Optimizado`) cruzada con el nivel de evidencia (`0` a `4`) por control, por dimensión (`D01`–`D10`) y por cada uno de los **4 ejes**, sin emitir una cifra o porcentaje global único para la organización (`DIAG-08`, `DIAG-09`, `DIAG-10`, `FE-24`).
+5. **`INV_LOPDP_MATURITY_SCALE_1_5`**: La madurez se mide exclusivamente en la **escala de madurez de 1 a 5** (`1 Inicial`, `2 Repetible`, `3 Definido`, `4 Gestionado`, `5 Optimizado`) cruzada con el nivel de evidencia (`0` a `4`) por control, por dimensión (`D01`–`D10`) y por cada uno de los **4 ejes**, sin emitir una cifra o porcentaje global único para la organización (`DIAG-08`, `DIAG-09`, `DIAG-10`, `FE-24`).
 6. **`INV_LOPDP_DPO_INDEPENDENCE`**: El usuario con rol `dpo` en una organización tiene prohibido estructuralmente acumular roles operativos (`admin_organizacion`, `coordinador`, `responsable_area`, `implementador`) en esa misma organización o ser asignado como ejecutor de tareas operativas (Art. 48 LOPDP; `ORG-01`).
 7. **`INV_LOPDP_SOD_EXPLICIT_TIMEBOUND_EXCEPTIONS`**: Cualquier excepción a la separación de funciones entre Coordinador y Responsable de Área requiere registro explícito, justificación motivada y fecha de expiración determinada (`ORG-02`).
 8. **`INV_LOPDP_SINGLE_ROLE_GRANT_NO_SELF_ELEVATION`**: Todas las concesiones de rol atraviesan una única compuerta de autorización en `features/organizacion/`, impidiendo que cualquier usuario se autoconceda o eleve privilegios (`ORG-05`).
@@ -140,7 +140,7 @@
 Invariantes del archivo anterior que siguen rigiendo en EVYDENTIA. Conservan su ID porque el código y las pruebas lo citan; ninguno se renombra. Si uno ya está cubierto por un número de este archivo, aquí solo figura su equivalencia, para que no haya dos textos normativos que puedan divergir. Lista aprobada por el CTO el 2026-11-11 (PRD-02).
 
 - **`INV_LOPDP_60MIN_TIMEBOX_LIMIT`**: equivale al invariante n.º 1 de este archivo (el árbol del Assessment no muestra más de 80 preguntas por sesión). Se conserva el ID porque lo citan el código y las pruebas.
-- **`INV_LOPDP_EVIDENCE_BEFORE_COMPLIANCE`**: equivale al invariante n.º 2 de este archivo (sin evidencia válida no hay conformidad; el nivel de madurez es el de la escala SMARTCIDI 1 a 5). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_LOPDP_EVIDENCE_BEFORE_COMPLIANCE`**: equivale al invariante n.º 2 de este archivo (sin evidencia válida no hay conformidad; el nivel de madurez es el de la escala de madurez de 1 a 5). Se conserva el ID porque lo citan el código y las pruebas.
 - **`INV_LOPDP_MTGE_DETERMINISTIC_TRIGGER`**: equivale al invariante n.º 11 de este archivo (el umbral MTGE o un caso directo activan EIPD y DPO). Se conserva el ID porque lo citan el código y las pruebas.
 - **`INV_LOPDP_INCIDENT_TIMELOCK`**: equivale al invariante n.º 16 de este archivo (cronómetros de la Norma Técnica `SPDP-SPD-2026-0040-R` desde `detected_at`). Se conserva el ID porque lo citan el código y las pruebas.
 - **`INV_LOPDP_FORENSIC_ORIGINAL_HASH`**: equivale al invariante n.º 27 de este archivo (original intacto con `SHA-256` en streaming y derivados ligeros aparte). Se conserva el ID porque lo citan el código y las pruebas.
@@ -153,7 +153,7 @@ Invariantes del archivo anterior que siguen rigiendo en EVYDENTIA. Conservan su 
 - **`INV_ARCO_EVIDENCIA_E1`**: complementa el n.º 17 (la respuesta se archiva como evidencia): resolver una solicitud ARCOP+ exige la evidencia de la respuesta. Hoy no existe ninguna ruta que resuelva solicitudes; `DER-01` la crea y exige esa evidencia en el servicio y con un `CHECK` en la base (brecha registrada, `DER-01` pendiente).
 - **`INV_CAPA_SOD`**: equivale al invariante n.º 14 (el auditor de un hallazgo no es quien subió su evidencia). Se conserva el ID porque lo citan el código y las pruebas.
 
-- **`INV_LOPDP_MULTIDIMENSIONAL_METRICS`**: el sistema muestra por separado la madurez SMARTCIDI de 1 a 5, la conformidad jurídica, la cobertura de evidencia y el riesgo residual; nunca un porcentaje único. Complementa el n.º 5.
+- **`INV_LOPDP_MULTIDIMENSIONAL_METRICS`**: el sistema muestra por separado la madurez de 1 a 5, la conformidad jurídica, la cobertura de evidencia y el riesgo residual; nunca un porcentaje único. Complementa el n.º 5.
 - **`INV_LOPDP_CLOUD_SQL_AUTOPROXY`**: sin proveedor externo de base; producción en Cloud SQL PostgreSQL 16 con RLS forzado (`lopdp_app`) y respaldo gestionado. Árbitro: `tests/test_gcp04_cloudsql_migration_cutover.py`.
 - **`INV_LOPDP_CLOUD_CONFIG_FAILS_CLOSED`**: en la nube el backend no arranca si `DATABASE_URL` falta, no es PostgreSQL o no conecta con el rol `lopdp_app`; en producción tampoco si `CORS_ORIGINS` falta o contiene `*`. Árbitro: `tests/test_sec17_configuracion_nube.py`.
 - **`INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD`**: en Cloud Run el backend no arranca si `JWT_SECRET` o `SESSION_SECRET` faltan, valen una clave por defecto, miden menos de 32 caracteres o son iguales entre sí. Árbitro: `tests/test_sec16_secretos_obligatorios.py`.

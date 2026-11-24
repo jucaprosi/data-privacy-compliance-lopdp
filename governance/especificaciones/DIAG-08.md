@@ -1,9 +1,9 @@
-# DIAG-08 · Escala SMARTCIDI en el servidor
+# DIAG-08 · Escala de madurez de 1 a 5 en el servidor
 `¤sdd` `¤diagnostico` `¤diagnostico-scoring`
 
 ## 1. Datos
 
-Migración `20261031_diagnostico_escala_smartcidi`, sobre `diagnostico_respuestas` (DIAG-03):
+Migración `20261031_diagnostico_escala_madurez`, sobre `diagnostico_respuestas` (DIAG-03):
 
 | Cambio | Detalle |
 | :--- | :--- |
@@ -14,7 +14,7 @@ Migración `20261031_diagnostico_escala_smartcidi`, sobre `diagnostico_respuesta
 
 `lopdp_app` conserva sus permisos; RLS sin cambios. `diagnostico_resultados` no se altera: los resultados sellados son inmutables y su JSON `indicadores` conserva la forma con que se sellaron.
 
-**Escala** (hojas «Niveles de Madurez» y «Catálogos» del archivo SMARTCIDI), como constantes del dominio:
+**Escala** (hojas «Niveles de Madurez» y «Catálogos» del archivo de assessment), como constantes del dominio:
 
 | Nivel asignado | Nombre | Criterio operativo |
 | :--- | :--- | :--- |
@@ -32,7 +32,7 @@ Migración `20261031_diagnostico_escala_smartcidi`, sobre `diagnostico_respuesta
 | 3 | Operativa: registros de aplicación |
 | 4 | Revisada: auditada o revisada por la dirección |
 
-`IndicadoresSellados` (forma nueva, `escala = "smartcidi_1_5"`): `{escala, cumplimiento: bool, brechas_criticas: int, brechas_altas: int, por_dimension: [{dimension, nombre, nivel: int 0–5, etiqueta, score: float, cobertura: float, brechas_criticas, brechas_altas}], respaldo_documental: float, preguntas_evaluadas, preguntas_aplicables, cobertura}`. Desaparecen `madurez`, `nivel_madurez` y `riesgo_residual`.
+`IndicadoresSellados` (forma nueva, `escala = "madurez_1_5"`): `{escala, cumplimiento: bool, brechas_criticas: int, brechas_altas: int, por_dimension: [{dimension, nombre, nivel: int 0–5, etiqueta, score: float, cobertura: float, brechas_criticas, brechas_altas}], respaldo_documental: float, preguntas_evaluadas, preguntas_aplicables, cobertura}`. Desaparecen `madurez`, `nivel_madurez` y `riesgo_residual`.
 
 ## 2. API
 
@@ -41,7 +41,7 @@ Migración `20261031_diagnostico_escala_smartcidi`, sobre `diagnostico_respuesta
 | `PUT /diagnostico/respuestas` | los de hoy (DIAG-03; DIAG-07 los cambia después) | por pregunta `{"pregunta_id": int, "nivel_asignado": 1–5, "nivel_evidencia": 0–4}`; `estado` en el cuerpo → 422 | `200` con `estado` derivado (R3) |
 | `GET /diagnostico/respuestas` | sin cambio | — | cada fila con `nivel_asignado`, `nivel_evidencia` y `estado` derivado |
 | `POST /diagnostico/resultados` (sellar) | `dpo` | sin cambio | `201` con `indicadores` en la forma nueva |
-| `GET /diagnostico/resultados` | sin cambio | — | cada resultado con `indicadores.escala`: `"smartcidi_1_5"` o, si el JSON sellado no la trae, `"anterior"` (se añade al leer, sin escribir) |
+| `GET /diagnostico/resultados` | sin cambio | — | cada resultado con `indicadores.escala`: `"madurez_1_5"` o, si el JSON sellado no la trae, `"anterior"` (se añade al leer, sin escribir) |
 | Informes de `api/routers/diagnostico.py` | sin cambio | sin cambio | niveles por dimensión; ninguna madurez 0–3 ni cifra global |
 
 Valores fuera de escala: 422 de validación del esquema.
@@ -73,9 +73,9 @@ Sin interfaz: la pantalla de respuesta es de DIAG-09 y el tablero de FE-24.
 | **Dado** respuestas de A, **cuando** se consultan en B con `lopdp_app`, **entonces** 0 filas. | `test_rls_respuestas_escala` |
 | **Dado** el código de `features/diagnostico/`, **entonces** no aparece `madurez_spdp` ni las etiquetas de la escala 0–3. | `test_sin_motor_cero_tres` |
 
-Todas en `tests/test_diagnostico_escala_smartcidi.py`, contra la base local de pruebas.
+Todas en `tests/test_diagnostico_escala_1_5.py`, contra la base local de pruebas.
 
 ## 6. Trazabilidad
 
-- Ficha: `governance/tareas/DIAG-08.md`. PRD: Módulo 1 («Scoring multidimensional cuádruple», «Escala y cota»), criterio 2. Invariante: `INV_LOPDP_MULTIDIMENSIONAL_METRICS`. Fuente: archivo de assessment SMARTCIDI, hojas «Niveles de Madurez», «Catálogos» y «Guía Aplicación Comercio».
+- Ficha: `governance/tareas/DIAG-08.md`. PRD: Módulo 1 («Scoring multidimensional cuádruple», «Escala y cota»), criterio 2. Invariante: `INV_LOPDP_MULTIDIMENSIONAL_METRICS`. Fuente: archivo de assessment, hojas «Niveles de Madurez», «Catálogos» y «Guía Aplicación Comercio».
 - La siguen DIAG-09 (pantalla), FE-24 (tablero), DIAG-06 (comparativo) y ORG-15 (cartera), que leen la forma nueva de los indicadores.

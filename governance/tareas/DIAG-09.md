@@ -1,6 +1,6 @@
 +++
 id = "DIAG-09"
-titulo = "Escala SMARTCIDI en la pantalla: responder el nivel 1 a 5 con su criterio y la evidencia 0 a 4, y retirar el porcentaje global del panel ejecutivo"
+titulo = "Escala de madurez de 1 a 5 en la pantalla: responder el nivel 1 a 5 con su criterio y la evidencia 0 a 4, y retirar el porcentaje global del panel ejecutivo"
 ola = "D"
 estado = "hecha"
 sala = "frontend"
@@ -10,9 +10,9 @@ arbitro = "Playwright de frontend/tests/diagnostico/escala.spec.ts con la API si
 rastros = ["¤diagnostico", "¤frontend-ide"]
 +++
 
-# DIAG-09 · Escala SMARTCIDI en la pantalla
+# DIAG-09 · Escala de madurez de 1 a 5 en la pantalla
 
-**Decisión del propietario (2026-10-29).** Ver DIAG-08: la madurez sigue la metodología del archivo de assessment SMARTCIDI. Esta tarea lleva la escala a la pantalla.
+**Decisión del propietario (2026-10-29).** Ver DIAG-08: la madurez sigue la metodología del archivo de assessment. Esta tarea lleva la escala a la pantalla.
 
 **Contrato:** `governance/especificaciones/DIAG-09.md` (manda sobre esta ficha en datos, interfaz y aceptación).
 

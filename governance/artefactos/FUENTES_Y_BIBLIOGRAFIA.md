@@ -42,7 +42,7 @@
 `¤diagnostico-scoring` `¤privacy-gate`
 * **Emisor:** SPDP, 21-oct-2025.
 * **Unidades clave:** Capítulo 3, Tabla 1 (p. 17) y Tabla 4 (p. 20). Ejes `DevPrivOps`, `DevSecOps` y `DevRiskOps`.
-* **Aplicación en el sistema:** Escala de madurez recomendada (0: Caótico, 1: Implícito, 2: Temprano explícito, 3: Maduro explícito). Sustituida el 2026-10-29 por decisión del propietario: la app sigue la escala SMARTCIDI 1-5 del archivo de assessment (DIAG-08); esta fuente queda como antecedente.
+* **Aplicación en el sistema:** Escala de madurez recomendada (0: Caótico, 1: Implícito, 2: Temprano explícito, 3: Maduro explícito). Sustituida el 2026-10-29 por decisión del propietario: la app sigue la escala de madurez de 1 a 5 del archivo de assessment (DIAG-08); esta fuente queda como antecedente.
 
 ### F06 · Resolución SPDP-SPD-2025-0028-R (Reglamento del DPD/DPO)
 `¤dpo-cockpit` `¤dpo-independencia`
@@ -140,7 +140,7 @@
 * **Pirani (Pirámid):** Referente en UX minimalista y ergonomía de matrices de riesgo accesibles para no expertos en LATAM.
 * **Isotools:** Referente en automatización de tareas periódicas, gestión documental y seguimiento de comités CAPA.
 * **Odoo (OCA - Odoo Community Association):** Referente en arquitectura de datos relacional abierta, donde una entidad maestra (*Master Record / Partner Record*) centraliza y propaga el estado hacia todos los módulos satélite sin duplicación.
-* **SMARTCIDI (2026):** *Matriz de Madurez del SGPDP* (`Assessment_Madurez_SGPDP_COAC_SMARTCIDI (2).xlsx`) y *Reporte Assessment SGPDP COAC* (15-sep-2026). Referente metodológico de las 10 dimensiones ponderadas, del nivel efectivo `MIN(Nivel asignado, Evidencia+1)`, del riesgo `(5-Nivel efectivo)×Criticidad` y del ajuste de nivel por controles estructurales (Aporte 48). Fuente interna: sus niveles, rangos, pesos y umbrales se comprueban contra `governance/contratos/escala_madurez.json` con `scripts/verificar_escala_madurez.py` (DIAG-10); las diferencias deliberadas están en `governance/ESCALA_MADUREZ.md`.
+* **Matriz de Madurez del SGPDP (archivo de assessment, 2026):** *Matriz de Madurez del SGPDP* (`Assessment_Madurez_SGPDP.xlsx`) y *Reporte Assessment SGPDP* (15-sep-2026). Referente metodológico de las 10 dimensiones ponderadas, del nivel efectivo `MIN(Nivel asignado, Evidencia+1)`, del riesgo `(5-Nivel efectivo)×Criticidad` y del ajuste de nivel por controles estructurales (Aporte 48). Fuente interna: sus niveles, rangos, pesos y umbrales se comprueban contra `governance/contratos/escala_madurez.json` con `scripts/verificar_escala_madurez.py` (DIAG-10); las diferencias deliberadas están en `governance/ESCALA_MADUREZ.md`.
 
 ---
 
