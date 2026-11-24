@@ -226,23 +226,30 @@ async def test_la_base_exige_la_nota(fabrica):
 # ---------------------------------------------------------------- bitácora y disparo
 
 async def test_bitacora_y_disparo_manual(fabrica, cliente, operador, miembro, monkeypatch):
-    """Mutación: devolver 200 en lugar de 202, o no lanzar la corrida, rompe la prueba."""
-    lanzadas = []
+    """Mutación: devolver 200 en lugar de 202, o no lanzar el Job (NORM-05), rompe la prueba."""
+    from features.inteligencia_normativa.services import lanzador_trabajo
 
-    async def corrida(origen):
-        lanzadas.append(origen)
-        ahora = datetime.now(timezone.utc)
-        return ResumenCorrida(id="x", origen="manual", estado="ok", inicio=ahora, fin=ahora)
+    llamadas = []
 
-    monkeypatch.setattr(svc, "ejecutar_monitoreo", corrida)
+    async def lanzar_doble(*args, **kwargs):
+        llamadas.append(1)
+
+    monkeypatch.setattr(lanzador_trabajo, "lanzar", lanzar_doble)
     r = await cliente.post("/api/v1/normativa/monitoreo", headers=operador)
-    assert r.status_code == 202 and lanzadas == ["manual"]
+    assert r.status_code == 202 and len(llamadas) == 1
     async with fabrica() as s:
         await s.execute(text("INSERT INTO normativa_monitoreo_logs (inicio, fin, origen, estado, nuevos) "
                              "VALUES (now(), now(), 'manual', 'ok', 2)"))
         await s.commit()
     b = await cliente.get("/api/v1/normativa/monitoreo", headers=miembro)
     assert b.status_code == 200 and b.json()[0]["nuevos"] == 2 and "codigos_error" not in b.json()[0]
+
+
+async def test_disparo_manual_sin_el_job_da_503(cliente, operador, monkeypatch):
+    """NORM-05: sin doble y sin `NORMATIVA_TRABAJO_MONITOREO` (como en el CI) el POST da 503 sin detalle."""
+    monkeypatch.delenv("NORMATIVA_TRABAJO_MONITOREO", raising=False)
+    r = await cliente.post("/api/v1/normativa/monitoreo", headers=operador)
+    assert r.status_code == 503 and r.json()["detail"] == {"codigo": "NORMATIVA_TRABAJO_NO_DISPONIBLE"}
 
 
 # ---------------------------------------------------------------- aviso al operador
