@@ -17,7 +17,7 @@ const ORGANIZACION = "org-prueba-bib102";
 const RUTA = "**/api/v1/biblioteca/plantillas**";
 
 const plantilla = (codigo: string, extra: Record<string, unknown> = {}) => ({
-  id: `id-${codigo}`, codigo, nombre: `Plantilla ${codigo}`, tipo: "politica", fuente: "smartcidi",
+  id: `id-${codigo}`, codigo, nombre: `Plantilla ${codigo}`, tipo: "politica", fuente: "catalogo",
   version: "0.1.0", formato: "MD", validacion_legal: "pendiente", ola: 1, estado: "publicada",
   descargable: false, ...extra,
 });
@@ -64,8 +64,15 @@ test.describe("Biblioteca: catálogo de plantillas (BIB-102, API simulada)", () 
     await expect(catalogo.getByTestId("plantilla-BIB-001")).toHaveCount(0);
     await expect(catalogo.getByTestId("plantilla-BIB-002")).toBeVisible();
     await catalogo.getByLabel("Tipo").selectOption("aviso");
-    await catalogo.getByLabel("Fuente").selectOption("smartcidi");
-    await expect.poll(() => pedidas.at(-1)).toBe("?fuente=smartcidi&tipo=aviso&ola=2");
+    await catalogo.getByLabel("Fuente").selectOption("catalogo");
+    await expect.poll(() => pedidas.at(-1)).toBe("?fuente=catalogo&tipo=aviso&ola=2");
+  });
+
+  test("el filtro Fuente ofrece solo «Plantilla de la plataforma» y «Mi plantilla»", async ({ page }) => {
+    const catalogo = await abrirPlantillas(page, (ruta) => ruta.fulfill({ json: [plantilla("BIB-001")] }));
+    const opciones = await catalogo.getByLabel("Fuente").locator("option").allTextContents();
+    expect(opciones.filter((o) => o.trim() !== "" && !/^(todas|todos)/i.test(o.trim()))).toEqual(["Plantilla de la plataforma", "Mi plantilla"]);
+    expect(opciones.join("|")).not.toContain("catalogo");
   });
 
   test("elegir una plantilla la marca y volver a elegirla la suelta", async ({ page }) => {

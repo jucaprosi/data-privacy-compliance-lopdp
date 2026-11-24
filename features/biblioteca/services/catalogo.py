@@ -16,7 +16,7 @@ from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.plantillas_md import TIPOS
 from features.biblioteca.services.autorizacion import capacidades
 
-FUENTES = ("smartcidi", "organizacion")
+FUENTES = ("catalogo", "organizacion")
 # Un solo estado es descargable; las entradas planificadas o sin archivo nunca lo son.
 ESTADO_DESCARGABLE = "publicada"
 LIMITE = 500
@@ -27,7 +27,7 @@ class PlantillaCatalogo(BaseModel):
     codigo: str
     nombre: str | None
     tipo: str | None
-    fuente: Literal["smartcidi", "organizacion"]
+    fuente: Literal["catalogo", "organizacion"]
     version: str
     formato: str
     validacion_legal: str | None
@@ -64,7 +64,7 @@ def _validar_filtros(fuente: str | None, tipo: str | None, ola: int | None) -> N
 def _como_plantilla(fila: dict) -> PlantillaCatalogo:
     metadatos = fila["metadatos"] or {}
     return PlantillaCatalogo(
-        id=fila["id"], codigo=fila["codigo"], nombre=fila["nombre"], tipo=fila["tipo"], fuente="smartcidi",
+        id=fila["id"], codigo=fila["codigo"], nombre=fila["nombre"], tipo=fila["tipo"], fuente="catalogo",
         version=fila["version"], formato=fila["formato"], validacion_legal=metadatos.get("validacion_legal"),
         ola=_entero(metadatos.get("ola")), estado=fila["estado"],
         descargable=descargable(fila["estado"], fila["formato"]),

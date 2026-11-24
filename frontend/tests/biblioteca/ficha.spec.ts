@@ -14,12 +14,12 @@ import { expect, test, type Page } from "@playwright/test";
 import { abrirAppLimpia, barraDeMenus, configurarProyecto } from "../utiles";
 
 const ORGANIZACION = "org-prueba-bib103";
-const PLANTILLA = "plantilla-smartcidi-1";
+const PLANTILLA = "plantilla-catalogo-1";
 const COPIA = "mi-plantilla-1";
 
-const FICHA_SMARTCIDI = {
+const FICHA_CATALOGO = {
   id: PLANTILLA, codigo: "BIB-001", nombre: "Política de protección de datos personales", tipo: "politica",
-  fuente: "smartcidi", version: "0.2.0", formato: "MD", ola: 1, validacion_legal: "pendiente",
+  fuente: "catalogo", version: "0.2.0", formato: "MD", ola: 1, validacion_legal: "pendiente",
   estado_editorial: "publicada", fecha_corte_normativo: "2026-10-27", base_lopdp: "POR VERIFICAR", revision_meses: 12,
   ficha: {
     nombre: "Política", objetivo: "Fijar cómo la empresa protege los datos personales.", fuentes: "LOPDP (por verificar)",
@@ -40,7 +40,7 @@ const FICHA_SMARTCIDI = {
   acciones: { usar: true, copiar: true },
 };
 const FICHA_COPIA = {
-  ...FICHA_SMARTCIDI, id: COPIA, fuente: "organizacion", version: 1, estado_editorial: "mi_plantilla", ficha: null,
+  ...FICHA_CATALOGO, id: COPIA, fuente: "organizacion", version: 1, estado_editorial: "mi_plantilla", ficha: null,
   origen_plantilla_id: PLANTILLA, origen_version: "0.2.0", acciones: { usar: true, copiar: false },
 };
 
@@ -75,11 +75,11 @@ test.describe("Biblioteca: ficha de plantilla (BIB-103, API simulada)", () => {
 
   test("muestra la ficha, las variables con su disponibilidad y una vista previa identificada como demostrativa", async ({ page }) => {
     await prepararSesion(page);
-    await page.route(`**/api/v1/biblioteca/plantillas/${PLANTILLA}`, (route) => route.fulfill({ json: FICHA_SMARTCIDI }));
+    await page.route(`**/api/v1/biblioteca/plantillas/${PLANTILLA}`, (route) => route.fulfill({ json: FICHA_CATALOGO }));
     const ficha = await abrirFicha(page);
 
     await expect(ficha.getByRole("heading", { name: "Política de protección de datos personales" })).toBeVisible();
-    await expect(ficha).toContainText("BIB-001 · versión 0.2.0 · formato MD · Plantilla SMARTCIDI");
+    await expect(ficha).toContainText("BIB-001 · versión 0.2.0 · formato MD · Plantilla de la plataforma");
     await expect(ficha).toContainText("Estado editorial de la plantilla: Publicada · Pendiente de validación legal");
     await expect(ficha).toContainText("Fijar cómo la empresa protege los datos personales.");
     await expect(ficha.getByTestId("variable-organizacion.razon_social")).toContainText("La organización ya tiene este dato");
@@ -93,7 +93,7 @@ test.describe("Biblioteca: ficha de plantilla (BIB-103, API simulada)", () => {
 
   test("«Usar en esta organización» crea el documento por POST /documentos con la plantilla elegida", async ({ page }) => {
     await prepararSesion(page);
-    await page.route(`**/api/v1/biblioteca/plantillas/${PLANTILLA}`, (route) => route.fulfill({ json: FICHA_SMARTCIDI }));
+    await page.route(`**/api/v1/biblioteca/plantillas/${PLANTILLA}`, (route) => route.fulfill({ json: FICHA_CATALOGO }));
     let cuerpo: unknown = null;
     await page.route("**/api/v1/biblioteca/documentos", async (route) => {
       cuerpo = route.request().postDataJSON();
@@ -107,9 +107,17 @@ test.describe("Biblioteca: ficha de plantilla (BIB-103, API simulada)", () => {
     expect(cuerpo).toEqual({ plantilla_id: PLANTILLA });
   });
 
-  test("editar una plantilla SMARTCIDI crea la copia «Mi plantilla» y la ficha pasa a la copia", async ({ page }) => {
+  test("la ficha del catálogo muestra el aviso de copia sin el id interno de la fuente", async ({ page }) => {
     await prepararSesion(page);
-    await page.route(`**/api/v1/biblioteca/plantillas/${PLANTILLA}`, (route) => route.fulfill({ json: FICHA_SMARTCIDI }));
+    await page.route(`**/api/v1/biblioteca/plantillas/${PLANTILLA}`, (route) => route.fulfill({ json: FICHA_CATALOGO }));
+    const ficha = await abrirFicha(page);
+    await expect(ficha).toContainText("Editar una plantilla de la plataforma crea una copia de tu organización; la original no cambia.");
+    await expect(ficha).not.toContainText("catalogo");
+  });
+
+  test("editar una plantilla de la plataforma crea la copia «Mi plantilla» y la ficha pasa a la copia", async ({ page }) => {
+    await prepararSesion(page);
+    await page.route(`**/api/v1/biblioteca/plantillas/${PLANTILLA}`, (route) => route.fulfill({ json: FICHA_CATALOGO }));
     await page.route(`**/api/v1/biblioteca/plantillas/${COPIA}`, (route) => route.fulfill({ json: FICHA_COPIA }));
     let metodo = "";
     await page.route(`**/api/v1/biblioteca/plantillas/${PLANTILLA}/copias`, async (route) => {

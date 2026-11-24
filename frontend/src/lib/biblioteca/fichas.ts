@@ -15,7 +15,7 @@ export interface VariablePlantilla {
 }
 export interface AvisoPlantilla { cuando: string; nivel: "info" | "alto"; texto: string }
 export interface FichaPlantilla {
-  id: string; codigo: string; nombre: string; tipo: string; fuente: "smartcidi" | "organizacion";
+  id: string; codigo: string; nombre: string; tipo: string; fuente: "catalogo" | "organizacion";
   version: string | number; formato: "MD"; ola: number;
   validacion_legal: "pendiente" | "en_revision" | "validada" | "con_observaciones";
   estado_editorial: "publicada" | "mi_plantilla";
