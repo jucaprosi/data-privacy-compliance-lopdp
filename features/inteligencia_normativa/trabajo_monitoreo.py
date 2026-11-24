@@ -1,5 +1,5 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad
+# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad ¤monitoreo-job
 """Punto de entrada del Cloud Run Job `evydentia-monitoreo-normativo` (NORM-04).
 
     python -m features.inteligencia_normativa.trabajo_monitoreo

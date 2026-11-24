@@ -1,5 +1,5 @@
 # NORM-05 · El backend no adopta el rol del monitoreo
-`¤sdd` `¤vigilancia-spdp` `¤inteligencia-normativa` `¤seguridad` `¤arbitro`
+`¤sdd` `¤vigilancia-spdp` `¤inteligencia-normativa` `¤seguridad` `¤arbitro` `¤monitoreo-job`
 
 ## 1. Datos
 
@@ -66,6 +66,8 @@ Sin cambios. El botón del Centro de vigilancia sigue recibiendo 202.
 
 ## 6. Trazabilidad
 
+- **PRD:** §4, Módulo 6.1, «Ejecución y reparto de privilegios»; ley fundacional 13.
+- **Rastro:** `¤monitoreo-job` (alta en VPA_MAP por PRD-04). Los archivos que crea esta ficha llevan `# ¤monitoreo-job` en la cabecera, junto a sus rastros de sala.
 - Hallazgo del CTO y medición del Arquitecto (2026-11-24). Diseño de NORM-01 (decisión 5).
 - Depende de NORM-01, NORM-02, NORM-03 y NORM-04 (Job y nombre).
 - **Brief del propietario,** tras fusionar y desplegar:

@@ -1,6 +1,6 @@
 # Citas de las 12 plantillas de la Biblioteca, verificadas en fuente oficial (LEG-08)
 
-`¤regulation-code` `¤arbitro`
+`¤regulation-code` `¤cita-verificada` `¤arbitro`
 
 > **Ficha:** `LEG-08`. Una fila por cita atómica de `data/biblioteca/pmv/BIB-001.md` a `BIB-012.md`, leída en la fuente oficial, con la huella SHA-256 del PDF tal como se descargó el 2026-11-24. Método y formato: `governance/artefactos/CITAS_LEGALES_VERIFICADAS.md` (DIAG-16), cuyas lecturas se reutilizan con su misma clave. No sustituye a ese artefacto.
 

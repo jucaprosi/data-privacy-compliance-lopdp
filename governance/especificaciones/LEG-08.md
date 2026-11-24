@@ -1,5 +1,5 @@
 # LEG-08 · Lectura oficial de las citas de las 12 plantillas
-`¤sdd` `¤regulation-code` `¤arbitro`
+`¤sdd` `¤regulation-code` `¤arbitro` `¤cita-verificada`
 
 ## 1. Datos
 
@@ -61,5 +61,7 @@ Sin cambios.
 
 ## 6. Trazabilidad
 
+- **PRD:** §4, Módulo 7, «Publicación con cita verificada»; ley fundacional 6.
+- **Rastro:** `¤cita-verificada` (alta en VPA_MAP por PRD-04), en la cabecera de los archivos que esta ficha creó.
 - Brief del CTO v2 y DIAG-16, cuyo método y formato se reutilizan.
 - BIB-403 depende de esta ficha.

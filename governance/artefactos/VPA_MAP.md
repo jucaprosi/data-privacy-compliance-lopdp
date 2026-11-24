@@ -48,7 +48,7 @@
 ---
 
 ### 1.3 Eje Auditoría, Cockpit del DPO, Hoja de Ruta, Biblioteca y Firma (Módulos 3, 4, 5 y 7)
-`¤dpo-cockpit` `¤auditoria-capa` `¤roadmap` `¤evidencias` `¤firma-electronica`
+`¤dpo-cockpit` `¤auditoria-capa` `¤roadmap` `¤evidencias` `¤firma-electronica` `¤cita-verificada` `¤plantillas-demo`
 
 | Rastro | Gen | Significado Constitucional | Rol | Salas ADPA y Alcance |
 | :--- | :--- | :--- | :--- | :--- |
@@ -65,16 +65,20 @@
 | `¤evidencias` | G1 | Custodia probatoria en servidor, cálculo SHA-256, validación MIME/antivirus y Biblioteca de 3 capas | `¤¤security-engineer` | `features/evidencias`, `features/biblioteca` (`EVI-01`, `BIB-100..402`) |
 | `¤evidencias-vigencia` | G2 | Control de vigencia y visibilidad de evidencias por rol y exportación de paquete de inspección SPDP | `¤¤security-engineer` | `features/evidencias` (`EVI-02`) |
 | `¤firma-electronica` | G1 | Firma criptográfica real con ANF AC Ecuador STB v2 (`PAdES`/`XAdES`/`CAdES`) y aceptación simple con acuse hash | `¤¤backend-developer` | `features/firma_electronica` (`FIRMA-01..06`, `FIRMA-02`) |
+| `¤cita-verificada` | G2 | Plantilla publicable cuando cada sección `##`/`###` tiene una cita verificada contra la norma vigente, ligada a la huella SHA-256 del PDF oficial, o está declarada informativa; la revisión jurídica es esa validación normativa (PRD §4, Módulo 7, «Publicación con cita verificada»; ley 6) | `¤¤legal-engineer` | `features/biblioteca`, `governance/artefactos/CITAS_PLANTILLAS_VERIFICADAS.md` (`LEG-08`, `BIB-403`) |
+| `¤plantillas-demo` | G2 | Catálogo de plantillas publicadas por personas ficticias, sembrado solo en la base de la demo por el flujo editorial (PRD §4, Módulo 7, «Plantillas de la demo», y §5.6) | `¤¤lead-implementer` | `features/biblioteca` (`BIB-404`) |
 
 ---
 
 ### 1.4 Eje Inteligencia Normativa, Vigilancia SPDP, Google Gemini en Vertex AI y NIIF 18 (Módulos 6 y 10)
-`¤inteligencia-normativa` `¤vigilancia-spdp` `¤gemini-vertex` `¤vertex-cache` `¤regulation-code` `¤copiloto-ia` `¤esquema-asistente` `¤validar-salida-asistente` `¤niif18`
+`¤inteligencia-normativa` `¤vigilancia-spdp` `¤gemini-vertex` `¤vertex-cache` `¤regulation-code` `¤copiloto-ia` `¤esquema-asistente` `¤validar-salida-asistente` `¤niif18` `¤monitoreo-job` `¤transcripcion-normativa`
 
 | Rastro | Gen | Significado Constitucional | Rol | Salas ADPA y Alcance |
 | :--- | :--- | :--- | :--- | :--- |
 | `¤inteligencia-normativa` | G1 | Módulo de vigilancia regulatoria continua, ingesta de fuentes oficiales SPDP y base documental estructurada | `¤¤legal-engineer` | `features/inteligencia_normativa` (BRF-001) |
 | `¤vigilancia-spdp` | G2 | Monitoreo automatizado diario de resoluciones SPDP (05:00 ECT), deduplicación en 3 capas y validación SHA-256 | `¤¤backend-developer` | `features/inteligencia_normativa` (BRF-001) |
+| `¤monitoreo-job` | G2 | El monitoreo corre como el Cloud Run Job `evydentia-monitoreo-normativo`, con cuenta `sa-evydentia-normativa` y usuario de base propios, y es el único que escribe el corpus; el backend lee, revisa como `lopdp_app` y lanza el Job (PRD §4, Módulo 6.1, «Ejecución y reparto de privilegios»; ley 13) | `¤¤security-engineer` | `features/inteligencia_normativa` (`NORM-04`, `NORM-05`) |
+| `¤transcripcion-normativa` | G2 | Los originales normativos escaneados los transcribe Gemini en Vertex AI desde el PDF, una vez por huella SHA-256, con modelo y fecha; sin transcripción no hay análisis (PRD §4, Módulo 6.3, «Transcripción de originales escaneados»; ley 7) | `¤¤backend-developer` | `features/inteligencia_normativa`, `features/inferencia`, `app_core/pasillo/inferencia.py` (`NORM-06`) |
 | `¤gemini-vertex` | G1 | Modelos nativos **Google Gemini en Vertex AI** (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`) con *Structured Outputs*, autenticación IAM/ADC y cero entrenamiento | `¤¤ai-engineer` | `features/ai_copilot`, `features/regulacion_rag`, `features/roadmap`, `features/niif18` (`VTX-01`, `RM-12`, `RM-19`) |
 | `¤vertex-cache` | G2 | `Vertex AI Context Caching` (`CachedContent`) del corpus normativo LOPDP/RGLOPDP/SPDP/NIIF 18 indexado por `corpus_sha256` | `¤¤ai-engineer` | `features/regulacion_rag`, `features/ai_copilot` (`VTX-01`) |
 | `¤copiloto-ia` | G1 | Copiloto jurídico y financiero con filtro DLP Módulo 10 pre-vuelo y citación obligatoria de artículos oficiales | `¤¤ai-engineer` | `features/ai_copilot` (`VTX-01`) |
