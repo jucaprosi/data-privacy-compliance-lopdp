@@ -21,7 +21,9 @@ Sin rutas. Configuración nueva: `ANF_CLIENTE` (`app_core/config.py`, `anf_clien
   - `anf_stb_client` lo lee de `config.anf_cliente`, y `configurado()` exige también ese valor. Sin él, la firma con ANF falla cerrada, como hoy sin credenciales.
   - Las pruebas usan valores de prueba neutros, por ejemplo `cliente-prueba` e `id-prueba`.
   - El propietario fija `ANF_CLIENTE` en cada entorno con su procedimiento de secretos (Antigravity) antes de desplegar esta ficha. Brief: `GEN-propietario-recuentos.md` §3.
-- **R2 · Autoría de `salud.json`.** Es una atribución con autorización: el texto final de `autoria` y `nota` lo decide el propietario. **La ficha no se lanza sin ese texto anotado aquí.** Hasta entonces, esta sección queda pendiente.
+- **R2 · Autoría de `salud.json`.** Es una atribución con autorización: el texto final de `autoria` y `nota` lo decide el propietario, que eligió conservar la atribución sin la marca.
+  - `autoria` = «SALUDATA; autorización expresa de José Morocho confirmada por el propietario».
+  - `nota` = «Este documento es una versión borrador de apoyo consultivo y debe ser revisado y adaptado por el consultor responsable y, cuando corresponda, por un profesional legal competente antes de su entrega o implementación final.»
 - **R3 · Binarios fuera del repositorio.**
   - **Propuesta del Arquitecto:** los cinco binarios de §1 salen del repositorio con `git rm` y pasan a los documentos del propietario. Son documentos de terceros o del operador y ningún código los lee.
   - Los documentos que los citan los nombran por título, emisor y fecha, sin ruta. El propietario confirma o corrige la lista en el PR de gobernanza que anota su decisión, antes de lanzar.
