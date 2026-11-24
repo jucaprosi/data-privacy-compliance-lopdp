@@ -97,6 +97,7 @@ TABLAS_POR_SALA: dict[str, str] = {
     "mtge_politica_privacidad": "riesgos_mtge",
     "normativa_monitoreo_logs": "inteligencia_normativa",
     "normativa_resoluciones": "inteligencia_normativa",
+    "normativa_transcripciones": "inteligencia_normativa",
     "normativa_versiones": "inteligencia_normativa",
     "operadores_plataforma": "plataforma",
     "paquetes_normativos": "regulacion_rag",

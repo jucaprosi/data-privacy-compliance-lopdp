@@ -64,3 +64,10 @@ def crear_cache_contenido(modelo, contenido, ttl_segundos):
     from features.inferencia import inferencia_service
 
     return inferencia_service.crear_cache_contenido(modelo, contenido, ttl_segundos)
+
+
+async def transcribir_pdf(pdf, prompt, *, modelo):
+    """NORM-06: texto de un PDF escaneado y su traza; no consume tope."""
+    from features.inferencia import inferencia_service
+
+    return await inferencia_service.transcribir_pdf(pdf, prompt, modelo=modelo)

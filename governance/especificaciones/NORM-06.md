@@ -63,7 +63,6 @@ Sin rutas nuevas. La respuesta del análisis de impacto gana `origen_texto` (`ca
   3. Si no, toma `pg_advisory_xact_lock(hashtextextended(sha256, 6))`, vuelve a mirar, transcribe e inserta la fila con su traza en la misma transacción. Dos análisis simultáneos del mismo documento transcriben una sola vez.
 - **R5 · Falla cerrada de verdad.** En `impacto.solicitar`:
   - si el documento es escaneado y el pasillo lanza o devuelve vacío: `IaNoDisponible` o `ResolucionSinTexto`, y no se guarda el análisis;
-  - con capa de texto, además del vacío actual, un documento con menos de 300 caracteres útiles por página de media también da `ResolucionSinTexto`, para no analizar casi nada en silencio;
   - la fila del análisis guarda `origen_texto`.
 - **R6 · Trazabilidad.** La fila de `normativa_transcripciones` dice qué modelo (`modelo_version` devuelto por Vertex) y qué prompt (`normativa.transcripcion`, versión 1) la produjeron, y cuándo. La traza del análisis en `trazas_ia` sigue igual, y `origen_texto` enlaza las dos.
 - **R7 · Prompt.** El prompt `normativa.transcripcion` v1, en `domain/transcripcion.py`, pide la transcripción literal, página a página, sin resumir, sin corregir y sin completar. Lo ilegible se marca `[ilegible]`. Se versiona como los demás (`prompt_versionado`).
