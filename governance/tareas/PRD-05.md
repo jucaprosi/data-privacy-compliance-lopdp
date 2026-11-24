@@ -2,7 +2,7 @@
 id = "PRD-05"
 titulo = "Los documentos rectores con un solo modelo de generación, remitiendo a modelos_permitidos.py"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["IA-13", "IA-14", "PRD-04"]
 propiedad = ["governance/artefactos/PRD.md", "governance/artefactos/INVARIANTS.md", "governance/artefactos/VPA_MAP.md", "governance/artefactos/TASKS.md", "governance/especificaciones/IA-06.md", "governance/especificaciones/VTX-01.md", "governance/especificaciones/NORM-03.md", "governance/apoyo/LANZAMIENTO_TANDA_ORTOGONAL.md", "governance/operaciones/BRIEF_PROPIETARIO_IA-11.md", "governance/especificaciones/PRD-05.md"]
