@@ -118,3 +118,8 @@ async def revisar(id_resolucion: str, cuerpo: RevisionRequest, operador: dict = 
     except svc.ErrorNormativo as exc:
         raise _http(exc) from exc
     return r.model_dump(mode="json")
+
+
+# === NORM-04 ===
+# Disparo programado del Scheduler (NORM-04): sección reservada.
+# === fin NORM-04 ===
