@@ -8,7 +8,7 @@ niveles de evidencia ni puntajes del navegador. El único dato que llega del nav
 de operación de la ficha, que sigue viviendo allí: el DPO lo confirma al sellar y queda sellado
 como alcance declarado.
 
-Escala SMARTCIDI (DIAG-08): el servidor toma el nivel asignado 1 a 5 y la evidencia 0 a 4 guardados,
+Escala de madurez de 1 a 5 (DIAG-08): el servidor toma el nivel asignado 1 a 5 y la evidencia 0 a 4 guardados,
 deriva el estado y sella el nivel por dimensión, sin cifra global de la organización.
 
 Política de evidencia (DIAG-13, `EVIDENCIA_DIAGNOSTICO`, leída solo en `politica_evidencia`):

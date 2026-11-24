@@ -33,7 +33,7 @@ function formatearFecha(iso: string): string {
  * (DIAG-09 R3). Un resultado de la escala anterior se muestra con el aviso y sin niveles (R4).
  */
 export function IndicadoresSelladosVista({ indicadores: i }: { indicadores: IndicadoresSellados }) {
-  if (i.escala !== "smartcidi_1_5") {
+  if (i.escala !== "madurez_1_5") {
     return (
       <p role="note" className="text-[11px] font-mono text-[var(--ui-texto-suave)]">
         {AVISO_ESCALA_ANTERIOR}

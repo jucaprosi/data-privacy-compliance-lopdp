@@ -150,7 +150,7 @@ async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
 
 # === CAPA-04 ===
 def escala_madurez() -> dict[int, tuple[str, str]]:
-    """Escala de madurez SMARTCIDI leída de la compuerta de diagnóstico (R0)."""
+    """Escala de madurez de 1 a 5 leída de la compuerta de diagnóstico (R0)."""
     from features.diagnostico import diagnostico_service
 
     return diagnostico_service.NIVELES_ASIGNADOS

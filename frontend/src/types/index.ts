@@ -64,7 +64,7 @@ export interface PreguntaDiagnostico {
   evidencia_esperada: string;
 }
 
-/** Escalón de evidencia SMARTCIDI: 0 verbal, 1 informal, 2 documental, 3 operativa, 4 revisada (ver diagnostico/escala.ts). */
+/** Escalón de evidencia de la escala de madurez de 1 a 5: 0 verbal, 1 informal, 2 documental, 3 operativa, 4 revisada (ver diagnostico/escala.ts). */
 export type NivelEvidencia = 0 | 1 | 2 | 3 | 4;
 
 export interface RespuestaDiagnosticoItem {

@@ -1,8 +1,8 @@
 {
-  "version": "smartcidi_1_5",
-  "decision": "Propietario, 2026-10-29: la madurez sigue el archivo de assessment SMARTCIDI y sustituye a la escala 0-3.",
+  "version": "madurez_1_5",
+  "decision": "Propietario, 2026-10-29: la madurez sigue el archivo de assessment y sustituye a la escala 0-3.",
   "fuente": {
-    "archivo": "Assessment_Madurez_SGPDP_COAC_SMARTCIDI (2).xlsx",
+    "archivo": "Assessment_Madurez_SGPDP.xlsx",
     "sha256": "328127a1f1bcfb51111cb874184a8672fac42aef2f9a149e366d365af150019d"
   },
   "nivel_asignado": [
@@ -155,7 +155,7 @@
     "Maduro explícito"
   ],
   "lectura_historica": {
-    "tests/test_diagnostico_escala_smartcidi.py": "Comprueba que el término retirado ya no sale, o simula una instantánea sellada con la escala anterior (DIAG-08).",
+    "tests/test_diagnostico_escala_1_5.py": "Comprueba que el término retirado ya no sale, o simula una instantánea sellada con la escala anterior (DIAG-08).",
     "tests/test_diagnostico_resultados.py": "Comprueba que el término retirado ya no sale, o simula una instantánea sellada con la escala anterior (DIAG-08).",
     "tests/test_roadmap_hallazgos.py": "Comprueba que el término retirado ya no sale, o simula una instantánea sellada con la escala anterior (DIAG-08)."
   },

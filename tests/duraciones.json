@@ -42,7 +42,7 @@
   "tests/test_estructura_organica.py": 2.7,
   "tests/test_capa_persistencia.py": 2.6,
   "tests/test_excepciones_sod.py": 2.5,
-  "tests/test_diagnostico_escala_smartcidi.py": 2.5,
+  "tests/test_diagnostico_escala_1_5.py": 2.5,
   "tests/test_firma_router.py": 2.4,
   "tests/test_rat_plantilla_salud.py": 2.4,
   "tests/test_autenticacion.py": 2.3,

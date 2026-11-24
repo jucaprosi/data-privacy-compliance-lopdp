@@ -22,7 +22,7 @@ export interface RespuestaServidor {
   pregunta_id: number;
   control: string;
   dimension: string;
-  /** Entrada: nivel asignado SMARTCIDI 1 a 5 (null = pendiente). */
+  /** Entrada: nivel asignado de la escala de madurez de 1 a 5 1 a 5 (null = pendiente). */
   nivel_asignado: number | null;
   /** Dato derivado: lo devuelve el servidor y no se envía (DIAG-08 R3). */
   estado?: EstadoCumplimiento;

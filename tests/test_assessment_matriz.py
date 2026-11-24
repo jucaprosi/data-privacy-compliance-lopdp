@@ -1,8 +1,8 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-"""Arbitro exogeno del motor de calculo del assessment SGPDP (escala SMARTCIDI, DIAG-08).
+"""Arbitro exogeno del motor de calculo del assessment SGPDP (escala de madurez de 1 a 5, DIAG-08).
 
 Fija las reglas de la matriz de madurez frente a la hoja de calculo canonica
-(Assessment_Madurez_SGPDP, modelo SMARTCIDI), cuyas formulas por control son:
+(Assessment_Madurez_SGPDP, modelo de madurez de 1 a 5), cuyas formulas por control son:
 
     M (nivel efectivo)  = MIN(K; L+1)     K nivel asignado 1-5, L evidencia 0-4
     N (score ponderado) = (M/5) * J

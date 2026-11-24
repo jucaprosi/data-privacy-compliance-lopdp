@@ -1,7 +1,7 @@
 // © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
  * Catálogo canónico de las 10 dimensiones del SGPDP y su metodología de scoring.
- * Fuente: Matriz de Madurez SGPDP (modelo SMARTCIDI) alineada a LOPDP Ecuador.
+ * Fuente: Matriz de Madurez SGPDP (modelo de madurez de 1 a 5) alineada a LOPDP Ecuador.
  *
  * Metodología (invariante del modelo):
  *   Nivel efectivo   = MIN(nivel asignado, nivel evidencia + 1)

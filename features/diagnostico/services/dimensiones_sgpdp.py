@@ -1,7 +1,7 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """Catálogo canónico de las 10 dimensiones ponderadas del SGPDP y su agregación.
 
-Escala SMARTCIDI (DIAG-08): nivel asignado 1 a 5 y nivel de evidencia 0 a 4 por control.
+Escala de madurez de 1 a 5 (DIAG-08): nivel asignado 1 a 5 y nivel de evidencia 0 a 4 por control.
     nivel efectivo  = MIN(nivel asignado, nivel evidencia sellado + 1)
     riesgo          = (5 - nivel efectivo) * criticidad del control
     score dimensión = SUMA((nivel efectivo / 5) * criticidad) / SUMA(criticidad) * 100

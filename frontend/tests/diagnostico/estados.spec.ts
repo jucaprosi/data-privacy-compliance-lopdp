@@ -21,7 +21,7 @@ const ESTADO = (secuencia: number) => ({
   emitido_por: "persona-dpo",
   fecha_corte: `2026-11-0${secuencia}T10:00:00+00:00`,
   resultado_real_id: "real-1",
-  escala: "smartcidi_1_5",
+  escala: "madurez_1_5",
   tareas: Array.from({ length: secuencia }, (_, i) => ({ tarea_id: `t-${i}`, control_ref: `P${i + 1}` })),
   indicadores: {},
   huella_anterior: "0".repeat(64),

@@ -5,7 +5,7 @@
 
 `governance/contratos/escala_madurez.json` es la fuente única. Este árbitro comprueba:
   E1  el contrato está completo: niveles 1 a 5, evidencia 0 a 4, rangos contiguos y pesos que suman 1.
-  E2  el contrato coincide con el archivo de assessment SMARTCIDI (huella, hojas y fórmulas).
+  E2  el contrato coincide con el archivo de assessment (huella, hojas y fórmulas).
   E3  las tablas de `governance/ESCALA_MADUREZ.md` son las que genera este script.
   E4  ningún archivo usa vocabulario retirado salvo los anotados con la tarea que lo retira,
       y una anotación que ya no hace falta se borra: la lista solo puede encoger.
@@ -60,7 +60,7 @@ def revisar_contrato(c: dict) -> list[str]:
 
 # ¤diagnostico-scoring
 def archivo_fuente(c: dict) -> Path | None:
-    """El assessment puede estar en la raíz o en data/; sin él no se puede ejecutar E2."""
+    """El assessment puede estar en la raíz o en data/."""
     for ruta in (RAIZ / c["fuente"]["archivo"], RAIZ / "data" / c["fuente"]["archivo"]):
         if ruta.exists():
             return ruta
@@ -199,7 +199,9 @@ def revisar_doctrina(raiz: Path) -> list[str]:
 def revisar(c: dict) -> list[str]:
     hallazgos = revisar_contrato(c)
     fuente = archivo_fuente(c)
-    if fuente is not None:
+    if fuente is None:
+        hallazgos.append("E2: no se encuentra el archivo de assessment " + c["fuente"]["archivo"] + "; el contrato debe nombrar el archivo vigente")
+    else:
         hallazgos += revisar_fuente(c, fuente)
     if bloque(DOCUMENTO.read_text(encoding="utf-8")) != tablas(c):
         hallazgos.append("E3: las tablas de governance/ESCALA_MADUREZ.md no son las del contrato; ejecute --escribir")

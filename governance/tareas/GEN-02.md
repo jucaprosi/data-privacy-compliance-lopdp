@@ -2,7 +2,7 @@
 id = "GEN-02"
 titulo = "Escala de madurez de 1 a 5 sin marca: versión madurez_1_5, contrato, servidor, pantalla y archivo de assessment"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 100
 sala = "diagnostico, frontend, gobernanza"
 depende_de = ["GEN-01", "DIAG-08", "DIAG-09", "DIAG-10", "DIAG-13"]

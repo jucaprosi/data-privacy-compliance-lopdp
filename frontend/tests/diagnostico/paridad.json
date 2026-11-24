@@ -1,5 +1,5 @@
 {
-  "_nota": "DIAG-09: casos de paridad con la escala SMARTCIDI. «esperado» lo calcula el motor del servidor (features/diagnostico/services/resultados_engine.py); paridad.spec.ts calcula los mismos indicadores con el tablero de la pantalla (useAuditStore, modo «verificado») y deben coincidir.",
+  "_nota": "DIAG-09: casos de paridad con la escala de madurez de 1 a 5. «esperado» lo calcula el motor del servidor (features/diagnostico/services/resultados_engine.py); paridad.spec.ts calcula los mismos indicadores con el tablero de la pantalla (useAuditStore, modo «verificado») y deben coincidir.",
   "casos": [
     {
       "nombre": "mediana sin perfil y sin documentos",
@@ -168,7 +168,7 @@
         "preguntas_evaluadas": 9,
         "preguntas_aplicables": 73,
         "cobertura": 12.3,
-        "escala": "smartcidi_1_5"
+        "escala": "madurez_1_5"
       }
     },
     {
@@ -342,7 +342,7 @@
         "preguntas_evaluadas": 9,
         "preguntas_aplicables": 73,
         "cobertura": 12.3,
-        "escala": "smartcidi_1_5"
+        "escala": "madurez_1_5"
       }
     },
     {
@@ -513,7 +513,7 @@
         "preguntas_evaluadas": 6,
         "preguntas_aplicables": 59,
         "cobertura": 10.2,
-        "escala": "smartcidi_1_5"
+        "escala": "madurez_1_5"
       }
     },
     {
@@ -1114,7 +1114,7 @@
         "preguntas_evaluadas": 39,
         "preguntas_aplicables": 39,
         "cobertura": 100.0,
-        "escala": "smartcidi_1_5"
+        "escala": "madurez_1_5"
       }
     },
     {
@@ -1239,7 +1239,7 @@
         "preguntas_evaluadas": 1,
         "preguntas_aplicables": 80,
         "cobertura": 1.3,
-        "escala": "smartcidi_1_5"
+        "escala": "madurez_1_5"
       }
     }
   ]

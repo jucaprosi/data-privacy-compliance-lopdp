@@ -9,7 +9,7 @@ SHA-256 encadenada por organización y nunca cambia un diagnóstico sellado: est
 `diagnostico_resultados`.
 
 Regla de suma: la validación de una evidencia sube el nivel de evidencia (0 a 4) del control, nunca la madurez
-SMARTCIDI. Por control, el nivel de evidencia del estado es el máximo entre el del diagnóstico real y el
+de 1 a 5. Por control, el nivel de evidencia del estado es el máximo entre el del diagnóstico real y el
 `nivel_acreditado` de las evidencias con doble validación (lo añadirá RM-25a; hoy ninguna lo trae, así que suma 0).
 Tomar el máximo nunca baja el nivel (suposición del Arquitecto, marcada al CTO). El nivel asignado de cada control
 es el del real. Sin cifra única de avance (D-1): los indicadores son los de DIAG-08, por dimensión. Las tareas se leen por el pasillo de la

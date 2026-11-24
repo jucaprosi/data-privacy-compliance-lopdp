@@ -54,7 +54,7 @@ def test_los_indicadores_sellados_son_por_dimension_y_sin_cifra_global():
     guardadas = [{"pregunta_id": 1, "nivel_asignado": 4, "nivel_evidencia": 3, "control": "", "dimension": "D01"}]
     indicadores, _ = calcular_indicadores(aplicables, guardadas, {1})
     crudo = asdict(indicadores)
-    assert crudo["escala"] == "smartcidi_1_5"
+    assert crudo["escala"] == "madurez_1_5"
     assert not {"madurez", "nivel_madurez", "riesgo_residual"} & set(crudo)
     assert {d["dimension"] for d in crudo["por_dimension"]} <= {f"D{i:02d}" for i in range(1, 11)}
 

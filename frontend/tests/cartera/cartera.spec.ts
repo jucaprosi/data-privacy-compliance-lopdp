@@ -25,7 +25,7 @@ const B: OrganizacionSimulada = { tenant_id: "org-b", nombre_comercial: "Banco B
 const dpo = credencialSimulada({ email: "dpo@externo.invalid", nombre: "DPO Externo" });
 
 const DIAGNOSTICO = {
-  escala: "smartcidi_1_5",
+  escala: "madurez_1_5",
   niveles_por_dimension: [
     { dimension: "D01", nivel: 4 },
     { dimension: "D02", nivel: 2 },

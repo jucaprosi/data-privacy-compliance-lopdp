@@ -1,6 +1,6 @@
 // © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
- * Escala de madurez SMARTCIDI en la pantalla (DIAG-09): única copia en el frontend.
+ * Escala de madurez de 1 a 5 en la pantalla (DIAG-09): única copia en el frontend.
  *
  * Los textos son los de governance/contratos/escala_madurez.json (hojas «Niveles de Madurez» y
  * «Catálogos» del archivo de assessment). El estado de cumplimiento NO se elige: lo deriva el

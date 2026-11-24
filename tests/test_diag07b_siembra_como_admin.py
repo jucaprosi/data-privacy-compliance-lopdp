@@ -20,7 +20,7 @@ ARCHIVOS = (
     "tests/test_diag11_prueba_y_real.py",
     "tests/test_diag13_evidencia_declarada.py",
     "tests/test_diagnostico_comparativo.py",
-    "tests/test_diagnostico_escala_smartcidi.py",
+    "tests/test_diagnostico_escala_1_5.py",
     "tests/test_diagnostico_no_aplica.py",
     "tests/test_diagnostico_respuestas.py",
     "tests/test_diagnostico_resultados.py",

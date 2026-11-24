@@ -1,7 +1,7 @@
 # Escala de madurez del SGPDP
 `¤diagnostico-scoring`
 
-**Vigente desde el 2026-10-29, por decisión del propietario.** La madurez de la plataforma sigue el archivo de assessment SMARTCIDI (`Assessment_Madurez_SGPDP_COAC_SMARTCIDI (2).xlsx`) y sustituye a la escala 0 a 3 y a los estados «no implementado, parcial, implementado» como entrada del diagnóstico.
+**Vigente desde el 2026-10-29, por decisión del propietario.** La madurez de la plataforma sigue el archivo de assessment (`Assessment_Madurez_SGPDP.xlsx`) y sustituye a la escala 0 a 3 y a los estados «no implementado, parcial, implementado» como entrada del diagnóstico.
 
 ## 1. Fuente única
 

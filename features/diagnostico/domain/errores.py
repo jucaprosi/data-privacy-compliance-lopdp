@@ -48,7 +48,7 @@ registrar(NO_APLICA_SIN_JUSTIFICACION)
 # === fin DIAG-05 ===
 
 # === DIAG-06 ===
-# ¤diagnostico-comparativo Un sellado anterior a la escala SMARTCIDI no trae niveles asignados.
+# ¤diagnostico-comparativo Un sellado anterior a la escala de madurez de 1 a 5 no trae niveles asignados.
 COMPARATIVO_ESCALA_ANTERIOR = CodigoErrorNegocio(
     codigo="DIAG_COMPARATIVO_ESCALA_ANTERIOR",
     status_code=409,
