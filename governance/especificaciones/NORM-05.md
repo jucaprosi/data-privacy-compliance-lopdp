@@ -61,7 +61,8 @@ Sin cambios. El botón del Centro de vigilancia sigue recibiendo 202.
 | **Dado** `POST /monitoreo` con un lanzador doble, **entonces** 202 y una llamada a `:run` con el nombre del Job, sin llamar a `disparar_monitoreo`. Mutación m3: volver a `disparar_monitoreo` da rojo. | ídem |
 | **Dado** `NORMATIVA_TRABAJO_MONITOREO` vacía, **entonces** 503 `NORMATIVA_TRABAJO_NO_DISPONIBLE` sin llamadas. Mutación m4: llamar igual da rojo. | ídem |
 | **Dado** el grafo de Alembic, **entonces** una sola cabeza por sala. Mutación m5: colgar la migración de la cabeza de otra sala da rojo. | `test_alembic_cabeza_por_sala.py` |
-| **Dado** las suites de NORM-01, NORM-02, NORM-02b y NORM-03, **entonces** siguen en verde. | existentes |
+| **Dado** `test_bitacora_y_disparo_manual` (`tests/test_norm02_centro_vigilancia.py`, que pasa a la propiedad de esta ficha), **entonces** inyecta un doble de `lanzador_trabajo.lanzar` y comprueba 202 y una sola llamada al lanzador, en lugar de `lanzadas == ["manual"]`. La bitácora no cambia. Sin el doble y sin `NORMATIVA_TRABAJO_MONITOREO`, como en el CI, el mismo `POST` da 503 `NORMATIVA_TRABAJO_NO_DISPONIBLE`, y la prueba lo comprueba en un caso aparte. | `test_norm02_centro_vigilancia.py` |
+| **Dado** las demás pruebas de NORM-02 y las suites de NORM-01, NORM-02b y NORM-03, **entonces** siguen en verde. | existentes |
 
 ## 6. Trazabilidad
 
