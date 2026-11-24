@@ -24,21 +24,19 @@ import httpx
 
 from app_core.config import config
 
-CLIENTE_ANF = "SMART-CIDI"
 ENTORNO_ANF = "DEV"
 TIPO_CERT_PERSONA_NATURAL = "1"  # El único habilitado en TEST para la cédula de pruebas de ANF.
 TAMANIO_FUENTE = 10
 AMBIENTES_PRODUCCION = ("production", "prod", "produccion")
 
 # Testigos que ANF exige en toda petición (al menos OTP o biométrico). En TEST no hay titular real.
-TESTIGOS_TEST: dict[str, Any] = {
+TESTIGOS_TEST: dict[str, Any] = {  # `cliente` se añade en cada petición desde `config.anf_cliente` (GEN-07).
     "otp": True,
     "biometrico": False,
     "registroCivil": True,
     "aceptaEmisionFirma": True,
     "aceptaFirmar": True,
     "porcentajeVerificacion": 100,
-    "cliente": CLIENTE_ANF,
     "entorno": ENTORNO_ANF,
 }
 
@@ -78,6 +76,7 @@ def esta_configurado() -> bool:
     return (
         url.scheme == "https"
         and bool(url.hostname)
+        and bool(config.anf_cliente.strip())
         and (_usa_login() or bool(config.anf_api_token.get_secret_value()))
     )
 
@@ -132,7 +131,7 @@ async def solicitar_firma(pdf: bytes, descripcion: str, firmante_id: str, pagina
     peticion = {
         "certificadoEs": False,
         "withTSU": True,
-        "testigos": TESTIGOS_TEST,
+        "testigos": {**TESTIGOS_TEST, "cliente": config.anf_cliente.strip()},
         "documentos": [
             {
                 "descripcion": descripcion,

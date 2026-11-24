@@ -76,7 +76,8 @@ def anf(monkeypatch):
     servidor = AnfFalso()
     monkeypatch.setattr(config, "environment", "development")
     monkeypatch.setattr(config, "anf_stb_url", URL_TEST)
-    monkeypatch.setattr(config, "anf_api_id", "smartcidi")
+    monkeypatch.setattr(config, "anf_api_id", "id-prueba")
+    monkeypatch.setattr(config, "anf_cliente", "cliente-prueba")
     monkeypatch.setattr(config, "anf_api_password", SecretStr(CLAVE))
     monkeypatch.setattr(config, "anf_api_token", SecretStr(""))
     monkeypatch.setattr(anf_stb_client, "_TRANSPORTE", httpx.MockTransport(servidor))
@@ -97,18 +98,26 @@ async def test_solicitud_cumple_el_contrato_de_anf(anf):
     assert solicitud == ID_ANF
 
     auth = json.loads(anf.rutas("/auth")[0].content)
-    assert auth == {"id": "smartcidi", "password": CLAVE}
+    assert auth == {"id": "id-prueba", "password": CLAVE}
     envio = anf.rutas("/signs")[0]
     assert envio.headers["Authorization"] == JWT  # ANF lo documenta sin el prefijo Bearer.
     cuerpo = json.loads(envio.content)
     assert cuerpo["certificadoEs"] is False and cuerpo["withTSU"] is True and "titular" not in cuerpo
-    assert cuerpo["testigos"]["entorno"] == "DEV" and cuerpo["testigos"]["cliente"] == "SMART-CIDI"
+    assert cuerpo["testigos"]["entorno"] == "DEV" and cuerpo["testigos"]["cliente"] == "cliente-prueba"
     assert cuerpo["testigos"]["otp"] is True and cuerpo["testigos"]["porcentajeVerificacion"] == 100
     documento = cuerpo["documentos"][0]
     assert base64.b64decode(documento["documento"]) == PDF
     assert documento["firmantes"] == [
         {"id": CEDULA_TEST, "tipoCert": "1", "tamanioFuente": 10, "paginas": ["1(50, 50)"]}
     ]
+
+
+async def test_sin_cliente_anf_no_esta_configurado_y_no_llama(anf, monkeypatch):
+    monkeypatch.setattr(config, "anf_cliente", "")
+    assert anf_stb_client.esta_configurado() is False
+    with pytest.raises(firma.AnfStbNoConfiguradoError):
+        await firma.solicitar_firma_anf_stb(_documento(), CEDULA_TEST, PDF)
+    assert anf.peticiones == []
 
 
 async def test_token_fijo_sin_login(anf, monkeypatch):
