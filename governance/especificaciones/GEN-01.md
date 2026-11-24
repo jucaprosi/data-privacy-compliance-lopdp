@@ -12,10 +12,11 @@ Medido en `origin/main` ea6d26bf (brief del CTO, repetido por el Arquitecto con 
 | GEN-01 | 99 | artefactos, 5 especificaciones y 15 fichas | — |
 | GEN-02 | 100 | escala de madurez: contrato, servidor, pantalla, pruebas y archivo de assessment | GEN-01; recuento del propietario (GEN-02 R1) |
 | GEN-03 | 100 | Biblioteca: fuente `"catalogo"`, código de error y textos | GEN-01 |
-| GEN-04 | 100 | marca en la interfaz: título y logotipos | GEN-01; logotipos del propietario (GEN-04 R2) |
 | GEN-07 | 100 | firma electrónica, plantilla RAT, documentos de apoyo y binarios | GEN-01; decisiones del propietario (GEN-07 R1 a R3) |
 | GEN-05 | 101 | contrato OpenAPI regenerado | GEN-02, GEN-03 |
 | GEN-06 | 101 | Alembic: archivo y revisión de la escala | GEN-02; `alembic_version` del propietario (GEN-06 R1) |
+
+**Fuera del programa** (decisión del propietario, 2026-11-24): la marca en la interfaz, es decir, el título de `frontend/src/app/page.tsx`, el texto alternativo de `DashboardHeader.tsx` y los logotipos de `frontend/public/brand/`. Ninguna ficha del programa los toca. Los ids GEN-05 a GEN-07 se conservan.
 
 **Cambios sobre el reparto del brief, por ortogonalidad:**
 - `governance/ESCALA_MADUREZ.md` y `INFORME_SEGURIDAD_PRESENTACION_LOPDP.md` nombran el archivo de assessment y pasan a GEN-02, que es la ficha que lo renombra. Si no, dos fichas tocarían el mismo nombre de archivo en tandas distintas y quedarían desalineadas entre medias.
@@ -55,7 +56,6 @@ Sin rutas.
   | fuente de plantilla | `"catalogo"` |
   | código de error | `BIB_COPIA_SOLO_CATALOGO` |
   | plantilla de la fuente `"catalogo"` | «Plantilla de la plataforma» (UX/UI, GEN-03 §4) |
-  | título de la aplicación | «EVYDENTIA · LOPDP 360» |
   | archivo de assessment | `Assessment_Madurez_SGPDP.xlsx` (GEN-02 R4) |
   | migración de la escala | `alembic/versions/20261031_diagnostico_escala_madurez.py`, revisión `20261031_diag_escala_madurez` (GEN-06) |
   | prueba de la escala | `tests/test_diagnostico_escala_1_5.py` (GEN-02) |
@@ -72,7 +72,7 @@ Sin rutas.
 
 ## 4. Interfaz
 
-No aplica (GEN-03 y GEN-04).
+No aplica (GEN-03).
 
 ## 5. Aceptación
 
