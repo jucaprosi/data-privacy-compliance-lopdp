@@ -2,10 +2,9 @@
 # ¤vigilancia-spdp ¤inteligencia-normativa
 """Corrida de monitoreo de la SPDP (NORM-01): descarga, valida, guarda el original y registra la corrida.
 
-Invocable a mano. Se programa a las 05:00 en `America/Guayaquil` con Cloud Scheduler tras GCP-01 (brief del
-propietario). El original se guarda intacto, antes de registrar nada, con el hash como nombre; va a Cloud
-Storage (`gs://evydentia-corpus-normativo/spdp/`) por `app_core/storage`, nunca a R2; el adaptador real llega
-con EVI-04 y mientras tanto la fábrica de producción falla cerrada.
+Invocable a mano y desde el Cloud Run Job `evydentia-monitoreo-normativo` (NORM-04), que Cloud Scheduler lanza a las
+05:00 en `America/Guayaquil`. El original se guarda intacto, antes de registrar nada, con el hash como nombre; va a
+Cloud Storage (`gs://evydentia-corpus-normativo/spdp/`) por `app_core/storage`, nunca a R2, y solo lo escribe el Job.
 """
 from __future__ import annotations
 
@@ -18,6 +17,7 @@ from features.inteligencia_normativa.domain.errores import (
     AlmacenNoDisponible,
     ErrorNormativo,
     FuenteBloqueada,
+    FuenteSinConfigurar,
 )
 from features.inteligencia_normativa.schemas import ResumenCorrida
 from features.inteligencia_normativa.services import deduplicacion
@@ -33,11 +33,10 @@ class AlmacenOriginales(Protocol):
 
 
 def almacen_por_defecto() -> AlmacenOriginales:
-    """Almacén real de producción. Falla cerrado, con un error neutro, hasta que EVI-04 deje en `main`
-    `Almacen.subir` (escritura única) en `app_core/storage`: el adaptador será un envoltorio de una línea
-    sobre ese almacén con el bucket `GCP_STORAGE_BUCKET_NORMATIVO` (evydentia-corpus-normativo).
-    """
-    raise AlmacenNoDisponible("almacén normativo no disponible")
+    """Almacén real: solo existe dentro del Cloud Run Job del monitoreo (NORM-04 R1); en otro sitio falla cerrado."""
+    from features.inteligencia_normativa.services import almacen_normativo
+
+    return almacen_normativo.almacen_normativo_por_defecto()
 
 
 def _sesion_por_defecto():
@@ -102,7 +101,7 @@ async def ejecutar(
                     break
                 try:
                     enlaces = await conector.listar(seccion)
-                except FuenteBloqueada as exc:
+                except (FuenteBloqueada, FuenteSinConfigurar) as exc:  # NORM-04 R5: sin URL base no hay corrida
                     resumen["codigos"].append(exc.codigo)
                     bloqueada = True
                     break
