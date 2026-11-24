@@ -1,5 +1,5 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad
+# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad ¤monitoreo-job
 """NORM-05 R3: el backend lanza el Job del monitoreo (Cloud Run Jobs API v2) en lugar de correrlo él mismo.
 
 Las credenciales son las predeterminadas del backend; el permiso `run.invoker` sobre este Job lo concede el

@@ -1,5 +1,5 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-# ¤¤backend-developer
+# ¤¤backend-developer ¤monitoreo-job
 """NORM-05 · la revisión escribe como `lopdp_app`: UPDATE solo sobre cuatro columnas de normativa_resoluciones. ¤inteligencia-normativa ¤seguridad
 
 Revision ID: norm05_revision_sin_rol_mon

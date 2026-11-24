@@ -1,5 +1,5 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad ¤arbitro
+# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad ¤arbitro ¤monitoreo-job
 """NORM-05: el backend no adopta el rol del monitoreo.
 
 Conectado como `lopdp_app` (SET SESSION AUTHORIZATION sobre una conexión propia, que sobrevive al commit; `SET ROLE` no sirve: lo valida el
