@@ -26,7 +26,7 @@ Inspirada en el benchmark metodológico europeo **DMAT (Digital Maturity Assessm
 `¤diagnostico-scoring`
 
 Superación del paradigma del "porcentaje único ficticio". La plataforma evalúa mediante cuatro vectores ortogonales:
-1.  **Madurez por dimensión (1 a 5):** Escala SMARTCIDI. Cada control recibe un nivel asignado de 1 a 5 y la evidencia lo limita; cada dimensión obtiene su nivel y ninguna cifra las combina. Valores, fórmulas y diferencias con el archivo fuente: `governance/ESCALA_MADUREZ.md`, cuya fuente única es `governance/contratos/escala_madurez.json`.
+1.  **Madurez por dimensión (1 a 5):** escala de madurez de 1 a 5. Cada control recibe un nivel asignado de 1 a 5 y la evidencia lo limita; cada dimensión obtiene su nivel y ninguna cifra las combina. Valores, fórmulas y diferencias con el archivo fuente: `governance/ESCALA_MADUREZ.md`, cuya fuente única es `governance/contratos/escala_madurez.json`.
 2.  **Estado de Conformidad Jurídica:** Clasificación booleana estricta: `Conforme`, `Parcial`, `No Conforme`, `No Verificado` o `No Aplicable`.
 3.  **Calidad de Evidencia (0 a 4):** Verbal, informal, documental, operativa y revisada. Limita el nivel reconocido: `nivel efectivo = MIN(nivel asignado, evidencia + 1)`.
 4.  **Vector de Riesgo Residual:** Identificación de brechas de impacto crítico sobre derechos y libertades que bloquean la conformidad independientemente del nivel de madurez alcanzado.

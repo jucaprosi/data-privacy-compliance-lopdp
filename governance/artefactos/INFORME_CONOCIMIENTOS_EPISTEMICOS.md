@@ -1,5 +1,5 @@
 # Informe Epistémico y Aportes Inéditos
-**Plataforma LegalTech:** SMARTCIDI LOPDP 360
+**Plataforma LegalTech:** EVYDENTIA · LOPDP 360
 **Fecha de Emisión:** 15 de Septiembre de 2026
 **Contexto de Extracción:** Sesiones de Desarrollo Frontend y Arquitectura Agéntica (Chat `3d7b4609` y continuaciones).
 

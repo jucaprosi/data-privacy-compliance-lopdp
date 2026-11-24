@@ -1,4 +1,4 @@
-# DIAG-09 · Escala SMARTCIDI en la pantalla
+# DIAG-09 · Escala de madurez de 1 a 5 en la pantalla
 `¤sdd` `¤diagnostico` `¤frontend-ide`
 
 ## 1. Datos

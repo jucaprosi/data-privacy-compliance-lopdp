@@ -87,7 +87,7 @@ Sin interfaz. El router se autoregistra con `AUTO_REGISTRO = True`.
 
 - Ficha: `governance/tareas/FIRMA-06.md`. Especificación de referencia: `governance/especificaciones/README.md`.
 - Depende de FIRMA-04 (router y serialización), FIRMA-03 (`firma_sessions`, `marcar_firmado`), RM-00 (`AUTO_REGISTRO`) y SEC-05 (`get_current_tenant`). PRD Biblioteca G («Firmas»); Aporte 111.
-- Fuentes: informe de ANF «V1. Informe de entrega de STBS - SmartCidi» (15-oct-2026) y su ficha técnica TEST, leída el 2026-11-01.
+- Fuentes: informe de ANF «V1. Informe de entrega de STBS» (15-oct-2026) y su ficha técnica TEST, leída el 2026-11-01.
 - **Decisión tomada · Sin webhook.** La ficha técnica de ANF no define avisos salientes. Si ANF los ofreciera, se reutilizaría `POST /firma/webhook`.
 - **Decisión tomada · Credenciales.** ANF autentica con id y contraseña y su JWT dura 10 minutos, así que `ANF_API_TOKEN` por sí solo no sirve para operar; se añadieron `ANF_API_ID` y `ANF_API_PASSWORD`.
 - **Decisión abierta 1 · Verificación real.** `test_ciclo_real_contra_anf_test` no se ha ejecutado: las credenciales TEST las recibió Aleczandra Villavicencio por WhatsApp y no están en el entorno. La cabecera `Authorization` sin `Bearer` sale del ejemplo de la ficha técnica y queda por confirmar.

@@ -12,7 +12,7 @@ rastros = ["¤diagnostico"]
 
 # DIAG-02 · El banco de preguntas en el servidor
 
-**Hallazgo (2026-10-25).** El diagnóstico y el assessment se hacen con las **80 preguntas de la plataforma** (`frontend/src/lib/bancoPreguntas/`). El equipo las redactó a partir de la matriz de madurez SMARTCIDI: lenguaje claro, ejemplos (`ejemplos.ts`), redacción y evidencia por tamaño de organización, criticidad, talla mínima y controles estructurales. **No coinciden con el Excel original**: los 80 enunciados son distintos y 65 de los 80 nombres de control también; en algunos casos cambia el tema (control 74: «Inducción a nuevos colaboradores» en el Excel, «Campañas de concienciación» en la plataforma).
+**Hallazgo (2026-10-25).** El diagnóstico y el assessment se hacen con las **80 preguntas de la plataforma** (`frontend/src/lib/bancoPreguntas/`). El equipo las redactó a partir de la matriz de madurez: lenguaje claro, ejemplos (`ejemplos.ts`), redacción y evidencia por tamaño de organización, criticidad, talla mínima y controles estructurales. **No coinciden con el Excel original**: los 80 enunciados son distintos y 65 de los 80 nombres de control también; en algunos casos cambia el tema (control 74: «Inducción a nuevos colaboradores» en el Excel, «Campañas de concienciación» en la plataforma).
 
 El **backend no conoce ese banco**. `generar_banco_preguntas_diagnostico` (`features/diagnostico/services/engine.py`) devuelve **48 preguntas de relleno** («Control núcleo 1 para …», en 16 dominios G01-G16), y con ellas responden `POST /api/v1/diagnostico/preguntas` y los **informes Markdown y HTML** (`report_generator.py`).
 

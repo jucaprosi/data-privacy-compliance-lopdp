@@ -163,7 +163,7 @@
 ### Teorema 15: Eliminación Estricta de FOUC mediante Resolución Asíncrona de Cookies en el Servidor (Teorema Zero-FOUC en Arquitecturas Híbridas SSR/RSC)
 `¤frontend-ide` `¤bbap`
 * **Problema:** En aplicaciones web SPA o Jamstack tradicionales, la preferencia de tema (Dark/Light) se almacena en `localStorage` o se resuelve mediante hooks del cliente (`useEffect`). Esto provoca un *Flash of Unstyled Content* (FOUC) o destello blanco de alta luminancia mientras se hidrata el árbol DOM en el navegador, violando el Teorema 8 de neutralidad cromática y ergonomía visual prolongada.
-* **Formulación y Demostración:** Sea $\mathcal{T}_{\text{tema}} \in \{\text{dark}, \text{light}\}$ el estado preferido del usuario. Al persistir el estado en una cookie HTTP (`smartcidi-theme`) y resolverla de forma determinista en el servidor mediante Server Components asíncronos (`await cookies()` en `layout.tsx` de Next.js 15.5):
+* **Formulación y Demostración:** Sea $\mathcal{T}_{\text{tema}} \in \{\text{dark}, \text{light}\}$ el estado preferido del usuario. Al persistir el estado en una cookie HTTP (`theme`) y resolverla de forma determinista en el servidor mediante Server Components asíncronos (`await cookies()` en `layout.tsx` de Next.js 15.5):
   $$\mathcal{T}_{\text{inyectado}} = \text{ResolverCookie}(\text{Headers}_{\text{HTTP}})$$
   $$\text{DOM}_{\text{root}} := \langle \text{html} \quad \text{className} = f(\mathcal{T}_{\text{inyectado}}) \rangle$$
   El árbol HTML inicial viaja serializado con la clase de contraste adecuada antes del primer paquete TCP (*First Contentful Paint* - FCP). La latencia del destello colapsa estrictamente a:
@@ -1133,7 +1133,7 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
   $$N_{\text{ajus}} = \begin{cases} \min(N_{\text{teo}}(S),\, 2), & \exists h \in H:\ n^{ef}_h < 3 \\ N_{\text{teo}}(S), & \text{en otro caso} \end{cases}$$
 * **Propiedad demostrable (no compensación):** mientras subsista $n^{ef}_h < 3$ para algún $h \in H$, $N_{\text{ajus}} \le 2$ con independencia de $n^{ef}_j$ para todo $j \notin H$. Demostración: la cota es una constante que no depende de $S$; $S$ puede crecer, pero $\min(\cdot, 2)$ lo trunca.
 * **Estado de validación:** *Ejecutado.* Con el conjunto de referencia de 80 controles: $S = 75{,}58$, $N_{\text{teo}} = 4$ (Gestionado), los 4 habilitadores con $n^{ef} = 1{,}00$ y $\rho = 20$ cada uno ⇒ $N_{\text{ajus}} = 2$. Un auditor independiente recalculó a mano la dimensión D02 (46,7 %) y coincidió con el código; el navegador mostró "75,6 % · Nivel teórico 4 · Degradado 4 → 2".
-* **Origen y atribución:** La fórmula del nivel efectivo y del riesgo proviene de la hoja *ASSESSMENT* de la Matriz de Madurez SMARTCIDI (`Assessment_Madurez_SGPDP_COAC_SMARTCIDI (2).xlsx`), y el caso 81,02 % → Nivel 2 del *Reporte Assessment SGPDP COAC* (15-sep-2026). El ajuste a Nivel 2 se tomó del resultado de ese reporte; el mecanismo interno del libro **no** se auditó celda a celda. Aporte propio: la formalización, la propiedad de no compensación, la implementación tipada y su verificación numérica.
+* **Origen y atribución:** La fórmula del nivel efectivo y del riesgo proviene de la hoja *ASSESSMENT* de la Matriz de Madurez del SGPDP (`Assessment_Madurez_SGPDP.xlsx`), y el caso 81,02 % → Nivel 2 del *Reporte Assessment SGPDP* (15-sep-2026). El ajuste a Nivel 2 se tomó del resultado de ese reporte; el mecanismo interno del libro **no** se auditó celda a celda. Aporte propio: la formalización, la propiedad de no compensación, la implementación tipada y su verificación numérica.
 * **Relación con T16:** T16 acota $\mathcal{S}_{\text{SPDP}}$ según el *número de brechas críticas* (0 / 1–2 / ≥3). Esta cota se activa por el *estado de los habilitadores*, con otro disparador. Coexisten (ver Hallazgos abiertos).
 * **Límites conocidos:** (i) Renormalizar sobre $D^{+}$ hace que una evaluación parcial parezca madura: con 2 de 39 controles respondidos el tablero mostró 85,6 %; el score solo es interpretable junto a la cobertura (5,1 % en ese caso). (ii) El conjunto $H$ y el tope 2 son parámetros de negocio heredados del reporte, no derivados.
 * **Base científica:** Paulk et al. (1993), *CMM v1.1*, y CMMI Product Team (2010), *CMMI-DEV v1.3* (representación por etapas: un nivel exige satisfacer las áreas de los niveles inferiores); Tversky (1972) y Fishburn (1974) para la no compensación (ya catalogados).
@@ -2273,13 +2273,12 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 ### Aporte 111: Ecosistema de Firma Electronica para EVYDENTIA / LOPDP 360
 `firma-electronica` `proveedores` `arquitectura`
 
-* **Fuentes:** Informe ANF AC "V1. Informe de entrega de STBS - SMARTCIDI" (15-oct-2026); Guia de integracion "One-Shot Biometric" de UniverselD/DARKCAM (12-oct-2026); confirmacion del propietario.
+* **Fuentes:** Informe ANF AC "V1. Informe de entrega de STBS" (15-oct-2026); Guia de integracion "One-Shot Biometric" de UniverselD/DARKCAM (12-oct-2026); confirmacion del propietario.
 * **Aclaracion de identidades:**
 
 | Marca | Rol | Notas |
 | :--- | :--- | :--- |
 | **LOPDP 360 = EVYDENTIA** | Plataforma propia | "EVYDENTIA" es el nombre comercial de LOPDP 360 |
-| **SMARTCIDI CIA LTDA** | Empresa del propietario | Marca comercial ante ANF AC |
 | **Radical / GRD Corporation / UniverselD / DARKCAM** | Proveedor A de firma electronica + biometria | Modalidad "One-Shot Biometric" (pasarela); entrega PDF firmado con vigencia 24 h |
 | **ANF AC — Autoridad de Certificación Ecuador C.A.** | Proveedor B de firma electronica | Competencia de Radical; WS1 STB con ambiente TEST activo desde 15-oct-2026 |
 
