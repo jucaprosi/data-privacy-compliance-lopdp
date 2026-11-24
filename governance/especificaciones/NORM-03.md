@@ -4,7 +4,7 @@
 ## 1. Datos
 
 Tabla `normativa_analisis_impacto` (RLS forzado por `tenant_id`):
-- `id` (UUID PK), `tenant_id`, `resolucion_id` (FK a `normativa_resoluciones`), `modelo` (`gemini-2.5-pro`), `corpus_sha256`;
+- `id` (UUID PK), `tenant_id`, `resolucion_id` (FK a `normativa_resoluciones`), `modelo` (el `MODELO_GENERACION` del pasillo), `corpus_sha256`;
 - `propuesta` (JSONB: lista de `{tipo: pregunta|tratamiento|tarea|plantilla, referencia_id, motivo, articulos_citados}`), `sin_base_normativa` (bool);
 - `estado` (`propuesta`, `aceptada`, `rechazada`), `decidida_por`, `decidida_en`, `nota`.
 
