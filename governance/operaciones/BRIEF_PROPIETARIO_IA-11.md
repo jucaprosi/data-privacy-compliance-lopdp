@@ -11,7 +11,7 @@ $raiz = "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.claude\worktrees\<tu
 $proyectoPruebas = "evydentia-pruebas"
 $promptId = "<sala>.<nombre>"
 $version = 1
-$modelo = "gemini-2.5-flash"
+$modelo = "gemini-3.8-flash"
 $orgEval = "<id-de-la-organizacion-de-evaluacion>"
 Set-Location $raiz
 
@@ -35,4 +35,4 @@ git add evaluacion/ia/resultados
 git commit -m "IA-11: resultado de evaluación $promptId v$version $modelo"
 ```
 
-Repite el paso 2 para cada modelo de `MODELOS_PERMITIDOS` que uses (`gemini-2.5-flash`, `gemini-2.5-pro`). Si subes la versión de un prompt, el árbitro exige un resultado nuevo con puntaje no menor al anterior. Sin secretos en el repositorio: las credenciales son las de tu sesión de gcloud.
+Repite el paso 2 para cada modelo de `MODELOS_PERMITIDOS` que uses (hoy solo `gemini-3.8-flash`). Si subes la versión de un prompt, el árbitro exige un resultado nuevo con puntaje no menor al anterior. Sin secretos en el repositorio: las credenciales son las de tu sesión de gcloud.
