@@ -1,5 +1,5 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-"""Escala SMARTCIDI en las respuestas del diagnóstico (DIAG-08).
+"""Escala de madurez de 1 a 5 en las respuestas del diagnóstico (DIAG-08).
 
 `nivel_asignado` (1 a 5, nulo = sin responder con la escala nueva) y evidencia de 0 a 4. Las filas
 existentes recorren la evidencia 1 → 2, 2 → 3, 3 → 4 (documentada → documental, implementada →
@@ -12,7 +12,7 @@ elimina `nivel_asignado`. Los permisos de `lopdp_app` y la RLS no cambian.
 from alembic import op
 import sqlalchemy as sa
 
-revision = "20261031_diag_escala_smartcidi"
+revision = "20261031_diag_escala_madurez"
 down_revision = "20261030_controles_periodicos"
 branch_labels = None
 depends_on = None
