@@ -3,65 +3,72 @@
 
 ## 1. Datos
 
-Sin tablas ni migraciones. Hechos medidos en `origin/main` a80da616 y con gcloud de lectura (2026-11-24):
-- `services/monitoreo.py:35-41`: `almacen_por_defecto()` lanza `AlmacenNoDisponible` siempre. Su docstring espera el adaptador de EVI-04, que ya está `hecha`.
+Sin tablas ni migraciones. Hechos medidos en `origin/main` 475f8a6a y con gcloud de lectura (2026-11-24).
+
+**Diseño de NORM-01, ya ejecutado** (`governance/operaciones/BRIEF_PROPIETARIO_BUCKET_NORMATIVO.md`, 2026-11-12):
+- Bucket propio `evydentia-corpus-normativo`, en `US-CENTRAL1`, vacío.
+- Cuenta propia del monitoreo, `sa-evydentia-normativa`, con el rol `projects/evydentia/roles/corpusNormativoEscritura` (`storage.objects.create` y `storage.objects.get`, sin borrar ni sobrescribir) sobre el bucket.
+- El backend (`sa-evydentia-backend`) solo lee, con `roles/storage.objectViewer` (decisión 5).
+- Política leída hoy: el backend tiene además `roles/storage.objectCreator`. Lo concedió la fase 1 del brief de Antigravity de la versión anterior de esta ficha, y se revoca (brief, paso 1).
+
+**Código.**
+- `services/monitoreo.py:35-41`: `almacen_por_defecto()` lanza siempre.
+- `monitoreo.py:49-54`: el monitoreo escribe en la base con `SET LOCAL ROLE lopdp_normativa`, el mismo rol que ya usa `revision.py:138` desde el backend. La conexión del Job, la de `DATABASE_URL`, puede adoptarlo.
+- `inteligencia_normativa_service.py:142-144`: `_lector()` devuelve `LectorOriginalesCerrado`. `disparar_monitoreo(origen)` (`:173`) corre la corrida y avisa al operador si falla.
 - `app_core/storage/gcs.py`:
-  - `AlmacenGcs(cliente, bucket, credenciales)` tiene `subir` (escritura única con `if_generation_match=0`, que lanza `ObjetoYaExiste`) y `descargar(clave, maximo_bytes)`.
-  - `almacen_por_defecto()` usa `GCP_STORAGE_BUCKET`, el de evidencias, y falla cerrado fuera de Cloud Run (`corre_en_cloud_run`).
-- `inteligencia_normativa_service.py:142-144`: `_lector()` devuelve `LectorOriginalesCerrado`, que lanza `OriginalNoDisponible`.
-- `api/routers/inteligencia_normativa.py:103-106`: `POST /monitoreo` exige `require_operador`, una persona con sesión. Cloud Scheduler no puede usarlo, y no hay en el repositorio ningún verificador de tokens OIDC de Google.
-- GCP:
-  - el bucket `evydentia-corpus-normativo` existe en `US-CENTRAL1` y está vacío;
-  - la API de Cloud Scheduler no está activada;
-  - `evydentia-backend` no tiene `NORMATIVA_SPDP_URL_BASE` ni `GCP_STORAGE_BUCKET_NORMATIVO`.
+  - `AlmacenGcs(cliente, bucket, credenciales)` tiene `subir` (escritura única, lanza `ObjetoYaExiste`) y `descargar`.
+  - `almacen_por_defecto()` exige `corre_en_cloud_run()`, y `app_core/config.py:48-54` lo define como `K_SERVICE` presente.
+  - **Un Cloud Run Job no define `K_SERVICE`, sino `CLOUD_RUN_JOB`**, así que ese guardián no sirve dentro del Job.
+
+**Patrón de Job que ya existe.** `evydentia-migrate`:
+- corre la imagen del backend, fijada por digest, con `command` sustituido;
+- usa la anotación `run.googleapis.com/cloudsql-instances` y las variables `ENVIRONMENT`, `PROJECT_ID` y `DATABASE_URL`;
+- tiene su propia cuenta.
+
+`deploy-gcp.yml` solo despliega el servicio y no toca los Jobs, así que el digest del Job lo actualiza el propietario, como con `evydentia-migrate`.
 
 ## 2. API
 
-| Ruta | Cambio |
-| :--- | :--- |
-| `POST /api/v1/normativa/monitoreo/programado` (nueva) | 202 con `{"corrida": "aceptada"}`. Solo acepta `Authorization: Bearer <token OIDC de Google>` de la cuenta de servicio del Scheduler (R3). Si no, 401 sin detalle. Nunca acepta la sesión de una persona. |
-| `POST /api/v1/normativa/monitoreo` | Sin cambios: el disparo manual del operador. |
-| `GET /api/v1/normativa/resoluciones/{id}/original` | Deja de dar siempre «no disponible»: sirve el original custodiado (R2). |
-
-Las rutas se montan con el prefijo global `/api/v1` (`main.py:189`, `registrar_routers`) más el del router, `/normativa` (`api/routers/inteligencia_normativa.py:27`). La ruta nueva entra en el contrato OpenAPI. Si GEN-05 ya está fusionada, este PR lo regenera; si no, lo hace GEN-05.
+Sin cambios. No hay ruta de disparo programado: el Scheduler ejecuta el Job por la API de Cloud Run, no por HTTP al backend. `GET /api/v1/normativa/resoluciones/{id}/original` sirve el original custodiado (R2).
 
 ## 3. Reglas
 
-- **R1 · Almacén real de originales.** `almacen_normativo.py` implementa `AlmacenOriginales` sobre `AlmacenGcs`:
+- **R1 · Almacén de escritura, solo en el Job.** `almacen_normativo.py` implementa `AlmacenOriginales` sobre `AlmacenGcs`:
   - toma el bucket de `GCP_STORAGE_BUCKET_NORMATIVO`, nunca de `GCP_STORAGE_BUCKET`;
-  - `guardar` llama a `subir` y devuelve `True`; con `ObjetoYaExiste` devuelve `False`, porque mismo hash es mismo nombre;
-  - falla cerrado con `AlmacenNoDisponible` sin conectar fuera de Cloud Run o sin la variable.
+  - `guardar` devuelve `True` tras `subir` y `False` con `ObjetoYaExiste`;
+  - falla cerrado con `AlmacenNoDisponible`, sin crear el cliente, si falta la variable o si `CLOUD_RUN_JOB` no está definida. Solo escribe desde un Job.
 
-  `monitoreo.almacen_por_defecto()` lo devuelve. Su docstring y la cabecera del módulo pasan a estado final, sin «llega con EVI-04».
-- **R2 · Lector real.** `_lector()` devuelve un lector sobre `descargar` del mismo bucket, con el tope de tamaño de NORM-01. `LectorOriginalesCerrado` se queda solo como respuesta cuando falta la configuración.
-- **R3 · Disparo programado con identidad de servicio.** `disparo_programado.verificar(token)` usa `google.oauth2.id_token.verify_oauth2_token` y acepta el token solo si:
-  - la firma es de Google;
-  - `aud` es igual a `NORMATIVA_SCHEDULER_AUDIENCE`, que es la URL completa `https://<host del backend>/api/v1/normativa/monitoreo/programado`, la misma que el destino del trabajo de Scheduler;
-  - `email` es igual a `NORMATIVA_SCHEDULER_CUENTA` y `email_verified` es verdadero.
+  `monitoreo.almacen_por_defecto()` lo devuelve. Las cabeceras quedan en estado final, sin «llega con EVI-04».
+- **R2 · Lector, en el backend.** `_lector()` devuelve un lector sobre `descargar` del mismo bucket, con el tope de NORM-01, y exige `K_SERVICE` y la variable. Si falta alguna, `LectorOriginalesCerrado`. No usa ningún permiso de escritura.
+- **R3 · Punto de entrada del Job.** `trabajo_monitoreo.py` (`python -m features.inteligencia_normativa.trabajo_monitoreo`):
+  - llama a `disparar_monitoreo("programado")`;
+  - sale con 0 si la corrida queda `ok` o `parcial`, y con 1 si queda `fallida`, para que el Job registre el fallo;
+  - no imprime la URL de la base ni secretos.
 
-  Cualquier otra cosa da 401. Con alguna variable vacía, todas las peticiones dan 401, así que falla cerrado. La ruta llama a `disparar_monitoreo("programado")` en segundo plano. No registra el token ni el correo en los logs.
-- **R4 · Una corrida a la vez.** Si en `normativa_monitoreo_logs` hay una corrida con `fin IS NULL` e `inicio` de hace menos de 30 minutos, el disparo programado responde 202 sin abrir otra, y la bitácora no se duplica. La corrida se abre como `fallida` y se cierra con `ok`, `parcial` o `fallida` (`monitoreo.py:59,127`). El origen nuevo, `programado`, cabe en `origen varchar(20)`.
-- **R5 · Sin la URL no hay corrida.** Sin `NORMATIVA_SPDP_URL_BASE`, la corrida queda `fallida` con `FuenteSinConfigurar` (NORM-01) y se avisa al operador (NORM-02). No cambia.
-- **R-ADPA · Ortogonalidad ZERAG (`NORM-04`).** Solo los archivos de la propiedad. Las secciones `#NORM-04` del servicio y del router no tocan el código de NORM-01 ni de NORM-02. `app_core/storage` no cambia.
+  El origen `programado` cabe en `origen varchar(20)`.
+- **R4 · Una corrida a la vez.** Antes de abrir otra, comprueba que no haya en `normativa_monitoreo_logs` una corrida con `fin IS NULL` e `inicio` de hace menos de 30 minutos. Si la hay, sale con 0 sin abrir otra. El Job se crea con `--tasks=1 --max-retries=0` (brief).
+- **R5 · Sin la URL de la SPDP no hay corrida.** Sin `NORMATIVA_SPDP_URL_BASE`, la corrida queda `fallida` con `FuenteSinConfigurar` y se avisa al operador (NORM-01 y NORM-02).
+- **R-ADPA · Ortogonalidad ZERAG (`NORM-04`).** Solo los archivos de la propiedad. `app_core/storage`, `app_core/config.py`, la API y el router no cambian. La sección vacía `=== NORM-04 ===` del router que sembró la versión anterior se retira en este PR.
 
 ## 4. Interfaz
 
-Sin cambios de texto. La pantalla del Centro de vigilancia (NORM-02) ya muestra la bitácora y el original.
+Sin cambios.
 
 ## 5. Aceptación
 
 | Caso | Árbitro |
 | :--- | :--- |
-| **Dado** un `AlmacenGcs` doble, **entonces** `guardar` da `True` la primera vez y `False` con `ObjetoYaExiste`, y usa el bucket de `GCP_STORAGE_BUCKET_NORMATIVO`. Mutación m1: usar `GCP_STORAGE_BUCKET` da rojo. | `test_norm04_almacen_y_disparo.py` |
-| **Dado** que no corre en Cloud Run o falta la variable, **entonces** `AlmacenNoDisponible` sin crear cliente. Mutación m2: crear el cliente antes de comprobar da rojo. | ídem |
-| **Dado** un original guardado, **entonces** `GET …/original` lo sirve con la misma huella. Mutación m3: volver al lector cerrado da rojo. | ídem |
-| **Dado** un token con otro `aud`, otro `email`, `email_verified` falso o una sesión de persona, **entonces** 401. Mutación m4: no comprobar `email` da rojo. Mutación m5: aceptar con las variables vacías da rojo. | ídem, `verify_oauth2_token` sustituido por un doble |
-| **Dado** una corrida con `fin` nulo de hace 5 minutos, **entonces** el disparo programado no abre otra. Mutación m6: quitar la comprobación da rojo. | ídem, PostgreSQL |
+| **Dado** `CLOUD_RUN_JOB` y `GCP_STORAGE_BUCKET_NORMATIVO` y un `AlmacenGcs` doble, **entonces** `guardar` da `True` la primera vez y `False` con `ObjetoYaExiste`. Mutación m1: usar `GCP_STORAGE_BUCKET` da rojo. | `test_norm04_almacen_y_trabajo.py` |
+| **Dado** solo `K_SERVICE` (el backend), o falta la variable, **entonces** `AlmacenNoDisponible` sin crear el cliente. Mutación m2: aceptar `K_SERVICE` para escribir da rojo. | ídem |
+| **Dado** un original guardado, **entonces** el backend lo sirve con la misma huella. Mutación m3: volver al lector cerrado da rojo. | ídem |
+| **Dado** una corrida `fallida`, **entonces** el punto de entrada sale con 1; con `ok` o `parcial`, con 0. Mutación m4: salir siempre con 0 da rojo. | ídem |
+| **Dado** una corrida con `fin` nulo de hace 5 minutos, **entonces** no abre otra. Mutación m5: quitar la comprobación da rojo. | ídem, PostgreSQL |
+| **Dado** la salida del punto de entrada, **entonces** no contiene la URL de la base. Mutación m6: imprimir `DATABASE_URL` da rojo. | ídem |
 | **Dado** las suites de NORM-01 y NORM-02, **entonces** siguen en verde. | existentes |
 
 ## 6. Trazabilidad
 
-- Medición del Arquitecto (2026-11-24), pedida por el CTO para BIB-403 R2.
-- Depende de NORM-01 y NORM-02 (módulo y Centro de vigilancia), de EVI-04 (`subir`) y de GCP-01 (proyecto y Cloud Run).
-- Brief del propietario: `C:\Users\Juan Carlos\compartido\evydentia\briefs\NORM-04-propietario-gcp.md`.
-- Tras el despliegue, el propietario comprueba que hay una corrida `completada` en la bitácora y objetos en `gs://evydentia-corpus-normativo/spdp/`.
+- Diseño de NORM-01 (brief del bucket, decisiones 4, 5 y 8) y reconciliación pedida por el CTO (2026-11-24).
+- Depende de NORM-01 y NORM-02, de EVI-04 (`subir` y `descargar`) y de GCP-01.
+- Brief del propietario: `C:\Users\Juan Carlos\compartido\evydentia\briefs\NORM-04-propietario-gcp.v3.md`. Sustituye a la v1 y a la v2.
+- El control «norma cambiada» de BIB-403 R2 se activa con la primera corrida `ok`.
