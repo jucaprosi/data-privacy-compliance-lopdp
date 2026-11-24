@@ -121,5 +121,17 @@ async def revisar(id_resolucion: str, cuerpo: RevisionRequest, operador: dict = 
 
 
 # === NORM-05 ===
-# Disparo manual por el Job (NORM-05): sección reservada.
+# ¤vigilancia-spdp ¤seguridad El disparo manual lanza el Job del monitoreo; ya no corre en el backend (NORM-05 R3).
+# Sustituye la ruta de NORM-02 (misma ruta y mismo 202): la anterior se retira del router antes de registrar esta.
+router.routes[:] = [r for r in router.routes
+                    if not (getattr(r, "path", None) == "/normativa/monitoreo" and "POST" in getattr(r, "methods", ()))]
+
+
+@router.post("/monitoreo", status_code=status.HTTP_202_ACCEPTED)
+async def disparar_por_el_job(operador: dict = Depends(require_operador)) -> dict:
+    try:
+        await svc.lanzar_monitoreo(str(operador["id"]))
+    except svc.lanzador_trabajo.TrabajoNoDisponible as exc:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, {"codigo": exc.codigo}) from exc
+    return {"estado": "aceptado"}
 # === fin NORM-05 ===

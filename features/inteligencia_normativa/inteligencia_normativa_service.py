@@ -432,7 +432,22 @@ async def disparar_monitoreo(origen: str = "manual") -> ResumenCorrida:
 
 
 # === NORM-05 ===
-# Disparo manual que lanza el Job del monitoreo (NORM-05): sección reservada.
+# ¤vigilancia-spdp ¤seguridad Disparo manual que lanza el Job del monitoreo en lugar de correrlo en el backend (NORM-05 R3).
+from features.inteligencia_normativa.services import lanzador_trabajo  # noqa: E402
+
+_envio_del_trabajo_de_prueba: Callable[[str], Any] | None = None
+_registro_norm05 = logging.getLogger("normativa.lanzador")
+
+
+def inyectar_envio_del_trabajo_de_prueba(envio: Callable[[str], Any] | None = None) -> None:
+    global _envio_del_trabajo_de_prueba
+    _envio_del_trabajo_de_prueba = envio
+
+
+async def lanzar_monitoreo(quien: str) -> None:
+    """Lanza el Job; la ejecución corre con origen `programado`. Se anota quién la pidió, sin datos personales."""
+    await lanzador_trabajo.lanzar(_envio_del_trabajo_de_prueba)
+    _registro_norm05.info("NORM-05: monitoreo lanzado por el operador %s", quien)
 # === fin NORM-05 ===
 
 

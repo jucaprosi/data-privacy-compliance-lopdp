@@ -2,7 +2,7 @@
 id = "NORM-05"
 titulo = "El backend no adopta el rol del monitoreo: revisión con UPDATE por columna y disparo manual que lanza el Job"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 104
 sala = "inteligencia_normativa"
 depende_de = ["NORM-01", "NORM-02", "NORM-03", "NORM-04"]

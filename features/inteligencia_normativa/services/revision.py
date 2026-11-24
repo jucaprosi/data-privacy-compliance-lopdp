@@ -20,7 +20,6 @@ from features.inteligencia_normativa.domain.errores import (
     ResolucionNoEncontrada,
 )
 from features.inteligencia_normativa.schemas import EstadoCorrida, Origen, ResolucionResumen
-from features.inteligencia_normativa.services.monitoreo import _como_normativa
 
 ESTADOS_REVISION = ("vigente", "observada", "reformada", "derogada")
 LARGO_MINIMO_NOTA = 10
@@ -135,13 +134,12 @@ async def listar_bitacora(sesion, limite: int = 50) -> list[CorridaBitacora]:
 
 
 async def registrar_revision(sesion, id_resolucion: str, estado: str, nota: str, usuario_id: str) -> ResolucionConNota:
-    """Cambia el estado con quién, cuándo y la nota. El rol de escritura es el del monitoreo (`lopdp_normativa`)."""
+    """Cambia el estado con quién, cuándo y la nota. Escribe como `lopdp_app`, con `UPDATE` solo sobre estas cuatro columnas (NORM-05)."""
     if estado not in ESTADOS_REVISION:
         raise EstadoNoPermitido()
     nota_limpia = (nota or "").strip()
     if len(nota_limpia) < LARGO_MINIMO_NOTA:
         raise NotaObligatoria()
-    await _como_normativa(sesion)
     actualizadas = (await sesion.execute(
         text("UPDATE normativa_resoluciones SET estado = :e, revisada_por = :u, revisada_en = now(), "
              "nota_revision = :n WHERE id = CAST(:i AS uuid)"),
