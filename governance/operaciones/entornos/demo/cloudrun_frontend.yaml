@@ -21,7 +21,8 @@ spec:
       containerConcurrency: 80
       serviceAccountName: 517105327086-compute@developer.gserviceaccount.com
       containers:
-        - image: us-central1-docker.pkg.dev/evydentia-demo/evydentia-demo-containers/evydentia-web-demo
+        # DEMO-09 · Imagen web de producción, sin etiqueta ni digest: el digest del commit lo fija el paso de DEMO_COMERCIAL.md §5.
+        - image: us-central1-docker.pkg.dev/evydentia/evydentia-containers/web
           ports:
             - name: http1
               containerPort: 3000
@@ -32,6 +33,7 @@ spec:
               value: https://evydentia-backend-demo-ponc6sfqtq-uc.a.run.app
             - name: PROXY_AUTH_CLOUD_RUN
               value: token_servicio
+            # Informativa: Next la incrusta al compilar; debe ser igual al --build-arg de frontend/cloudbuild.yaml.
             - name: NEXT_PUBLIC_GOOGLE_CLIENT_ID
               value: 943042355099-um6ieu8s1s8kettg253g9v5ms8ag7k4l.apps.googleusercontent.com
 ---

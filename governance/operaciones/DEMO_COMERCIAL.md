@@ -109,3 +109,63 @@ Ejecución auditada del Job `purga-demo`:
 ```
 
 El Cloud Scheduler `purga-demo-nocturna` queda habilitado con la expresión `0 3 * * *` para mantener el almacenamiento y la base de datos limpios diariamente.
+
+---
+
+## 5. Publicar la web de demo (DEMO-09)
+
+La web de demo (`evydentia-web-demo`) corre la **misma imagen web de producción del mismo commit**, por digest, leída del repositorio `us-central1-docker.pkg.dev/evydentia/evydentia-containers/web`. Nada del bundle depende del entorno al compilar, salvo el client id de Google, que es el mismo en los dos entornos (`frontend/cloudbuild.yaml`). Por eso este procedimiento nunca compila una imagen aparte: si falta la imagen del commit, usa la construcción de producción (GCP-03b). Contrato: `governance/especificaciones/DEMO-09.md`.
+
+### 5.1 Prerrequisito único (una sola vez)
+
+El agente de servicio de Cloud Run de la demo (`service-517105327086@serverless-robot-prod.iam.gserviceaccount.com`) necesita `roles/artifactregistry.reader` **solo sobre el repositorio** `evydentia-containers`, nunca sobre el proyecto `evydentia`. Sin él, la revisión nueva no puede descargar la imagen. Los pasos, con su comprobación, están en `C:\Users\Juan Carlos\compartido\evydentia\briefs\DEMO-09-propietario.md` (fuera del repositorio). El supuesto sobre el nombre de esa cuenta se confirma allí con `gcloud projects get-iam-policy evydentia-demo`.
+
+### 5.2 Procedimiento
+
+Lo ejecuta el propietario en PowerShell. Cada bloque es independiente de la sesión: define sus variables.
+
+```powershell
+# 1. Imagen del commit: localizarla o construirla una sola vez con la construcción de producción.
+cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+git fetch origin
+$COMMIT = (git rev-parse --short origin/main).Trim()
+$IMAGEN = "us-central1-docker.pkg.dev/evydentia/evydentia-containers/web"
+gcloud artifacts docker images describe "${IMAGEN}:${COMMIT}" --project=evydentia
+# Si la orden anterior responde que no la encuentra, construirla desde el commit de origin/main
+# (la misma construcción de producción, GCP-03b):
+#   git switch --detach origin/main
+#   cd frontend
+#   gcloud builds submit --config cloudbuild.yaml --substitutions=_ETIQUETA=$COMMIT --project=evydentia .
+$DIGEST = (gcloud artifacts docker images describe "${IMAGEN}:${COMMIT}" --project=evydentia --format="value(image_summary.digest)").Trim()
+"Imagen del commit: ${IMAGEN}@${DIGEST}"
+
+# 2. Anotar la revisión actual para poder volver atrás.
+$ANTERIOR = (gcloud run services describe evydentia-web-demo --project=evydentia-demo --region=us-central1 --format="value(status.latestReadyRevisionName)").Trim()
+"Revisión anterior: $ANTERIOR"
+
+# 3. Publicar la revisión nueva sin tráfico, con una etiqueta. Variables y cuenta del servicio no cambian.
+gcloud run deploy evydentia-web-demo --project=evydentia-demo --region=us-central1 --image="${IMAGEN}@${DIGEST}" --no-traffic --tag="c${COMMIT}"
+```
+
+**4. Verificar en la URL de la etiqueta** (`https://c<commit>---evydentia-web-demo-<hash>-uc.a.run.app`, la imprime el paso 3):
+
+- `/login` responde 200 y ofrece el acceso con Google.
+- El aviso de entorno dice «demo» y una fecha sale en es-EC (GCP-08c).
+- Con IA-15 fusionada, el consentimiento del preanálisis nombra «Estados Unidos (región us)».
+
+```powershell
+# 5. Pasar el tráfico a la revisión nueva y repetir la comprobación en la URL pública.
+gcloud run services update-traffic evydentia-web-demo --project=evydentia-demo --region=us-central1 --to-latest
+```
+
+### 5.3 Volver atrás
+
+```powershell
+# Con $ANTERIOR del paso 2 (hoy: evydentia-web-demo-00005-8f5).
+$ANTERIOR = "evydentia-web-demo-00005-8f5"
+gcloud run services update-traffic evydentia-web-demo --project=evydentia-demo --region=us-central1 --to-revisions="${ANTERIOR}=100"
+```
+
+### 5.4 Qué comprueba el repositorio
+
+`tests/test_demo09_web_demo.py` verifica, sin red, que la imagen del manifiesto `entornos/demo/cloudrun_frontend.yaml`, la de este procedimiento y la de `frontend/cloudbuild.yaml` son la misma; que el client id es uno solo; que este procedimiento no compila aparte; y que solo ese id entra al compilar. La aceptación final es del propietario: la revisión nueva sirve `/login` con `$IMAGEN@<digest del commit>`.
