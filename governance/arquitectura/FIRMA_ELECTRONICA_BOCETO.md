@@ -28,7 +28,7 @@ En el marco del régimen jurídico de la República del Ecuador:
 4. **Ley Orgánica de Protección de Datos Personales (LOPDP):**
    - Exige evidencia documental íntegra e inalterable ($E1+$ a $E3$) para evaluaciones de impacto (EIPD/Assessments), consentimientos expresos de titulares y actas de comités de privacidad, sustentando el principio de responsabilidad proactiva y demostrada (*accountability*, art. 48 LOPDP).
 5. **Decisión Doctrinal D-4 y Aporte 111:**
-   - Establece la selección e integración con **ANF AC — Autoridad de Certificación Ecuador C.A.** como entidad certificadora acreditada por ARCOTEL, articulada con el ecosistema de EVYDENTIA / SMARTCIDI CIA LTDA.
+   - Establece la selección e integración con **ANF AC — Autoridad de Certificación Ecuador C.A.** como entidad certificadora acreditada por ARCOTEL, articulada con el ecosistema de EVYDENTIA y el operador de la plataforma.
 
 > [!NOTE]
 > **Vacíos o silencios normativos:** Donde la ley o reglamento ecuatoriano no determine expresamente especificaciones técnicas para webhooks asíncronos, formatos de payload JSON o tokens de sesión efímeros de biometría facial remota, se adopta como **diseño propio prudente** la verificación criptográfica HMAC-SHA256, la inmutabilidad notarial SHA-256 en base de datos protegida con Row Level Security (RLS) y el almacenamiento en Cloud Storage (GCS) con trazabilidad en bitácora de auditoría inmutable (`audit_events`).
@@ -42,7 +42,7 @@ El ecosistema operativo y societario documentado en el **Aporte 111** (`governan
 | Actor / Marca | Razón Social / Entidad | Rol en el Ecosistema | Responsabilidad y Flujo |
 | :--- | :--- | :--- | :--- |
 | **LOPDP 360 = EVYDENTIA** | EVYDENTIA / Plataforma SaaS propia | Plataforma de Privacidad y Cumplimiento LOPDP | Orquesta las solicitudes de firma de assessments, consentimientos y DPAs; resguarda evidencias auditables. |
-| **SMARTCIDI CIA LTDA** | SMARTCIDI CIA LTDA | Empresa titular del propietario | Titular comercial y personería contractual ante las entidades de certificación (ANF AC y Radical/UniverselD). |
+| **Operador de la plataforma** | Operador de la plataforma | Empresa titular del propietario | Titular comercial y personería contractual ante las entidades de certificación (ANF AC y Radical/UniverselD). |
 | **Radical / GRD / UniverselD / DARKCAM** | Radical / GRD Corporation | Proveedor A: Pasarela One-Shot Biometric | Provee interfaz UI huésped, prueba de vida (liveness), consulta al Registro Civil y emisión de certificado de un solo uso; entrega PDF firmado vía webhook HTTPS. |
 | **ANF AC** | ANF Autoridad de Certificación Ecuador C.A. | Proveedor B: WS1 STB (Directo) | Entidad acreditada por ARCOTEL; provee WS 1 STB v2 (emisión de firma temporal, firmado, sello de tiempo TSA y estampado múltiple en coordenadas). Ambiente TEST activo desde 15-oct-2026. |
 
@@ -116,9 +116,9 @@ flowchart TD
   5. *Descarga y Custodia:* LOPDP 360 valida la autenticidad del webhook, descarga el PDF firmado, calcula su hash SHA-256 definitivo y lo resguarda en Cloud Storage (GCS).
 
 ### 4.2 Modalidad «STB Directo» (ANF AC — Autoridad de Certificación Ecuador C.A.)
-- **Caso de Uso:** Firma de documentos internos corporativos, actas de comité y dictámenes formales donde SMARTCIDI interactúa directamente con los servicios STB de la autoridad acreditada.
+- **Caso de Uso:** Firma de documentos internos corporativos, actas de comité y dictámenes formales donde el operador de la plataforma interactúa directamente con los servicios STB de la autoridad acreditada.
 - **Flujo (WS 1 STB v2):**
-  1. *Generación y Envío de Petición:* LOPDP 360 invoca el servicio STB de ANF AC pasando el JSON técnico con: identificador del cliente (`CLIENTE: "SMART-CIDI"`), datos del firmante, documento base (Base64 o referencia) y matriz de coordenadas de estampado (página, eje X, eje Y).
+  1. *Generación y Envío de Petición:* LOPDP 360 invoca el servicio STB de ANF AC pasando el JSON técnico con: identificador del cliente (identificador de cliente del contrato con ANF AC, tomado de la configuración `ANF_CLIENTE`), datos del firmante, documento base (Base64 o referencia) y matriz de coordenadas de estampado (página, eje X, eje Y).
   2. *Procesamiento ANF:* La autoridad emite la firma temporal o aplica la firma del titular, estampa los sellos visuales en las posiciones especificadas y aplica el sellado de tiempo de autoridad (TSA).
   3. *Soporte Multi-Firma:* Cuando un documento requiere dos o más firmantes, el flujo procesa de forma individual y secuencial a cada firmante garantizando la conservación de firmas previas (PAdES acumulativo).
   4. *Ambiente TEST:* Ficha técnica activa en URL de pruebas de ANF con firmas precargadas para simular respuestas sin consumo arancelario.

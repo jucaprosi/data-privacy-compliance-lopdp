@@ -66,7 +66,7 @@ class EstadoFirma(str, Enum):
 
 
 class ProveedorFirma(str, Enum):
-    """Proveedores admitidos en el ecosistema EVYDENTIA / SMARTCIDI (Aporte 111)."""
+    """Proveedores admitidos en el ecosistema EVYDENTIA (Aporte 111)."""
     ANF = "ANF"                  # ANF AC — Proveedor B (WS1 STB directo)
     UNIVERSEID = "UNIVERSEID"    # Radical / UniverselD / DARKCAM — Proveedor A (Pasarela One-Shot)
 

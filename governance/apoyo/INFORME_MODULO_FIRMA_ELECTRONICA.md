@@ -36,14 +36,14 @@ Radical (GRD Corporation) es la empresa; **UniverseID** es su producto «One-Sho
 | Para quién | Firmante sin firma previa; prueba de vida, Registro Civil y certificado de un solo uso | Firmante con documento enviado por API, con coordenadas de estampado |
 | Flujo | `POST /sessions` → `verification_url` → webhook `documents.signed` → descarga del PDF | WS1 STB v2: petición con el documento (Base64) y las coordenadas → PDF firmado con sello de tiempo TSA |
 | Secretos | API key `dk_test_…` / `dk_live_…` y secreto de webhook `whsec_…` | Token STB de ANF |
-| Especificación | `data/Guia_Integracion_OneShot_SMARTCIDI.pdf` (12-oct-2026) | Informe ANF «V1. Informe de entrega de STBS - SMARTCIDI» (15-oct-2026) |
+| Especificación | «Guía de integración One-Shot Biometric» (UniverseID, 12-oct-2026) | Informe ANF «Informe de entrega de STBS» (ANF AC, 15-oct-2026) |
 
 ### 4.1 Parámetros de Radical / UniverseID (según su guía)
 
 | Parámetro | Valor del proveedor |
 | :--- | :--- |
 | Duración de la sesión (`verification_url`) | **10 minutos** desde que se crea. Después pasa a `expired` y hay que crear una sesión nueva |
-| Certificado | De un solo uso, **24 horas**. Nunca llega a SMARTCIDI: se usa en sus servidores y se descarta |
+| Certificado | De un solo uso, **24 horas**. Nunca llega al operador de la plataforma: se usa en sus servidores y se descarta |
 | Descarga del PDF firmado | `signed_url` de descarga directa en el webhook. La guía no fija plazo: **descargar en cuanto llega el aviso** y guardarlo en nuestros sistemas |
 | Documentos | **Plantillas** (PDF + posición del sello) cargadas en el panel de la organización; cada una tiene un `document_id`. `POST /sessions` recibe `document_ids` y responde 400 si alguno no existe |
 | Firmante | Una persona por sesión: `cedula` (10 dígitos), `codigo_dactilar` (6+), `nombres`, `apellidos`, `email`. `return_url` obligatoria y `cancel_url` opcional |
@@ -56,7 +56,7 @@ Radical (GRD Corporation) es la empresa; **UniverseID** es su producto «One-Sho
 | Aviso al titular | Informarle, antes de enviarlo al enlace, que se tratarán sus datos biométricos |
 | Sandbox | Prueba de vida y Registro Civil simulados; el PDF sale firmado pero sin validez legal |
 
-### 4.2 Parámetros de ANF (según `data/ANF.pdf`, «V1. Informe entrega de STBS - SMARTCIDI», 15-oct-2026)
+### 4.2 Parámetros de ANF (según el «Informe de entrega de STBS» de ANF AC, 15-oct-2026)
 
 | Parámetro | Valor del proveedor |
 | :--- | :--- |
@@ -68,14 +68,14 @@ Radical (GRD Corporation) es la empresa; **UniverseID** es su producto «One-Sho
 | Validación del titular | **Validación biométrica obligatoria** (art. 17, Resolución ARCOTEL-2024-0176). La cédula es opcional (art. 24, Ley para la Optimización y Eficiencia de Trámites Administrativos); si no se envía copia o foto, la petición debe llevar un **documento de evidencia** que respalde la emisión |
 | Configuración del titular | La petición que emite firma para el titular debe incluir su configuración; si falta, se rechaza |
 | Testigos | Si se habilita el esquema de testigos (OTP o biometría), se exige al menos un testigo válido |
-| Parámetro `CLIENTE` | Identifica al cliente de SMARTCIDI que pide la firma; por defecto `SMART-CIDI`. Sirve para el control comercial |
+| Parámetro `CLIENTE` | Identifica al cliente del contrato con ANF AC que pide la firma; sale de la configuración `ANF_CLIENTE`. Sirve para el control comercial |
 | Tiempo de respuesta | Máximo 90 s. Consultar 3 veces (a los 30, 60 y 90 s); después se considera error |
 | Rechazo | Cualquier condición incumplida produce rechazo automático en la validación |
 | Firma longeva | Debe estar cargada en el aplicativo TOC HEM |
 | Ambientes | TEST y producción separados. En TEST no se emite firma: hay firmas precargadas que simulan el firmado |
-| Credenciales | TEST entregadas por WhatsApp el 15-oct-2026. Producción: solo tras la aprobación de las pruebas por SMARTCIDI |
+| Credenciales | TEST entregadas por WhatsApp el 15-oct-2026. Producción: solo tras la aprobación de las pruebas por el operador de la plataforma |
 
-**Ficha técnica (endpoints, JSON, errores).** El PDF la enlaza en `http://documentacion-longeva.smartcidi.firmas-electronicas-293414.uc.r.appspot.com/`. Al consultarla, el certificado HTTPS de esa dirección no corresponde al dominio (subdominio de varios niveles bajo `*.uc.r.appspot.com`), así que no se pudo leer. Hay que pedirle a ANF la ficha en PDF o una URL con certificado válido. Mientras no esté, no se conocen endpoints, autenticación, formato de respuesta, códigos de error ni tamaño máximo del PDF.
+**Ficha técnica (endpoints, JSON, errores).** El PDF la enlaza en `http://documentacion-longeva.<cliente>.firmas-electronicas-293414.uc.r.appspot.com/`. Al consultarla, el certificado HTTPS de esa dirección no corresponde al dominio (subdominio de varios niveles bajo `*.uc.r.appspot.com`), así que no se pudo leer. Hay que pedirle a ANF la ficha en PDF o una URL con certificado válido. Mientras no esté, no se conocen endpoints, autenticación, formato de respuesta, códigos de error ni tamaño máximo del PDF.
 
 **Por confirmar con ANF:** quién ejecuta la validación biométrica (ANF con su propia pantalla, o el integrador entregando la evidencia) y en qué formato se entrega.
 
@@ -148,7 +148,7 @@ Cada tarea termina con su árbitro en verde: `pytest` de la sala, `npm run typec
 
 ## 9. Referencias
 
-- `data/Guia_Integracion_OneShot_SMARTCIDI.pdf` (guía de integración One-Shot Biometric de UniverseID, 12-oct-2026)
+- «Guía de integración One-Shot Biometric» (UniverseID, 12-oct-2026)
 - `governance/arquitectura/FIRMA_ELECTRONICA_BOCETO.md`
 - `governance/tareas/FIRMA-01.md`
 - `governance/artefactos/PRD.md` (sala `firma_electronica`, líneas 146, 226 y 297)

@@ -2,7 +2,7 @@
 id = "GEN-07"
 titulo = "Firma electrónica, plantilla RAT y documentos de apoyo sin marca: el cliente de ANF en la configuración y los binarios fuera del repositorio"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 100
 sala = "firma_electronica, rat, plataforma, gobernanza"
 depende_de = ["GEN-01", "FIRMA-06", "RAT-02", "MARCA-01"]

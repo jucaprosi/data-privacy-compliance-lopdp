@@ -27,6 +27,8 @@ class AppConfig(BaseSettings):
     anf_api_token: SecretStr = Field(default=SecretStr(""), alias="ANF_API_TOKEN")
     anf_api_id: str = Field(default="", alias="ANF_API_ID")
     anf_api_password: SecretStr = Field(default=SecretStr(""), alias="ANF_API_PASSWORD")
+    # GEN-07: identificador de cliente del contrato con ANF AC. Lo fija el propietario en cada entorno; vacío, la firma con ANF falla cerrada.
+    anf_cliente: str = Field(default="", alias="ANF_CLIENTE")
 
     model_config = SettingsConfigDict(extra="ignore")
 
