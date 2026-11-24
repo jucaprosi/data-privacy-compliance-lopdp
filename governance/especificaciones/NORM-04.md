@@ -19,11 +19,11 @@ Sin tablas ni migraciones. Hechos medidos en `origin/main` a80da616 y con gcloud
 
 | Ruta | Cambio |
 | :--- | :--- |
-| `POST /normativa/monitoreo/programado` (nueva) | 202 con `{"corrida": "aceptada"}`. Solo acepta `Authorization: Bearer <token OIDC de Google>` de la cuenta de servicio del Scheduler (R3). Si no, 401 sin detalle. Nunca acepta la sesión de una persona. |
-| `POST /normativa/monitoreo` | Sin cambios: el disparo manual del operador. |
-| `GET /normativa/resoluciones/{id}/original` | Deja de dar siempre «no disponible»: sirve el original custodiado (R2). |
+| `POST /api/v1/normativa/monitoreo/programado` (nueva) | 202 con `{"corrida": "aceptada"}`. Solo acepta `Authorization: Bearer <token OIDC de Google>` de la cuenta de servicio del Scheduler (R3). Si no, 401 sin detalle. Nunca acepta la sesión de una persona. |
+| `POST /api/v1/normativa/monitoreo` | Sin cambios: el disparo manual del operador. |
+| `GET /api/v1/normativa/resoluciones/{id}/original` | Deja de dar siempre «no disponible»: sirve el original custodiado (R2). |
 
-La ruta nueva entra en el contrato OpenAPI. Si GEN-05 ya está fusionada, este PR lo regenera; si no, lo hace GEN-05.
+Las rutas se montan con el prefijo global `/api/v1` (`main.py:189`, `registrar_routers`) más el del router, `/normativa` (`api/routers/inteligencia_normativa.py:27`). La ruta nueva entra en el contrato OpenAPI. Si GEN-05 ya está fusionada, este PR lo regenera; si no, lo hace GEN-05.
 
 ## 3. Reglas
 
@@ -36,7 +36,7 @@ La ruta nueva entra en el contrato OpenAPI. Si GEN-05 ya está fusionada, este P
 - **R2 · Lector real.** `_lector()` devuelve un lector sobre `descargar` del mismo bucket, con el tope de tamaño de NORM-01. `LectorOriginalesCerrado` se queda solo como respuesta cuando falta la configuración.
 - **R3 · Disparo programado con identidad de servicio.** `disparo_programado.verificar(token)` usa `google.oauth2.id_token.verify_oauth2_token` y acepta el token solo si:
   - la firma es de Google;
-  - `aud` es igual a `NORMATIVA_SCHEDULER_AUDIENCE`;
+  - `aud` es igual a `NORMATIVA_SCHEDULER_AUDIENCE`, que es la URL completa `https://<host del backend>/api/v1/normativa/monitoreo/programado`, la misma que el destino del trabajo de Scheduler;
   - `email` es igual a `NORMATIVA_SCHEDULER_CUENTA` y `email_verified` es verdadero.
 
   Cualquier otra cosa da 401. Con alguna variable vacía, todas las peticiones dan 401, así que falla cerrado. La ruta llama a `disparar_monitoreo("programado")` en segundo plano. No registra el token ni el correo en los logs.
