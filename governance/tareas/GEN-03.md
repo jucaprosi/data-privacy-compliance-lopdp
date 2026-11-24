@@ -2,7 +2,7 @@
 id = "GEN-03"
 titulo = "Biblioteca sin marca: la fuente de plantillas catalogo, el código BIB_COPIA_SOLO_CATALOGO y un solo término visible"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 tanda = 100
 sala = "biblioteca, frontend"
 depende_de = ["GEN-01", "BIB-102", "BIB-103", "BIB-109"]
