@@ -429,3 +429,8 @@ async def disparar_monitoreo(origen: str = "manual") -> ResumenCorrida:
             _registro_norm02b.warning("NORM-02b: el aviso a las organizaciones falló (%s)", type(exc).__name__)
     return resumen
 # === fin NORM-02b ===
+
+
+# === NORM-04 ===
+# Almacén y lector reales y disparo programado (NORM-04): sección reservada.
+# === fin NORM-04 ===
