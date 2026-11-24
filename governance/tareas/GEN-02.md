@@ -2,7 +2,7 @@
 id = "GEN-02"
 titulo = "Escala de madurez de 1 a 5 sin marca: versión madurez_1_5, contrato, servidor, pantalla y archivo de assessment"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 tanda = 100
 sala = "diagnostico, frontend, gobernanza"
 depende_de = ["GEN-01", "DIAG-08", "DIAG-09", "DIAG-10", "DIAG-13"]
@@ -25,3 +25,5 @@ rastros = ["¤diagnostico-scoring", "¤arbitro"]
 ## Límites
 - No se lanza sin el recuento del propietario (especificación R1). Un resultado sellado no se reescribe nunca.
 - La migración de Alembic la renombra GEN-06; el contrato OpenAPI lo regenera GEN-05.
+
+**Recuento R1:** producción 0 (declaración del propietario, 2026-11-24); pruebas y demo, datos ficticios.
