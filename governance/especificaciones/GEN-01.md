@@ -11,7 +11,7 @@ Medido en `origin/main` ea6d26bf (brief del CTO, repetido por el Arquitecto con 
 | :--- | ---: | :--- | :--- |
 | GEN-01 | 99 | artefactos, 5 especificaciones y 15 fichas | — |
 | GEN-02 | 100 | escala de madurez: contrato, servidor, pantalla, pruebas y archivo de assessment | GEN-01; recuento del propietario (GEN-02 R1) |
-| GEN-03 | 100 | Biblioteca: fuente `"catalogo"`, código de error y textos | GEN-01; término de UX/UI (GEN-03 R3) |
+| GEN-03 | 100 | Biblioteca: fuente `"catalogo"`, código de error y textos | GEN-01 |
 | GEN-04 | 100 | marca en la interfaz: título y logotipos | GEN-01; logotipos del propietario (GEN-04 R2) |
 | GEN-07 | 100 | firma electrónica, plantilla RAT, documentos de apoyo y binarios | GEN-01; decisiones del propietario (GEN-07 R1 a R3) |
 | GEN-05 | 101 | contrato OpenAPI regenerado | GEN-02, GEN-03 |
@@ -54,7 +54,7 @@ Sin rutas.
   | operador | «Operador de la plataforma» |
   | fuente de plantilla | `"catalogo"` |
   | código de error | `BIB_COPIA_SOLO_CATALOGO` |
-  | plantilla de la fuente `"catalogo"` | el término de UX/UI (GEN-03 R3) |
+  | plantilla de la fuente `"catalogo"` | «Plantilla de la plataforma» (UX/UI, GEN-03 §4) |
   | título de la aplicación | «EVYDENTIA · LOPDP 360» |
   | archivo de assessment | `Assessment_Madurez_SGPDP.xlsx` (GEN-02 R4) |
   | migración de la escala | `alembic/versions/20261031_diagnostico_escala_madurez.py`, revisión `20261031_diag_escala_madurez` (GEN-06) |

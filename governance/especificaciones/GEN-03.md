@@ -29,13 +29,21 @@ Cambia el contrato: backend y frontend van en el mismo PR. No hay clientes exter
 - **R3 · Un solo término visible.**
   - La plantilla de la fuente `"catalogo"` se nombra con un único término, que elige UX/UI. «Modelos de plantillas» choca con el tipo «Modelo» del mismo filtro.
   - Lo usan la opción del filtro (`catalogo.ts:41`), la línea de la ficha (`FichaPlantilla.tsx:80`), el aviso de copia (`:140`) y `docs/biblioteca-pmv.md`.
-  - **La ficha no se lanza sin el término anotado en §4.**
 - **R4 · Sin prohibiciones** (GEN-01 R3).
 - **R-ADPA · Ortogonalidad ZERAG (`GEN-03`).** Solo la propiedad. Sin `import yaml`.
 
 ## 4. Interfaz
 
-Pasa por UX/UI. Término de la fuente `"catalogo"`: **pendiente de UX/UI** (se pidió el 2026-11-24). Se anota aquí, en un PR de gobernanza, antes de lanzar la ficha.
+Pasa por UX/UI. Término cerrado por UX/UI el 2026-11-24: **«Plantilla de la plataforma»**. Es el par de «Mi plantilla», no choca con el tipo «Modelo» y no lleva marca.
+
+| Lugar | Texto |
+| :--- | :--- |
+| opción del filtro «Fuente» (`catalogo.ts:41`) | «Plantilla de la plataforma»; la otra, «Mi plantilla», las dos en singular |
+| línea de la ficha (`FichaPlantilla.tsx:80`) | «Plantilla de la plataforma» |
+| aviso de copia (`:140`) | «Editar una plantilla de la plataforma crea una copia de tu organización; la original no cambia.» |
+| `docs/biblioteca-pmv.md` | el mismo término: en minúscula dentro de la frase y con mayúscula inicial como etiqueta |
+
+El id interno de la fuente (`"catalogo"`) nunca se muestra en la interfaz.
 
 ## 5. Aceptación
 
@@ -43,7 +51,8 @@ Pasa por UX/UI. Término de la fuente `"catalogo"`: **pendiente de UX/UI** (se p
 | :--- | :--- |
 | **Dado** el catálogo, **cuando** se filtra con `fuente=catalogo`, **entonces** devuelve las plantillas publicadas con `fuente = "catalogo"`. Mutación m1: dejar el valor anterior en `FUENTES` da rojo. | `tests/test_bib_102_catalogo.py`, `catalogo.spec.ts` |
 | **Dado** «Mi plantilla», **cuando** se copia, **entonces** 422 `BIB_COPIA_SOLO_CATALOGO`. Mutación m2: lanzar otro código da rojo. | `tests/test_bib_103_ficha.py` |
-| **Dado** la ficha de una plantilla del catálogo, **entonces** muestra el término de §4 y el aviso de copia con ese término. | `ficha.spec.ts`, `formularios.spec.ts` |
+| **Dado** el filtro «Fuente», **entonces** sus opciones visibles son exactamente «Plantilla de la plataforma» y «Mi plantilla», y ningún texto visible es el id interno de la fuente. | `catalogo.spec.ts` |
+| **Dado** la ficha de una plantilla del catálogo, **entonces** muestra «Plantilla de la plataforma» y el aviso de copia de §4 tal cual. | `ficha.spec.ts`, `formularios.spec.ts` |
 
 ## 6. Trazabilidad
 

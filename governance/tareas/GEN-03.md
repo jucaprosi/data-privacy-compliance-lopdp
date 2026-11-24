@@ -20,8 +20,7 @@ rastros = ["¤biblioteca", "¤frontend-ide", "¤arbitro"]
 
 ## Entrega
 - La fuente de plantillas `"catalogo"` y el código `BIB_COPIA_SOLO_CATALOGO`, en backend y frontend en el mismo PR, porque cambian el contrato de la API.
-- Un solo término visible para las plantillas de la fuente `"catalogo"`, el que fija UX/UI.
+- Un solo término visible para las plantillas de la fuente `"catalogo"`: «Plantilla de la plataforma» (UX/UI).
 
 ## Límites
-- No se lanza sin el término de UX/UI anotado en la especificación §4.
 - El contrato OpenAPI lo regenera GEN-05. Sin migración: la fuente no se guarda en la base (especificación §1).
