@@ -125,6 +125,13 @@ El agente de servicio de Cloud Run de la demo (`service-517105327086@serverless-
 Lo ejecuta el propietario en PowerShell. Cada bloque es independiente de la sesión: define sus variables.
 
 ```powershell
+# 0. Comprobar el permiso de lectura del repositorio (5.1). Sin él, no se publica nada.
+$NUMERO = (gcloud projects describe evydentia-demo --format="value(projectNumber)").Trim()
+$AGENTE = "service-$NUMERO@serverless-robot-prod.iam.gserviceaccount.com"
+$POLITICA = gcloud artifacts repositories get-iam-policy evydentia-containers --project=evydentia --location=us-central1 --format=json | ConvertFrom-Json
+$TIENE = $POLITICA.bindings | Where-Object { $_.role -eq "roles/artifactregistry.reader" -and $_.members -contains "serviceAccount:$AGENTE" }
+if (-not $TIENE) { throw "Falta roles/artifactregistry.reader para $AGENTE sobre evydentia-containers: haz primero el prerrequisito de 5.1. No se publica nada." }
+
 # 1. Imagen del commit: localizarla o construirla una sola vez con la construcción de producción.
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
 git fetch origin
@@ -139,9 +146,10 @@ gcloud artifacts docker images describe "${IMAGEN}:${COMMIT}" --project=evydenti
 $DIGEST = (gcloud artifacts docker images describe "${IMAGEN}:${COMMIT}" --project=evydentia --format="value(image_summary.digest)").Trim()
 "Imagen del commit: ${IMAGEN}@${DIGEST}"
 
-# 2. Anotar la revisión actual para poder volver atrás.
+# 2. Guardar la revisión actual en el servicio, como etiqueta de tráfico "anterior" (5.3 vuelve con ella).
 $ANTERIOR = (gcloud run services describe evydentia-web-demo --project=evydentia-demo --region=us-central1 --format="value(status.latestReadyRevisionName)").Trim()
 "Revisión anterior: $ANTERIOR"
+gcloud run services update-traffic evydentia-web-demo --project=evydentia-demo --region=us-central1 --update-tags="anterior=$ANTERIOR"
 
 # 3. Publicar la revisión nueva sin tráfico, con una etiqueta. Variables y cuenta del servicio no cambian.
 gcloud run deploy evydentia-web-demo --project=evydentia-demo --region=us-central1 --image="${IMAGEN}@${DIGEST}" --no-traffic --tag="c${COMMIT}"
@@ -161,9 +169,8 @@ gcloud run services update-traffic evydentia-web-demo --project=evydentia-demo -
 ### 5.3 Volver atrás
 
 ```powershell
-# Con $ANTERIOR del paso 2 (hoy: evydentia-web-demo-00005-8f5).
-$ANTERIOR = "evydentia-web-demo-00005-8f5"
-gcloud run services update-traffic evydentia-web-demo --project=evydentia-demo --region=us-central1 --to-revisions="${ANTERIOR}=100"
+# La etiqueta "anterior" la dejó el paso 2 de 5.2 en Cloud Run; este bloque no hereda nada de aquel.
+gcloud run services update-traffic evydentia-web-demo --project=evydentia-demo --region=us-central1 --to-tags="anterior=100"
 ```
 
 ### 5.4 Qué comprueba el repositorio

@@ -14,6 +14,11 @@ archivo restaurado:
 - m2 manifiesto o §5 con otro client id -> falla `test_el_client_id_es_uno_solo`.
 - m3 §5 con `--build-arg NEXT_PUBLIC_GOOGLE_CLIENT_ID=...` -> falla `test_el_procedimiento_no_compila_aparte`.
 - m4 `Dockerfile.cloudrun` con un segundo `ARG NEXT_PUBLIC_X` -> falla `test_solo_el_client_id_entra_al_compilar`.
+
+DEMO-10 (governance/especificaciones/DEMO-10.md §5):
+- m5 §5.2 sin el `throw` de la comprobación, o con la comprobación después del `deploy`
+  -> falla `test_el_procedimiento_comprueba_el_permiso_antes_de_publicar`.
+- m6 §5.3 con `$ANTERIOR = "evydentia-web-demo-00005-8f5"` -> falla `test_volver_atras_usa_la_etiqueta_anterior`.
 """
 from __future__ import annotations
 
@@ -98,3 +103,42 @@ def test_solo_el_client_id_entra_al_compilar():
     args = _cloudbuild()["steps"][0]["args"]
     assert args.count("--build-arg") == 1
     assert args[args.index("--build-arg") + 1].startswith("NEXT_PUBLIC_GOOGLE_CLIENT_ID=")
+
+
+def _subseccion(titulo: str) -> str:
+    seccion = _seccion_5()
+    inicio = re.search(rf"^### {re.escape(titulo)} ", seccion, re.M)
+    assert inicio, f"§5 no tiene la subsección {titulo}"
+    resto = seccion[inicio.start():]
+    fin = re.search(r"^### ", resto[4:], re.M)
+    return resto[: fin.start() + 4] if fin else resto
+
+
+def _bloques_powershell(texto: str) -> list[str]:
+    return re.findall(r"```powershell\n(.*?)```", texto, re.S)
+
+
+def test_el_procedimiento_comprueba_el_permiso_antes_de_publicar():
+    bloque = _bloques_powershell(_subseccion("5.2"))[0]
+    despliegue = bloque.find("gcloud run deploy")
+    assert despliegue >= 0
+    antes = bloque[:despliegue]
+    for pieza in (
+        "get-iam-policy evydentia-containers",
+        "roles/artifactregistry.reader",
+        "serverless-robot-prod.iam.gserviceaccount.com",
+        "projectNumber",
+        "throw",
+    ):
+        assert pieza in antes, f"falta antes del deploy: {pieza}"
+    assert "517105327086" not in bloque
+
+
+def test_volver_atras_usa_la_etiqueta_anterior():
+    assert not re.search(r"evydentia-web-demo-\d{5}-", _seccion_5())
+    paso = _subseccion("5.2")
+    etiqueta = paso.find('--update-tags="anterior=')
+    assert 0 <= etiqueta < paso.find("gcloud run deploy")
+    volver = _subseccion("5.3")
+    assert '--to-tags="anterior=100"' in volver
+    assert not re.search(r"\$ANTERIOR\s*=", volver)
