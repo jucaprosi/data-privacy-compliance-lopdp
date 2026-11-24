@@ -2,7 +2,7 @@
 id = "LEG-08"
 titulo = "Lectura oficial de las citas de las 12 plantillas de la Biblioteca, con la huella del documento leído"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 tanda = 101
 sala = "gobernanza"
 depende_de = ["DIAG-16", "LEG-03"]
