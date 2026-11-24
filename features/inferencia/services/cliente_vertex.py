@@ -65,6 +65,19 @@ async def generar_json(cliente, modelo: str, sistema: str, usuario: str, esquema
     )
 
 
+async def transcribir(cliente, modelo: str, sistema: str, instruccion: str, pdf: bytes) -> object:
+    """Transcripción de un PDF (NORM-06): el PDF va como parte `application/pdf`; salida de texto plano."""
+    from google.genai import types
+
+    return await cliente.aio.models.generate_content(
+        model=modelo,
+        contents=[types.Part.from_bytes(data=pdf, mime_type="application/pdf"), instruccion],
+        config=types.GenerateContentConfig(
+            system_instruction=sistema, response_mime_type="text/plain", temperature=0,
+        ),
+    )
+
+
 async def vectorizar(cliente, modelo: str, textos: list[str]) -> list[list[float]]:
     """Vectores de `textos` en el mismo orden (IA-12, `¤vertex-cache`); la compuerta valida el recuento."""
     respuesta = await cliente.aio.models.embed_content(model=modelo, contents=list(textos))

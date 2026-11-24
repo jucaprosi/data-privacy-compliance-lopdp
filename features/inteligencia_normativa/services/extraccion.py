@@ -1,5 +1,5 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-# ¤inteligencia-normativa ¤vertex-cache ¤adpa
+# ¤inteligencia-normativa ¤vertex-cache ¤transcripcion-normativa ¤adpa
 """NORM-03: texto del original de una resolución, fragmentos y citas de artículos.
 
 El original sale de NORM-01 (PDF custodiado). El texto se divide en fragmentos con solape para indexarlos con
@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from typing import Optional, Protocol
 
 from app_core.pasillo import inferencia as pasillo_inferencia
+from features.inteligencia_normativa.domain.transcripcion import PaginaPdf
 
 MODELO_EMBEDDING = pasillo_inferencia.MODELO_EMBEDDING
 LARGO_FRAGMENTO = 1500
@@ -73,6 +74,29 @@ def extraer_texto(pdf: bytes) -> str:
         return "\n".join((p.extract_text() or "") for p in paginas).strip()
     except Exception:  # noqa: BLE001 — el PDF es externo; el motivo no se filtra
         return ""
+
+
+def _tiene_imagen(pagina) -> bool:
+    try:
+        recursos = pagina.get("/Resources")
+        objetos = (recursos.get_object() if recursos is not None else {}).get("/XObject")
+        if objetos is None:
+            return False
+        return any(o.get_object().get("/Subtype") == "/Image" for o in objetos.get_object().values())
+    except Exception:  # noqa: BLE001 — un recurso mal formado no cuenta como imagen
+        return False
+
+
+def estadisticas(pdf: bytes) -> list[PaginaPdf]:
+    """NORM-06 R1: por página, los caracteres útiles (sin espacios) y si trae imagen. Ilegible → lista vacía."""
+    try:
+        from pypdf import PdfReader
+
+        lector = PdfReader(io.BytesIO(pdf))
+        return [PaginaPdf(len(re.sub(r"\s+", "", p.extract_text() or "")), _tiene_imagen(p))
+                for p in lector.pages[:MAXIMO_PAGINAS]]
+    except Exception:  # noqa: BLE001 — el PDF es externo; el motivo no se filtra
+        return []
 
 
 def fragmentar(texto: str, largo: int = LARGO_FRAGMENTO, solape: int = SOLAPE) -> list[Fragmento]:

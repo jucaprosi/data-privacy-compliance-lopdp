@@ -1,5 +1,5 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-# ¤inteligencia-normativa ¤copiloto-ia ¤vertex-cache ¤dpo-independencia ¤adpa
+# ¤inteligencia-normativa ¤copiloto-ia ¤vertex-cache ¤dpo-independencia ¤transcripcion-normativa ¤adpa
 """NORM-03: análisis de impacto de una resolución sobre una organización, validado por persona.
 
 R1 · la propuesta de la IA no cambia nada: solo la aceptación del DPO genera hallazgos hacia el plan de acción.
@@ -27,7 +27,7 @@ from features.inteligencia_normativa.domain.errores import (
     ResolucionNoEncontrada,
     ResolucionSinTexto,
 )
-from features.inteligencia_normativa.services import extraccion
+from features.inteligencia_normativa.services import extraccion, transcripcion_engine
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ LARGO_MINIMO_NOTA = 10
 DECISIONES = {"aceptar": "aceptada", "rechazar": "rechazada"}
 
 _COLUMNAS = ("id::text AS id, resolucion_id::text AS resolucion_id, modelo, corpus_sha256, propuesta, "
-             "sin_base_normativa, estado, solicitada_por, creada_en, decidida_por, decidida_en, nota")
+             "sin_base_normativa, estado, solicitada_por, creada_en, decidida_por, decidida_en, nota, origen_texto")
 
 
 class ElementoImpacto(BaseModel):
@@ -60,6 +60,7 @@ class AnalisisImpacto(BaseModel):
     decidida_por: Optional[str] = None
     decidida_en: Optional[datetime] = None
     nota: Optional[str] = None
+    origen_texto: str = "capa_texto"
     hallazgos_generados: int = 0
 
 
@@ -87,7 +88,7 @@ def _analisis(f, hallazgos: int = 0) -> AnalisisImpacto:
         id=f.id, resolucion_id=f.resolucion_id, modelo=f.modelo, corpus_sha256=f.corpus_sha256,
         propuesta=[ElementoImpacto(**e) for e in (f.propuesta or [])], sin_base_normativa=f.sin_base_normativa,
         estado=f.estado, solicitada_por=f.solicitada_por, creada_en=f.creada_en, decidida_por=f.decidida_por,
-        decidida_en=f.decidida_en, nota=f.nota, hallazgos_generados=hallazgos,
+        decidida_en=f.decidida_en, nota=f.nota, origen_texto=f.origen_texto, hallazgos_generados=hallazgos,
     )
 
 
@@ -135,7 +136,7 @@ async def _contexto(sesion, tenant_id: str, user_id: str) -> None:
 async def solicitar(
     sesion, tenant_id: str, user_id: str, resolucion_id: str, *, lector: LectorOriginales,
     catalogo: CatalogoOrganizacion, analizar: Analizador, modelo: str, indexador=None,
-    registrar_traza: Optional[Callable[..., Awaitable[None]]] = None,
+    registrar_traza: Optional[Callable[..., Awaitable[None]]] = None, transcribir=None,
 ) -> AnalisisImpacto:
     """Extrae el original, pide el análisis al modelo, depura las citas y guarda la propuesta (estado `propuesta`)."""
     await _contexto(sesion, tenant_id, user_id)
@@ -146,7 +147,11 @@ async def solicitar(
     if fila is None:
         raise ResolucionNoEncontrada()
     contenido = lector.leer(fila.ruta_original)
-    texto = extraccion.extraer_texto(contenido) if contenido else ""
+    if not contenido:
+        raise ResolucionSinTexto()
+    original = await transcripcion_engine.texto_de(sesion, contenido, fila.archivo_sha256, modelo=modelo,
+                                                   transcribir=transcribir)
+    texto = original.texto
     if not texto:
         raise ResolucionSinTexto()
     await extraccion.indexar(extraccion.fragmentar(texto), indexador)
@@ -161,10 +166,11 @@ async def solicitar(
     await _contexto(sesion, tenant_id, user_id)
     nuevo = (await sesion.execute(
         text("INSERT INTO normativa_analisis_impacto (tenant_id, resolucion_id, modelo, corpus_sha256, propuesta, "
-             "sin_base_normativa, solicitada_por) VALUES (:t, CAST(:r AS uuid), :m, :c, CAST(:p AS jsonb), :s, :u) "
+             "sin_base_normativa, solicitada_por, origen_texto) "
+             "VALUES (:t, CAST(:r AS uuid), :m, :c, CAST(:p AS jsonb), :s, :u, :o) "
              f"RETURNING {_COLUMNAS}"),
         {"t": tenant_id, "r": resolucion_id, "m": modelo, "c": corpus, "p": json.dumps(propuesta),
-         "s": not propuesta, "u": user_id},
+         "s": not propuesta, "u": user_id, "o": original.origen},
     )).one()
     if registrar_traza is not None and traza is not None:
         await registrar_traza(sesion, traza, "normativa_impacto", nuevo.id)
