@@ -20,7 +20,7 @@ export interface FilaRespuesta {
   pregunta_id: number;
   control: string;
   dimension: string;
-  /** Entrada (DIAG-08): nivel asignado SMARTCIDI 1 a 5. */
+  /** Entrada (DIAG-08): nivel asignado de la escala de madurez de 1 a 5 1 a 5. */
   nivel_asignado: number | null;
   /** Dato derivado: lo pone el servidor simulado, como el real (DIAG-08 R3). */
   estado?: string;
@@ -114,7 +114,7 @@ export async function simularApiDiagnostico(
           con_documento: false,
         })),
         indicadores: {
-          escala: "smartcidi_1_5",
+          escala: "madurez_1_5",
           cumplimiento: false,
           brechas_criticas: 65,
           brechas_altas: 2,

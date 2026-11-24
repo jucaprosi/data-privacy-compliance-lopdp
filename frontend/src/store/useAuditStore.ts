@@ -110,7 +110,7 @@ export type EstadoCumplimiento = "Conforme" | "Parcial" | "No Conforme" | "Pendi
 
 export interface RespuestaItemStore {
   preguntaId: number;
-  /** Nivel asignado SMARTCIDI 1 a 5; null = aún sin responder con la escala nueva (pendiente). */
+  /** Nivel asignado de la escala de madurez de 1 a 5 1 a 5; null = aún sin responder con la escala nueva (pendiente). */
   nivelAsignado: number | null;
   /** Dato derivado de `nivelAsignado` (lo devuelve el servidor); nunca es entrada. */
   cumple: EstadoCumplimiento;
@@ -1157,7 +1157,7 @@ export const useAuditStore = create<AuditStoreState>()(
         if (version < 5) {
           delete migrado.theme;
         }
-        // v6 (DIAG-09): escala SMARTCIDI. La evidencia E0-E3 pasa a los cinco escalones y el nivel
+        // v6 (DIAG-09): escala de madurez de 1 a 5. La evidencia E0-E3 pasa a los cinco escalones y el nivel
         // asignado queda sin responder: no se puede deducir si un «Parcial» era 2 o 3 (DIAG-08).
         if (version < 6 && Array.isArray(migrado.respuestas)) {
           migrado = {

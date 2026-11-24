@@ -113,7 +113,7 @@ def test_ninguna_otra_sala_inserta_hallazgos_ni_crea_tareas_correctoras():
     assert not infractores, f"Escriben hallazgos o tareas fuera de la sala roadmap: {sorted(set(infractores))}"
 
 
-# --- Resultados sellados antes y después de la escala SMARTCIDI (sin base de datos) -------------
+# --- Resultados sellados antes y después de la escala de madurez de 1 a 5 (sin base de datos) -------------
 
 
 def _sellado(respuestas, indicadores):
@@ -181,7 +181,7 @@ async def test_resultado_anterior_a_la_escala_registra_sus_hallazgos_criticos(mo
 def _sellado_nuevo():
     from features.diagnostico.domain.resultados import IndicadoresSellados
 
-    indicadores = IndicadoresSellados(escala="smartcidi_1_5", cumplimiento=False, brechas_criticas=1, brechas_altas=0,
+    indicadores = IndicadoresSellados(escala="madurez_1_5", cumplimiento=False, brechas_criticas=1, brechas_altas=0,
                                       por_dimension=[], respaldo_documental=0.0, preguntas_evaluadas=2,
                                       preguntas_aplicables=3, cobertura=66.7)
     return _sellado([_respuesta_sellada(1, "No Conforme", nivel_asignado=1),

@@ -76,7 +76,7 @@ async function contextoConEvidencia(browser: Browser): Promise<BrowserContext> {
   return contexto;
 }
 
-test.describe("Escala SMARTCIDI con evidencia física (DIAG-09, EVYDENTIA)", () => {
+test.describe("Escala de madurez de 1 a 5 con evidencia física (DIAG-09, EVYDENTIA)", () => {
   test("el DPO vincula, el administrador pide la propuesta y elige el nivel, y el DPO sella", async ({ browser }) => {
     test.slow(); // Tres sesiones de navegador en una prueba.
     // 1. El DPO sube y vincula la evidencia sin elegir escalón; no ve el selector de nivel, el escalón ni la IA.

@@ -1,6 +1,6 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤diagnostico ¤diagnostico-scoring ¤arbitro
-"""DIAG-08: escala SMARTCIDI en el servidor (nivel asignado 1 a 5, evidencia 0 a 4, nivel por dimensión).
+"""DIAG-08: escala de madurez de 1 a 5 en el servidor (nivel asignado 1 a 5, evidencia 0 a 4, nivel por dimensión).
 
 Las pruebas puras (motor, esquema, sellado anterior) corren sin base. Las que recorren PostgreSQL
 (API, migración, RLS con lopdp_app) exigen TEST_DATABASE_URL (PostgreSQL 16 local o servicio PostgreSQL 16 del CI);
@@ -68,7 +68,7 @@ def _guardada(pregunta_id: int, nivel_asignado, nivel_evidencia: int) -> dict:
 # --- Escala y reglas (sin base de datos) -------------------------------------------------------
 
 
-def test_la_escala_es_la_del_archivo_smartcidi():
+def test_la_escala_es_la_del_archivo_de_assessment():
     assert sorted(NIVELES_ASIGNADOS) == [1, 2, 3, 4, 5]
     assert sorted(NIVELES_EVIDENCIA) == [0, 1, 2, 3, 4]
     assert NIVELES_ASIGNADOS[1][0] == "Inicial / Reactivo" and NIVELES_ASIGNADOS[5][0] == "Optimizado / Mejora continua"
@@ -116,7 +116,7 @@ def test_indicadores_por_dimension():
     guardadas = [_guardada(1, 4, 3), _guardada(2, 2, 2)]
     indicadores, _ = calcular_indicadores(_aplicables(), guardadas, {1, 2})
     crudo = asdict(indicadores)
-    assert crudo["escala"] == "smartcidi_1_5"
+    assert crudo["escala"] == "madurez_1_5"
     assert not {"madurez", "nivel_madurez", "riesgo_residual"} & set(crudo)
     assert crudo["por_dimension"], "debe traer al menos una dimensión"
     for d in crudo["por_dimension"]:

@@ -1,6 +1,6 @@
 // © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 /**
- * DIAG-09: la escala SMARTCIDI en la pantalla, con la API de DIAG-08 simulada.
+ * DIAG-09: la escala de madurez de 1 a 5 en la pantalla, con la API de DIAG-08 simulada.
  *
  * - Cinco niveles con su criterio y cinco escalones de evidencia; el estado no se envía.
  * - El estado sale del servidor como dato derivado.
@@ -61,7 +61,7 @@ async function simularHistorial(context: BrowserContext, indicadores: Record<str
   );
 }
 
-test.describe("Escala SMARTCIDI en la pantalla (DIAG-09)", () => {
+test.describe("Escala de madurez de 1 a 5 en la pantalla (DIAG-09)", () => {
   test("cinco niveles: criterio visible, cinco escalones de evidencia y nada de estado en el envío", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     const servidor = await simularRespuestasDiagnostico08(context);
@@ -132,7 +132,7 @@ test.describe("Escala SMARTCIDI en la pantalla (DIAG-09)", () => {
   test("sin cifra global: el historial muestra niveles por dimensión y ningún valor de la organización", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await simularHistorial(context, {
-      escala: "smartcidi_1_5",
+      escala: "madurez_1_5",
       cumplimiento: true,
       brechas_criticas: 0,
       brechas_altas: 1,

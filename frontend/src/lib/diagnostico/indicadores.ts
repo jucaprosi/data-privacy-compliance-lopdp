@@ -28,12 +28,12 @@ export interface NivelDimensionSellado {
 }
 
 /**
- * Indicadores de un resultado sellado. Con la escala nueva (`smartcidi_1_5`) traen los niveles por
+ * Indicadores de un resultado sellado. Con la escala nueva (`madurez_1_5`) traen los niveles por
  * dimensión y ninguna cifra global; un resultado sellado antes llega con `escala = "anterior"` y se
  * muestra con el aviso, sin convertirlo (DIAG-09 R4).
  */
 export interface IndicadoresSellados {
-  escala: "smartcidi_1_5" | "anterior";
+  escala: "madurez_1_5" | "anterior";
   cumplimiento: boolean;
   brechas_criticas: number;
   brechas_altas?: number;

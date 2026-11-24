@@ -916,7 +916,7 @@ export default function DiagnosticCanvas({
           </div>
 
           {/* ===================================================================== */}
-          {/* CONTROL 1: Nivel de madurez SMARTCIDI 1 a 5 (DIAG-09). El estado se deriva. */}
+          {/* CONTROL 1: Nivel de madurez de la escala de 1 a 5 (DIAG-09). El estado se deriva. */}
           {/* ===================================================================== */}
           <fieldset disabled={!puedeResponder} className="m-0 min-w-0 border-0 p-0 space-y-6">
           <div className={`${dimensionCardStyles.divider} space-y-2.5 pt-2 border-t`}>

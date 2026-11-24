@@ -36,7 +36,7 @@ _COLUMNAS = (
 
 
 class RespuestaFueraDeCatalogo(ValueError):
-    """Dimensión fuera de D01-D10, control sin nombre o nivel fuera de la escala SMARTCIDI."""
+    """Dimensión fuera de D01-D10, control sin nombre o nivel fuera de la escala de madurez de 1 a 5."""
 
 
 async def listar_respuestas(session: AsyncSession, tenant_id: str, user_id: str) -> list[dict[str, Any]]:

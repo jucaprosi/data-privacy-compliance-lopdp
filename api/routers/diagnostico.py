@@ -35,7 +35,7 @@ class RespuestaItemSchema(BaseModel):
     id_pregunta: str
     respuesta_afirmativa: bool
     nivel_evidencia: NivelEvidencia = NivelEvidencia.E0_VERBAL
-    nivel_asignado: Optional[int] = Field(None, ge=1, le=5, description="Nivel asignado SMARTCIDI 1 a 5")
+    nivel_asignado: Optional[int] = Field(None, ge=1, le=5, description="Nivel asignado de la escala de madurez de 1 a 5 1 a 5")
     rationale: str = ""
 
 class EvaluacionDiagnosticoRequest(BaseModel):
@@ -48,7 +48,7 @@ class InformeDiagnosticoRequest(BaseModel):
 class RespuestaControlSchema(BaseModel):
     pregunta_id: int = Field(..., description="Identificador numérico del control del assessment")
     nivel_asignado: Optional[int] = Field(
-        None, ge=1, le=5, description="Nivel asignado SMARTCIDI 1 a 5; sin valor computa como pendiente"
+        None, ge=1, le=5, description="Nivel asignado de la escala de madurez de 1 a 5 1 a 5; sin valor computa como pendiente"
     )
     evidencia_nivel: int = Field(0, ge=0, le=4, description="Nivel de evidencia 0 (verbal) a 4 (revisada)")
     criticidad: int = Field(3, ge=1, le=5, description="Criticidad del control (1 a 5)")

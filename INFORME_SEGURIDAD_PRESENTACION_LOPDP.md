@@ -53,7 +53,7 @@ Para asegurar que la presentación de la aplicación sea 100% exitosa y libre de
      - Terminal 2: `iniciar_frontend.bat` (servidor frontend en `http://localhost:5173` o `http://localhost:3000`)
 
 3. **Demostración de Funcionalidades Clave:**
-   - **Assessment de Madurez LOPDP:** Carga del archivo `Assessment_Madurez_SGPDP_COAC_SMARTCIDI (2).xlsx` y visualización de diagnósticos de brecha.
+   - **Assessment de Madurez LOPDP:** Carga del archivo `Assessment_Madurez_SGPDP.xlsx` y visualización de diagnósticos de brecha.
    - **Sanitización y Privacidad:** Demostración del motor de anonimización de datos personales y cláusulas de consentimiento.
    - **Reportes:** Generación y descarga del reporte ejecutivo PDF.
 

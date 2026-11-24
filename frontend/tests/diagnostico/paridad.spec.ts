@@ -79,7 +79,7 @@ for (const caso of casos) {
     const conDocumento = new Set(caso.controles_con_documento);
     const sumaSellada = evaluadas.reduce((acc, r) => acc + (conDocumento.has(r.preguntaId) ? r.evidenciaNivel : 0), 0);
     const pantalla: IndicadoresSellados = {
-      escala: "smartcidi_1_5",
+      escala: "madurez_1_5",
       cumplimiento: resultado.brechasCriticas === 0,
       brechas_criticas: resultado.brechasCriticas,
       brechas_altas: resultado.brechasAltas,

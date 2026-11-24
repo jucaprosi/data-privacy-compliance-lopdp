@@ -50,7 +50,7 @@ class RespuestaSellada:
     nivel_declarado: int
     nivel_sellado: int
     con_documento: bool
-    # Escala SMARTCIDI (DIAG-08); los sellados anteriores no lo traen y no se les añade.
+    # Escala de madurez de 1 a 5 (DIAG-08); los sellados anteriores no lo traen y no se les añade.
     nivel_asignado: Optional[int] = None
     # DIAG-13: False si la evidencia es la declarada por el DPO y nadie la comprobó. Los sellados
     # anteriores no lo traen y no se les añade, para que su huella siga cuadrando.
@@ -101,7 +101,7 @@ def indicadores_a_salida(indicadores: Union[IndicadoresSellados, dict[str, Any]]
 
 
 def es_resultado_anterior(indicadores: Union[IndicadoresSellados, dict[str, Any]]) -> bool:
-    """True si el sellado es anterior a la escala SMARTCIDI (sus respuestas no traen nivel asignado)."""
+    """True si el sellado es anterior a la escala de madurez de 1 a 5 (sus respuestas no traen nivel asignado)."""
     return isinstance(indicadores, dict) and indicadores.get("escala") != ESCALA_SELLADA
 
 
