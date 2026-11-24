@@ -31,6 +31,7 @@ Sin código. Estado final de la propiedad:
 | :--- | :--- |
 | `PRD.md` | líneas 23 (se elimina la frase del operador: el operador no tiene nombre de marca), 29, 66, 140-141, 208, 245, 310, 312, 635, 656 y 715 con el vocabulario de §3 |
 | `INVARIANTS.md` | 9 (título de la sección), 15 (el invariante de la escala pasa a llamarse con el sufijo `MATURITY_SCALE_1_5` en lugar del que nombra la marca, dentro de la misma familia LOPDP; texto: «La madurez se mide exclusivamente en la escala de madurez de 1 a 5»), 143 y 156 |
+| `tests/test_auditoria_grilla.py` | 14 (docstring: «escala de madurez de 1 a 5») y 54 (el comentario cita el invariante con el sufijo `MATURITY_SCALE_1_5`). Va en GEN-01 porque `tests/test_inv_citados_existen.py` exige que cada invariante citado exista: al renombrarlo en `INVARIANTS.md`, el mismo PR cambia su única otra cita. |
 | `VPA_MAP.md` | 24 |
 | `governance/METODOLOGIAS.md` | 29 |
 | `INFORME_CONOCIMIENTOS_EPISTEMICOS.md` | 2: «EVYDENTIA · LOPDP 360» |
