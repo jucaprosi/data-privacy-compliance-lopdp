@@ -2,7 +2,7 @@
 id = "NORM-04"
 titulo = "El monitoreo de la SPDP descarga de verdad: un Cloud Run Job con la cuenta del monitoreo escribe los originales y el backend solo los lee"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 101
 sala = "inteligencia_normativa"
 depende_de = ["NORM-01", "NORM-02", "EVI-04", "GCP-01"]

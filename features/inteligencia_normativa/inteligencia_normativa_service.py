@@ -432,5 +432,14 @@ async def disparar_monitoreo(origen: str = "manual") -> ResumenCorrida:
 
 
 # === NORM-04 ===
-# Almacén y lector reales y disparo programado (NORM-04): sección reservada.
+# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad Lector real de originales, de solo lectura, en el backend (NORM-04 R2).
+
+
+def _lector() -> LectorOriginales:  # noqa: F811 - redefine el de NORM-02 como NORM-02b redefine disparar_monitoreo
+    """Lector real sobre el bucket normativo (`K_SERVICE` y `GCP_STORAGE_BUCKET_NORMATIVO`); si falta alguno, el cerrado."""
+    if _lector_de_prueba is not None:
+        return _lector_de_prueba
+    from features.inteligencia_normativa.services import almacen_normativo
+
+    return almacen_normativo.lector_normativo_por_defecto()
 # === fin NORM-04 ===
