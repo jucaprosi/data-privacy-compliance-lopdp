@@ -2,7 +2,7 @@
 id = "DEMO-10"
 titulo = "El procedimiento de la web de demo comprueba el permiso de lectura y vuelve atrás sin revisión fija"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 tanda = 98
 sala = "operaciones"
 depende_de = ["DEMO-09"]
