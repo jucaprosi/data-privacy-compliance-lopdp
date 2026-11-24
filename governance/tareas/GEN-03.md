@@ -9,7 +9,7 @@ depende_de = ["GEN-01", "BIB-102", "BIB-103", "BIB-109"]
 propiedad = ["features/biblioteca/services/catalogo.py", "features/biblioteca/services/ficha.py", "features/biblioteca/services/mis_plantillas.py", "features/biblioteca/services/plantillas_cuenta_engine.py", "features/biblioteca/domain/errores.py", "frontend/src/lib/biblioteca/catalogo.ts", "frontend/src/lib/biblioteca/fichas.ts", "frontend/src/components/biblioteca/fichas/FichaPlantilla.tsx", "docs/biblioteca-pmv.md", "tests/test_bib_102_catalogo.py", "tests/test_bib_103_ficha.py", "frontend/tests/biblioteca/catalogo.spec.ts", "frontend/tests/biblioteca/ficha.spec.ts", "frontend/tests/biblioteca/formularios.spec.ts"]
 crea = []
 arbitro = "pytest tests/test_bib_102_catalogo.py tests/test_bib_103_ficha.py contra PostgreSQL; Playwright frontend/tests/biblioteca/catalogo.spec.ts ficha.spec.ts formularios.spec.ts + tsc --noEmit + npm run build; mutaciones m1 y m2."
-rastros = ["¤biblioteca", "¤frontend-ide", "¤arbitro"]
+rastros = ["¤adpa", "¤frontend-ide", "¤arbitro"]
 +++
 
 # GEN-03 · Biblioteca sin marca: la fuente de plantillas catalogo, el código BIB_COPIA_SOLO_CATALOGO y un solo término visible

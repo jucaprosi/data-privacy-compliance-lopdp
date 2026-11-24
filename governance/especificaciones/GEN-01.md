@@ -30,7 +30,7 @@ Sin código. Estado final de la propiedad:
 | Archivo | Cambio |
 | :--- | :--- |
 | `PRD.md` | líneas 23 (se elimina la frase del operador: el operador no tiene nombre de marca), 29, 66, 140-141, 208, 245, 310, 312, 635, 656 y 715 con el vocabulario de §3 |
-| `INVARIANTS.md` | 9 (título de la sección), 15 (`INV_LOPDP_MATURITY_SCALE_1_5`: «La madurez se mide exclusivamente en la escala de madurez de 1 a 5»), 143 y 156 |
+| `INVARIANTS.md` | 9 (título de la sección), 15 (el invariante de la escala pasa a llamarse con el sufijo `MATURITY_SCALE_1_5` en lugar del que nombra la marca, dentro de la misma familia LOPDP; texto: «La madurez se mide exclusivamente en la escala de madurez de 1 a 5»), 143 y 156 |
 | `VPA_MAP.md` | 24 |
 | `governance/METODOLOGIAS.md` | 29 |
 | `INFORME_CONOCIMIENTOS_EPISTEMICOS.md` | 2: «EVYDENTIA · LOPDP 360» |
@@ -51,7 +51,7 @@ Sin rutas.
   | :--- | :--- |
   | escala | «escala de madurez de 1 a 5» |
   | versión de escala sellada | `madurez_1_5` |
-  | invariante | `INV_LOPDP_MATURITY_SCALE_1_5` |
+  | invariante de la escala | mismo prefijo de la familia LOPDP, sufijo `MATURITY_SCALE_1_5` (lo escribe GEN-01 en `INVARIANTS.md`) |
   | operador | «Operador de la plataforma» |
   | fuente de plantilla | `"catalogo"` |
   | código de error | `BIB_COPIA_SOLO_CATALOGO` |

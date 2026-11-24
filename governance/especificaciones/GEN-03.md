@@ -1,5 +1,5 @@
 # GEN-03 · Biblioteca sin marca: la fuente de plantillas catalogo, el código BIB_COPIA_SOLO_CATALOGO y un solo término visible
-`¤sdd` `¤biblioteca` `¤frontend-ide` `¤arbitro`
+`¤sdd` `¤adpa` `¤frontend-ide` `¤arbitro`
 
 ## 1. Datos
 
