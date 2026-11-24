@@ -4,8 +4,6 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #0a0a0c;
-  --foreground: #f4f4f5;
   --render-dark: #0a0a0c;
   --render-surface: #141417;
   --render-border: #26262b;
@@ -382,6 +380,9 @@ html, body {
  */
 :root,
 .theme-light {
+  --background: #ffffff;
+  --foreground: #09090b;
+  color-scheme: light;
   --ui-campo: #ffffff;
   --ui-superficie: #ffffff;
   --ui-superficie-2: #fafafa;
@@ -394,6 +395,9 @@ html, body {
   --ui-primario-texto: #ffffff;
 }
 .theme-dark {
+  --background: #0a0a0c;
+  --foreground: #f4f4f5;
+  color-scheme: dark;
   --ui-campo: #0a0a0c;
   --ui-superficie: #141417;
   --ui-superficie-2: #18181b;
