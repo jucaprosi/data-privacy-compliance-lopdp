@@ -68,6 +68,7 @@ Sin cambios.
 
 ## 6. Trazabilidad
 
+- **PRD:** §4, Módulo 6.1, «Ejecución y reparto de privilegios»; ley fundacional 13.
 - Diseño de NORM-01 (brief del bucket, decisiones 4, 5 y 8) y reconciliación pedida por el CTO (2026-11-24).
 - Depende de NORM-01 y NORM-02, de EVI-04 (`subir` y `descargar`) y de GCP-01.
 - Brief del propietario: `C:\Users\Juan Carlos\compartido\evydentia\briefs\NORM-04-propietario-gcp.v3.md`. Sustituye a la v1 y a la v2.

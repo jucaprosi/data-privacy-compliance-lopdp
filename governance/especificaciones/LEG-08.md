@@ -61,5 +61,6 @@ Sin cambios.
 
 ## 6. Trazabilidad
 
+- **PRD:** §4, Módulo 7, «Publicación con cita verificada»; ley fundacional 6.
 - Brief del CTO v2 y DIAG-16, cuyo método y formato se reutilizan.
 - BIB-403 depende de esta ficha.

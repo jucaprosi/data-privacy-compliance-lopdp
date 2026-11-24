@@ -90,6 +90,7 @@ Los PDF de prueba se generan dentro de la prueba: uno con una página que solo t
 
 ## 6. Trazabilidad
 
+- **PRD:** §4, Módulo 6.3, «Transcripción de originales escaneados»; ley fundacional 7.
 - Decisión del propietario (2026-11-24) y brief del CTO.
 - Depende de NORM-03 (análisis), NORM-05 (cabeza de Alembic de la sala), IA-10 (trazas), IA-12 (precedente sin tope), IA-13 (modelo) e IA-17 (región).
 - **Estimación de coste (para el CTO; no es una regla):**
