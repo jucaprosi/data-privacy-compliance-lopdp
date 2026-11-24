@@ -2,7 +2,7 @@
 id = "GEN-01"
 titulo = "Aplicación genérica: los artefactos, las especificaciones y las fichas en estado final, sin la marca del operador"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 tanda = 99
 sala = "gobernanza"
 depende_de = ["DIAG-08", "DIAG-09", "DIAG-10", "PRD-02"]
