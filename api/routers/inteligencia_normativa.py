@@ -118,3 +118,8 @@ async def revisar(id_resolucion: str, cuerpo: RevisionRequest, operador: dict = 
     except svc.ErrorNormativo as exc:
         raise _http(exc) from exc
     return r.model_dump(mode="json")
+
+
+# === NORM-05 ===
+# Disparo manual por el Job (NORM-05): sección reservada.
+# === fin NORM-05 ===

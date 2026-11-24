@@ -431,6 +431,11 @@ async def disparar_monitoreo(origen: str = "manual") -> ResumenCorrida:
 # === fin NORM-02b ===
 
 
+# === NORM-05 ===
+# Disparo manual que lanza el Job del monitoreo (NORM-05): sección reservada.
+# === fin NORM-05 ===
+
+
 # === NORM-04 ===
 # ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad Lector real de originales, de solo lectura, en el backend (NORM-04 R2).
 
