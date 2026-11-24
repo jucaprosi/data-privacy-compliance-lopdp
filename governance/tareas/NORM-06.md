@@ -2,7 +2,7 @@
 id = "NORM-06"
 titulo = "El análisis de impacto lee los PDF escaneados: detección del escaneo, transcripción con Gemini en Vertex AI una sola vez por sha256 y falla cerrada"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 105
 sala = "inteligencia_normativa"
 depende_de = ["NORM-03", "NORM-05", "IA-10", "IA-12", "IA-13", "IA-17"]
