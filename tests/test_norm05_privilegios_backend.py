@@ -72,6 +72,7 @@ async def _sembrar(propietario) -> str:
 
 async def _debe_fallar(fabrica, sentencia: str, params: dict | None = None) -> None:
     async with fabrica() as s:
+        assert (await s.execute(text("SELECT session_user = 'lopdp_app'"))).scalar_one() is True
         with pytest.raises(DBAPIError):
             await s.execute(text(sentencia), params or {})
         await s.rollback()
@@ -120,10 +121,10 @@ async def test_lopdp_app_solo_actualiza_las_cuatro_columnas(propietario, como_ap
 
 async def test_lopdp_app_no_adopta_el_rol_del_monitoreo(como_app):
     """Mutación m2 (c): `GRANT lopdp_normativa TO lopdp_app` en la migración da rojo."""
-    await _debe_fallar(como_app, "SET LOCAL ROLE lopdp_normativa")
     async with como_app() as s:
         miembro = (await s.execute(text("SELECT pg_has_role('lopdp_app', 'lopdp_normativa', 'MEMBER')"))).scalar_one()
-    assert miembro is False
+    assert miembro is False, "hay una membresía de lopdp_app en lopdp_normativa que viene de fuera del repositorio"
+    await _debe_fallar(como_app, "SET LOCAL ROLE lopdp_normativa")
 
 
 # ------------------------------------------------------------ R3: disparo manual por el Job
