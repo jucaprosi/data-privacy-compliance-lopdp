@@ -2,7 +2,8 @@
 # ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad ¤arbitro
 """NORM-05: el backend no adopta el rol del monitoreo.
 
-Conectado como `lopdp_app` (SET ROLE de sesión sobre una conexión propia, que sobrevive al commit): revisa una
+Conectado como `lopdp_app` (SET SESSION AUTHORIZATION sobre una conexión propia, que sobrevive al commit; `SET ROLE` no sirve: lo valida el
+usuario de sesión, y en el CI es el superusuario `lopdp_beta_owner`, que puede adoptar cualquier rol): revisa una
 resolución, pero no inserta versiones ni bitácora, no cambia otra columna y no adopta `lopdp_normativa`.
 El disparo manual lanza el Job con un envío doble: sin red real. Cada prueba documenta su mutación.
 """
@@ -33,10 +34,14 @@ async def como_app(db_engine):
     @event.listens_for(motor.sync_engine, "connect")
     def _rol(conexion, _registro):
         cursor = conexion.cursor()
-        cursor.execute("SET ROLE lopdp_app")
+        cursor.execute("SET SESSION AUTHORIZATION lopdp_app")
         cursor.close()
 
     fabrica = async_sessionmaker(motor, expire_on_commit=False, class_=AsyncSession)
+    async with fabrica() as s:
+        quien = (await s.execute(text(
+            "SELECT session_user, current_user, (SELECT rolsuper FROM pg_roles WHERE rolname = session_user)"))).one()
+    assert tuple(quien) == ("lopdp_app", "lopdp_app", False), "la prueba no se conecta de verdad como lopdp_app"
     yield fabrica
     await motor.dispose()
 
