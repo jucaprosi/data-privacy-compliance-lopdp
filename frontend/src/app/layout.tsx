@@ -32,7 +32,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} theme-light`}>
+    <html lang="es" className={`${inter.variable} theme-light`} suppressHydrationWarning>
+      <head>
+        {/* FE-30 R5: síncrono y sin async/defer, para fijar el tema guardado antes de pintar. */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts -- síncrono a propósito: bloquea el pintado (FE-30 R5) */}
+        <script src="/tema-inicial.js" />
+      </head>
       <body className={`${inter.className} antialiased`}>
         <ThemeRootSync />
         <AvisoEntorno entorno={entornoDelServidor()} />
