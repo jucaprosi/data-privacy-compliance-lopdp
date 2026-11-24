@@ -1,5 +1,7 @@
 # Brief del propietario · Bucket del corpus normativo y cuenta del monitoreo (NORM-01)
 
+`¤vigilancia-spdp` `¤monitoreo-job`
+
 Fecha: 2026-11-12. Redactado por el Arquitecto ADPA para el Tech Lead. Lo ejecuta el propietario (o quien provisiona el entorno). Ninguna sesión de IA ejecuta nada de esto. NORM-01 no entra en tanda hasta que el propietario confirme el paso 6.
 
 ## Qué se hace y por qué

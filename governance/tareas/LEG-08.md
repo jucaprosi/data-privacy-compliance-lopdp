@@ -9,7 +9,7 @@ depende_de = ["DIAG-16", "LEG-03"]
 propiedad = ["governance/artefactos/CITAS_PLANTILLAS_VERIFICADAS.md"]
 crea = ["governance/artefactos/CITAS_PLANTILLAS_VERIFICADAS.md"]
 arbitro = "Revisión del CTO: cada fila con fuente oficial, página, texto literal breve y huella SHA-256 del PDF leído; ninguna fila completada de memoria."
-rastros = ["¤regulation-code", "¤arbitro"]
+rastros = ["¤regulation-code", "¤arbitro", "¤cita-verificada"]
 +++
 
 # LEG-08 · Lectura oficial de las citas de las 12 plantillas

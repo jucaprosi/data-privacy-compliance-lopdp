@@ -16,7 +16,7 @@ Cada `governance/especificaciones/<ID>.md` tiene, en este orden, estos seis apar
 3. `## 3. Reglas` — reglas de negocio como predicados o fórmulas, sin «según corresponda».
 4. `## 4. Interfaz` — pantallas, estados y textos visibles; o «sin interfaz».
 5. `## 5. Aceptación` — escenarios `Dado / Cuando / Entonces`; cada uno nombra la prueba que lo fija.
-6. `## 6. Trazabilidad` — ficha, apartados del PRD, invariantes y decisiones abiertas. Abre con `- **PRD:**` y el apartado que sustenta cada decisión de producto. Si la decisión aún no está en el PRD, la misma ficha la lleva a su apartado natural. Una especificación solo técnica (CI, arnés, migración) nombra ahí la ficha o el invariante del que sale.
+6. `## 6. Trazabilidad` — ficha, apartados del PRD, invariantes y decisiones abiertas. Abre con `- **PRD:**` y el apartado que sustenta cada decisión de producto. Si la decisión aún no está en el PRD, la misma ficha la lleva a su apartado natural. Una especificación solo técnica (CI, arnés, migración) nombra ahí la ficha o el invariante del que sale. Una decisión de producto nueva tiene su rastro específico en `VPA_MAP.md`, cuyo significado remite al apartado del PRD; va en los `rastros` de la ficha, en la línea de etiquetas de la especificación y en la cabecera de cada archivo que la implementa, prueba o documenta.
 
 ## Convenciones del repositorio que toda especificación respeta
 

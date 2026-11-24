@@ -9,7 +9,7 @@ depende_de = ["NORM-01", "NORM-02", "EVI-04", "GCP-01"]
 propiedad = ["features/inteligencia_normativa/services/monitoreo.py", "features/inteligencia_normativa/services/almacen_normativo.py", "features/inteligencia_normativa/trabajo_monitoreo.py", "features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-04", "tests/test_norm04_almacen_y_trabajo.py"]
 crea = ["features/inteligencia_normativa/services/almacen_normativo.py", "features/inteligencia_normativa/trabajo_monitoreo.py", "tests/test_norm04_almacen_y_trabajo.py"]
 arbitro = "pytest tests/test_norm04_almacen_y_trabajo.py tests/test_norm01_inteligencia_normativa.py tests/test_norm02_centro_vigilancia.py; mutaciones m1 a m6; tras crear el Job, el propietario lee la bitácora y el bucket (brief)."
-rastros = ["¤vigilancia-spdp", "¤inteligencia-normativa", "¤seguridad", "¤arbitro"]
+rastros = ["¤vigilancia-spdp", "¤inteligencia-normativa", "¤seguridad", "¤arbitro", "¤monitoreo-job"]
 +++
 
 # NORM-04 · El monitoreo de la SPDP descarga de verdad

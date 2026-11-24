@@ -9,7 +9,7 @@ depende_de = ["NORM-01", "NORM-02", "NORM-03", "NORM-04"]
 propiedad = ["features/inteligencia_normativa/services/revision.py", "features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-05", "api/routers/inteligencia_normativa.py#NORM-05", "features/inteligencia_normativa/services/lanzador_trabajo.py", "alembic/versions/norm05_revision_sin_rol_monitoreo.py", "tests/test_norm05_privilegios_backend.py", "tests/test_norm02_centro_vigilancia.py"]
 crea = ["features/inteligencia_normativa/services/lanzador_trabajo.py", "alembic/versions/norm05_revision_sin_rol_monitoreo.py", "tests/test_norm05_privilegios_backend.py"]
 arbitro = "pytest tests/test_norm05_privilegios_backend.py tests/test_norm02_centro_vigilancia.py tests/test_norm01_inteligencia_normativa.py tests/test_alembic_cabeza_por_sala.py contra PostgreSQL, conectado como lopdp_app; mutaciones m1 a m5."
-rastros = ["¤vigilancia-spdp", "¤inteligencia-normativa", "¤seguridad", "¤arbitro"]
+rastros = ["¤vigilancia-spdp", "¤inteligencia-normativa", "¤seguridad", "¤arbitro", "¤monitoreo-job"]
 +++
 
 # NORM-05 · El backend no adopta el rol del monitoreo

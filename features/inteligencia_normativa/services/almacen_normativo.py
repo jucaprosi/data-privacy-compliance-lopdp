@@ -1,5 +1,5 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad
+# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad ¤monitoreo-job
 """Almacén real de los originales de la SPDP sobre `app_core.storage` (NORM-04, EVI-04).
 
 Dos puertas, una por cuenta, sobre el bucket propio `evydentia-corpus-normativo`

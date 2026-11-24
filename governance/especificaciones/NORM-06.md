@@ -1,5 +1,5 @@
 # NORM-06 · El análisis de impacto lee los PDF escaneados
-`¤sdd` `¤inteligencia-normativa` `¤copiloto-ia` `¤arbitro`
+`¤sdd` `¤inteligencia-normativa` `¤copiloto-ia` `¤arbitro` `¤transcripcion-normativa`
 
 ## 1. Datos
 
@@ -91,6 +91,7 @@ Los PDF de prueba se generan dentro de la prueba: uno con una página que solo t
 ## 6. Trazabilidad
 
 - **PRD:** §4, Módulo 6.3, «Transcripción de originales escaneados»; ley fundacional 7.
+- **Rastro:** `¤transcripcion-normativa` (alta en VPA_MAP por PRD-04). Los archivos que crea esta ficha llevan `# ¤transcripcion-normativa` en la cabecera, junto a sus rastros de sala.
 - Decisión del propietario (2026-11-24) y brief del CTO.
 - Depende de NORM-03 (análisis), NORM-05 (cabeza de Alembic de la sala), IA-10 (trazas), IA-12 (precedente sin tope), IA-13 (modelo) e IA-17 (región).
 - **Estimación de coste (para el CTO; no es una regla):**

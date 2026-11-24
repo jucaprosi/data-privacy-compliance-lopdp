@@ -1,5 +1,5 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad ¤arbitro
+# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad ¤monitoreo-job ¤arbitro
 """NORM-04: el monitoreo de la SPDP descarga de verdad.
 
 Almacén de escritura solo en el Job, lector de solo lectura en el backend y punto de entrada del Job.
