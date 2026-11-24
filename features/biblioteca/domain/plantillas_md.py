@@ -9,6 +9,7 @@ listas en línea y listas de objetos simples); se leen sin dependencias nuevas.
 import hashlib
 import re
 from app_core.errors import ErrorNegocio
+from features.biblioteca.domain.validacion import errores_informativas
 
 COMUNES = frozenset({
     "organizacion.razon_social", "organizacion.nombre_comercial", "organizacion.ruc", "organizacion.sector",
@@ -194,6 +195,11 @@ def validar_plantilla_md(texto: str, codigo_esperado: str) -> list[str]:
         return [f"cabecera ilegible: {error}"]
     fallos, contexto = _validar_metadatos(meta, codigo_esperado)
     fallos += _validar_cuerpo(cuerpo, contexto)
+    informativas = meta.get("secciones_informativas", [])
+    if not isinstance(informativas, list) or any(not isinstance(i, dict) or not i.get("titulo") for i in informativas):
+        fallos.append("secciones_informativas no es una lista de títulos")
+    else:
+        fallos += errores_informativas(cuerpo, [i["titulo"] for i in informativas])
     if any(marca in texto for marca in MARCAS_BORRADOR):
         fallos.append("quedan marcas de borrador")
     return fallos

@@ -137,3 +137,15 @@ def test_r3_pendiente_si_falta_una_cita_verificada():
 def test_r3_con_observaciones_por_cita_no_encontrada():
     estados = {**ESTADOS, "LOPDP-art-77": "no_encontrada"}
     assert validacion_normativa({"LOPDP-art-7", "LOPDP-art-77"}, estados, FUENTE_DE, LEIDAS, {}) == "con_observaciones"
+
+
+def test_validar_plantilla_md_rechaza_informativas_mal_declaradas():
+    from features.biblioteca.domain.plantillas_md import validar_plantilla_md
+    from pathlib import Path
+    texto = Path("data/biblioteca/pmv/BIB-007.md").read_bytes().decode("utf-8")
+    assert validar_plantilla_md(texto, "BIB-007") == []
+    inexistente = texto.replace("  - titulo: 1. Objeto\n", "  - titulo: 9. No existe\n")
+    assert any("no existe en el cuerpo" in f for f in validar_plantilla_md(inexistente, "BIB-007"))
+    con_cita = texto.replace("  - titulo: 1. Objeto\n", "  - titulo: 1. Objeto\n  - titulo: 2. Derechos que se pueden ejercer\n")
+    assert validar_plantilla_md(con_cita, "BIB-007") == [
+        "sección informativa «2. Derechos que se pueden ejercer» con cita: tiene efecto jurídico"]

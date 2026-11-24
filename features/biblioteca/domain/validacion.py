@@ -104,8 +104,8 @@ def secciones(cuerpo: str) -> list[tuple[str, str]]:
 
 
 # ¤adpa
-def errores_secciones(cuerpo: str, informativas: list[str], verificadas: set[str]) -> list[str]:
-    """R8: cada sección lleva una cita `verificada` o está declarada informativa (y entonces no cita)."""
+def errores_informativas(cuerpo: str, informativas: list[str]) -> list[str]:
+    """R8: cada título de `secciones_informativas` existe en el cuerpo y su sección no cita nada."""
     fallos: list[str] = []
     todas = secciones(cuerpo)
     titulos = [t for t, _ in todas]
@@ -113,11 +113,17 @@ def errores_secciones(cuerpo: str, informativas: list[str], verificadas: set[str
         if titulo not in titulos:
             fallos.append(f"secciones_informativas: el título «{titulo}» no existe en el cuerpo")
     for titulo, texto in todas:
-        claves, _ = extraer_citas(texto)
-        if titulo in informativas:
-            if claves:
-                fallos.append(f"sección informativa «{titulo}» con cita: tiene efecto jurídico")
-        elif not (claves & verificadas):
+        if titulo in informativas and extraer_citas(texto)[0]:
+            fallos.append(f"sección informativa «{titulo}» con cita: tiene efecto jurídico")
+    return fallos
+
+
+# ¤adpa
+def errores_secciones(cuerpo: str, informativas: list[str], verificadas: set[str]) -> list[str]:
+    """R8: cada sección lleva una cita `verificada` o está declarada informativa (y entonces no cita)."""
+    fallos = errores_informativas(cuerpo, informativas)
+    for titulo, texto in secciones(cuerpo):
+        if titulo not in informativas and not (extraer_citas(texto)[0] & verificadas):
             fallos.append(f"sección «{titulo}» sin cita verificada")
     return fallos
 
