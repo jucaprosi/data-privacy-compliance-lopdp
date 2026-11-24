@@ -127,7 +127,7 @@ async def test_rol_sin_permiso_no_copia():
 def test_codigos_de_error_registrados():
     from app_core.errors import CATALOGO_ERRORES
     assert CATALOGO_ERRORES["BIB_PLANTILLA_NO_ENCONTRADA"].status_code == 404
-    assert CATALOGO_ERRORES["BIB_COPIA_SOLO_SMARTCIDI"].status_code == 422
+    assert CATALOGO_ERRORES["BIB_COPIA_SOLO_CATALOGO"].status_code == 422
 
 
 # ¤adpa
@@ -232,7 +232,7 @@ async def test_db_ficha_publicada_con_variables_y_vista_previa_demostrativa(db_b
     plantilla = await publicar_plantilla(sesion, ids)
     en_a = await router.ficha(plantilla["id"], sesion, contexto(ids, "miembro_a", org_a))
     en_b = await router.ficha(plantilla["id"], sesion, contexto(ids, "miembro_b", org_b))
-    assert en_a["fuente"] == "smartcidi" and en_a["estado_editorial"] == "publicada" and en_a["acciones"] == {"usar": True, "copiar": True}
+    assert en_a["fuente"] == "catalogo" and en_a["estado_editorial"] == "publicada" and en_a["acciones"] == {"usar": True, "copiar": True}
     assert en_a["ficha"]["objetivo"] == "Probar" and en_a["validacion_legal"] == "pendiente"
     assert en_a["vista_previa"]["demostrativa"] is True and "{{" not in en_a["vista_previa"]["markdown"]
     # El aislamiento por organización: A tiene domicilio y B no, y la vista previa no cambia con la organización.
@@ -291,7 +291,7 @@ async def test_db_no_se_copia_una_copia_ni_una_no_publicada(db_bib):
     copia = await router.copiar((await publicar_plantilla(sesion, ids))["id"], sesion, contexto(ids, "miembro_a", org_a))
     with pytest.raises(ErrorNegocio) as exc:
         await router.copiar(copia["id"], sesion, contexto(ids, "miembro_a", org_a))
-    assert exc.value.code == "BIB_COPIA_SOLO_SMARTCIDI"
+    assert exc.value.code == "BIB_COPIA_SOLO_CATALOGO"
     borrador = await publicar_plantilla(sesion, ids, publicar=False)
     with pytest.raises(ErrorNegocio) as exc:
         await router.copiar(borrador["id"], sesion, contexto(ids, "miembro_a", org_a))

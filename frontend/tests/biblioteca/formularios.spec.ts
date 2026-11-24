@@ -25,7 +25,7 @@ const FICHA_PLANTILLA = {
   codigo: "BIB-011",
   nombre: "Aviso de videovigilancia",
   tipo: "aviso",
-  fuente: "smartcidi",
+  fuente: "catalogo",
   version: "0.1.0",
   formato: "MD",
   ola: 3,

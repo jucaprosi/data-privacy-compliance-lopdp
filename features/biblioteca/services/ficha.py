@@ -121,7 +121,7 @@ def clave_disponible(clave: str, origen: str, disponibles: frozenset[str]) -> bo
 # ¤adpa
 async def obtener_ficha(session: AsyncSession, usuario_id: str, tenant_id: str, plantilla_id: str,
                         disponibles: frozenset[str]) -> dict:
-    """Ficha de una plantilla SMARTCIDI publicada o de «Mi plantilla» de la organización de la sesión.
+    """Ficha de una plantilla de la plataforma publicada o de «Mi plantilla» de la organización de la sesión.
 
     La RLS decide qué filas existen para esta organización: una copia de otra organización, o una versión
     que no está publicada, responde como inexistente.
@@ -135,20 +135,20 @@ async def obtener_ficha(session: AsyncSession, usuario_id: str, tenant_id: str, 
         publicada = (await session.execute(text(SQL_PUBLICADA), {"id": plantilla_id})).mappings().first()
         if publicada is None:
             raise ErrorNegocio("BIB_PLANTILLA_NO_ENCONTRADA")
-        fuente, texto, base = "smartcidi", publicada["cuerpo_md"], dict(publicada)
+        fuente, texto, base = "catalogo", publicada["cuerpo_md"], dict(publicada)
         ficha, origen_id, origen_version = publicada["ficha"], None, None
     meta, cuerpo = metadatos_de(texto), separar(texto)[1]
     variables = [{**v, "disponible": clave_disponible(v["clave"], v["origen"], disponibles)}
                  for v in variables_de(meta, cuerpo)]
     return {
         "id": base["id"], "codigo": base["codigo"], "nombre": base.get("nombre") or meta["nombre"],
-        "tipo": meta["tipo"], "fuente": fuente, "version": meta["version"] if fuente == "smartcidi" else base["version"],
+        "tipo": meta["tipo"], "fuente": fuente, "version": meta["version"] if fuente == "catalogo" else base["version"],
         "formato": "MD", "ola": int(meta["ola"]), "validacion_legal": meta["validacion_legal"],
-        "estado_editorial": "publicada" if fuente == "smartcidi" else "mi_plantilla",
+        "estado_editorial": "publicada" if fuente == "catalogo" else "mi_plantilla",
         "fecha_corte_normativo": str(meta["fecha_corte_normativo"]), "base_lopdp": meta["base_lopdp"],
         "revision_meses": int(meta["revision_meses"]), "ficha": ficha, "avisos": meta.get("avisos") or [],
         "origen_plantilla_id": origen_id, "origen_version": origen_version,
         "cuerpo_markdown": cuerpo, "variables": variables,
         "vista_previa": {"demostrativa": True, "aviso": AVISO_VISTA_PREVIA, "markdown": vista_previa(cuerpo, meta)},
-        "acciones": {"usar": True, "copiar": fuente == "smartcidi"},
+        "acciones": {"usar": True, "copiar": fuente == "catalogo"},
     }

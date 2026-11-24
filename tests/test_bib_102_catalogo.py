@@ -90,9 +90,9 @@ def test_ruta_pasa_los_filtros_y_responde_la_lista(cliente, monkeypatch):
         return []
 
     monkeypatch.setattr(bib, "listar_catalogo", falso)
-    r = http.get("/api/v1/biblioteca/plantillas", params={"fuente": "smartcidi", "tipo": "politica", "ola": 1})
+    r = http.get("/api/v1/biblioteca/plantillas", params={"fuente": "catalogo", "tipo": "politica", "ola": 1})
     assert r.status_code == 200 and r.json() == []
-    assert recibido == {"actor": "usuario-bib102", "fuente": "smartcidi", "tipo": "politica", "ola": 1}
+    assert recibido == {"actor": "usuario-bib102", "fuente": "catalogo", "tipo": "politica", "ola": 1}
 
 
 # ¤adpa
@@ -206,7 +206,7 @@ async def test_db_solo_publicadas_aunque_el_usuario_edite(db_bib):
         assert all(p.estado == "publicada" for p in lista)
     elegida = de(await bib.listar_catalogo(sesion, ids["miembro"]), publicada)[0]
     assert (elegida.fuente, elegida.tipo, elegida.ola, elegida.version, elegida.formato) == \
-        ("smartcidi", "politica", 1, "0.1.0", "MD")
+        ("catalogo", "politica", 1, "0.1.0", "MD")
     assert elegida.validacion_legal == "pendiente" and elegida.descargable is False
 
 
@@ -223,7 +223,7 @@ async def test_db_filtros_tipo_y_ola_se_combinan(db_bib):
     assert propios(await bib.listar_catalogo(sesion, miembro, tipo="politica")) == {politica1, politica2}
     assert propios(await bib.listar_catalogo(sesion, miembro, ola=1)) == {politica1, aviso1}
     assert propios(await bib.listar_catalogo(sesion, miembro, tipo="politica", ola=1)) == {politica1}
-    assert propios(await bib.listar_catalogo(sesion, miembro, fuente="smartcidi", tipo="aviso", ola=2)) == set()
+    assert propios(await bib.listar_catalogo(sesion, miembro, fuente="catalogo", tipo="aviso", ola=2)) == set()
 
 
 # ¤adpa

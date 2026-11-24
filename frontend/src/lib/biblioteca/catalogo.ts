@@ -13,7 +13,7 @@ import { falloDeRol, rechazoDeIdentidad } from "@/lib/biblioteca/http";
 
 export const RUTA_CATALOGO = "/api/v1/biblioteca/plantillas";
 
-export type FuentePlantilla = "smartcidi" | "organizacion";
+export type FuentePlantilla = "catalogo" | "organizacion";
 
 export interface PlantillaCatalogo {
   id: string;
@@ -38,7 +38,7 @@ export interface FiltrosCatalogo {
 export const SIN_FILTROS: FiltrosCatalogo = { fuente: "", tipo: "", ola: "" };
 
 export const FUENTES: ReadonlyArray<{ id: FuentePlantilla; nombre: string }> = [
-  { id: "smartcidi", nombre: "Modelos de plantillas" },
+  { id: "catalogo", nombre: "Plantilla de la plataforma" },
   { id: "organizacion", nombre: "Mi plantilla" },
 ];
 
