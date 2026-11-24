@@ -24,7 +24,7 @@ async function simularIA(page: Page): Promise<string[]> {
   await page.route("**/api/v1/preanalisis/**", async (route) => {
     const ruta = new URL(route.request().url()).pathname;
     if (ruta.endsWith("/preanalisis/estado")) {
-      await route.fulfill({ json: { disponible: true, proveedor: "simulado", modelo: "qa-09", motivo: null } });
+      await route.fulfill({ json: { disponible: true, proveedor: "simulado", modelo: "qa-09", motivo: null, ubicacion: "Estados Unidos", region: "us" } });
     } else if (ruta.endsWith("/preanalisis/preparar")) {
       await route.fulfill({
         json: {

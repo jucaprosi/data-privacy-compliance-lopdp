@@ -62,7 +62,10 @@ export interface EstadoServicioIA {
   proveedor: string | null;
   modelo: string | null;
   motivo: string | null;
+  /** País donde se procesan los datos (IA-17), tal cual lo entrega la compuerta. */
   ubicacion: string | null;
+  /** Región donde se procesan los datos (IA-17). */
+  region: string | null;
 }
 
 /** Datos de un control que se envían al servicio junto con los fragmentos. */

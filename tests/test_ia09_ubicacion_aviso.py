@@ -322,6 +322,8 @@ def test_sin_ubicacion_ni_encuadre_escritos_a_mano() -> None:
     # Verificación de mutaciones en memoria: cada cadena prohibida debe hacer saltar la guardia.
     consentimiento = "frontend/src/components/preanalisis/ConsentimientoEnvio.tsx"
     base_tsx = contenidos[consentimiento]
+    ancla = "El documento completo no se envía."
+    assert ancla in base_tsx
     for mutacion in (
         "Estados Unidos",
         "garantías adecuadas",
@@ -336,7 +338,7 @@ def test_sin_ubicacion_ni_encuadre_escritos_a_mano() -> None:
         MODELO_GENERACION,
         "art. 60",
     ):
-        mutado = base_tsx.replace("Estos fragmentos", f"{mutacion} Estos fragmentos", 1)
+        mutado = base_tsx.replace(ancla, f"{mutacion} {ancla}", 1)
         assert _buscar_prohibidos_ia09(consentimiento, mutado), f"Mutación no detectada: {mutacion!r}"
 
     proveedor = "features/preanalisis/services/proveedor.py"
