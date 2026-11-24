@@ -25,8 +25,8 @@ Sin rutas. Configuración nueva: `ANF_CLIENTE` (`app_core/config.py`, `anf_clien
   - `autoria` = «SALUDATA; autorización expresa de José Morocho confirmada por el propietario».
   - `nota` = «Este documento es una versión borrador de apoyo consultivo y debe ser revisado y adaptado por el consultor responsable y, cuando corresponda, por un profesional legal competente antes de su entrega o implementación final.»
 - **R3 · Binarios fuera del repositorio.**
-  - **Propuesta del Arquitecto:** los cinco binarios de §1 salen del repositorio con `git rm` y pasan a los documentos del propietario. Son documentos de terceros o del operador y ningún código los lee.
-  - Los documentos que los citan los nombran por título, emisor y fecha, sin ruta. El propietario confirma o corrige la lista en el PR de gobernanza que anota su decisión, antes de lanzar.
+  - Los cinco binarios de §1 salen del repositorio con `git rm` y pasan a los documentos del propietario. Son documentos de terceros o del operador y ningún código los lee. El propietario confirmó la lista tal cual («Confirmo los cinco»).
+  - Los documentos que los citan los nombran por título, emisor y fecha, sin ruta.
   - El historial de git no se reescribe.
 - **R4 · Documentos de apoyo.** `FIRMA_ELECTRONICA_BOCETO.md` e `INFORME_MODULO_FIRMA_ELECTRONICA.md` usan «Operador de la plataforma» y citan los documentos de R3 sin ruta.
 - **R5 · Sin prohibiciones** (GEN-01 R3).
