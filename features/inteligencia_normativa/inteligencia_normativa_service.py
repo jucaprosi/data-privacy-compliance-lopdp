@@ -140,12 +140,8 @@ def inyectar_lector_de_prueba(lector: LectorOriginales | None = None, avisador: 
 
 
 def _lector() -> LectorOriginales:
-    # NORM-04 R2: lector real de solo lectura en el backend (`K_SERVICE` y el bucket normativo); si no, cerrado.
-    if _lector_de_prueba is not None:
-        return _lector_de_prueba
-    from features.inteligencia_normativa.services import almacen_normativo
-
-    return almacen_normativo.lector_normativo_por_defecto()
+    # El adaptador real (envoltorio de app_core.storage.descargar) llega con EVI-04; mientras, falla cerrado.
+    return _lector_de_prueba or revision.LectorOriginalesCerrado()
 
 
 async def catalogo(filtros: FiltrosCatalogo) -> PaginaResoluciones:
@@ -433,3 +429,17 @@ async def disparar_monitoreo(origen: str = "manual") -> ResumenCorrida:
             _registro_norm02b.warning("NORM-02b: el aviso a las organizaciones falló (%s)", type(exc).__name__)
     return resumen
 # === fin NORM-02b ===
+
+
+# === NORM-04 ===
+# ¤vigilancia-spdp ¤inteligencia-normativa ¤seguridad Lector real de originales, de solo lectura, en el backend (NORM-04 R2).
+
+
+def _lector() -> LectorOriginales:  # noqa: F811 - redefine el de NORM-02 como NORM-02b redefine disparar_monitoreo
+    """Lector real sobre el bucket normativo (`K_SERVICE` y `GCP_STORAGE_BUCKET_NORMATIVO`); si falta alguno, el cerrado."""
+    if _lector_de_prueba is not None:
+        return _lector_de_prueba
+    from features.inteligencia_normativa.services import almacen_normativo
+
+    return almacen_normativo.lector_normativo_por_defecto()
+# === fin NORM-04 ===
