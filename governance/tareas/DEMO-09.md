@@ -2,7 +2,7 @@
 id = "DEMO-09"
 titulo = "La web de demo se publica desde main con la imagen web de producción del mismo commit"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 tanda = 97
 sala = "operaciones"
 depende_de = ["DEMO-07", "GCP-03", "GCP-03b", "GCP-08", "GCP-08c"]
