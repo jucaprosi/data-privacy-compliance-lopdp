@@ -8,7 +8,7 @@ sala = "inteligencia_normativa"
 depende_de = ["BIB-406"]
 propiedad = ["alembic/versions/20261125_norm07_fecha_vigencia.py", "features/inteligencia_normativa/services/revision.py", "features/inteligencia_normativa/inteligencia_normativa_service.py", "api/routers/inteligencia_normativa.py", "app_core/pasillo/inteligencia_normativa.py", "frontend/src/components/normativa/PanelResolucion.tsx", "frontend/src/components/normativa/cliente.ts", "tests/test_norm05_privilegios_backend.py", "tests/test_norm07_fecha_vigencia.py"]
 crea = ["alembic/versions/20261125_norm07_fecha_vigencia.py", "tests/test_norm07_fecha_vigencia.py"]
-arbitro = "pytest tests/test_norm07_fecha_vigencia.py tests/test_norm05_privilegios_backend.py tests/test_alembic_cabeza_por_sala.py tests/test_adpa_bulkhead.py; mutaciones m1 a m4."
+arbitro = "pytest tests/test_norm07_fecha_vigencia.py tests/test_norm05_privilegios_backend.py tests/test_alembic_cabeza_por_sala.py tests/test_adpa_bulkhead.py; mutaciones m1 a m5."
 rastros = ["¤monitoreo-job", "¤arbitro"]
 +++
 

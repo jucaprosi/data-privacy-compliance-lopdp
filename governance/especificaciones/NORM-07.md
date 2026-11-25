@@ -20,7 +20,9 @@ Migración `20261125_norm07_fecha_vigencia.py`: `ALTER TABLE normativa_resolucio
 
 - **R1 · Fecha opcional.** Al revisar, el operador puede dar la fecha de entrada en vigencia. Si no la da, se conserva la que hubiera. Se guarda con la revisión, en el mismo UPDATE.
 - **R2 · Disparo.** Antes de `revisar_estado`, la sala lee el estado que tenía la resolución (`None` si es su primera revisión). Después de confirmar la revisión, llama a `proponer_por_resolucion(id_resolucion, estado, estado_anterior, actor)` de `app_core/pasillo/biblioteca.py`, con el operador como actor. La biblioteca no lee el historial de la normativa: decide con lo que se le pasa (BIB-406 R1): propone con `reformada` o `derogada` desde un estado distinto, y con `vigente` desde otro estado; no propone con `observada`, con el mismo estado que el anterior, ni con `vigente` en la primera revisión (`None`). Si la propuesta falla, la revisión queda hecha y el fallo se registra en la bitácora.
-- **R3 · Lectura.** `app_core/pasillo/inteligencia_normativa.py` expone `fecha_vigencia_de(id_resolucion)`, que leen BIB-407 y NOTIF-02.
+- **R3 · Lectura.** `app_core/pasillo/inteligencia_normativa.py` expone:
+  - `fecha_vigencia_de(id_resolucion)`, que lee NOTIF-02, que tiene el id de la versión;
+  - `fecha_vigencia_por_url(url)`, que lee BIB-407, porque las citas de `citas.json` llevan la URL oficial y no el id. Compara `url_fuente` (`norm01_inteligencia_normativa.py:34`) sin espacios al borde y sin la barra final. Devuelve la fecha si exactamente una resolución tiene esa URL, y `None` si no hay ninguna, si hay varias o si no tiene fecha.
 - **R-SP · Sin prohibiciones** (GEN-01 R3).
 - **R-ADPA · Ortogonalidad ZERAG (`NORM-07`).** Solo los archivos de la propiedad. Otras salas se usan solo por sus pasillos (`app_core/pasillo/`). Las pruebas no usan `import yaml`.
 
@@ -35,6 +37,7 @@ En `PanelResolucion.tsx`, junto al estado y la nota, un `<input type="date">` co
 | **Dado** una revisión con `fecha_vigencia`, **entonces** queda guardada y el pasillo la devuelve. Mutación m1: no escribirla da rojo. | `tests/test_norm07_fecha_vigencia.py` |
 | **Dado** una revisión `reformada`, **entonces** se llama una vez a `proponer_por_resolucion` con el operador como actor; con `observada`, ninguna. Mutación m2: llamarla también con `observada` da rojo. | ídem |
 | **Dado** una resolución `observada` que se revisa como `vigente`, **entonces** la llamada lleva `estado_anterior = "observada"`; en su primera revisión, `None`. Mutación m4: pasar siempre `None` da rojo. | `tests/test_norm07_fecha_vigencia.py` |
+| **Dado** una resolución con `url_fuente` U y fecha F, **entonces** `fecha_vigencia_por_url(U + "/")` devuelve F; con una URL que no está, o con dos resoluciones con U, devuelve `None`, sin error. Mutación m5: hacer `CAST` de la URL a uuid da rojo. | `tests/test_norm07_fecha_vigencia.py` |
 | **Dado** los privilegios de `lopdp_app`, **entonces** puede hacer UPDATE de las cuatro columnas de NORM-05 y de `fecha_vigencia`, y de nada más. Mutación m3: conceder UPDATE de toda la tabla da rojo. | `tests/test_norm05_privilegios_backend.py` |
 | **Dado** el grafo, **entonces** la sala tiene una sola cabeza y solo importa la biblioteca por su pasillo. | `tests/test_alembic_cabeza_por_sala.py`, `tests/test_adpa_bulkhead.py` |
 
