@@ -12,7 +12,7 @@ class EstadoConformidad(str, Enum):
     NO_APLICABLE = "NO_APLICABLE"
 
 class NivelEvidencia(str, Enum):
-    """Nivel de evidencia 0 a 4 de la escala SMARTCIDI (DIAG-08)."""
+    """Nivel de evidencia 0 a 4 de la escala de madurez de 1 a 5 (DIAG-08)."""
     E0_VERBAL = "E0_VERBAL"
     E1_INFORMAL = "E1_INFORMAL"
     E2_DOCUMENTAL = "E2_DOCUMENTAL"
@@ -24,7 +24,7 @@ class NivelEvidencia(str, Enum):
         return int(self.value[1])
 
 # === DIAG-08 ===
-# Escala SMARTCIDI (hojas «Niveles de Madurez» y «Catálogos» del archivo de assessment).
+# Escala de madurez de 1 a 5 (hojas «Niveles de Madurez» y «Catálogos» del archivo de assessment).
 NIVELES_ASIGNADOS: dict[int, tuple[str, str]] = {
     1: ("Inicial / Reactivo", "No existe o se gestiona informalmente"),
     2: ("Básico / Repetible", "Prácticas aisladas o documentos iniciales"),
@@ -156,7 +156,7 @@ class RespuestaControl:
     pendiente_validacion: bool = False
 
 
-# Estado de un resultado sellado antes de la escala SMARTCIDI -> nivel asignado. Solo se aplica al
+# Estado de un resultado sellado antes de la escala de madurez de 1 a 5 -> nivel asignado. Solo se aplica al
 # leerlo; no reescribe el sellado ni vale para las respuestas vivas, donde NULL sigue siendo pendiente.
 _NIVEL_ASIGNADO_ANTERIOR = {"No Conforme": 1, "Parcial": 3, "Conforme": 5}
 

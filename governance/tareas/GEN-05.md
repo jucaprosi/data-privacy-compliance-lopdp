@@ -2,7 +2,7 @@
 id = "GEN-05"
 titulo = "Contrato OpenAPI regenerado tras la escala y la Biblioteca sin marca"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 tanda = 101
 sala = "plataforma"
 depende_de = ["GEN-02", "GEN-03", "MARCA-01"]

@@ -43964,7 +43964,7 @@
           "E4_REVISADA"
         ],
         "title": "NivelEvidencia",
-        "description": "Nivel de evidencia 0 a 4 de la escala SMARTCIDI (DIAG-08)."
+        "description": "Nivel de evidencia 0 a 4 de la escala de madurez de 1 a 5 (DIAG-08)."
       },
       "NivelRiesgoEipd": {
         "type": "string",
