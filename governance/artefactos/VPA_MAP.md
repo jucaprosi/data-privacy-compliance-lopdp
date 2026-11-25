@@ -48,7 +48,7 @@
 ---
 
 ### 1.3 Eje Auditoría, Cockpit del DPO, Hoja de Ruta, Biblioteca y Firma (Módulos 3, 4, 5 y 7)
-`¤dpo-cockpit` `¤auditoria-capa` `¤roadmap` `¤evidencias` `¤firma-electronica` `¤cita-verificada` `¤plantillas-demo`
+`¤dpo-cockpit` `¤auditoria-capa` `¤roadmap` `¤evidencias` `¤firma-electronica` `¤cita-verificada`
 
 | Rastro | Gen | Significado Constitucional | Rol | Salas ADPA y Alcance |
 | :--- | :--- | :--- | :--- | :--- |
@@ -66,7 +66,6 @@
 | `¤evidencias-vigencia` | G2 | Control de vigencia y visibilidad de evidencias por rol y exportación de paquete de inspección SPDP | `¤¤security-engineer` | `features/evidencias` (`EVI-02`) |
 | `¤firma-electronica` | G1 | Firma criptográfica real con ANF AC Ecuador STB v2 (`PAdES`/`XAdES`/`CAdES`) y aceptación simple con acuse hash | `¤¤backend-developer` | `features/firma_electronica` (`FIRMA-01..06`, `FIRMA-02`) |
 | `¤cita-verificada` | G2 | Plantilla publicable cuando cada sección `##`/`###` tiene una cita verificada contra la norma vigente, ligada a la huella SHA-256 del PDF oficial, o está declarada informativa; la revisión jurídica es esa validación normativa (PRD §4, Módulo 7, «Publicación con cita verificada»; ley 6) | `¤¤legal-engineer` | `features/biblioteca`, `governance/artefactos/CITAS_PLANTILLAS_VERIFICADAS.md` (`LEG-08`, `BIB-403`) |
-| `¤plantillas-demo` | G2 | Catálogo de plantillas publicadas por personas ficticias, sembrado solo en la base de la demo por el flujo editorial (PRD §4, Módulo 7, «Plantillas de la demo», y §5.6) | `¤¤lead-implementer` | `features/biblioteca` (`BIB-404`) |
 
 ---
 

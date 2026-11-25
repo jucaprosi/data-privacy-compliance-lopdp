@@ -247,7 +247,7 @@ El control de acceso es determinista, se resuelve en el servidor por organizaci�
   3. **Capa 3 — Documentos de la Organización (`BIB-107`, `BIB-113`):** Expediente documental vivo de cada tenant, que incluye tanto los documentos generados desde plantillas como los documentos externos preexistentes subidos por el cliente (`BIB-106`).
 * **Aplicabilidad Explicable y Reutilización del Compliance Graph (`BIB-201..204`):** Cada ficha de plantilla declara sus reglas de aplicabilidad (`BIB-204`) explicando al usuario por qué es obligatoria o recomendada según su ficha organizacional, su RAT y su cálculo MTGE. Los formularios de captura por versión (`BIB-201`, `BIB-203`) pre-rellenan automáticamente las variables y tablas desde la Ficha Organizacional, el Diagnóstico y el RAT indicando la procedencia exacta de cada dato (`BIB-202`).
 * **Publicación con cita verificada (`BIB-403`, `LEG-08`, `¤cita-verificada`):** Una plantilla es publicable cuando cada sección `##` y `###` tiene al menos una cita verificada contra la norma vigente o está declarada informativa. Las lecturas verificadas viven en `CITAS_PLANTILLAS_VERIFICADAS.md`, cada una con el artículo, el texto leído y la huella SHA-256 del PDF oficial registrado en `normativa_versiones`. La revisión jurídica es esa validación normativa: la acredita el árbitro de citas, no una persona. La revisión técnica y la publicación las hace una persona distinta del autor. Si cambia la huella de la norma citada, la plantilla vuelve a validación.
-* **Plantillas de la demo (`BIB-404`, `¤plantillas-demo`):** La demo (§5.6) muestra un catálogo de plantillas publicadas por personas ficticias por el mismo flujo editorial, sembrado solo en la base de la demo.
+* **Las mismas plantillas en producción y en la demo:** la demo (§5.6) muestra las plantillas originales del catálogo, las mismas de producción, con su misma cita verificada y su mismo flujo editorial.
 * **Motor de Generación Nativa Word (`DOCX`), Excel (`XLSX`) y Vista Previa Fiel (`BIB-205..208`):** Generación asíncrona y concurrente en servidor (`BIB-207`) de documentos editables `.docx` y libros `.xlsx` con fidelidad tipográfica, vista previa integrada (`BIB-206`) y descarga controlada con marca de estado (`BIB-104`).
 * **Ciclo de Vida de 9 Estados e Integración con Acciones, Evidencias y Cambios Normativos (`BIB-301..307`, `BIB-402`):**
   * Flujo trazable: `borrador` → `en_revision` → `observado` → `aprobado` → `pendiente_firma` → `vigente` → `vencido` → `reemplazado` → `archivado`.
@@ -527,7 +527,7 @@ Un vendedor autorizado enseña EVYDENTIA completo, solo y sin preparar nada, con
    - 403 `DEMO_PERSONA_AJENA`;
    - 503 `DEMO_NO_DISPONIBLE` (nuevo en EVYDENTIA): falló la copia de la plantilla. No queda ninguna sesión ni organización a medias, y el vendedor puede reintentar.
 
-**Catálogo de la Biblioteca en la demo (`BIB-404`, `¤plantillas-demo`):** la base de la demo trae seis plantillas publicadas por las personas ficticias por el flujo editorial de la Biblioteca (Módulo 7, «Plantillas de la demo»). Se siembran en la plantilla «Cooperativa Demo» y cada organización de sesión las ve en su catálogo.
+**Catálogo de la Biblioteca en la demo:** la demo muestra las plantillas originales del catálogo, las mismas de producción (Módulo 7, «Las mismas plantillas en producción y en la demo»).
 
 #### 5.6.2 Contrato del entorno
 
