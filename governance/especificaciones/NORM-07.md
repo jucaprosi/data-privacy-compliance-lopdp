@@ -26,7 +26,7 @@ Migración `20261125_norm07_fecha_vigencia.py`: `ALTER TABLE normativa_resolucio
 
 ## 4. Interfaz
 
-En `PanelResolucion.tsx`, junto al estado y la nota, un campo de fecha con la etiqueta «Fecha de entrada en vigencia (opcional)». Si la resolución ya la tiene, aparece rellena.
+En `PanelResolucion.tsx`, junto al estado y la nota, un `<input type="date">` con su `<label>` «Fecha de entrada en vigencia (opcional)» y ayuda por `aria-describedby`: «Déjala en blanco si la norma no la indica. Se usa para los avisos de revisión de plantillas.». Si la resolución ya la tiene, aparece rellena. Error de formato: «Escribe una fecha válida.». Vacía, los avisos usan «La norma no indica fecha de vigencia.» (NOTIF-02 R2).
 
 ## 5. Aceptación
 
