@@ -118,8 +118,12 @@ def _core(fecha: date) -> bytes:
 
 # ¤adpa
 def generar_xlsx(titulo: str, valores: Mapping[str, object], contenido: list[Bloque], fecha: date,
-                 faltantes: list[str] | None = None) -> bytes:
-    """Libro de uso: hoja «Documento» con los datos y una hoja por tabla. Borrador: marca y faltantes."""
+                 faltantes: list[str] | None = None, pie: str | None = None) -> bytes:
+    """Libro de uso: hoja «Documento» con los datos y una hoja por tabla. Borrador: marca y faltantes.
+
+    Con `pie` (la leyenda de la demo, DEMO-12 R4b) cada hoja lo lleva en el pie de impresión; sin él, los
+    bytes son los de siempre.
+    """
     libro = Workbook()
     hoja = libro.active
     hoja.title = "Documento"
@@ -142,6 +146,9 @@ def generar_xlsx(titulo: str, valores: Mapping[str, object], contenido: list[Blo
         _escribir(hoja_faltan, 1, 1, "Dato que falta", negrita=True)
         for n, f in enumerate(faltantes, 2):
             _escribir(hoja_faltan, n, 1, f)
+    if pie is not None:
+        for hoja_libro in libro.worksheets:
+            hoja_libro.oddFooter.center.text = pie
     libro.calculation.fullCalcOnLoad = True
     crudo = BytesIO()
     libro.save(crudo)

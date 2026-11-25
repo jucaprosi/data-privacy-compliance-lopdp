@@ -29,6 +29,10 @@ TIPOS = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
          'wordprocessingml.document.main+xml"/>'
          '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.'
          'wordprocessingml.styles+xml"/></Types>')
+TIPO_PIE = ('<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.'
+            'wordprocessingml.footer+xml"/>')
+REL_PIE = ('<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/'
+           'footer" Target="footer1.xml"/>')
 RELS = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
         '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/'
@@ -107,8 +111,19 @@ def _bloque(b: Bloque) -> str:
 
 
 # ¤adpa
-def generar_docx(contenido: list[Bloque], faltantes: list[str] | None = None) -> bytes:
-    """DOCX de uso. Con `faltantes` (modo borrador) abre con la marca BORRADOR y el listado."""
+def _pie(texto: str) -> str:
+    return (f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="{W}">'
+            f'<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:t xml:space="preserve">{escape(texto)}</w:t></w:r>'
+            '</w:p></w:ftr>')
+
+
+# ¤adpa
+def generar_docx(contenido: list[Bloque], faltantes: list[str] | None = None, pie: str | None = None) -> bytes:
+    """DOCX de uso. Con `faltantes` (modo borrador) abre con la marca BORRADOR y el listado.
+
+    Con `pie` (la leyenda de la demo, DEMO-12 R4b) añade un pie de página con ese texto y nada más; sin él,
+    los bytes son los de siempre.
+    """
     partes = []
     if faltantes is not None:
         partes.append(_parrafo("BORRADOR — no apto para revisión", "Borrador"))
@@ -117,12 +132,20 @@ def generar_docx(contenido: list[Bloque], faltantes: list[str] | None = None) ->
             partes += [_parrafo("• " + f, "ListBullet") for f in faltantes]
     partes += [_bloque(b) for b in contenido]
     documento = (f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="{W}" '
-                 f'xmlns:r="{REL}"><w:body>{"".join(partes)}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/>'
+                 f'xmlns:r="{REL}"><w:body>{"".join(partes)}<w:sectPr>'
+                 f'{'<w:footerReference w:type="default" r:id="rId2"/>' if pie is not None else ""}<w:pgSz w:w="11906" w:h="16838"/>'
                  '<w:pgMar w:top="1418" w:right="1418" w:bottom="1418" w:left="1418" w:header="709" '
                  'w:footer="709" w:gutter="0"/></w:sectPr></w:body></w:document>')
-    return zip_determinista([("[Content_Types].xml", TIPOS.encode()), ("_rels/.rels", RELS.encode()),
-                             ("word/_rels/document.xml.rels", RELS_DOC.encode()),
-                             ("word/styles.xml", ESTILOS.encode()), ("word/document.xml", documento.encode())])
+    if pie is None:
+        return zip_determinista([("[Content_Types].xml", TIPOS.encode()), ("_rels/.rels", RELS.encode()),
+                                 ("word/_rels/document.xml.rels", RELS_DOC.encode()),
+                                 ("word/styles.xml", ESTILOS.encode()), ("word/document.xml", documento.encode())])
+    tipos = TIPOS.replace("</Types>", TIPO_PIE + "</Types>")
+    relaciones = RELS_DOC.replace("</Relationships>", REL_PIE + "</Relationships>")
+    return zip_determinista([("[Content_Types].xml", tipos.encode()), ("_rels/.rels", RELS.encode()),
+                             ("word/_rels/document.xml.rels", relaciones.encode()),
+                             ("word/styles.xml", ESTILOS.encode()), ("word/document.xml", documento.encode()),
+                             ("word/footer1.xml", _pie(pie).encode())])
 
 
 # ¤adpa

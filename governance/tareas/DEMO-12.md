@@ -2,7 +2,7 @@
 id = "DEMO-12"
 titulo = "La demo con las plantillas reales del catálogo: carga en la base de la demo y documentos nacidos de ellas"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 106
 sala = "biblioteca"
 depende_de = ["BIB-403", "DEMO-11"]

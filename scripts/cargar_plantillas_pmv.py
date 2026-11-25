@@ -22,17 +22,23 @@ RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ))
 
 
-ENTORNOS = ("local", "pruebas", "produccion")
+ENTORNOS = ("local", "pruebas", "produccion", "demo")
+HUELLAS_DEMO = ("evydentia-demo-db", "evydentia_demo")  # instancia y base de la demo (DEMO-12 R1)
 
 
 # ¤adpa
 def entorno_de_url(url: str) -> str | None:
-    """Entorno que nombra la URL (sin abrir conexión): local, produccion, pruebas o `None` si no se reconoce."""
+    """Entorno que nombra la URL (sin abrir conexión): demo, local, produccion, pruebas o `None` si no se reconoce.
+
+    La demo se reconoce antes que las demás reglas: su base por proxy local no debe pasar por «local».
+    """
     from app_core.huellas_produccion import apunta_a_produccion, es_base_local
 
+    minusculas = url.lower()
+    if any(h in minusculas for h in HUELLAS_DEMO):
+        return "demo"
     if es_base_local(url):
         return "local"
-    minusculas = url.lower()
     if apunta_a_produccion(url) or any(h in minusculas for h in ("evydentia-production", "evydentia_prod")):
         return "produccion"
     return "pruebas" if "pruebas" in minusculas else None
