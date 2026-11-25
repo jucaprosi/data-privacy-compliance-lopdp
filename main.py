@@ -164,6 +164,8 @@ ROUTERS_MAP = [
     # === CON-01 ===
     ("features.conservacion.conservacion_service", "conservacion"),
     # === fin CON-01 ===
+    # === NOTIF-02 ===
+    # === fin NOTIF-02 ===
 ]
 
 

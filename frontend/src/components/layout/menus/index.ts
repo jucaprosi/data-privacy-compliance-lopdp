@@ -222,3 +222,5 @@ const SUBMENUS_BOV_04: Submenu[] = [
 ];
 SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMENUS_BOV_04]));
 // --- FIN BOV-04 ---
+// === NOTIF-02 ===
+// === fin NOTIF-02 ===
