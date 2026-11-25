@@ -56,8 +56,12 @@ def test_base_comun_es_una_revision_del_grafo_y_la_historia_no_cambia_de_forma()
     salas = AS.cargar_salas()
     guion = AS.guion_del_repositorio()
     assert guion.get_revision(salas.BASE_COMUN) is not None
-    # Sin etiquetas aún, la cabeza de cualquier sala es la base común.
-    assert AS.cabeza_de_sala("biblioteca") == salas.BASE_COMUN
+    # Una sala sin etiqueta en el grafo tiene como cabeza la base común; la de biblioteca es su migración.
+    etiquetadas = AS.cabezas_por_etiqueta(guion)
+    for sala in set(salas.TABLAS_POR_SALA.values()):
+        if sala not in etiquetadas:
+            assert AS.cabeza_de_sala(sala) == salas.BASE_COMUN
+    assert AS.cabeza_de_sala("biblioteca") == "20261124_bib403_publicacion"
 
 
 def test_toda_tabla_del_mapa_tiene_sala_de_features():
