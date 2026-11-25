@@ -24,7 +24,7 @@ def exportar_contrato() -> Path:
     CONTRATOS_DIR.mkdir(parents=True, exist_ok=True)
     schema = app.openapi()
     contenido = json.dumps(schema, indent=2, ensure_ascii=False) + "\n"
-    CONTRATO_FILE.write_text(contenido, encoding="utf-8")
+    CONTRATO_FILE.write_bytes(contenido.encode("utf-8"))
     return CONTRATO_FILE
 
 
