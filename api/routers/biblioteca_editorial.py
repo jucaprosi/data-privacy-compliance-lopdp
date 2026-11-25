@@ -76,3 +76,12 @@ async def proponer(entrada: biblioteca.PedirPropuesta, session: Sesion, actor: A
 async def descartar(identificador: str, entrada: biblioteca.Descarte, session: Sesion, actor: Actor):
     return await biblioteca.descartar(session, actor, identificador, entrada.nota, entrada.generacion)
 # === fin BIB-406 ===
+
+
+# === BIB-407 ===
+# ¤adpa
+@router.get("/versiones/{identificador}/comparacion", response_model=biblioteca.Comparacion)
+async def comparar(identificador: str, session: Sesion, actor: Actor):
+    """Solo lectura: la versión frente a la publicada de su código, por sección y con la cita de cada cambio."""
+    return await biblioteca.comparar_version(session, actor, identificador)
+# === fin BIB-407 ===
