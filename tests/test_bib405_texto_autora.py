@@ -1,3 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 """BIB-405: las doce plantillas vuelven al texto de su autora (commit 0537659b).
 
 Árbitro exógeno: lee cada plantilla en 0537659b con ``git show`` (sin red ni
