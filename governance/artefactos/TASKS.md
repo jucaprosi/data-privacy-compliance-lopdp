@@ -55,7 +55,7 @@
 > * el frontend sin mapas de fuente ni secretos;
 > * el escalado acotado con caché de borde;
 > * el despliegue progresivo reversible y la API de integración versionada;
-> * el motor de **Google Gemini (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`) con Vertex AI Context Caching** y el descubrimiento muestreado con **Google Cloud DLP**.
+> * el motor de **Google Gemini (`gemini-3.8-flash` y `text-embedding-005`) con Vertex AI Context Caching** y el descubrimiento muestreado con **Google Cloud DLP**.
 
 | Estado | Tanda | Bloque | ID | Tarea Constitucional | Sala(s) ADPA | Especificación SDD |
 | :---: | :---: | :---: | :--- | :--- | :--- | :--- |
@@ -64,10 +64,10 @@
 | `[ ]` | **46** | `BL-185` | [`GCP-03`](../tareas/GCP-03.md) | Migración del Frontend a Cloud Run: empaquetado standalone de Next.js 15.5+, Dockerfile multi-stage y proxy regional | `frontend, operaciones` | [`especificaciones/GCP-03.md`](../especificaciones/GCP-03.md) |
 | `[ ]` | **46** | `BL-186` | [`GCP-04`](../tareas/GCP-04.md) | Migración de Base de Datos y Enrutamiento Unificado: Cloud SQL PostgreSQL 16 con RLS forzado y Cloud Load Balancing | `pasillo_central, operaciones` | [`especificaciones/GCP-04.md`](../especificaciones/GCP-04.md) |
 | `[ ]` | **42** | `BL-176` | [`DLP-01`](../tareas/DLP-01.md) | Sala Descubrimiento DLP Muestreado: escaneo de archivos y tablas con Cloud DLP Sampling y validador Módulo 10 para poblar el RAT | `dlp_discovery` | [`especificaciones/DLP-01.md`](../especificaciones/DLP-01.md) |
-| `[ ]` | **42** | `BL-177` | [`VTX-01`](../tareas/VTX-01.md) | Modelos **Google Gemini (`gemini-2.5-pro`, `gemini-2.5-flash`)** y **Vertex AI Context Caching** sobre el corpus normativo LOPDP/SPDP con filtro DLP Módulo 10 pre-vuelo | `regulacion_rag, ai_copilot` | [`especificaciones/VTX-01.md`](../especificaciones/VTX-01.md) |
+| `[ ]` | **42** | `BL-177` | [`VTX-01`](../tareas/VTX-01.md) | Modelos **Google Gemini (`gemini-3.8-flash`)** y **Vertex AI Context Caching** sobre el corpus normativo LOPDP/SPDP con filtro DLP Módulo 10 pre-vuelo | `regulacion_rag, ai_copilot` | [`especificaciones/VTX-01.md`](../especificaciones/VTX-01.md) |
 | `[ ]` | **42** | `BL-187` | [`NORM-01`](../tareas/NORM-01.md) | Sala Inteligencia Normativa: modelos relacionales, conector HTTP resiliente para SPDP, validación SHA-256 y persistencia en GCS | `inteligencia_normativa` | [`especificaciones/NORM-01.md`](../especificaciones/NORM-01.md) |
 | `[ ]` | **43** | `BL-188` | [`NORM-02`](../tareas/NORM-02.md) | Centro de Vigilancia Normativa y Resoluciones SPDP (Frontend Next.js): catálogo, filtros, visor PDF, trigger manual y bitácora | `inteligencia_normativa, frontend` | [`especificaciones/NORM-02.md`](../especificaciones/NORM-02.md) |
-| `[ ]` | **43** | `BL-189` | [`NORM-03`](../tareas/NORM-03.md) | Integración HITL con Copiloto Gemini 2.5 Pro: análisis de impacto en Assessment, RAT y regeneración de Context Caching | `inteligencia_normativa, ai_copilot` | [`especificaciones/NORM-03.md`](../especificaciones/NORM-03.md) |
+| `[ ]` | **43** | `BL-189` | [`NORM-03`](../tareas/NORM-03.md) | Integración HITL con Copiloto Gemini: análisis de impacto en Assessment, RAT y regeneración de Context Caching | `inteligencia_normativa, ai_copilot` | [`especificaciones/NORM-03.md`](../especificaciones/NORM-03.md) |
 | `[ ]` | **21** | `BL-190` | [`SEC-13`](../tareas/SEC-13.md) | Límite de peticiones en la API por IP, usuario y organización, con tope de gasto de IA | `pasillo_central` | [`especificaciones/SEC-13.md`](../especificaciones/SEC-13.md) |
 | `[ ]` | **22** | `BL-191` | [`SEC-14`](../tareas/SEC-14.md) | El frontend no publica mapas de fuente ni secretos en variables públicas | `frontend, pruebas` | [`especificaciones/SEC-14.md`](../especificaciones/SEC-14.md) |
 | `[ ]` | **47** | `BL-192` | [`GCP-05`](../tareas/GCP-05.md) | Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga | `operaciones` | [`especificaciones/GCP-05.md`](../especificaciones/GCP-05.md) |

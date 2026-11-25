@@ -87,7 +87,7 @@
   - `features/roadmap/services/generacion_en_linea.py`
   - `tests/test_ia06_roadmap_inferencia.py`
 - **Resumen de Entrega:**
-  - `features/roadmap/ai/client.py` pasa a la compuerta con `gemini-2.5-pro`. Cambia el comportamiento de la generación del roadmap, así que lleva su propia revisión de calidad de salida; las pruebas del roadmap existentes siguen siendo árbitro.
+  - `features/roadmap/ai/client.py` pasa a la compuerta con el modelo de generación del pasillo. Cambia el comportamiento de la generación del roadmap, así que lleva su propia revisión de calidad de salida; las pruebas del roadmap existentes siguen siendo árbitro.
   - `features/roadmap/ai/client.py`: invoca directamente `app_core/pasillo/inferencia.py` sobre Vertex AI.
   ## Dónde importa cada cosa
   Solo desde `app_core.pasillo.inferencia`.
