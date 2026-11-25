@@ -7,7 +7,7 @@ verificada. El original se sirve por el backend con un `LectorOriginales` (el ad
 """
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Optional, Protocol
 
 from pydantic import BaseModel, Field
@@ -62,6 +62,7 @@ class ResolucionConNota(BaseModel):
     revisada_por: Optional[str] = None
     revisada_en: Optional[datetime] = None
     nota_revision: Optional[str] = None
+    fecha_vigencia: Optional[date] = None
 
 
 class CorridaBitacora(BaseModel):
@@ -114,13 +115,14 @@ async def listar_catalogo(sesion, filtros: FiltrosCatalogo) -> PaginaResolucione
 
 async def nota_de_revision(sesion, id_resolucion: str) -> ResolucionConNota:
     f = (await sesion.execute(
-        text("SELECT id::text AS id, estado, revisada_por, revisada_en, nota_revision "
+        text("SELECT id::text AS id, estado, revisada_por, revisada_en, nota_revision, fecha_vigencia "
              "FROM normativa_resoluciones WHERE id = CAST(:i AS uuid)"), {"i": id_resolucion},
     )).first()
     if f is None:
         raise ResolucionNoEncontrada()
     return ResolucionConNota(id=f.id, estado=f.estado, revisada_por=f.revisada_por,
-                             revisada_en=f.revisada_en, nota_revision=f.nota_revision)
+                             revisada_en=f.revisada_en, nota_revision=f.nota_revision,
+                             fecha_vigencia=f.fecha_vigencia)
 
 
 async def listar_bitacora(sesion, limite: int = 50) -> list[CorridaBitacora]:
@@ -133,8 +135,12 @@ async def listar_bitacora(sesion, limite: int = 50) -> list[CorridaBitacora]:
                             versiones_nuevas=f.versiones_nuevas, errores=f.errores) for f in filas]
 
 
-async def registrar_revision(sesion, id_resolucion: str, estado: str, nota: str, usuario_id: str) -> ResolucionConNota:
-    """Cambia el estado con quién, cuándo y la nota. Escribe como `lopdp_app`, con `UPDATE` solo sobre estas cuatro columnas (NORM-05)."""
+async def registrar_revision(sesion, id_resolucion: str, estado: str, nota: str, usuario_id: str,
+                             fecha_vigencia: Optional[date] = None) -> ResolucionConNota:
+    """Cambia el estado con quién, cuándo y la nota, y la fecha de vigencia si se da (NORM-07 R1; si no, se conserva).
+
+    Escribe como `lopdp_app`, con `UPDATE` solo sobre las cuatro columnas de NORM-05 y `fecha_vigencia`.
+    """
     if estado not in ESTADOS_REVISION:
         raise EstadoNoPermitido()
     nota_limpia = (nota or "").strip()
@@ -142,13 +148,48 @@ async def registrar_revision(sesion, id_resolucion: str, estado: str, nota: str,
         raise NotaObligatoria()
     actualizadas = (await sesion.execute(
         text("UPDATE normativa_resoluciones SET estado = :e, revisada_por = :u, revisada_en = now(), "
-             "nota_revision = :n WHERE id = CAST(:i AS uuid)"),
-        {"e": estado, "u": usuario_id, "n": nota_limpia, "i": id_resolucion},
+             "nota_revision = :n, fecha_vigencia = COALESCE(CAST(:f AS date), fecha_vigencia) "
+             "WHERE id = CAST(:i AS uuid)"),
+        {"e": estado, "u": usuario_id, "n": nota_limpia, "i": id_resolucion, "f": fecha_vigencia},
     )).rowcount
     if not actualizadas:
         raise ResolucionNoEncontrada()
     await sesion.commit()
     return await nota_de_revision(sesion, id_resolucion)
+
+
+ESTADO_INICIAL = "pendiente_revision"
+ESTADOS_SIN_PROPUESTA = ("observada",)
+
+
+def estado_anterior_de(estado_guardado: str) -> Optional[str]:
+    """NORM-07 R2: el estado previo que se pasa a la biblioteca; `None` si la resolución nunca se había revisado."""
+    return None if estado_guardado in (ESTADO_INICIAL, "homologada") else estado_guardado
+
+
+def debe_pedir_propuesta(estado: str, estado_anterior: Optional[str]) -> bool:
+    """NORM-07 R2: no se pide con `observada`, con el mismo estado ni con `vigente` en la primera revisión."""
+    if estado in ESTADOS_SIN_PROPUESTA or estado == estado_anterior:
+        return False
+    return not (estado == "vigente" and estado_anterior is None)
+
+
+async def estado_guardado(sesion, id_resolucion: str) -> str:
+    fila = (await sesion.execute(
+        text("SELECT estado FROM normativa_resoluciones WHERE id = CAST(:i AS uuid)"), {"i": id_resolucion},
+    )).first()
+    if fila is None:
+        raise ResolucionNoEncontrada()
+    return fila.estado
+
+
+async def fecha_vigencia_de(sesion, id_resolucion: str) -> Optional[date]:
+    fila = (await sesion.execute(
+        text("SELECT fecha_vigencia FROM normativa_resoluciones WHERE id = CAST(:i AS uuid)"), {"i": id_resolucion},
+    )).first()
+    if fila is None:
+        raise ResolucionNoEncontrada()
+    return fila.fecha_vigencia
 
 
 async def clave_original(sesion, id_resolucion: str) -> str:

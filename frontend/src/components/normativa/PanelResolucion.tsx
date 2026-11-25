@@ -36,6 +36,8 @@ export default function PanelResolucion({ id, operador, roles, alCerrar, alRevis
   const [estado, setEstado] = useState<EstadoRevision>("vigente");
   const [nota, setNota] = useState("");
   const [errorNota, setErrorNota] = useState("");
+  const [fecha, setFecha] = useState("");
+  const [errorFecha, setErrorFecha] = useState("");
   const titulo = useRef<HTMLHeadingElement>(null);
   const enlaceActual = useRef<string | null>(null);
   const [seccion, setSeccion] = useState<SeccionId>("documento");
@@ -89,8 +91,10 @@ export default function PanelResolucion({ id, operador, roles, alCerrar, alRevis
   const guardar = async (e: React.FormEvent) => {
     e.preventDefault();
     if (nota.trim().length < 10) { setErrorNota("Escribe una nota."); return; }
+    if (fecha && !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) { setErrorFecha("Escribe una fecha válida."); return; }
+    setErrorFecha("");
     try {
-      await registrarRevision(id, estado, nota);
+      await registrarRevision(id, estado, nota, fecha || undefined);
       setRevisando(false); setNota(""); setErrorNota("");
       await cargarDetalle();
       alRevisar();
@@ -163,13 +167,19 @@ export default function PanelResolucion({ id, operador, roles, alCerrar, alRevis
                   <textarea value={nota} onChange={(e) => setNota(e.target.value)} aria-invalid={Boolean(errorNota)}
                     className="rounded border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-2" />
                 </label>
+                <label className="flex flex-col">Fecha de entrada en vigencia (opcional)
+                  <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} aria-describedby="norm-fecha-ayuda"
+                    aria-invalid={Boolean(errorFecha)} className="rounded border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-2" />
+                </label>
+                <p id="norm-fecha-ayuda">Déjala en blanco si la norma no la indica. Se usa para los avisos de revisión de plantillas.</p>
+                {errorFecha ? <p role="alert">{errorFecha}</p> : null}
                 {errorNota ? <p role="alert">{errorNota}</p> : null}
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => { setRevisando(false); setErrorNota(""); }} className="rounded border border-[var(--ui-borde)] px-2 py-1">Cancelar</button>
+                  <button type="button" onClick={() => { setRevisando(false); setErrorNota(""); setErrorFecha(""); }} className="rounded border border-[var(--ui-borde)] px-2 py-1">Cancelar</button>
                   <button type="submit" className="rounded border border-[var(--ui-borde)] px-2 py-1">Guardar revisión</button>
                 </div>
               </form>
-            ) : <button type="button" onClick={() => setRevisando(true)} className="self-start rounded border border-[var(--ui-borde)] px-2 py-1 text-sm">Registrar revisión</button>
+            ) : <button type="button" onClick={() => { setFecha(d.fecha_vigencia ?? ""); setRevisando(true); }} className="self-start rounded border border-[var(--ui-borde)] px-2 py-1 text-sm">Registrar revisión</button>
           ) : null}
         </div>
       ) : null}

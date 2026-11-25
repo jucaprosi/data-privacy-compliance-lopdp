@@ -159,9 +159,10 @@ async def bitacora(limite: int = 50) -> list[CorridaBitacora]:
         return await revision.listar_bitacora(sesion, limite)
 
 
-async def revisar_estado(id_resolucion: str, estado: str, nota: str, usuario_id: str) -> ResolucionConNota:
+async def revisar_estado(id_resolucion: str, estado: str, nota: str, usuario_id: str,
+                         fecha_vigencia=None) -> ResolucionConNota:
     async with _sesion() as sesion:
-        return await revision.registrar_revision(sesion, id_resolucion, estado, nota, usuario_id)
+        return await revision.registrar_revision(sesion, id_resolucion, estado, nota, usuario_id, fecha_vigencia)
 
 
 async def leer_original_de(id_resolucion: str) -> bytes:
@@ -314,15 +315,42 @@ def ultima_regeneracion_de_cache() -> RegeneracionCache | None:
 _revisar_estado_norm02 = revisar_estado
 
 
-async def revisar_estado(id_resolucion: str, estado: str, nota: str, usuario_id: str) -> ResolucionConNota:
-    """Revisión de NORM-02 y, ya confirmada, pedido a VTX-01 de regenerar la caché si el estado la afecta (R4)."""
-    resultado = await _revisar_estado_norm02(id_resolucion, estado, nota, usuario_id)
+async def revisar_estado(id_resolucion: str, estado: str, nota: str, usuario_id: str,
+                         fecha_vigencia=None) -> ResolucionConNota:
+    """Revisión de NORM-02 y, ya confirmada, pedido a VTX-01 de regenerar la caché si el estado la afecta (R4).
+
+    NORM-07 R2: antes de revisar lee el estado previo y, ya confirmada, pide la propuesta a la biblioteca.
+    """
+    async with _sesion() as sesion:
+        anterior = revision.estado_anterior_de(await revision.estado_guardado(sesion, id_resolucion))
+    resultado = await _revisar_estado_norm02(id_resolucion, estado, nota, usuario_id, fecha_vigencia)
     global _ultima_regeneracion
     async with _sesion() as sesion:
         _ultima_regeneracion = await impacto.pedir_regeneracion_de_cache(
             sesion, resultado.estado, await _dependencia("solicitar_cache", _pedir_cache_por_pasillo)
         )
+    await _pedir_propuesta_a_la_biblioteca(id_resolucion, resultado.estado, anterior, usuario_id)
     return resultado
+
+
+async def _pedir_propuesta_a_la_biblioteca(id_resolucion: str, estado: str, anterior, actor: str) -> None:
+    """NORM-07 R2: la revisión ya está confirmada; si la propuesta falla solo se registra el tipo del fallo."""
+    if not revision.debe_pedir_propuesta(estado, anterior):
+        return
+    from app_core.pasillo import biblioteca as pasillo_biblioteca
+
+    try:
+        async with _sesion() as sesion:
+            await pasillo_biblioteca.proponer_por_resolucion(sesion, id_resolucion, estado, anterior, actor)
+    except Exception as exc:  # noqa: BLE001 — la revisión no se deshace
+        logging.getLogger("normativa.propuestas").warning(
+            "NORM-07: la propuesta de la biblioteca falló (%s)", type(exc).__name__)
+
+
+async def fecha_vigencia_de(id_resolucion: str):
+    """NORM-07 R3: fecha de entrada en vigencia de una resolución, o None."""
+    async with _sesion() as sesion:
+        return await revision.fecha_vigencia_de(sesion, id_resolucion)
 # === fin NORM-03 ===
 
 

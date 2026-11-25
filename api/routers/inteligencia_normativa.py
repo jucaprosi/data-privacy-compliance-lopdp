@@ -7,6 +7,7 @@ lo revisa solo el operador (la identidad sale del token verificado, nunca de una
 """
 from __future__ import annotations
 
+from datetime import date
 from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query, status
@@ -60,6 +61,7 @@ async def lector_del_corpus(
 class RevisionRequest(BaseModel):
     estado: str = Field(..., max_length=30)
     nota: str = Field(default="", max_length=4000)
+    fecha_vigencia: Optional[date] = None
 
 
 @router.get("/resoluciones")
@@ -84,6 +86,7 @@ async def detalle(id_resolucion: str, _: dict = Depends(lector_del_corpus)) -> d
     salida = base.model_dump(mode="json", exclude={"ruta_original"})
     salida["versiones"] = [{k: v for k, v in ver.items() if k != "ruta_original"} for ver in salida["versiones"]]
     salida["nota_revision"] = nota.nota_revision
+    salida["fecha_vigencia"] = nota.fecha_vigencia.isoformat() if nota.fecha_vigencia else None
     return salida
 
 
@@ -114,7 +117,8 @@ async def bitacora(limite: int = Query(50, ge=1, le=200), _: dict = Depends(lect
 @router.post("/resoluciones/{id_resolucion}/revision")
 async def revisar(id_resolucion: str, cuerpo: RevisionRequest, operador: dict = Depends(require_operador)) -> dict:
     try:
-        r = await svc.revisar_estado(id_resolucion, cuerpo.estado, cuerpo.nota, str(operador["id"]))
+        r = await svc.revisar_estado(id_resolucion, cuerpo.estado, cuerpo.nota, str(operador["id"]),
+                                cuerpo.fecha_vigencia)
     except svc.ErrorNormativo as exc:
         raise _http(exc) from exc
     return r.model_dump(mode="json")
