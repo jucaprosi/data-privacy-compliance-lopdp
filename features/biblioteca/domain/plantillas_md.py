@@ -23,11 +23,10 @@ COMUNES = frozenset({
     "tratamiento.destinatarios",
 })
 OBLIGATORIOS = ("codigo", "nombre", "tipo", "ola", "sector", "naturaleza", "tamano_empresa", "version",
-                "base_lopdp", "validacion_legal", "fecha_corte_normativo", "variables_contexto", "revision_meses")
+                "base_lopdp", "fecha_corte_normativo", "variables_contexto", "revision_meses")
 TIPOS = frozenset({"politica", "aviso", "formulario", "acuerdo", "contrato", "registro", "procedimiento",
                    "protocolo", "modelo"})
 NATURALEZAS = frozenset({"publica", "privada", "ambas"})
-VALIDACIONES = frozenset({"pendiente", "en_revision", "validada", "con_observaciones"})
 TIPOS_CONTEXTO = frozenset({"texto", "si_no", "lista"})
 NIVELES_AVISO = frozenset({"info", "alto"})
 CONDICION_DPO = "dpo.designado"
@@ -109,8 +108,8 @@ def _validar_metadatos(meta: dict, codigo_esperado: str) -> tuple[list[str], dic
         fallos.append(f"tipo no admitido: {meta['tipo']}")
     if "naturaleza" in meta and meta["naturaleza"] not in NATURALEZAS:
         fallos.append(f"naturaleza no admitida: {meta['naturaleza']}")
-    if "validacion_legal" in meta and meta["validacion_legal"] not in VALIDACIONES:
-        fallos.append(f"validacion_legal no admitida: {meta['validacion_legal']}")
+    if "validacion_legal" in meta:
+        fallos.append("validacion_legal no se declara en el archivo: se deriva de las citas verificadas (BIB-403 R3)")
     if "version" in meta and not (isinstance(meta["version"], str) and SEMVER.match(meta["version"])):
         fallos.append(f"version no es semver: {meta['version']}")
     if "fecha_corte_normativo" in meta and not FECHA.match(str(meta["fecha_corte_normativo"])):
@@ -212,11 +211,7 @@ def metadatos_de(texto: str) -> dict:
 
 # ¤adpa
 def exigir_plantilla_cargable(texto: str, codigo_esperado: str) -> dict:
-    """Valida para carga: solo entra sin dictamen jurídico, nunca como «validada»."""
+    """Valida para carga. La validación legal no sale del archivo: se deriva de las citas (BIB-403)."""
     if validar_plantilla_md(texto, codigo_esperado):
         raise ErrorNegocio("BIB_ARCHIVO_INVALIDO")
-    meta = metadatos_de(texto)
-    # «validada» exige el dictamen de la revisión jurídica del flujo editorial; un archivo no lo acredita.
-    if meta["validacion_legal"] == "validada":
-        raise ErrorNegocio("BIB_ARCHIVO_INVALIDO")
-    return meta
+    return metadatos_de(texto)

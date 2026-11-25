@@ -32,7 +32,7 @@ FICHA = {"nombre": "Plantilla sintética", "objetivo": "Probar", "fuentes": "Fue
          "restricciones": "Solo pruebas"}
 CUERPO = ("---\ncodigo: BIB-001\nnombre: Política de prueba\ntipo: politica\nola: 1\nsector: general\n"
           "naturaleza: privada\ntamano_empresa: [micro, pequena]\nversion: 0.1.0\nbase_lopdp: \"POR VERIFICAR\"\n"
-          "validacion_legal: pendiente\nfecha_corte_normativo: 2026-10-27\nvariables_contexto:\n"
+          "fecha_corte_normativo: 2026-10-27\nvariables_contexto:\n"
           "  - clave: contexto.canal\n    etiqueta: Canal de solicitudes\n    obligatoria: true\nrevision_meses: 12\n---\n\n"
           "# Política de {{organizacion.razon_social}}\n\nDomicilio: {{organizacion.direccion}}. "
           "Canal: {{contexto.canal}}. Emitida el {{fecha_emision}} ({{documento.version}}).\n\n"
@@ -213,7 +213,7 @@ async def publicar_plantilla(sesion, ids, publicar: bool = True) -> dict:
         return version
     version = await bib.editar(sesion, ids["editor"], version["id"], bib.EditarFicha(
         ficha=bib.Ficha(**FICHA), generacion=version["generacion"]))
-    for rol, tipo in [("tecnico", "tecnica"), ("juridico", "juridica")]:
+    for rol, tipo in [("tecnico", "tecnica")]:
         await bib.revisar(sesion, ids[rol], version["id"], bib.Dictamen(
             tipo=tipo, aprobado=True, comentario="Dictamen sintético", generacion=version["generacion"]))
     return await bib.publicar(sesion, ids["publicador"], version["id"], bib.Transicion(
@@ -319,3 +319,11 @@ async def test_db_rls_forzada_solo_insert_y_otra_organizacion_denegada(db_bib):
                 "origen_plantilla_id,origen_version,creada_por) SELECT :n,:n,1,:otro,codigo,nombre,cuerpo_md,sha256,"
                 "origen_plantilla_id,origen_version,creada_por FROM biblioteca_mis_plantillas WHERE id=:id"),
                 {"n": nuevo, "otro": org_b, "id": copia["id"]})
+
+
+# ¤adpa
+@pytest.fixture(autouse=True)
+def _validacion_normativa_validada(monkeypatch):
+    """BIB-403 R4: publicar exige validación normativa «validada»; estas pruebas no ejercen esa regla."""
+    from features.biblioteca.services import editorial as _editorial
+    monkeypatch.setattr(_editorial, "validacion_de_texto", lambda *a, **k: "validada")

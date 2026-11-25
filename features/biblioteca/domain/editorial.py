@@ -63,7 +63,8 @@ class ArchivoMaestro(Contrato):
 
 # ¤adpa
 class Dictamen(Contrato):
-    tipo: Literal["tecnica", "juridica"]
+    # Nadie escribe una revisión «juridica» (BIB-403 R4): el tipo sigue en la tabla solo por la historia.
+    tipo: Literal["tecnica"]
     aprobado: bool
     comentario: str = Field(min_length=1, max_length=4000)
     generacion: int = Field(ge=1)
@@ -182,7 +183,9 @@ def exigir_sustitucion(publicada_id: str | None, sustituye_id: str | None) -> No
 
 
 # ¤adpa
-def exigir_publicable(version: dict, revisiones: list[dict], actor: str) -> None:
+def exigir_publicable(version: dict, revisiones: list[dict], actor: str, validacion: str = "validada") -> None:
+    """Compuerta de publicación (BIB-403 R4): revisión técnica de una persona no autora y validación
+    normativa `validada` para esta versión. Ya no se pide revisión jurídica."""
     exigir_separacion(actor, version["autores"])
     if version["estado"] != "en_revision":
         raise ErrorNegocio("BIB_VERSION_INMUTABLE")
@@ -194,7 +197,7 @@ def exigir_publicable(version: dict, revisiones: list[dict], actor: str) -> None
     aprobadas = {r["tipo"] for r in revisiones
                  if r["aprobado"] and r["generacion"] == version["generacion"]
                  and r["revisor_id"] not in version["autores"]}
-    if not {"tecnica", "juridica"}.issubset(aprobadas):
+    if "tecnica" not in aprobadas or validacion != "validada":
         raise ErrorNegocio("BIB_REVISION_PENDIENTE")
 
 
@@ -210,6 +213,7 @@ class CrearVersionMd(Contrato):
     codigo: str = Field(pattern=r"^[A-Z][A-Z0-9-]{1,39}$")
     version: str = Field(max_length=40, pattern=r"^[0-9]+\.[0-9]+(?:\.[0-9]+)?$")
     cuerpo: str | None = Field(default=None, min_length=1, max_length=200_000)
+    ficha: Ficha | None = None
     sustituye_id: str | None = Field(default=None, max_length=36)
 
 

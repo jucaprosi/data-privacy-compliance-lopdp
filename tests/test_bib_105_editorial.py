@@ -72,11 +72,11 @@ def version_pura(**cambios):
 # ¤adpa
 def revisiones_puras():
     return [{"tipo": tipo, "aprobado": True, "generacion": 3, "revisor_id": revisor}
-            for tipo, revisor in [("tecnica", "tecnico"), ("juridica", "juridico")]]
+            for tipo, revisor in [("tecnica", "tecnico")]]
 
 
 # ¤adpa
-@pytest.mark.parametrize("faltante", ["tecnica", "juridica"])
+@pytest.mark.parametrize("faltante", ["tecnica"])
 def test_publicacion_incompleta_exige_revision(faltante):
     revisiones = [r for r in revisiones_puras() if r["tipo"] != faltante]
     with pytest.raises(ErrorNegocio, match="revisión") as exc:
@@ -87,6 +87,21 @@ def test_publicacion_incompleta_exige_revision(faltante):
 # ¤adpa
 def test_publicacion_completa_explicita():
     bib.exigir_publicable(version_pura(), revisiones_puras(), "publicador")
+
+
+# ¤adpa
+def test_m5_la_revision_juridica_ya_no_se_exige():
+    # BIB-403 R4: basta la técnica de una persona no autora y la validación normativa.
+    assert all(r["tipo"] == "tecnica" for r in revisiones_puras())
+    bib.exigir_publicable(version_pura(), revisiones_puras(), "publicador", "validada")
+
+
+# ¤adpa
+@pytest.mark.parametrize("validacion", ["pendiente", "en_revision", "con_observaciones"])
+def test_m6_sin_validacion_normativa_no_se_publica(validacion):
+    with pytest.raises(ErrorNegocio) as exc:
+        bib.exigir_publicable(version_pura(), revisiones_puras(), "publicador", validacion)
+    assert exc.value.code == "BIB_REVISION_PENDIENTE"
 
 
 # ¤adpa
@@ -340,7 +355,7 @@ async def crear_db(sesion, ids):
 
 # ¤adpa
 async def aprobar_db(sesion, ids, v):
-    for rol, tipo in [("tecnico","tecnica"),("juridico","juridica")]:
+    for rol, tipo in [("tecnico","tecnica")]:
         await bib.revisar(sesion, ids[rol], v["id"], bib.Dictamen(
             tipo=tipo, aprobado=True, comentario="Dictamen sintético", generacion=v["generacion"]))
 
@@ -560,3 +575,11 @@ async def test_api_real_identidad_verificada_ignora_usuario_y_rol_de_cabeceras(d
         assert respuesta.json()["code"] == "BIB_SIN_CAPACIDAD"
         sin_credencial = await cliente.get("/api/v1/biblioteca/editorial", headers={"X-User-ID":ids["editor"]})
         assert sin_credencial.status_code == 401
+
+
+# ¤adpa
+@pytest.fixture(autouse=True)
+def _validacion_normativa_validada(monkeypatch):
+    """BIB-403 R4: publicar exige validación normativa «validada»; estas pruebas no ejercen esa regla."""
+    from features.biblioteca.services import editorial as _editorial
+    monkeypatch.setattr(_editorial, "validacion_de_texto", lambda *a, **k: "validada")

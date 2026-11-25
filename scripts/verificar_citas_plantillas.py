@@ -76,11 +76,11 @@ def citas_de(meta: dict, cuerpo: str) -> tuple[set[str], list[str]]:
 # ¤adpa
 def generar(estados, fuente_de, fuentes, plantillas) -> dict:
     asignadas = {codigo: sorted(citas_de(meta, cuerpo)[0]) for codigo, (meta, cuerpo) in plantillas.items()}
-    usadas = {c for claves in asignadas.values() for c in claves}
     return {
         "plantillas": asignadas,
-        "claves": {c: fuente_de[c] for c in sorted(usadas) if c in fuente_de},
-        "fuentes": {f: fuentes[f] for f in sorted({fuente_de[c] for c in usadas if c in fuente_de})},
+        "estados": dict(sorted(estados.items())),
+        "fuente_de": dict(sorted(fuente_de.items())),
+        "fuentes": dict(sorted(fuentes.items())),
     }
 
 

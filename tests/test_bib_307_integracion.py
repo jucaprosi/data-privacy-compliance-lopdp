@@ -156,7 +156,7 @@ async def _publicar_plantilla(sesion, editorial) -> str:
     version = await bib.crear_version_md(sesion, editorial["editor"], "B307-" + uuid4().hex[:10].upper(), "0.1.0", CUERPO)
     version = await bib.editar(sesion, editorial["editor"], version["id"], bib.EditarFicha(
         ficha=bib.Ficha(**FICHA), generacion=version["generacion"]))
-    for rol, tipo in (("tecnico", "tecnica"), ("juridico", "juridica")):
+    for rol, tipo in (("tecnico", "tecnica"),):
         await bib.revisar(sesion, editorial[rol], version["id"], bib.Dictamen(
             tipo=tipo, aprobado=True, comentario="Dictamen sintético BIB-307", generacion=version["generacion"]))
     publicada = await bib.publicar(sesion, editorial["publicador"], version["id"], bib.Transicion(
@@ -357,3 +357,11 @@ async def test_api_documento_y_expediente_de_otra_empresa_no_se_ven(api, mundo):
     assert ajeno.status_code == 404
     expediente = await api.get(f"/api/v1/biblioteca/verificaciones/acciones/{b.traza['accion']}", headers=propio)
     assert expediente.status_code == 422 and expediente.json()["code"] == "BIB_VERIF_ACCION_AJENA"
+
+
+# ¤adpa
+@pytest.fixture(autouse=True)
+def _validacion_normativa_validada(monkeypatch):
+    """BIB-403 R4: publicar exige validación normativa «validada»; estas pruebas no ejercen esa regla."""
+    from features.biblioteca.services import editorial as _editorial
+    monkeypatch.setattr(_editorial, "validacion_de_texto", lambda *a, **k: "validada")

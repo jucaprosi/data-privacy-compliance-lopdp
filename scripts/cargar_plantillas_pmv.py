@@ -27,7 +27,7 @@ from app_core.huellas_produccion import BaseNoLocal, exigir_base_local  # noqa: 
 def _imprimir_informe(informe: dict) -> None:
     print(f"{len(informe['plantillas'])} plantillas válidas en data/biblioteca/pmv")
     for p in informe["plantillas"]:
-        print(f"  {p['codigo']}  v{p['version']}  validacion_legal={p['validacion_legal']}  {p['sha256']}  {p['nombre']}")
+        print(f"  {p['codigo']}  v{p['version']}  {p['sha256']}  {p['nombre']}")
     for error in informe["errores"]:
         print(f"ERROR: {error}")
 

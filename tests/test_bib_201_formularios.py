@@ -37,8 +37,8 @@ FINALIDAD = "  - clave: contexto.finalidad\n    etiqueta: Finalidad\n    obligat
 # ¤adpa
 def plantilla(cuerpo: str, contexto: str = "", extra: str = "", codigo: str = "BIB-099") -> str:
     return (f"---\ncodigo: {codigo}\nnombre: Prueba\ntipo: politica\nola: 1\nsector: general\nnaturaleza: privada\n"
-            "tamano_empresa: [micro, pequena]\nversion: 0.1.0\nbase_lopdp: \"PENDIENTE VALIDACIÓN\"\n"
-            "validacion_legal: pendiente\nfecha_corte_normativo: 2026-10-27\n"
+            "tamano_empresa: [micro, pequena]\nversion: 0.1.0\nbase_lopdp: \"LOPDP art. 8\"\n"
+            "fecha_corte_normativo: 2026-10-27\n"
             f"variables_contexto:\n{contexto}{extra}revision_meses: 12\n---\n\n{cuerpo}\n")
 
 
@@ -297,7 +297,7 @@ def fuentes(org=None, dpd=None, actividades=None, falla=False):
 async def publicar(sesion, ids, texto: str, codigo: str = "BIB-099") -> str:
     v = await bib.crear_version_md(sesion, ids["editor"], codigo, "0.1.0", texto)
     v = await bib.editar(sesion, ids["editor"], v["id"], bib.EditarFicha(ficha=bib.Ficha(**FICHA), generacion=v["generacion"]))
-    for rol, tipo in [("tecnico", "tecnica"), ("juridico", "juridica")]:
+    for rol, tipo in [("tecnico", "tecnica")]:
         await bib.revisar(sesion, ids[rol], v["id"], bib.Dictamen(tipo=tipo, aprobado=True, comentario="Dictamen sintético",
                                                                     generacion=v["generacion"]))
     return (await bib.publicar(sesion, ids["publicador"], v["id"], bib.Transicion(
@@ -447,3 +447,11 @@ async def test_db_las_compuertas_reales_entregan_organizacion_dpd_y_rat_de_la_se
     dpd = await router.FUENTES.dpd_vigente(sesion, tenant)
     assert dpd["nombre"] == "editor" and dpd["correo"].endswith("@example.test") and dpd["fecha_designacion"] == date(2026, 10, 1)
     assert await router.FUENTES.dpd_vigente(sesion, otro) is None  # la designación es de otra organización
+
+
+# ¤adpa
+@pytest.fixture(autouse=True)
+def _validacion_normativa_validada(monkeypatch):
+    """BIB-403 R4: publicar exige validación normativa «validada»; estas pruebas no ejercen esa regla."""
+    from features.biblioteca.services import editorial as _editorial
+    monkeypatch.setattr(_editorial, "validacion_de_texto", lambda *a, **k: "validada")

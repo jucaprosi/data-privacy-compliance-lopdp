@@ -181,3 +181,28 @@ def validacion_normativa(claves: set[str], estados: dict[str, str], fuente_de: d
         if registrada is not None and registrada != huellas_leidas.get(fuente):
             return "en_revision"
     return "validada"
+
+
+# ¤adpa
+def validacion_de_texto(texto: str, citas: dict | None, versiones_modulo: dict[str, str]) -> str:
+    """`validacion_legal` de una versión Markdown: sus citas contra `citas.json` y las huellas del módulo.
+
+    `citas`: contenido de citas.json (`estados`, `fuente_de`, `fuentes`); sin él nada se acredita. Una
+    cita sin fila, o un texto ilegible, deja la versión `pendiente`.
+    """
+    from features.biblioteca.domain.plantillas_md import leer_metadatos, separar
+
+    if not citas:
+        return "pendiente"
+    try:
+        cabecera, cuerpo = separar(texto)
+        meta = leer_metadatos(cabecera)
+    except ValueError:
+        return "pendiente"
+    claves, sin_norma = extraer_citas(str(meta.get("base_lopdp", "")))
+    del_cuerpo, sin_norma_cuerpo = extraer_citas(cuerpo)
+    if sin_norma or sin_norma_cuerpo:
+        return "pendiente"
+    huellas = {f: d.get("sha256") for f, d in citas.get("fuentes", {}).items()}
+    return validacion_normativa(claves | del_cuerpo, citas.get("estados", {}), citas.get("fuente_de", {}),
+                                huellas, versiones_modulo)

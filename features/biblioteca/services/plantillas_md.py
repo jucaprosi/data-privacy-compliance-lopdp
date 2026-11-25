@@ -21,7 +21,7 @@ from features.biblioteca.services.editorial import crear_version_md
 CARPETA = "data/biblioteca/pmv"
 CODIGOS = tuple(f"BIB-{n:03d}" for n in range(1, 13))
 # Metadatos de la plantilla que el catálogo guarda en su campo jsonb (los demás tienen columna).
-EN_METADATOS = ("ola", "sector", "tamano_empresa", "base_lopdp", "validacion_legal", "fecha_corte_normativo",
+EN_METADATOS = ("ola", "sector", "tamano_empresa", "base_lopdp", "fecha_corte_normativo",
                 "revision_meses", "variables_contexto", "avisos")
 
 
@@ -39,13 +39,11 @@ def verificar_plantillas_pmv(raiz: Path) -> dict:
         errores.append(f"Se esperaban {', '.join(CODIGOS)}; hay {', '.join(textos) or 'ninguna'}")
     for codigo, texto in textos.items():
         fallos = validar_plantilla_md(texto, codigo)
-        if not fallos and metadatos_de(texto)["validacion_legal"] == "validada":
-            fallos = ["validacion_legal «validada» sin dictamen registrado en el flujo editorial"]
         errores += [f"{codigo}: {fallo}" for fallo in fallos]
         if not fallos:
             meta = metadatos_de(texto)
             plantillas.append({"codigo": codigo, "version": meta["version"], "nombre": meta["nombre"],
-                               "validacion_legal": meta["validacion_legal"], "sha256": huella(texto)})
+                               "sha256": huella(texto)})
     return {"plantillas": plantillas, "errores": errores}
 
 
