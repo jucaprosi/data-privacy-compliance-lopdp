@@ -2,7 +2,7 @@
 id = "DEMO-11"
 titulo = "Procedimiento del backend y de la migración de la demo, con su job, su secreto y la membresía del rol"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 101
 sala = "operaciones"
 depende_de = ["DEMO-10"]
