@@ -67,5 +67,15 @@ async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: 
 # === ORG-20 ===
 # === fin ORG-20 ===
 
+# === BIB-406 ===
+async def proponer_por_resolucion(session, id_resolucion: str, estado: str, actor: str, *,
+                                  estado_anterior: str | None = None, org_id: str) -> dict:
+    """La sala normativa la llama tras revisar una resolución (R1); la IA propone, nunca publica."""
+    from features.biblioteca import biblioteca_service
+
+    return await biblioteca_service.proponer_por_resolucion(
+        session, id_resolucion, estado, actor, estado_anterior=estado_anterior, org_id=org_id)
+# === fin BIB-406 ===
+
 # === RAT-07 ===
 # === fin RAT-07 ===
