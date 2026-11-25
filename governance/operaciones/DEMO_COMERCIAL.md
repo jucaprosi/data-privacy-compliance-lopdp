@@ -298,3 +298,4 @@ Una fila por cada migración de la demo. `REGISTRO_MIGRACIONES_MANUALES.md` es s
 
 | Fecha | Commit | Digest | Revisiones antes | Revisiones después | Quién aplicó | Confirmación |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 2026-11-24 | `dfc82838` | `sha256:2b13a27173c2fd72419f1e5ac32cfc91b64fac0823f5006f6470833ed4dd1567` | 12 cabezas (con `ia14_modelo_impacto_sin_literal`) | 13 cabezas: `norm05_revision_sin_rol_mon`, `norm06_transcripciones` y `20261124_bib403_publicacion` | El propietario, con Antigravity, **a mano y no con `migrar-demo`**, que aún no existe en GCP. Copia previa `1795581578903`. Backend publicado en `evydentia-backend-demo-00016-mj4`. | `alembic current` |
