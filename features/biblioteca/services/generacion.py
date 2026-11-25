@@ -19,7 +19,7 @@ from datetime import date
 from uuid import uuid4
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from app_core.entorno.guardias import datos_ficticios
+from app_core.entorno.guardias import entorno_actual
 from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.esquemas import GENERADAS, Plantilla, leer_plantilla
 from features.biblioteca.domain.generacion import (
@@ -106,7 +106,7 @@ def construir(instantanea: InstantaneaGeneracion, pedido: PedirGeneracion) -> tu
             raise ErrorNegocio("BIB_GEN_SALIDA_INVALIDA", "Quedan marcas: " + " ".join(restos))
     partes = bloques(texto)
     marca = bloqueantes if borrador else None
-    pie = LEYENDA_DEMO if datos_ficticios() else None  # fuera de la demo y de pruebas, los bytes de siempre
+    pie = LEYENDA_DEMO if entorno_actual() == "demo" else None  # fuera de la demo (pruebas incluido), los bytes de siempre
     if pedido.formato == "docx":
         archivo = generar_docx(partes, marca, pie)
     else:

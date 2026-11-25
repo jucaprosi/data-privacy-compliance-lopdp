@@ -131,9 +131,9 @@ def generar_docx(contenido: list[Bloque], faltantes: list[str] | None = None, pi
             partes.append(_parrafo("Datos que faltan:"))
             partes += [_parrafo("• " + f, "ListBullet") for f in faltantes]
     partes += [_bloque(b) for b in contenido]
+    ref_pie = '<w:footerReference w:type="default" r:id="rId2"/>' if pie is not None else ""
     documento = (f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="{W}" '
-                 f'xmlns:r="{REL}"><w:body>{"".join(partes)}<w:sectPr>'
-                 f'{'<w:footerReference w:type="default" r:id="rId2"/>' if pie is not None else ""}<w:pgSz w:w="11906" w:h="16838"/>'
+                 f'xmlns:r="{REL}"><w:body>{"".join(partes)}<w:sectPr>{ref_pie}<w:pgSz w:w="11906" w:h="16838"/>'
                  '<w:pgMar w:top="1418" w:right="1418" w:bottom="1418" w:left="1418" w:header="709" '
                  'w:footer="709" w:gutter="0"/></w:sectPr></w:body></w:document>')
     if pie is None:

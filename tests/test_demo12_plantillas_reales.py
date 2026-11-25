@@ -158,11 +158,13 @@ def test_fuera_de_la_demo_los_generadores_dan_los_mismos_bytes_que_hoy():
             assert hashlib.sha256(libro).hexdigest() == esperado
 
 
+@pytest.mark.parametrize("entorno", ["production", "pruebas"])
 @pytest.mark.parametrize("formato", ["docx", "xlsx"])
-def test_con_production_la_salida_es_identica_a_la_de_development(monkeypatch, formato):
-    produccion = _construir(monkeypatch, "production", formato)
-    assert produccion == _construir(monkeypatch, "development", formato)
-    assert LEYENDA not in "".join(_partes(produccion).values())
+def test_fuera_de_la_demo_la_salida_es_identica_a_la_de_development(monkeypatch, formato, entorno):
+    """R4b (decisión del Arquitecto, #1059): la leyenda va solo con APP_ENV=demo; `pruebas` incluido, no cambia."""
+    fuera = _construir(monkeypatch, entorno, formato)
+    assert fuera == _construir(monkeypatch, "development", formato)
+    assert LEYENDA not in "".join(_partes(fuera).values())
 
 
 def test_m5_en_la_demo_el_docx_lleva_la_leyenda_en_el_pie(monkeypatch):
