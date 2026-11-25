@@ -176,3 +176,125 @@ gcloud run services update-traffic evydentia-web-demo --project=evydentia-demo -
 ### 5.4 Qué comprueba el repositorio
 
 `tests/test_demo09_web_demo.py` verifica, sin red, que la imagen del manifiesto `entornos/demo/cloudrun_frontend.yaml`, la de este procedimiento y la de `frontend/cloudbuild.yaml` son la misma; que el client id es uno solo; que este procedimiento no compila aparte; y que solo ese id entra al compilar. La aceptación final es del propietario: la revisión nueva sirve `/login` con `$IMAGEN@<digest del commit>`.
+
+## 6. Backend y migración de la demo (DEMO-11)
+
+El backend de demo (`evydentia-backend-demo`) corre la imagen `us-central1-docker.pkg.dev/evydentia-demo/evydentia-demo-containers/backend` del **mismo commit que la web de §5.2**, por digest. La base `evydentia-demo-db` se migra con el job `migrar-demo` (`entornos/demo/job_migracion.yaml`). Ese job se declara como `evydentia-migrate` de producción (`entornos/produccion/MIGRAR_PRODUCCION.md`): `alembic upgrade heads`, `maxRetries: 0`, una cuenta propia y `DATABASE_URL` desde Secret Manager. Contrato: `governance/especificaciones/DEMO-11.md`.
+
+**Quién.** Lo ejecuta el propietario en PowerShell, desde `main` y tras fusionar. Ninguna sesión de IA migra ni publica la demo. Crear el job, su cuenta, el secreto `DATABASE_URL` y la membresía de `evydentia_demo_app` en `lopdp_app` también le toca al propietario. Cada bloque define sus variables. Ningún bloque contiene valores de secretos.
+
+**Orden.** 6.1 → 6.2 → 6.3. Nunca se publica el backend antes de migrar.
+
+### 6.1 Imagen
+
+```powershell
+# Imagen del backend del mismo commit que la web de §5.2: localizarla o construirla una sola vez en evydentia-demo.
+cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+git fetch origin
+$COMMIT = (git rev-parse --short origin/main).Trim()
+$IMAGEN = "us-central1-docker.pkg.dev/evydentia-demo/evydentia-demo-containers/backend"
+gcloud artifacts docker images describe "${IMAGEN}:${COMMIT}" --project=evydentia-demo
+# Si la orden anterior responde que no la encuentra, construirla desde ese commit, con el Dockerfile raíz,
+# como se construyó backend:b56f39c3:
+#   git switch --detach $COMMIT
+#   gcloud builds submit --tag "${IMAGEN}:${COMMIT}" --project=evydentia-demo .
+#   git switch main
+$DIGEST = (gcloud artifacts docker images describe "${IMAGEN}:${COMMIT}" --project=evydentia-demo --format="value(image_summary.digest)").Trim()
+"Imagen del commit: ${IMAGEN}@${DIGEST}"
+```
+
+### 6.2 Migración, antes de publicar el backend
+
+```powershell
+# 1. Copia previa de evydentia-demo-db. Sin la copia terminada, no se migra.
+gcloud sql backups create --instance=evydentia-demo-db --project=evydentia-demo --description="antes de migrar-demo"
+gcloud sql backups list --instance=evydentia-demo-db --project=evydentia-demo --limit=1
+```
+
+**2. Comprobación de solo lectura de la membresía** (`cloud_sql.yaml`, R3). La hace el propietario con Antigravity, por `cloud-sql-proxy` contra `evydentia-demo:us-central1:evydentia-demo-db`, dentro de una transacción de solo lectura. Como alternativa sirve Cloud SQL Studio, en la consola de Google Cloud (proyecto `evydentia-demo`, base `evydentia_demo`). Ninguna contraseña se escribe en este documento.
+
+```sql
+BEGIN TRANSACTION READ ONLY;
+SELECT pg_has_role('evydentia_demo_app','lopdp_app','MEMBER');
+ROLLBACK;
+```
+
+Si responde `f`, **el procedimiento se detiene aquí** y se avisa al propietario: la membresía no está concedida y el backend no podría usar los permisos que las migraciones conceden a `lopdp_app`.
+
+```powershell
+# 3. Fijar el job en el digest de 6.1 y ejecutarlo. execute no acepta --image: la imagen se fija antes, con update.
+cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+$COMMIT = (git rev-parse --short origin/main).Trim()
+$IMAGEN = "us-central1-docker.pkg.dev/evydentia-demo/evydentia-demo-containers/backend"
+$DIGEST = (gcloud artifacts docker images describe "${IMAGEN}:${COMMIT}" --project=evydentia-demo --format="value(image_summary.digest)").Trim()
+gcloud run jobs update migrar-demo --image="${IMAGEN}@${DIGEST}" --region=us-central1 --project=evydentia-demo
+gcloud run jobs execute migrar-demo --region=us-central1 --project=evydentia-demo --wait
+```
+
+```powershell
+# 4. Las cabezas del grafo de main: una por rama (CI-28). Se leen en un worktree temporal, que se quita al terminar.
+cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+git fetch origin
+$ARBOL = "C:\Users\Juan Carlos\worktrees-evydentia\cabezas-demo"
+git worktree add --detach $ARBOL origin/main
+cd $ARBOL
+$CABEZAS = @(& "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" -m alembic heads | ForEach-Object { ($_ -split " ")[0] } | Sort-Object)
+"Cabezas del grafo: $($CABEZAS.Count)"
+$CABEZAS
+cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+git worktree remove $ARBOL
+gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=migrar-demo" --project=evydentia-demo --limit=200 --freshness=1d --format="value(textPayload)" | Select-String "Running upgrade"
+```
+
+Las revisiones que dejó el job tienen que ser las mismas que `$CABEZAS`, y en el mismo número. Se leen de dos maneras: la última `-> <revisión>` de cada rama en el registro, o con la consulta siguiente, por la misma vía del paso 2 (Antigravity por `cloud-sql-proxy`, o Cloud SQL Studio). Si no coinciden, no se publica y se avisa al CTO.
+
+```sql
+BEGIN TRANSACTION READ ONLY;
+SELECT version_num FROM alembic_version ORDER BY 1;
+ROLLBACK;
+```
+
+### 6.3 Publicación del backend
+
+```powershell
+cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+$COMMIT = (git rev-parse --short origin/main).Trim()
+$IMAGEN = "us-central1-docker.pkg.dev/evydentia-demo/evydentia-demo-containers/backend"
+$DIGEST = (gcloud artifacts docker images describe "${IMAGEN}:${COMMIT}" --project=evydentia-demo --format="value(image_summary.digest)").Trim()
+
+# 1. Guardar la revisión actual como etiqueta de tráfico "anterior" (6.4 vuelve con ella).
+$ANTERIOR = (gcloud run services describe evydentia-backend-demo --project=evydentia-demo --region=us-central1 --format="value(status.latestReadyRevisionName)").Trim()
+"Revisión anterior: $ANTERIOR"
+gcloud run services update-traffic evydentia-backend-demo --project=evydentia-demo --region=us-central1 --update-tags="anterior=$ANTERIOR"
+
+# 2. Publicar la revisión nueva sin tráfico, con una etiqueta. Variables y cuenta del servicio no cambian.
+gcloud run deploy evydentia-backend-demo --project=evydentia-demo --region=us-central1 --image="${IMAGEN}@${DIGEST}" --no-traffic --tag="c${COMMIT}"
+
+# 3. Comprobar /health en la URL de la etiqueta. El servicio exige IAM: se llama con un token de identidad.
+$URL = (gcloud run services describe evydentia-backend-demo --project=evydentia-demo --region=us-central1 --format=json | ConvertFrom-Json).status.traffic | Where-Object { $_.tag -eq "c$COMMIT" } | Select-Object -ExpandProperty url
+$TOKEN = (gcloud auth print-identity-token).Trim()
+Invoke-WebRequest -Uri "$URL/health" -Headers @{ Authorization = "Bearer $TOKEN" } -UseBasicParsing | Select-Object StatusCode, Content
+```
+
+Si `/health` no responde 200, el tráfico no se pasa. Si responde 200:
+
+```powershell
+# 4. Pasar el tráfico a la revisión nueva.
+gcloud run services update-traffic evydentia-backend-demo --project=evydentia-demo --region=us-central1 --to-latest
+```
+
+### 6.4 Volver atrás
+
+```powershell
+# La etiqueta "anterior" la dejó el paso 1 de 6.3 en Cloud Run; este bloque no hereda nada de aquel.
+gcloud run services update-traffic evydentia-backend-demo --project=evydentia-demo --region=us-central1 --to-tags="anterior=100"
+```
+
+La base no se baja de versión. Si hace falta, se restaura la copia de 6.2 (`gcloud sql backups restore`). Esa decisión es del propietario.
+
+### 6.5 Registro
+
+Una fila por cada migración de la demo. `REGISTRO_MIGRACIONES_MANUALES.md` es solo para bases de pruebas (su regla 4), así que la demo lleva aquí su propio registro. Sin credenciales.
+
+| Fecha | Commit | Digest | Revisiones antes | Revisiones después | Quién aplicó | Confirmación |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |

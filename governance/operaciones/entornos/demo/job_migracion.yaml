@@ -1,0 +1,37 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# DEMO-11 · Cloud Run Job de migración de la demo (migrar-demo), declarado como evydentia-migrate de producción.
+# Ejecuta `alembic upgrade heads` contra evydentia-demo-db. La imagen es la del servicio del backend y se fija
+# por digest en cada migración (DEMO_COMERCIAL.md §6.2): `gcloud run jobs update migrar-demo --image=<imagen>@<digest>`.
+# Lo crea y lo ejecuta el propietario, desde main y tras fusionar. Ninguna sesión de IA lo ejecuta.
+metadata:
+  name: migrar-demo
+  project: evydentia-demo
+  region: us-central1
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/cloudsql-instances: evydentia-demo:us-central1:evydentia-demo-db
+    spec:
+      taskCount: 1
+      template:
+        spec:
+          maxRetries: 0
+          timeoutSeconds: 600
+          serviceAccountName: migrar-demo@evydentia-demo.iam.gserviceaccount.com
+          containers:
+            - image: us-central1-docker.pkg.dev/evydentia-demo/evydentia-demo-containers/backend
+              command: [alembic]
+              args: [upgrade, heads]
+              env:
+                - name: APP_ENV
+                  value: demo
+                - name: ENVIRONMENT
+                  value: demo
+                - name: HUELLA_PROYECTO_PRODUCCION
+                  value: evydentia-production
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: DATABASE_URL
+                      key: latest
