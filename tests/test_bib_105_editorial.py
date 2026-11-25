@@ -404,7 +404,7 @@ async def test_db_editar_invalida_dictamen_y_no_borra_historial(db_bib):
     with pytest.raises(ErrorNegocio) as exc:
         await bib.publicar(sesion, ids["publicador"], v["id"], bib.Transicion(generacion=cambiada["generacion"], motivo="Prueba"))
     assert exc.value.code == "BIB_REVISION_PENDIENTE"
-    assert (await sesion.execute(text("SELECT count(*) FROM biblioteca_revisiones WHERE version_id=:id"), {"id": v["id"]})).scalar() == 2
+    assert (await sesion.execute(text("SELECT count(*) FROM biblioteca_revisiones WHERE version_id=:id"), {"id": v["id"]})).scalar() == 1  # el montaje escribe solo la revisión técnica (BIB-403 R4)
 
 
 # ¤adpa

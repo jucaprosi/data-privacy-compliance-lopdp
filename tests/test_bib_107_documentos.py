@@ -145,8 +145,11 @@ async def _publicar(sesion, ids):
     for rol, tipo in (("tecnico", "tecnica"),):
         await bib.revisar(sesion, ids[rol], version["id"], bib.Dictamen(
             tipo=tipo, aprobado=True, comentario="Dictamen sintético", generacion=version["generacion"]))
-    return await bib.publicar(sesion, ids["publicador"], version["id"], bib.Transicion(
-        generacion=version["generacion"], motivo="Publicación sintética"))
+    # BIB-403 R4: el montaje lo importan otras suites (test_bib120), así que la validación normativa se fija aquí.
+    from unittest.mock import patch
+    with patch("features.biblioteca.services.editorial.validacion_de_texto", lambda *a, **k: "validada"):
+        return await bib.publicar(sesion, ids["publicador"], version["id"], bib.Transicion(
+            generacion=version["generacion"], motivo="Publicación sintética"))
 
 
 # ¤adpa

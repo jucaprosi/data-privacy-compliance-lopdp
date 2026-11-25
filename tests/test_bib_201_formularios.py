@@ -300,8 +300,11 @@ async def publicar(sesion, ids, texto: str, codigo: str = "BIB-099") -> str:
     for rol, tipo in [("tecnico", "tecnica")]:
         await bib.revisar(sesion, ids[rol], v["id"], bib.Dictamen(tipo=tipo, aprobado=True, comentario="Dictamen sintético",
                                                                     generacion=v["generacion"]))
-    return (await bib.publicar(sesion, ids["publicador"], v["id"], bib.Transicion(
-        generacion=v["generacion"], motivo="Publicación sintética")))["id"]
+    # BIB-403 R4: otras suites (203, 205) importan este montaje; la validación normativa se fija aquí.
+    from unittest.mock import patch
+    with patch("features.biblioteca.services.editorial.validacion_de_texto", lambda *a, **k: "validada"):
+        return (await bib.publicar(sesion, ids["publicador"], v["id"], bib.Transicion(
+            generacion=v["generacion"], motivo="Publicación sintética")))["id"]
 
 
 CUERPO = ("{{organizacion.razon_social}} {{organizacion.direccion}}\n"
