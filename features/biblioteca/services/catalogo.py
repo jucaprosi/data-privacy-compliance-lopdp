@@ -9,13 +9,16 @@ pantalla distinga «no hay nada» de «no tienes permiso». Solo se listan versi
 editora ve también las que están en revisión por su capacidad editorial, y aquí se excluyen.
 """
 import json
+from datetime import timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 from pydantic import BaseModel
-from sqlalchemy import text
+from sqlalchemy import bindparam, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.errors import ErrorNegocio
+from app_core.zona_negocio import ZONA_NEGOCIO
+from features.biblioteca.domain.leyenda import leyenda_de
 from features.biblioteca.domain.plantillas_md import TIPOS
 from features.biblioteca.domain.validacion import validacion_de_texto
 from features.biblioteca.services.autorizacion import capacidades
@@ -41,6 +44,45 @@ async def huellas_por_url_fuente() -> dict[str, str]:
     """
     return {}
 
+# ¤adpa
+async def leyendas_de_versiones(session: AsyncSession, ids: list[str]) -> dict[str, dict | None]:
+    """BIB-410 R1 a R3: la leyenda de cada versión, desde la revisión técnica aprobada de esa generación.
+
+    El nombre visible sale de `users` (nunca el correo) y la fecha es la de negocio de Guayaquil. Sin revisión aprobada
+    de una persona no autora, o sin nombre visible, la leyenda es `None`. Tres lecturas para toda la lista, sin N+1.
+    """
+    if not ids:
+        return {}
+    consulta = lambda sql, nombre: text(sql).bindparams(bindparam(nombre, expanding=True))  # noqa: E731
+    versiones = (await session.execute(consulta(
+        "SELECT id, estado, redactada_por, autores, generacion FROM biblioteca_versiones WHERE id IN :ids", "ids"),
+        {"ids": list(ids)})).mappings().all()
+    revisiones = (await session.execute(consulta(
+        "SELECT version_id, generacion, revisor_id, creada_en FROM biblioteca_revisiones "
+        "WHERE version_id IN :ids AND tipo='tecnica' AND aprobado ORDER BY creada_en", "ids"),
+        {"ids": list(ids)})).mappings().all()
+    autores = {v["id"]: list(v["autores"] or []) for v in versiones}
+    aprobada: dict[str, dict] = {}
+    for r in revisiones:  # la última aprobada de la generación vigente por una persona que no es autora
+        v = next(x for x in versiones if x["id"] == r["version_id"])
+        if r["generacion"] == v["generacion"] and r["revisor_id"] not in autores[v["id"]]:
+            aprobada[v["id"]] = r
+    personas = {i for v in versiones if v["redactada_por"] != "ia" for i in autores[v["id"]]} | {r["revisor_id"] for r in aprobada.values()}
+    nombres = {}
+    if personas:
+        nombres = {f["id"]: f["nombre"] for f in (await session.execute(consulta(
+            "SELECT id, nombre FROM users WHERE id IN :ids", "ids"), {"ids": sorted(personas)})).mappings().all()}
+    salida: dict[str, dict | None] = {}
+    for v in versiones:
+        r = aprobada.get(v["id"])
+        fecha = r["creada_en"] if r else None
+        if fecha is not None:
+            fecha = (fecha if fecha.tzinfo else fecha.replace(tzinfo=timezone.utc)).astimezone(ZONA_NEGOCIO).date()
+        salida[v["id"]] = leyenda_de(v["estado"], v["redactada_por"], [nombres.get(i, "") for i in autores[v["id"]]],
+                                     nombres.get(r["revisor_id"]) if r else None, fecha)
+    return salida
+
+
 FUENTES = ("catalogo", "organizacion")
 # Un solo estado es descargable; las entradas planificadas o sin archivo nunca lo son.
 ESTADO_DESCARGABLE = "publicada"
@@ -59,6 +101,7 @@ class PlantillaCatalogo(BaseModel):
     ola: int | None
     estado: str
     descargable: bool
+    leyenda: dict | None = None  # BIB-410: redacción y aprobación; nula sin aprobación registrada
 
 
 # ¤adpa
@@ -86,13 +129,13 @@ def _validar_filtros(fuente: str | None, tipo: str | None, ola: int | None) -> N
 
 
 # ¤adpa
-def _como_plantilla(fila: dict, versiones: dict[str, str]) -> PlantillaCatalogo:
+def _como_plantilla(fila: dict, versiones: dict[str, str], leyenda: dict | None = None) -> PlantillaCatalogo:
     metadatos = fila["metadatos"] or {}
     return PlantillaCatalogo(
         id=fila["id"], codigo=fila["codigo"], nombre=fila["nombre"], tipo=fila["tipo"], fuente="catalogo",
         version=fila["version"], formato=fila["formato"], validacion_legal=validacion_de_texto(fila["cuerpo_md"] or "", leer_citas(), versiones),
         ola=_entero(metadatos.get("ola")), estado=fila["estado"],
-        descargable=descargable(fila["estado"], fila["formato"]),
+        descargable=descargable(fila["estado"], fila["formato"]), leyenda=leyenda,
     )
 
 
@@ -118,4 +161,5 @@ async def listar_catalogo(session: AsyncSession, actor: str, fuente: str | None 
         "ORDER BY v.codigo, v.version LIMIT :limite"
     ), {"tipo": tipo, "ola": ola, "limite": LIMITE})).mappings().all()
     versiones = await huellas_por_url_fuente()  # una sola lectura por lista, sin N+1
-    return [_como_plantilla(dict(f), versiones) for f in filas]
+    leyendas = await leyendas_de_versiones(session, [f["id"] for f in filas])
+    return [_como_plantilla(dict(f), versiones, leyendas.get(f["id"])) for f in filas]

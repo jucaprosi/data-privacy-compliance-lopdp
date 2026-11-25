@@ -22,10 +22,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.entorno.guardias import entorno_actual
 from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.esquemas import GENERADAS, Plantilla, leer_plantilla
+from features.biblioteca.domain.leyenda import CLAVE_PIE, pie_de_plantilla
 from features.biblioteca.domain.generacion import (
     ESTADOS, MIME, Generacion, Guia, InstantaneaGeneracion, PedirGeneracion,
 )
 from features.biblioteca.services.borradores import FuentesDatos
+from features.biblioteca.services.catalogo import leyendas_de_versiones
 from features.biblioteca.services.generador_docx import generar_docx
 from features.biblioteca.services.generador_xlsx import generar_xlsx
 from features.biblioteca.services.rellenado import (
@@ -74,6 +76,11 @@ async def tomar_instantanea(session: AsyncSession, fuentes: FuentesDatos, tenant
     if dpd is not None:
         organizacion.update({"dpo.nombre": dpd.get("nombre"), "dpo.correo": dpd.get("correo"),
                              "dpo.fecha_designacion": dpd.get("fecha_designacion")})
+    # BIB-410 R4: el pie de la plantilla (versión publicada con aprobación registrada) queda en la instantánea, como todo
+    # lo que decide el contenido del archivo; así la vista previa y la emisión dan los mismos bytes.
+    leyenda = (await leyendas_de_versiones(session, [fila["version_id"]])).get(fila["version_id"])
+    if leyenda is not None:
+        organizacion[CLAVE_PIE] = pie_de_plantilla(plantilla.codigo, plantilla.version, leyenda)
     guardado = fila["contexto"] if isinstance(fila["contexto"], dict) else json.loads(fila["contexto"])
     contexto: dict = dict(guardado)
     if "tratamiento." in plantilla.cuerpo or any(c.origen == "rat" for c in plantilla.campos):
@@ -106,11 +113,14 @@ def construir(instantanea: InstantaneaGeneracion, pedido: PedirGeneracion) -> tu
             raise ErrorNegocio("BIB_GEN_SALIDA_INVALIDA", "Quedan marcas: " + " ".join(restos))
     partes = bloques(texto)
     marca = bloqueantes if borrador else None
-    pie = LEYENDA_DEMO if entorno_actual() == "demo" else None  # fuera de la demo (pruebas incluido), los bytes de siempre
+    # DEMO-12 R4b: la leyenda de la demo solo con APP_ENV=demo. BIB-410 R4: el pie de la plantilla, si la versión publicada
+    # tiene aprobación registrada (lo decide la instantánea). Sin ninguno, los bytes de siempre; con los dos, primero el de la demo.
+    lineas = ([LEYENDA_DEMO] if entorno_actual() == "demo" else []) + ([datos["organizacion"][CLAVE_PIE]] if datos["organizacion"].get(CLAVE_PIE) else [])
+    pie = None if not lineas else lineas[0] if len(lineas) == 1 else lineas
     if pedido.formato == "docx":
         archivo = generar_docx(partes, marca, pie)
     else:
-        valores = {**datos["organizacion"], **{k: v for k, v in datos["contexto"].items() if k not in GENERADAS}}
+        valores = {**{k: v for k, v in datos["organizacion"].items() if k != CLAVE_PIE}, **{k: v for k, v in datos["contexto"].items() if k not in GENERADAS}}
         archivo = generar_xlsx(f"{plantilla.codigo} · {plantilla.meta.get('nombre', '')}", valores, partes,
                                date.fromisoformat(datos["fecha_emision"]), marca, pie)
     nombre = f"{plantilla.codigo}-v{plantilla.version}-{ESTADOS[pedido.modo]}.{pedido.formato}"
