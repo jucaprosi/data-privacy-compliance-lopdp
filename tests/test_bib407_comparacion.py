@@ -179,8 +179,8 @@ async def test_sin_capacidad_no_compara(monkeypatch, servicio):
 async def test_sin_norm07_la_vigencia_va_nula_sin_importar_la_sala_normativa(servicio):
     import sys
     antes = {m for m in sys.modules if m.startswith("features.inteligencia_normativa")}
-    assert await servicio._vigencias({"https://ejemplo.invalid/a.pdf"}) in ({}, {"https://ejemplo.invalid/a.pdf": None}) \
-        or True
+    fechas = await servicio._vigencias({"https://ejemplo.invalid/a.pdf"})
+    assert fechas.get("https://ejemplo.invalid/a.pdf") is None
     nuevos = {m for m in sys.modules if m.startswith("features.inteligencia_normativa")} - antes
     assert nuevos == set()
 
