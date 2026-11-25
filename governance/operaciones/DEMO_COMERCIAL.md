@@ -211,17 +211,12 @@ gcloud sql backups create --instance=evydentia-demo-db --project=evydentia-demo 
 gcloud sql backups list --instance=evydentia-demo-db --project=evydentia-demo --limit=1
 ```
 
-```powershell
-# 2. Comprobación de solo lectura de la membresía (cloud_sql.yaml, R3). gcloud pide la contraseña de postgres
-#    en la consola; no se escribe en ningún bloque.
-gcloud sql connect evydentia-demo-db --project=evydentia-demo --user=postgres --database=evydentia_demo
-```
-
-Dentro de `psql`:
+**2. Comprobación de solo lectura de la membresía** (`cloud_sql.yaml`, R3). La hace el propietario con Antigravity, por `cloud-sql-proxy` contra `evydentia-demo:us-central1:evydentia-demo-db`, dentro de una transacción de solo lectura. Como alternativa sirve Cloud SQL Studio, en la consola de Google Cloud (proyecto `evydentia-demo`, base `evydentia_demo`). Ninguna contraseña se escribe en este documento.
 
 ```sql
-SELECT pg_has_role('evydentia_demo_app', 'lopdp_app', 'MEMBER');
-\q
+BEGIN TRANSACTION READ ONLY;
+SELECT pg_has_role('evydentia_demo_app','lopdp_app','MEMBER');
+ROLLBACK;
 ```
 
 Si responde `f`, **el procedimiento se detiene aquí** y se avisa al propietario: la membresía no está concedida y el backend no podría usar los permisos que las migraciones conceden a `lopdp_app`.
@@ -237,17 +232,27 @@ gcloud run jobs execute migrar-demo --region=us-central1 --project=evydentia-dem
 ```
 
 ```powershell
-# 4. Las cabezas aplicadas son las del grafo: una por rama (CI-28).
+# 4. Las cabezas del grafo de main: una por rama (CI-28). Se leen en un worktree temporal, que se quita al terminar.
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
-git switch --detach origin/main
-$CABEZAS = @(alembic heads | ForEach-Object { ($_ -split " ")[0] } | Sort-Object)
+git fetch origin
+$ARBOL = "C:\Users\Juan Carlos\worktrees-evydentia\cabezas-demo"
+git worktree add --detach $ARBOL origin/main
+cd $ARBOL
+$CABEZAS = @(& "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" -m alembic heads | ForEach-Object { ($_ -split " ")[0] } | Sort-Object)
 "Cabezas del grafo: $($CABEZAS.Count)"
 $CABEZAS
-git switch main
+cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+git worktree remove $ARBOL
 gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=migrar-demo" --project=evydentia-demo --limit=200 --freshness=1d --format="value(textPayload)" | Select-String "Running upgrade"
 ```
 
-Las revisiones que dejó el job tienen que ser las mismas que `$CABEZAS`, y en el mismo número. Se leen de dos maneras: la última `-> <revisión>` de cada rama en el registro, o `SELECT version_num FROM alembic_version ORDER BY 1;` con el `gcloud sql connect` del paso 2. Si no coinciden, no se publica y se avisa al CTO.
+Las revisiones que dejó el job tienen que ser las mismas que `$CABEZAS`, y en el mismo número. Se leen de dos maneras: la última `-> <revisión>` de cada rama en el registro, o con la consulta siguiente, por la misma vía del paso 2 (Antigravity por `cloud-sql-proxy`, o Cloud SQL Studio). Si no coinciden, no se publica y se avisa al CTO.
+
+```sql
+BEGIN TRANSACTION READ ONLY;
+SELECT version_num FROM alembic_version ORDER BY 1;
+ROLLBACK;
+```
 
 ### 6.3 Publicación del backend
 

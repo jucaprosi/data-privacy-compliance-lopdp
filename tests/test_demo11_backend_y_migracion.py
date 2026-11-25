@@ -117,11 +117,12 @@ def test_seccion_6_completa_y_en_orden():
     copia = s6.find("gcloud sql backups create")
     ejecuta = s6.find("gcloud run jobs execute migrar-demo")
     actualiza = s6.find("gcloud run jobs update migrar-demo")
-    rol = s6.find("pg_has_role('evydentia_demo_app', 'lopdp_app', 'MEMBER')")
+    rol = s6.find("pg_has_role('evydentia_demo_app','lopdp_app','MEMBER')")
     assert -1 < copia < ejecuta, "la copia previa va antes de jobs execute"
     assert -1 < rol < ejecuta and -1 < actualiza < ejecuta
     assert "--wait" in s6[ejecuta:].splitlines()[0]
     assert "alembic heads" in s6[ejecuta:]
+    assert "BEGIN TRANSACTION READ ONLY" in s6[:ejecuta], "la comprobación del rol es de solo lectura"
     # El mismo commit que §5.2.
     linea_commit = "$COMMIT = (git rev-parse --short origin/main).Trim()"
     assert linea_commit in _seccion("5") and linea_commit in s6
