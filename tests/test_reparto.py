@@ -23,7 +23,7 @@ def test_el_reparto_real_es_valido():
     assert errores == []
     assert vr.revisar(tareas, indice) == []
     # GOB-06 R6: las fichas de las tandas 93 a 96 que siguen sin hacer llevan su tanda (FE-29, la 93, ya está hecha)
-    esperadas = {"IA-13": 94, "IA-14": 95, "IA-15": 96, "GCP-08c": 95, "IA-16": 96, "IA-17": 95, "DEMO-09": 97, "GEN-01": 99, "GEN-02": 100, "GEN-03": 100, "GEN-07": 100, "GEN-05": 101, "GEN-06": 101, "LEG-08": 101, "BIB-403": 102}
+    esperadas = {"IA-13": 94, "IA-14": 95, "IA-15": 96, "GCP-08c": 95, "IA-16": 96, "IA-17": 95, "DEMO-09": 97, "GEN-01": 99, "GEN-02": 100, "GEN-03": 100, "GEN-07": 100, "GEN-05": 101, "GEN-06": 101, "LEG-08": 101, "BIB-403": 102, "DEMO-12": 106}
     por_id = {t.id: t for t in tareas}
     vivas = [tid for tid in esperadas if por_id[tid].estado != "hecha"]
     assert {tid: por_id[tid].tanda for tid in vivas} == {tid: esperadas[tid] for tid in vivas}
