@@ -2,7 +2,7 @@
 id = "GEN-08"
 titulo = "Los comentarios del modelo de diagnóstico sin marca y el contrato OpenAPI regenerado encima de GEN-05"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 102
 sala = "plataforma"
 depende_de = ["GEN-02", "GEN-05", "CI-38"]
