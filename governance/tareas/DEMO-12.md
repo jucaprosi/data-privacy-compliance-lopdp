@@ -6,7 +6,7 @@ estado = "pendiente"
 tanda = 106
 sala = "biblioteca"
 depende_de = ["BIB-403", "DEMO-11"]
-propiedad = ["scripts/cargar_plantillas_pmv.py", "features/biblioteca/services/clon_plantilla_engine.py", "data/demo/cooperativa_demo.json", "tests/test_demo_clon_biblioteca.py", "docs/biblioteca-pmv.md", "features/biblioteca/services/generacion.py", "features/biblioteca/services/generador_docx.py", "features/biblioteca/services/generador_xlsx.py", "tests/test_demo12_plantillas_reales.py"]
+propiedad = ["scripts/cargar_plantillas_pmv.py", "features/biblioteca/services/clon_plantilla_engine.py", "data/demo/cooperativa_demo.json", "tests/test_demo_clon_biblioteca.py", "docs/biblioteca-pmv.md", "features/biblioteca/services/generacion.py", "features/biblioteca/services/generador_docx.py", "features/biblioteca/services/generador_xlsx.py", "tests/test_demo12_plantillas_reales.py", "tests/test_demo_siembra.py", "tests/test_demo_ciclo.py"]
 crea = ["tests/test_demo12_plantillas_reales.py"]
 arbitro = "pytest tests/test_demo12_plantillas_reales.py tests/test_demo_clon_biblioteca.py tests/test_adpa_bulkhead.py; mutaciones m1 a m5."
 rastros = ["¤demo", "¤arbitro"]
@@ -30,4 +30,5 @@ rastros = ["¤demo", "¤arbitro"]
 - No toca la nube ni la base. La carga en `evydentia-demo-db` la ejecuta el propietario, desde `main` y tras fusionar.
 - En `tests/test_demo_clon_biblioteca.py` (ficha hecha) solo cambia lo que fija el título y el contenido del documento sembrado.
 - En `generacion.py`, `generador_docx.py` y `generador_xlsx.py` (fichas hechas) solo cambia el pie de la demo; fuera de la demo la salida es idéntica byte a byte.
+- En `tests/test_demo_siembra.py` y `tests/test_demo_ciclo.py` (fichas hechas) solo cambia el montaje: dentro de su transacción publican las plantillas que nombra `cooperativa_demo.json`, con los disparadores de `biblioteca_versiones` desactivados como en `test_demo05d`, y los vuelven a activar. Sus aserciones no cambian.
 - Sin migraciones. `documentos.py` no cambia: la siembra usa el mismo rellenador desde la propia sala.
