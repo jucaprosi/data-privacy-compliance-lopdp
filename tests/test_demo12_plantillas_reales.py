@@ -113,12 +113,10 @@ def test_r8_los_ids_salen_del_codigo_de_plantilla_nunca_de_la_posicion():
 
 TEXTO = "# Política\n\nTexto **negrita**.\n\n- uno\n\n| A | B |\n|---|---|\n| sí | 2026-01-15 |\n"
 # Huellas de las partes descomprimidas (nombre y bytes, ordenadas), medidas con el código de origin/main 61797614,
-# antes de DEMO-12. No se compara el ZIP entero: los bytes comprimidos dependen del zlib de cada plataforma.
+# antes de DEMO-12 (solo el DOCX, que escribe el propio código). No se compara el ZIP entero: los bytes comprimidos dependen del zlib de cada plataforma.
 DOCX_HOY = {None: "ead3022b49903db2304e8209a5197611dd26d0b8f5d1eb1f716638f3b29a74d1",
             ("x",): "9e9482f979bf3aef517410c00651a2afa623a4dccd1917c6b4df8c5744234c80"}
-XLSX_HOY = {None: "94c29891a16744dc8212bfaf0e9724e5f54a3e73cd5a99e01801d2927bb0f219",
-            ("x",): "7473c5fb8f5f9a39893e079081c8f89771a1c950d74e1f9d10945e1c63334e3e"}
-OPENPYXL_MEDIDO = "3.1.5"
+# El XLSX no lleva huella fija: su XML depende del escritor de openpyxl (lxml o et_xmlfile, según lo instalado).
 
 
 def _instantanea():
@@ -150,21 +148,12 @@ def _huella_de_partes(archivo: bytes) -> str:
 
 
 def test_fuera_de_la_demo_los_generadores_dan_los_mismos_bytes_que_hoy():
-    import openpyxl
     from features.biblioteca.services.generador_docx import generar_docx
-    from features.biblioteca.services.generador_xlsx import generar_xlsx
     from features.biblioteca.services.salida import bloques
 
     partes = bloques(TEXTO)
     for marca, esperado in DOCX_HOY.items():
         assert _huella_de_partes(generar_docx(partes, list(marca) if marca else None)) == esperado
-    # El XML del XLSX lo escribe openpyxl (sin versión fija en requirements): la huella se compara solo con la
-    # versión medida; con otra, la igualdad con development de la prueba siguiente cubre lo mismo.
-    if openpyxl.__version__ == OPENPYXL_MEDIDO:
-        for marca, esperado in XLSX_HOY.items():
-            libro = generar_xlsx("BIB-001 · Política", {"organizacion.ruc": "9999"}, partes, date(2026, 1, 15),
-                                 list(marca) if marca else None)
-            assert _huella_de_partes(libro) == esperado
 
 
 @pytest.mark.parametrize("entorno", ["production", "pruebas"])
@@ -174,6 +163,13 @@ def test_fuera_de_la_demo_la_salida_es_identica_a_la_de_development(monkeypatch,
     fuera = _construir(monkeypatch, entorno, formato)
     assert fuera == _construir(monkeypatch, "development", formato)
     assert LEYENDA not in "".join(_partes(fuera).values())
+    if formato == "xlsx":  # segundo sentido de m5, sin depender del escritor: ninguna hoja lleva el pie de la demo
+        from openpyxl import load_workbook
+
+        libro = load_workbook(BytesIO(fuera))
+        assert all(not h.oddFooter.center.text for h in libro.worksheets)
+        hojas = {n: x for n, x in _partes(fuera).items() if n.startswith("xl/worksheets/")}
+        assert hojas and all("oddFooter" not in x and LEYENDA not in x for x in hojas.values())
 
 
 def test_m5_en_la_demo_el_docx_lleva_la_leyenda_en_el_pie(monkeypatch):
