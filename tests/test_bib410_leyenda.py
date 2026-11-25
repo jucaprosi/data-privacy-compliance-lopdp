@@ -209,3 +209,12 @@ def test_sin_nombre_visible_no_hay_leyenda_ni_se_usa_el_correo():
     versiones = [{"id": "v-1", "estado": "publicada", "redactada_por": "ia", "autores": ["ia"], "generacion": 1}]
     revisiones = [{"version_id": "v-1", "generacion": 1, "revisor_id": "u-ana", "creada_en": FECHA}]
     assert _leyendas(versiones, revisiones, [])["v-1"] is None
+
+
+def test_la_lectura_editorial_lleva_el_campo_leyenda():
+    from features.biblioteca.domain.propuestas_ia import VersionMaestraMd
+    from features.biblioteca.services import editorial
+
+    assert "leyenda" in VersionMaestraMd.model_fields and VersionMaestraMd.model_fields["leyenda"].default is None
+    fuente = editorial.__loader__.get_source(editorial.__name__)
+    assert fuente.count("leyendas_de_versiones(session") == 2  # listar (una vez para la lista) y leer_version

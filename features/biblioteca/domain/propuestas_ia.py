@@ -76,6 +76,7 @@ class VersionMaestraMd(_editorial.VersionMaestraMd):
     descartada_por: str | None = None
     descartada_en: datetime | None = None
     solicitante_nombre: str | None = None
+    leyenda: dict | None = None  # BIB-410: redacción y aprobación; nula sin aprobación registrada
 
 
 # ¤adpa

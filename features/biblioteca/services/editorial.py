@@ -14,7 +14,7 @@ from features.biblioteca.domain.editorial import (
 )
 from features.biblioteca.domain.validacion import validacion_de_texto
 from features.biblioteca.services.autorizacion import autorizar
-from features.biblioteca.services.catalogo import leer_citas, huellas_por_url_fuente
+from features.biblioteca.services.catalogo import leer_citas, huellas_por_url_fuente, leyendas_de_versiones
 
 COLUMNAS = "id, codigo, version, formato, ficha, responsable_id, autores, estado, generacion, nombre_archivo, sha256, sustituye_id, creada_en"
 # BIB-406: la lectura devuelve también el origen de la versión (persona o IA) y el nombre de quien la pidió.
@@ -66,7 +66,7 @@ async def leer_version(session: AsyncSession, identificador: str) -> dict:
     fila = (await session.execute(text(_LEER_VERSION), {"id": identificador})).mappings().first()
     if not fila:
         raise ErrorNegocio("BIB_NO_ENCONTRADA")
-    return dict(fila)
+    return {**fila, "leyenda": (await leyendas_de_versiones(session, [identificador])).get(identificador)}
 
 
 # ¤adpa
@@ -77,7 +77,8 @@ async def listar(session: AsyncSession, actor: str) -> dict:
         "SELECT version_id, generacion, tipo, aprobado, revisor_id, comentario, creada_en "
         "FROM biblioteca_revisiones ORDER BY creada_en"
     ))).mappings().all()
-    return {"actor_id": actor, "capacidades": permisos, "versiones": [dict(v) for v in versiones],
+    leyendas = await leyendas_de_versiones(session, [v["id"] for v in versiones])  # BIB-410: una lectura para toda la lista
+    return {"actor_id": actor, "capacidades": permisos, "versiones": [{**v, "leyenda": leyendas.get(v["id"])} for v in versiones],
             "revisiones": [dict(r) for r in revisiones]}
 
 
