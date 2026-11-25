@@ -2,7 +2,7 @@
 id = "LEG-08b"
 titulo = "Lectura oficial de las citas de las plantillas que LEG-08 no leyó, en el mismo artefacto"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 tanda = 101
 sala = "gobernanza"
 depende_de = ["LEG-08"]
