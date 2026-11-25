@@ -25,7 +25,7 @@ Sin API nueva.
   Se siembran al menos cuatro documentos, de plantillas distintas, que cubren los cuatro estados de `_ESTADOS_SEMBRABLES`. Al menos uno lleva origen `propio`, copia de una plantilla publicada, para que el filtro «Origen» tenga resultados en sus dos valores.
 - **R3 · Falla cerrado.** Si un código no tiene versión publicada, la siembra lanza `ValueError` con el código, y no queda ningún documento sembrado: todo va en la misma transacción.
 - **R4 · Títulos.** El título es el nombre de la plantilla, sin «(borrador ficticio)». La leyenda de la demo sigue siendo la de §5.6 del PRD. UX/UI confirma que no hace falta otra marca por documento.
-- **R4b · Lo que sale de la pantalla** (condición de UX/UI, 2026-11-25). En pantalla, la única marca es la franja «Demostración · datos ficticios» de `AvisoEntorno.tsx` (EP-02, PRD §5.6 punto 6), fija en todas las pantallas, la Biblioteca y el detalle del documento incluidos. Al imprimir con Ctrl+P la franja sale, porque no tiene clase que la oculte en impresión. La demo sí exporta: `generacion.py` produce DOCX (`generador_docx.py`) y XLSX (`generador_xlsx.py`). Cuando `datos_ficticios()` de `app_core/entorno/guardias.py` es verdadero, cada DOCX lleva esa leyenda en el pie de página y cada XLSX en el pie de impresión de cada hoja, sin otro texto. Fuera de la demo la salida no cambia. La descarga de archivos maestros (`descarga.py`) entrega la plantilla del catálogo, sin datos de la organización, y no cambia.
+- **R4b · Lo que sale de la pantalla** (condición de UX/UI, 2026-11-25). En pantalla, la única marca es la franja «Demostración · datos ficticios» de `AvisoEntorno.tsx` (EP-02, PRD §5.6 punto 6), fija en todas las pantallas, la Biblioteca y el detalle del documento incluidos. Al imprimir con Ctrl+P la franja sale, porque no tiene clase que la oculte en impresión. La demo sí exporta: `generacion.py` produce DOCX (`generador_docx.py`) y XLSX (`generador_xlsx.py`). Hoy no genera PDF con datos de la organización; si una ficha futura lo añade, lleva el mismo pie. Cuando `datos_ficticios()` de `app_core/entorno/guardias.py` es verdadero, cada DOCX lleva esa leyenda en el pie de página y cada XLSX en el pie de impresión de cada hoja, sin otro texto. Fuera de la demo la salida no cambia. La descarga de archivos maestros (`descarga.py`) entrega la plantilla del catálogo, sin datos de la organización, y no cambia.
 - **R5 · Tarjeta duplicada.** El propietario corre, de solo lectura, un recuento por organización de sesión dentro de `BEGIN TRANSACTION READ ONLY`, por Antigravity o Cloud SQL Studio (sin psql, como en DEMO-11): `SELECT tenant_id, nombre, count(*) FROM biblioteca_documentos GROUP BY 1, 2 HAVING count(*) > 1;`. Si da filas, la siembra o el clon duplican, y se corrige aquí. Si no da filas, la segunda tarjeta es el detalle, y no se cambia nada del frontend.
 - **R6 · Procedimiento.** `docs/biblioteca-pmv.md` añade el bloque de la demo, que ejecuta el propietario desde `main` y tras fusionar, en este orden:
   1. **Carga:** `--cargar --entorno demo --confirmar-entorno`. Deja cada plantilla «En revisión» y nunca publica (`cargar_plantillas_pmv.py:9`).
@@ -35,7 +35,47 @@ Sin API nueva.
 - **R7 · Sin prohibiciones** (GEN-01 R3).
 - **R8 · Retiro de lo ya sembrado.** Hoy la demo tiene `DEMO-DOC-01` ficticio en el tenant plantilla y en los tenants ya clonados.
   - **Sin colisión de ids:** el id de cada documento nuevo sale de `_id_destino(plantilla_id, "DEMO-" + código de plantilla)`, nunca de la posición, así que no puede coincidir con el viejo `DEMO-DOC-01`.
-  - **Tenant plantilla:** el paso 4 de R6 retira las filas de código `DEMO-DOC-%` del tenant plantilla y su historial, en una sola transacción, con el mismo patrón que la purga (`jobs/purga_demo/politicas_purga.sql:87-91`): desactivar el disparador `biblioteca_documento_historial_inmutable`, borrar el historial y los documentos de ese tenant y código, y reactivar el disparador. Lo ejecuta el propietario con el rol de la purga, por Antigravity o Cloud SQL Studio, con un recuento antes (espera 1 documento y sus filas de historial) y después (espera 0). Si el recuento previo no coincide, se para y avisa al CTO.
+  - **Tenant plantilla.** El paso 4 de R6 lo ejecuta el propietario con el rol dueño de las tablas, el que migra (secreto `DATABASE_URL` de `evydentia-demo`, el mismo de `migrar-demo`), por Antigravity con `cloud-sql-proxy` o por Cloud SQL Studio, en una sola transacción. Nada va a `jobs/`: el rol `purga_demo` no es dueño (`politicas_purga.sql:15`), y `purga_demo_borrar_inmutables` rechaza la plantilla (l. 70-71). El id de la plantilla es `PLANTILLA_TENANT_ID = "demo-plantilla-cooperativa"` (`features/demo/domain/plantilla.py:17`).
+  - **Dependencias medidas en `alembic/versions`.** Sobre `biblioteca_documentos` solo hay un disparador, `biblioteca_documento_validar` (BEFORE INSERT OR UPDATE), que no actúa en DELETE. Lo referencian sin cascada `biblioteca_documentos_historial` (inmutable), `biblioteca_conservacion`, `biblioteca_eventos_documento`, `biblioteca_evidencias` (RESTRICT), `biblioteca_cargas` y `biblioteca_revisiones_documento`; con cascada, los vínculos y enlaces. El documento ficticio solo tiene su historial: si alguna de las otras tablas tiene filas suyas, el bloque para.
+  - **Bloque** (va igual en `docs/biblioteca-pmv.md`):
+    ```sql
+    BEGIN;
+    DO $$ BEGIN
+      IF (SELECT count(*) FROM public.entorno_marcador) <> 1
+         OR (SELECT valor FROM public.entorno_marcador) <> 'demo' THEN
+        RAISE EXCEPTION 'No es la base de la demo';
+      END IF;
+    END $$;
+    SELECT set_config('app.current_tenant_id', 'demo-plantilla-cooperativa', true);
+    CREATE TEMP TABLE ficticios ON COMMIT DROP AS
+      SELECT id FROM biblioteca_documentos
+      WHERE tenant_id = 'demo-plantilla-cooperativa' AND codigo LIKE 'DEMO-DOC-%';
+    -- Recuento antes: 1 documento y sus filas de historial.
+    SELECT (SELECT count(*) FROM ficticios) AS documentos,
+           (SELECT count(*) FROM biblioteca_documentos_historial WHERE documento_id IN (SELECT id FROM ficticios)) AS historial;
+    DO $$ BEGIN
+      IF (SELECT count(*) FROM ficticios) <> 1 THEN RAISE EXCEPTION 'Se esperaba 1 documento ficticio'; END IF;
+      IF EXISTS (SELECT 1 FROM biblioteca_conservacion WHERE documento_id IN (SELECT id FROM ficticios))
+         OR EXISTS (SELECT 1 FROM biblioteca_eventos_documento WHERE documento_id IN (SELECT id FROM ficticios))
+         OR EXISTS (SELECT 1 FROM biblioteca_evidencias WHERE documento_id IN (SELECT id FROM ficticios))
+         OR EXISTS (SELECT 1 FROM biblioteca_cargas WHERE documento_id IN (SELECT id FROM ficticios))
+         OR EXISTS (SELECT 1 FROM biblioteca_revisiones_documento WHERE documento_id IN (SELECT id FROM ficticios)) THEN
+        RAISE EXCEPTION 'El documento ficticio tiene dependencias: se para';
+      END IF;
+    END $$;
+    ALTER TABLE biblioteca_documentos_historial DISABLE TRIGGER biblioteca_documento_historial_inmutable;
+    DELETE FROM biblioteca_documentos_historial WHERE documento_id IN (SELECT id FROM ficticios);
+    DELETE FROM biblioteca_documentos WHERE id IN (SELECT id FROM ficticios);
+    ALTER TABLE biblioteca_documentos_historial ENABLE TRIGGER biblioteca_documento_historial_inmutable;
+    -- Recuento después: 0.
+    DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM biblioteca_documentos WHERE tenant_id = 'demo-plantilla-cooperativa' AND codigo LIKE 'DEMO-DOC-%') THEN
+        RAISE EXCEPTION 'Quedan documentos ficticios';
+      END IF;
+    END $$;
+    COMMIT;
+    ```
+    Cualquier `RAISE` deja la transacción abortada: se ejecuta `ROLLBACK`, se para y se avisa al CTO.
   - **Tenants ya clonados:** no se tocan. Caducan y los borra la purga nocturna (DEMO-05). Las sesiones nuevas clonan ya el conjunto nuevo.
   - **Alcance:** solo la base de la demo. Sin migración y sin cambios en producción.
 - **R-ADPA · Ortogonalidad ZERAG (`DEMO-12`).** Solo los archivos de la propiedad. El script importa la sala solo por `biblioteca_service.py` (`tests/test_adpa_bulkhead.py`). La prueba no usa `import yaml`.
