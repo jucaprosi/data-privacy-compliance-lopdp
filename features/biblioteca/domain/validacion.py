@@ -25,8 +25,9 @@ _ELEMENTO = (r"\d+(?:\.\d+)?(?:(?:\s*[-–]\s*|\s+a\s+)\d+)?"
 _ARTICULO = re.compile(r"\b(?:arts?\.|art[íi]culos?)\s*(?P<lista>" + _ELEMENTO + r"(?:(?:\s*,\s*|\s+y\s+)" + _ELEMENTO + r")*)",
                        re.IGNORECASE)
 _ITEM = re.compile(r"(?P<a>\d+)(?:\.(?P<sub>\d+))?(?:(?:\s*[-–]\s*|\s+a\s+)(?P<b>\d+))?(?:\s+(?P<lit>[a-m]))?")
-_REFORMA = re.compile(r"\bart(?:s?\.|[íi]culo) ?(?P<art>\d+)\s+reformad[oa]\s+por\b[^)]*?\bRO\s*5S\s*(?P<ro>\d+)", re.IGNORECASE)
+_REFORMA = re.compile(r"\bart(?:s?\.|[íi]culo) ?(?P<art>\d+),?\s+reformad[oa]\s+por\b[^)]*?\bRO\s*5S\s*(?P<ro>\d+)", re.IGNORECASE)
 _PARENTESIS_SIN_ARTICULO = re.compile(r"\((?![^)]*art)[^)]*\)", re.IGNORECASE)
+_SUFIJO = re.compile(r"\s*(?:de la|del)\s+(?P<n>LOPDP|RGLOPDP|Reglamento(?: General)?)")
 _FRONTERA = re.compile(r";|(?<=[.:])\s+(?=[A-ZÁÉÍÓÚ])")
 _ENCABEZADO = re.compile(r"^(#{2,3})\s+(.+?)\s*$", re.MULTILINE)
 
@@ -81,7 +82,11 @@ def extraer_citas(texto: str) -> tuple[set[str], list[str]]:
     for m in _ARTICULO.finditer(texto):
         previo = texto[:m.start()]
         segmento = _FRONTERA.split(previo)[-1]
-        norma = _norma_en(segmento, desde_atras=True)
+        # «art. 18 de la LOPDP»: la norma que sigue de inmediato manda sobre la que precede en la frase.
+        propia = _SUFIJO.match(texto[m.end():m.end() + 40])
+        norma = _norma_en(propia.group("n"), desde_atras=False) if propia else None
+        if norma is None:
+            norma = _norma_en(segmento, desde_atras=True)
         if norma is None:
             siguiente = texto[m.end():m.end() + 80]
             norma = _norma_en(_FRONTERA.split(siguiente)[0].split(")")[0], desde_atras=False)

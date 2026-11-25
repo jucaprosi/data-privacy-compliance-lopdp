@@ -149,3 +149,13 @@ def test_validar_plantilla_md_rechaza_informativas_mal_declaradas():
     con_cita = texto.replace("  - titulo: 1. Objeto\n", "  - titulo: 1. Objeto\n  - titulo: 2. Derechos que se pueden ejercer\n")
     assert validar_plantilla_md(con_cita, "BIB-007") == [
         "sección informativa «2. Derechos que se pueden ejercer» con cita: tiene efecto jurídico"]
+
+
+def test_m7_pendiente_validacion_es_marca_de_borrador():
+    from features.biblioteca.domain.plantillas_md import MARCAS_BORRADOR, validar_plantilla_md
+    from pathlib import Path
+    assert "PENDIENTE VALIDACIÓN" in MARCAS_BORRADOR
+    texto = Path("data/biblioteca/pmv/BIB-007.md").read_bytes().decode("utf-8")
+    assert "quedan marcas de borrador" in validar_plantilla_md(texto, "BIB-007")  # conserva la marca 7 (LEG-08)
+    limpio = texto.replace("PENDIENTE VALIDACIÓN", "x")
+    assert "quedan marcas de borrador" not in validar_plantilla_md(limpio, "BIB-007")
