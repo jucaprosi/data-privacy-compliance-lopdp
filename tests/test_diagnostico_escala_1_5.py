@@ -53,7 +53,7 @@ from features.diagnostico.services.resultados_engine import (  # noqa: E402
 )
 
 RUTA = "/api/v1/diagnostico/respuestas"
-MIGRACION = Path(__file__).resolve().parents[1] / "alembic" / "versions" / "20261031_diagnostico_escala_smartcidi.py"
+MIGRACION = Path(__file__).resolve().parents[1] / "alembic" / "versions" / "20261031_diagnostico_escala_madurez.py"
 
 
 def _aplicables():
