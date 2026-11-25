@@ -143,7 +143,7 @@ def test_validar_plantilla_md_rechaza_informativas_mal_declaradas():
     from features.biblioteca.domain.plantillas_md import validar_plantilla_md
     from pathlib import Path
     texto = Path("data/biblioteca/pmv/BIB-007.md").read_bytes().decode("utf-8")
-    marca = "quedan marcas de borrador"  # BIB-007 conserva la marca 7 de LEG-08 hasta decidirla
+    marca = "quedan marcas de borrador"
     assert [f for f in validar_plantilla_md(texto, "BIB-007") if f != marca] == []
     inexistente = texto.replace("  - titulo: 1. Objeto\n", "  - titulo: 9. No existe\n")
     assert any("no existe en el cuerpo" in f for f in validar_plantilla_md(inexistente, "BIB-007"))
@@ -157,9 +157,9 @@ def test_m7_pendiente_validacion_es_marca_de_borrador():
     from pathlib import Path
     assert "PENDIENTE VALIDACIÓN" in MARCAS_BORRADOR
     texto = Path("data/biblioteca/pmv/BIB-007.md").read_bytes().decode("utf-8")
-    assert "quedan marcas de borrador" in validar_plantilla_md(texto, "BIB-007")  # conserva la marca 7 (LEG-08)
-    limpio = texto.replace("PENDIENTE VALIDACIÓN", "x")
-    assert "quedan marcas de borrador" not in validar_plantilla_md(limpio, "BIB-007")
+    assert "quedan marcas de borrador" not in validar_plantilla_md(texto, "BIB-007")
+    con_marca = texto.replace("Los derechos son irrenunciables", "PENDIENTE VALIDACIÓN: x. Los derechos son irrenunciables", 1)
+    assert "quedan marcas de borrador" in validar_plantilla_md(con_marca, "BIB-007")
 
 
 def test_r6_fichas_json_cubre_las_doce_con_el_contrato_ficha():
@@ -185,3 +185,18 @@ def test_r6_entorno_produccion_con_url_local_es_codigo_2(monkeypatch, capsys):
     assert codigo == 2 and "localhost" not in capsys.readouterr().out
     codigo = cargar.main(["--cargar", "--actor", "u", "--entorno", "local"])
     assert codigo == 2  # sin --confirmar-entorno
+
+
+def test_r2_puerto_huellas_por_url_fuente_con_proveedor_falso():
+    from pathlib import Path
+    from features.biblioteca.domain.validacion import validacion_de_texto
+    from scripts.verificar_citas_plantillas import ARTEFACTO, generar, leer_artefacto, leer_plantillas
+    estados, fuente_de, fuentes = leer_artefacto(ARTEFACTO.read_bytes().decode("utf-8"))
+    citas = generar(estados, fuente_de, fuentes, leer_plantillas())
+    texto = Path("data/biblioteca/pmv/BIB-003.md").read_bytes().decode("utf-8")
+    usadas = {f: fuentes[f] for f in {fuente_de[c] for c in citas["plantillas"]["BIB-003"]}}
+    iguales = {d["url"]: d["sha256"] for d in usadas.values()}
+    assert validacion_de_texto(texto, citas, {}) == "validada"
+    assert validacion_de_texto(texto, citas, iguales) == "validada"
+    otra = {u: "0" * 64 for u in iguales}
+    assert validacion_de_texto(texto, citas, otra) == "en_revision"

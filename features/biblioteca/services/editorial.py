@@ -14,7 +14,7 @@ from features.biblioteca.domain.editorial import (
 )
 from features.biblioteca.domain.validacion import validacion_de_texto
 from features.biblioteca.services.autorizacion import autorizar
-from features.biblioteca.services.catalogo import leer_citas, versiones_del_modulo
+from features.biblioteca.services.catalogo import leer_citas, huellas_por_url_fuente
 
 COLUMNAS = "id, codigo, version, formato, ficha, responsable_id, autores, estado, generacion, nombre_archivo, sha256, sustituye_id, creada_en"
 
@@ -151,7 +151,7 @@ async def publicar(session: AsyncSession, actor: str, identificador: str, entrad
     if version["formato"] == "MD":
         cuerpo = (await session.execute(text("SELECT cuerpo_md FROM biblioteca_versiones WHERE id=:id"),
                                         {"id": identificador})).scalar()
-        validacion = validacion_de_texto(cuerpo or "", leer_citas(), await versiones_del_modulo())
+        validacion = validacion_de_texto(cuerpo or "", leer_citas(), await huellas_por_url_fuente())
     exigir_publicable(version, [dict(r) for r in revisiones], actor, validacion)
     exigir_sustitucion(await _publicada_vigente(session, codigo, identificador), version["sustituye_id"])
     if version["sustituye_id"]:

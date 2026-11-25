@@ -33,11 +33,11 @@ def leer_citas() -> dict | None:
 
 
 # ¤adpa
-async def versiones_del_modulo() -> dict[str, str]:
-    """fuente_id -> archivo_sha256 de la última versión que el módulo de inteligencia normativa conoce.
+async def huellas_por_url_fuente() -> dict[str, str]:
+    """Puerto: url_fuente -> sha256 de la última versión que el módulo de inteligencia normativa conoce.
 
-    Hoy el módulo no descarga en ningún entorno (BIB-403 §1): no hay versiones y el control de versión de
-    R2 no se dispara. Se llama una sola vez por lista. NORM-04 lo conecta al pasillo; los tests lo sustituyen.
+    El proveedor por defecto devuelve `{}`: R2 no se dispara y la validación descansa en R1. El enlace real
+    al módulo (NORM) sustituye este proveedor; los tests lo sustituyen. Se llama una vez por lista.
     """
     return {}
 
@@ -117,5 +117,5 @@ async def listar_catalogo(session: AsyncSession, actor: str, fuente: str | None 
         "AND (CAST(:ola AS integer) IS NULL OR c.metadatos->>'ola'=CAST(:ola AS text)) "
         "ORDER BY v.codigo, v.version LIMIT :limite"
     ), {"tipo": tipo, "ola": ola, "limite": LIMITE})).mappings().all()
-    versiones = await versiones_del_modulo()  # una sola lectura por lista, sin N+1
+    versiones = await huellas_por_url_fuente()  # una sola lectura por lista, sin N+1
     return [_como_plantilla(dict(f), versiones) for f in filas]

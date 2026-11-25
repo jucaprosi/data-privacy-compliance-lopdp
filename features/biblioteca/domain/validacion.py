@@ -29,6 +29,7 @@ _REFORMA = re.compile(r"\bart(?:s?\.|[íi]culo) ?(?P<art>\d+),?\s+reformad[oa]\s
 _PARENTESIS_SIN_ARTICULO = re.compile(r"\((?![^)]*art)[^)]*\)", re.IGNORECASE)
 _SUFIJO = re.compile(r"\s*(?:de la|del)\s+(?P<n>LOPDP|RGLOPDP|Reglamento(?: General)?)")
 _FRONTERA = re.compile(r";|(?<=[.:])\s+(?=[A-ZÁÉÍÓÚ])")
+_FRASE = re.compile(r"(?<=[.:])\s+(?=[A-ZÁÉÍÓÚ])")
 _ENCABEZADO = re.compile(r"^(#{2,3})\s+(.+?)\s*$", re.MULTILINE)
 
 
@@ -87,6 +88,9 @@ def extraer_citas(texto: str) -> tuple[set[str], list[str]]:
         norma = _norma_en(propia.group("n"), desde_atras=False) if propia else None
         if norma is None:
             norma = _norma_en(segmento, desde_atras=True)
+        if norma is None:
+            # «…(LOPDP arts. 13 a 16); para los 10 días del art. 62»: la norma de la misma frase, tras «;».
+            norma = _norma_en(_FRASE.split(previo)[-1], desde_atras=True)
         if norma is None:
             siguiente = texto[m.end():m.end() + 80]
             norma = _norma_en(_FRONTERA.split(siguiente)[0].split(")")[0], desde_atras=False)
@@ -184,10 +188,11 @@ def validacion_normativa(claves: set[str], estados: dict[str, str], fuente_de: d
 
 
 # ¤adpa
-def validacion_de_texto(texto: str, citas: dict | None, versiones_modulo: dict[str, str]) -> str:
+def validacion_de_texto(texto: str, citas: dict | None, huellas_por_url: dict[str, str]) -> str:
     """`validacion_legal` de una versión Markdown: sus citas contra `citas.json` y las huellas del módulo.
 
-    `citas`: contenido de citas.json (`estados`, `fuente_de`, `fuentes`); sin él nada se acredita. Una
+    `huellas_por_url`: puerto «huellas por url_fuente» (url_fuente -> sha256 de la última versión que el
+    módulo conoce); `{}` hasta que NORM lo conecte. `citas`: contenido de citas.json (`estados`, `fuente_de`, `fuentes`); sin él nada se acredita. Una
     cita sin fila, o un texto ilegible, deja la versión `pendiente`.
     """
     from features.biblioteca.domain.plantillas_md import leer_metadatos, separar
@@ -204,5 +209,7 @@ def validacion_de_texto(texto: str, citas: dict | None, versiones_modulo: dict[s
     if sin_norma or sin_norma_cuerpo:
         return "pendiente"
     huellas = {f: d.get("sha256") for f, d in citas.get("fuentes", {}).items()}
+    versiones = {f: huellas_por_url[d["url"]] for f, d in citas.get("fuentes", {}).items()
+                 if d.get("url") in huellas_por_url}
     return validacion_normativa(claves | del_cuerpo, citas.get("estados", {}), citas.get("fuente_de", {}),
-                                huellas, versiones_modulo)
+                                huellas, versiones)
