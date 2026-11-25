@@ -20,9 +20,11 @@ Mutaciones documentadas (cada una hace fallar la prueba indicada):
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import importlib
 import uuid
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import httpx
 import pytest
@@ -41,6 +43,64 @@ from features.demo.services import cierre_engine, entrada_engine
 from scripts.demo import sembrar_plantilla as siembra
 
 AHORA = datetime(2026, 11, 12, 10, 0, tzinfo=timezone.utc)
+
+
+# --- Montaje DEMO-12: el catálogo que nombra la plantilla ------------------------------------------
+# La siembra de biblioteca falla cerrado sin la versión publicada de cada código (DEMO-12 R3). El montaje
+# publica las que falten, con los disparadores de `biblioteca_versiones` desactivados solo durante la
+# inserción (el flujo editorial no es el objeto de esta prueba, como en test_demo05d), y al terminar retira
+# solo lo que creó.
+_CODIGOS_DEMO = [d["plantilla"] for d in siembra.cargar_plantilla()["salas"]["biblioteca"]["documentos"]]
+
+
+async def _publicar_catalogo_demo(db_engine) -> dict:
+    montaje: dict = {"versiones": [], "catalogo": [], "usuario": f"u-montaje-{uuid.uuid4().hex[:10]}"}
+    raiz = Path(__file__).resolve().parents[1] / "data" / "biblioteca" / "pmv"
+    async with AsyncSession(db_engine, expire_on_commit=False) as s:
+        await s.execute(text("INSERT INTO users (id, email, nombre) VALUES (:i, :e, 'Montaje ficticio')"),
+                        {"i": montaje["usuario"], "e": f"{montaje['usuario']}@prueba.invalid"})
+        for codigo in _CODIGOS_DEMO:
+            if (await s.execute(text("SELECT 1 FROM biblioteca_versiones WHERE codigo=:c AND estado='publicada' "
+                                     "AND formato='MD'"), {"c": codigo})).first():
+                continue
+            if (await s.execute(text("INSERT INTO biblioteca_catalogo (codigo, nombre, formato) VALUES (:c, :c, 'MD') "
+                                     "ON CONFLICT (codigo) DO NOTHING RETURNING codigo"), {"c": codigo})).first():
+                montaje["catalogo"].append(codigo)
+            cuerpo = (raiz / f"{codigo}.md").read_text(encoding="utf-8")
+            version = str(uuid.uuid4())
+            await s.execute(text("ALTER TABLE biblioteca_versiones DISABLE TRIGGER USER"))
+            await s.execute(text(
+                "INSERT INTO biblioteca_versiones (id, codigo, version, formato, responsable_id, autores, estado, "
+                "cuerpo_md, sha256) VALUES (:i, :c, '0.0.1', 'MD', :a, CAST(:au AS jsonb), 'publicada', :cu, :h)"),
+                {"i": version, "c": codigo, "a": montaje["usuario"], "au": f'["{montaje["usuario"]}"]', "cu": cuerpo,
+                 "h": hashlib.sha256(cuerpo.encode("utf-8")).hexdigest()})
+            await s.execute(text("ALTER TABLE biblioteca_versiones ENABLE TRIGGER USER"))
+            montaje["versiones"].append(version)
+        await s.commit()
+    return montaje
+
+
+async def _retirar_catalogo_demo(db_engine, montaje: dict) -> None:
+    async with AsyncSession(db_engine, expire_on_commit=False) as s:
+        if not montaje["versiones"]:  # el catálogo ya estaba publicado: no se retira nada sembrado
+            await s.execute(text("DELETE FROM users WHERE id=:u"), {"u": montaje["usuario"]})
+            await s.commit()
+            return
+        await s.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": PLANTILLA_TENANT_ID})
+        await s.execute(text("ALTER TABLE biblioteca_documentos_historial DISABLE TRIGGER USER"))
+        await s.execute(text("DELETE FROM biblioteca_documentos_historial WHERE documento_id IN ("
+                                "SELECT id FROM biblioteca_documentos WHERE tenant_id=:t AND codigo = ANY(:c))"),
+                        {"t": PLANTILLA_TENANT_ID, "c": _CODIGOS_DEMO})
+        await s.execute(text("ALTER TABLE biblioteca_documentos_historial ENABLE TRIGGER USER"))
+        await s.execute(text("DELETE FROM biblioteca_documentos WHERE id IN ("
+                                "SELECT id FROM biblioteca_documentos WHERE tenant_id=:t AND codigo = ANY(:c))"),
+                        {"t": PLANTILLA_TENANT_ID, "c": _CODIGOS_DEMO})
+        await s.execute(text("ALTER TABLE biblioteca_versiones DISABLE TRIGGER USER"))
+        await s.execute(text("DELETE FROM biblioteca_versiones WHERE id = ANY(:v)"), {"v": montaje["versiones"]})
+        await s.execute(text("ALTER TABLE biblioteca_versiones ENABLE TRIGGER USER"))
+        await s.execute(text("DELETE FROM biblioteca_catalogo WHERE codigo = ANY(:c)"), {"c": montaje["catalogo"]})
+        await s.execute(text("DELETE FROM users WHERE id=:u"), {"u": montaje["usuario"]})
+        await s.commit()
 
 
 def _fabrica(db_engine):
@@ -124,11 +184,13 @@ class Corrida:
 async def corrida(db_engine, monkeypatch):
     c = Corrida(db_engine)
     monkeypatch.setenv("DEMO_VENDEDORES", ", ".join(c.correo(n) for n in range(1, 4)))
+    montaje = await _publicar_catalogo_demo(db_engine)
     async with c.fabrica() as session:
         await siembra.sembrar(session)
         await session.commit()
     yield c
     await c.limpiar()
+    await _retirar_catalogo_demo(db_engine, montaje)
 
 
 # --- Lista de vendedores -----------------------------------------------------------------------------

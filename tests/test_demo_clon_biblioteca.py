@@ -18,6 +18,7 @@ Mutaciones documentadas (cada una hace fallar la prueba indicada):
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 import uuid
 from pathlib import Path
@@ -34,9 +35,10 @@ from features.biblioteca.domain.documentos import huella
 from features.demo.domain.plantilla import PLANTILLA_TENANT_ID
 
 RAIZ = Path(__file__).resolve().parents[1]
+PLANTILLA_JSON = json.loads((RAIZ / "data" / "demo" / "cooperativa_demo.json").read_text(encoding="utf-8"))
 MOTOR = RAIZ / "features" / "biblioteca" / "services" / "clon_plantilla_engine.py"
-BLOQUE = {"documentos": [{"titulo": "Política ficticia A", "estado": "borrador"},
-                         {"titulo": "Procedimiento ficticio B", "estado": "en_revision"}]}
+BLOQUE = {"documentos": [{"plantilla": "BIB-001", "estado": "borrador"},
+                         {"plantilla": "BIB-002", "estado": "en_revision"}]}
 
 
 def _id(prefijo: str) -> str:
@@ -207,6 +209,25 @@ async def test_aprobado_sin_aprobador_traducido_falla_sin_dejar_filas(mundo):
     assert await _filas(s, m["destino"]) == []
 
 
+async def _bloque_publicado(s: AsyncSession, autor: str) -> dict:
+    """DEMO-12: dos plantillas MD publicadas y el bloque que las nombra. Los disparadores editoriales (BIB-403)
+    no son el objeto de esta prueba: se desactivan solo durante la inserción, en la transacción revertida."""
+    documentos = []
+    for nombre, estado in (("Política de prueba A", "borrador"), ("Procedimiento de prueba B", "en_revision")):
+        codigo, cuerpo = f"ZZ-CLON-{uuid.uuid4().hex[:8].upper()}", f"# {nombre}\n\nTexto de la plantilla.\n"
+        await s.execute(text("INSERT INTO biblioteca_catalogo (codigo, nombre, formato) VALUES (:c, :n, 'MD')"),
+                        {"c": codigo, "n": nombre})
+        await s.execute(text("ALTER TABLE biblioteca_versiones DISABLE TRIGGER USER"))
+        await s.execute(text(
+            "INSERT INTO biblioteca_versiones (id, codigo, version, formato, responsable_id, autores, estado, "
+            "cuerpo_md, sha256) VALUES (:i, :c, '1.0', 'MD', :a, CAST(:au AS jsonb), 'publicada', :cu, :h)"),
+            {"i": str(uuid.uuid4()), "c": codigo, "a": autor, "au": f'["{autor}"]', "cu": cuerpo,
+             "h": hashlib.sha256(cuerpo.encode()).hexdigest()})
+        await s.execute(text("ALTER TABLE biblioteca_versiones ENABLE TRIGGER USER"))
+        documentos.append({"plantilla": codigo, "estado": estado})
+    return {"documentos": documentos}
+
+
 async def _estado_siembra(s: AsyncSession, tid: str) -> str:
     await _contexto(s, tid)
     filas = [tuple(f) for f in (await s.execute(text(
@@ -222,10 +243,10 @@ async def _estado_siembra(s: AsyncSession, tid: str) -> str:
 async def test_dos_siembras_dejan_el_mismo_estado(db_engine):
     async with AsyncSession(db_engine, expire_on_commit=False) as s:
         tid = await _tenant(s, _id("t-siembra"))
-        await _usuario(s, tid, "admin_organizacion")
-        await pasillo.sembrar_en_plantilla(s, tid, BLOQUE)
+        bloque = await _bloque_publicado(s, await _usuario(s, tid, "admin_organizacion"))
+        await pasillo.sembrar_en_plantilla(s, tid, bloque)
         uno = await _estado_siembra(s, tid)
-        await pasillo.sembrar_en_plantilla(s, tid, BLOQUE)
+        await pasillo.sembrar_en_plantilla(s, tid, bloque)
         assert await _estado_siembra(s, tid) == uno
         assert uno.endswith(":2:2")
         await s.rollback()
@@ -238,10 +259,25 @@ async def test_siembra_lee_el_bloque_del_json_y_sin_administrador_falla(db_engin
         with pytest.raises(ValueError):
             await compuerta.sembrar_en_plantilla(s, tid, BLOQUE)
         await _usuario(s, tid, "admin_organizacion")
-        await compuerta.sembrar_en_plantilla(s, tid)  # sin datos: lee data/demo/cooperativa_demo.json
-        nombres = [f[2] for f in [tuple(r) for r in (await s.execute(text(
-            "SELECT codigo, id, nombre FROM biblioteca_documentos WHERE tenant_id=:t"), {"t": tid})).all()]]
-        assert nombres == ["Política de protección de datos (borrador ficticio)"]
+        # Sin datos lee data/demo/cooperativa_demo.json. DEMO-12: sin el catálogo publicado falla cerrado; con él,
+        # los nombres son los de las plantillas, sin «(borrador ficticio)».
+        catalogo = dict((await s.execute(text(
+            "SELECT c.codigo, c.nombre FROM biblioteca_catalogo c JOIN biblioteca_versiones v ON v.codigo=c.codigo "
+            "AND v.estado='publicada' AND v.formato='MD' WHERE c.codigo LIKE 'BIB-%'"))).all())
+        pedidos = [d["plantilla"] for d in PLANTILLA_JSON["salas"]["biblioteca"]["documentos"]]
+        if not set(pedidos) <= set(catalogo):
+            with pytest.raises(ValueError, match="BIB-"):
+                await compuerta.sembrar_en_plantilla(s, tid)
+            await _contexto(s, tid)
+            assert (await s.execute(text("SELECT count(*) FROM biblioteca_documentos WHERE tenant_id=:t"),
+                                    {"t": tid})).scalar() == 0
+        else:
+            await compuerta.sembrar_en_plantilla(s, tid)
+            await _contexto(s, tid)
+            nombres = sorted(r[0] for r in (await s.execute(text(
+                "SELECT nombre FROM biblioteca_documentos WHERE tenant_id=:t"), {"t": tid})).all())
+            assert nombres == sorted(catalogo[c] or c for c in pedidos)
+            assert all("ficticio" not in n for n in nombres)
         await s.rollback()
 
 
@@ -250,7 +286,7 @@ async def test_lo_sembrado_se_clona_igual(db_engine):
     async with AsyncSession(db_engine, expire_on_commit=False) as s:
         plantilla, destino = await _tenant(s, _id("t-p")), await _tenant(s, _id("t-d"))
         autor_p, autor_d = await _usuario(s, plantilla, "admin_organizacion"), await _usuario(s, destino, "admin_organizacion")
-        await compuerta.sembrar_en_plantilla(s, plantilla, BLOQUE)
+        await compuerta.sembrar_en_plantilla(s, plantilla, await _bloque_publicado(s, autor_p))
         await pasillo.clonar_desde_plantilla(s, plantilla, destino, {autor_p: autor_d})
         origen_f, clon_f = await _filas(s, plantilla), await _filas(s, destino)
         assert [f[:6] for f in clon_f] == [f[:6] for f in origen_f] and len(clon_f) == 2

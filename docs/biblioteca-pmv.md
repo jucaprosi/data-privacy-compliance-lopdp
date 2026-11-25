@@ -284,7 +284,79 @@ Lo hace una persona, nunca la IA, y solo después de fusionar:
 
 ```
 python scripts/cargar_plantillas_pmv.py --verificar
-python scripts/cargar_plantillas_pmv.py --cargar --actor ID --entorno local|pruebas|produccion --confirmar-entorno
+python scripts/cargar_plantillas_pmv.py --cargar --actor ID --entorno local|pruebas|produccion|demo --confirmar-entorno
 ```
 
 Si la URL de `BIB109_DATABASE_URL` no corresponde al entorno pedido, el script sale con código 2 sin conectar. `scripts/capacidades_biblioteca.py` usa los mismos `--entorno` y `--confirmar-entorno`.
+
+### En la demo (DEMO-12)
+
+La demo (proyecto `evydentia-demo`, base `evydentia_demo` en `evydentia-demo-db`) usa las mismas plantillas BIB-001 a BIB-012 que producción, con los datos ficticios de la organización de `data/demo/cooperativa_demo.json`. Lo ejecuta el propietario, desde `main` y tras fusionar, en este orden. Ninguna sesión de IA lo ejecuta.
+
+1. **Carga.** Mismo flujo editorial que producción (BIB-403). Deja cada plantilla «En revisión» y nunca publica. Con una URL que no sea la de la demo, o sin `--confirmar-entorno`, sale con código 2 sin conectar.
+
+   ```powershell
+   cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+   git switch main
+   git pull
+   $env:BIB109_DATABASE_URL = "<URL de evydentia_demo por cloud-sql-proxy>"
+   python scripts/cargar_plantillas_pmv.py --cargar --actor <id del editor que carga> --entorno demo --confirmar-entorno
+   Remove-Item Env:BIB109_DATABASE_URL
+   ```
+
+2. **Revisión y publicación.** En la web de la demo, un usuario editor distinto del autor de la carga (BIB-403 R4) abre cada plantilla nombrada en `salas.biblioteca.documentos` de `cooperativa_demo.json` (hoy BIB-001, BIB-002, BIB-003 y BIB-006), aprueba la revisión técnica en el expediente («Aprobar con autoridad vigente»), valida sus citas y la publica. Como mínimo se publican esas plantillas.
+
+3. **Comprobación.** De solo lectura, por Antigravity o Cloud SQL Studio, sin psql: cada código nombrado en el JSON tiene una versión publicada. Si falta alguno, se para y no se siembra (la siembra falla cerrado de todos modos).
+
+   ```sql
+   BEGIN TRANSACTION READ ONLY;
+   SELECT c.codigo, v.version FROM (VALUES ('BIB-001'), ('BIB-002'), ('BIB-003'), ('BIB-006')) AS c(codigo)
+     LEFT JOIN biblioteca_versiones v ON v.codigo = c.codigo AND v.estado = 'publicada' AND v.formato = 'MD';
+   ROLLBACK;
+   ```
+
+   Toda fila con `version` vacía es una plantilla sin publicar.
+
+4. **Retiro de lo ficticio y, después, siembra.** Primero se retira el documento ficticio `DEMO-DOC-01` del tenant plantilla (`demo-plantilla-cooperativa`), con el rol dueño de las tablas, el que migra (secreto `DATABASE_URL` de `evydentia-demo`, el mismo de `migrar-demo`), por Antigravity con `cloud-sql-proxy` o por Cloud SQL Studio, en una sola transacción. Nada va a `jobs/`: el rol `purga_demo` no es dueño de las tablas. Los tenants ya clonados no se tocan: caducan y los borra la purga nocturna (DEMO-05).
+
+   ```sql
+   BEGIN;
+   DO $$ BEGIN
+     IF (SELECT count(*) FROM public.entorno_marcador) <> 1
+        OR (SELECT valor FROM public.entorno_marcador) <> 'demo' THEN
+       RAISE EXCEPTION 'No es la base de la demo';
+     END IF;
+   END $$;
+   SELECT set_config('app.current_tenant_id', 'demo-plantilla-cooperativa', true);
+   CREATE TEMP TABLE ficticios ON COMMIT DROP AS
+     SELECT id FROM biblioteca_documentos
+     WHERE tenant_id = 'demo-plantilla-cooperativa' AND codigo LIKE 'DEMO-DOC-%';
+   -- Recuento antes: 1 documento y sus filas de historial.
+   SELECT (SELECT count(*) FROM ficticios) AS documentos,
+          (SELECT count(*) FROM biblioteca_documentos_historial WHERE documento_id IN (SELECT id FROM ficticios)) AS historial;
+   DO $$ BEGIN
+     IF (SELECT count(*) FROM ficticios) <> 1 THEN RAISE EXCEPTION 'Se esperaba 1 documento ficticio'; END IF;
+     IF EXISTS (SELECT 1 FROM biblioteca_conservacion WHERE documento_id IN (SELECT id FROM ficticios))
+        OR EXISTS (SELECT 1 FROM biblioteca_eventos_documento WHERE documento_id IN (SELECT id FROM ficticios))
+        OR EXISTS (SELECT 1 FROM biblioteca_evidencias WHERE documento_id IN (SELECT id FROM ficticios))
+        OR EXISTS (SELECT 1 FROM biblioteca_cargas WHERE documento_id IN (SELECT id FROM ficticios))
+        OR EXISTS (SELECT 1 FROM biblioteca_revisiones_documento WHERE documento_id IN (SELECT id FROM ficticios)) THEN
+       RAISE EXCEPTION 'El documento ficticio tiene dependencias: se para';
+     END IF;
+   END $$;
+   ALTER TABLE biblioteca_documentos_historial DISABLE TRIGGER biblioteca_documento_historial_inmutable;
+   DELETE FROM biblioteca_documentos_historial WHERE documento_id IN (SELECT id FROM ficticios);
+   DELETE FROM biblioteca_documentos WHERE id IN (SELECT id FROM ficticios);
+   ALTER TABLE biblioteca_documentos_historial ENABLE TRIGGER biblioteca_documento_historial_inmutable;
+   -- Recuento después: 0.
+   DO $$ BEGIN
+     IF EXISTS (SELECT 1 FROM biblioteca_documentos WHERE tenant_id = 'demo-plantilla-cooperativa' AND codigo LIKE 'DEMO-DOC-%') THEN
+       RAISE EXCEPTION 'Quedan documentos ficticios';
+     END IF;
+   END $$;
+   COMMIT;
+   ```
+
+   Cualquier `RAISE` deja la transacción abortada: se ejecuta `ROLLBACK`, se para y se avisa al CTO. Después se siembra la plantilla de la demo: los documentos nacen de las versiones publicadas, con ids derivados del código de plantilla (`DEMO-BIB-001`…), que nunca coinciden con el viejo `DEMO-DOC-01`.
+
+En la demo, cada DOCX y XLSX generado lleva en el pie «Demostración · datos ficticios»; fuera de ella la salida no cambia. La descarga de archivos maestros entrega la plantilla del catálogo, sin datos de la organización, y no cambia.

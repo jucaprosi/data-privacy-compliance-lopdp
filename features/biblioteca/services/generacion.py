@@ -19,6 +19,7 @@ from datetime import date
 from uuid import uuid4
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
+from app_core.entorno.guardias import entorno_actual
 from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.esquemas import GENERADAS, Plantilla, leer_plantilla
 from features.biblioteca.domain.generacion import (
@@ -44,6 +45,7 @@ INSERTAR = ("INSERT INTO biblioteca_generaciones(id, tenant_id, borrador_id, mod
             "instantanea, instantanea_sha256, archivo, archivo_sha256, bytes, faltantes, nombre_archivo, creado_por) "
             "VALUES (:id, :t, :b, :modo, :formato, :estado, :psha, CAST(:inst AS jsonb), :isha, :archivo, :asha, "
             ":bytes, CAST(:faltan AS jsonb), :nombre, :u)")
+LEYENDA_DEMO = "Demostración · datos ficticios"  # DEMO-12 R4b: la misma franja de AvisoEntorno.tsx
 
 
 # ¤adpa
@@ -104,12 +106,13 @@ def construir(instantanea: InstantaneaGeneracion, pedido: PedirGeneracion) -> tu
             raise ErrorNegocio("BIB_GEN_SALIDA_INVALIDA", "Quedan marcas: " + " ".join(restos))
     partes = bloques(texto)
     marca = bloqueantes if borrador else None
+    pie = LEYENDA_DEMO if entorno_actual() == "demo" else None  # fuera de la demo (pruebas incluido), los bytes de siempre
     if pedido.formato == "docx":
-        archivo = generar_docx(partes, marca)
+        archivo = generar_docx(partes, marca, pie)
     else:
         valores = {**datos["organizacion"], **{k: v for k, v in datos["contexto"].items() if k not in GENERADAS}}
         archivo = generar_xlsx(f"{plantilla.codigo} · {plantilla.meta.get('nombre', '')}", valores, partes,
-                               date.fromisoformat(datos["fecha_emision"]), marca)
+                               date.fromisoformat(datos["fecha_emision"]), marca, pie)
     nombre = f"{plantilla.codigo}-v{plantilla.version}-{ESTADOS[pedido.modo]}.{pedido.formato}"
     return archivo, bloqueantes, nombre
 

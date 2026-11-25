@@ -2,7 +2,7 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # ¤adpa ¤demo ¤seguridad-tenant
 # ¤¤developer-architect
-"""Copia y siembra de la plantilla «Cooperativa Demo» en la sala biblioteca (DEMO-03d).
+"""Copia y siembra de la plantilla «Cooperativa Demo» en la sala biblioteca (DEMO-03d, DEMO-12).
 
 La biblioteca es multi-organización: el catálogo y las versiones editoriales son globales y no se copian.
 Aquí solo se copian los documentos de la organización (`biblioteca_documentos`) y su historial inmutable
@@ -16,6 +16,7 @@ Aquí solo se copian los documentos de la organización (`biblioteca_documentos`
 """
 from __future__ import annotations
 
+import inspect
 import json
 from collections.abc import Mapping
 from datetime import date, datetime, timezone
@@ -25,7 +26,8 @@ from uuid import NAMESPACE_URL, uuid5
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from features.biblioteca.domain.documentos import huella, sumar_meses
+from features.biblioteca.domain.documentos import huella, meses_de_revision, sumar_meses
+from features.biblioteca.services import documentos
 
 MapaIds = dict[str, str]
 
@@ -131,12 +133,53 @@ def _bloque_de_la_sala(datos: Mapping | None) -> Mapping:
     return datos.get("salas", {}).get("biblioteca", {}) if "salas" in datos else datos
 
 
+# ¤adpa
+def _organizacion_ficticia(plantilla_id: str) -> dict[str, object]:
+    """Datos de la organización ficticia del JSON, con las claves que lee el rellenador de `crear_documento`."""
+    tenant = json.loads(_JSON_PLANTILLA.read_text(encoding="utf-8")).get("tenant", {})
+    datos: dict[str, object] = {"tenant_id": plantilla_id}
+    datos.update({f"organizacion.{k}": tenant[k] for k in ("razon_social", "nombre_comercial", "ruc") if k in tenant})
+    return datos
+
+
+# ¤adpa
+async def _publicadas(session: AsyncSession, codigos: list[str]) -> dict[str, dict]:
+    """Versión publicada de cada código (una como máximo: `biblioteca_codigo_publicada`); un código sin ella es error."""
+    filas = (await session.execute(text(
+        "SELECT v.id, v.codigo, v.version, v.cuerpo_md, c.nombre, c.metadatos FROM biblioteca_versiones v "
+        "LEFT JOIN biblioteca_catalogo c ON c.codigo=v.codigo "
+        "WHERE v.codigo = ANY(:codigos) AND v.estado='publicada' AND v.formato='MD'"),
+        {"codigos": codigos})).mappings().all()
+    publicadas = {f["codigo"]: dict(f) for f in filas}
+    for codigo in codigos:
+        if codigo not in publicadas:
+            raise ValueError(f"La plantilla {codigo} no tiene versión publicada: carga y publica el catálogo antes de sembrar.")
+    return publicadas
+
+
+# ¤adpa
+async def _rellenar(version: Mapping, organizacion: Mapping) -> str:
+    resultado = documentos._rellenador.rellenar(dict(version), dict(organizacion), {})
+    contenido, _ = await resultado if inspect.isawaitable(resultado) else resultado
+    return contenido
+
+
 # ¤adpa ¤seguridad-tenant
 async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: Mapping | None = None) -> None:
-    """Siembra los documentos ficticios de la plantilla; repetirla deja el mismo estado. No hace commit."""
-    documentos = _bloque_de_la_sala(datos).get("documentos", [])
-    if not documentos:
+    """Siembra los documentos de la organización ficticia desde las plantillas publicadas del catálogo (DEMO-12).
+
+    Cada entrada nombra un código de plantilla y un estado; el contenido es la versión publicada rellenada con
+    los datos ficticios por el mismo rellenador de `crear_documento`. Falla cerrado antes de escribir si falta
+    una versión publicada. Repetirla deja el mismo estado. No hace commit: la transacción es del orquestador.
+    """
+    entradas = list(_bloque_de_la_sala(datos).get("documentos", []))
+    if not entradas:
         return
+    for doc in entradas:
+        if doc.get("estado", "borrador") not in _ESTADOS_SEMBRABLES:
+            raise ValueError(f"Estado de documento no sembrable: {doc.get('estado')}")
+        if doc.get("origen", "plantilla") not in ("plantilla", "propio"):
+            raise ValueError(f"Origen de documento no sembrable: {doc.get('origen')}")
     previo = await _contexto_actual(session)
     try:
         await _fijar_tenant(session, plantilla_id)
@@ -145,29 +188,31 @@ async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: 
             "AND (valid_to IS NULL OR valid_to > now()) ORDER BY user_id LIMIT 1"), {"t": plantilla_id})).scalar()
         if autor is None:
             raise ValueError("La plantilla no tiene administrador: siembra primero la sala organización.")
-        for posicion, doc in enumerate(documentos, start=1):
-            estado = doc.get("estado", "borrador")
-            if estado not in _ESTADOS_SEMBRABLES:
-                raise ValueError(f"Estado de documento no sembrable: {estado}")
-            codigo = f"DEMO-DOC-{posicion:02d}"
-            contenido = f"# {doc['titulo']}\n\nDocumento ficticio de demostración. Sin datos reales.\n"
-            identificador = _id_destino(plantilla_id, codigo)
+        publicadas = await _publicadas(session, [doc["plantilla"] for doc in entradas])
+        organizacion = _organizacion_ficticia(plantilla_id)
+        for doc in entradas:
+            version = publicadas[doc["plantilla"]]
+            estado, propio = doc.get("estado", "borrador"), doc.get("origen", "plantilla") == "propio"
+            contenido = await _rellenar(version, organizacion)
+            identificador = _id_destino(plantilla_id, "DEMO-" + version["codigo"])
+            proxima = sumar_meses(_FECHA_EMISION, meses_de_revision(version["metadatos"]))
             await session.execute(text(
-                "INSERT INTO biblioteca_documentos(id, tenant_id, codigo, nombre, origen, contenido_markdown, "
-                "estado, aprobado_por, aprobado_en, sha256, fecha_emision, proxima_revision, creado_por) "
-                "VALUES (:id, :t, :codigo, :nombre, 'propio', :c, :estado, :apr, "
-                ":apr_en, :h, :emision, :proxima, :u) "
-                "ON CONFLICT (id) DO NOTHING"),
-                {"id": identificador, "t": plantilla_id, "codigo": codigo, "nombre": doc["titulo"], "c": contenido,
-                 "estado": estado, "apr": autor if estado == "aprobado" else None,
-                 "apr_en": datetime(2026, 1, 15, tzinfo=timezone.utc) if estado == "aprobado" else None, "h": huella(contenido),
-                 "emision": _FECHA_EMISION, "proxima": sumar_meses(_FECHA_EMISION, 12), "u": autor})
+                "INSERT INTO biblioteca_documentos(id, tenant_id, codigo, nombre, origen, plantilla_id, "
+                "plantilla_version, contenido_markdown, estado, aprobado_por, aprobado_en, sha256, fecha_emision, "
+                "proxima_revision, creado_por) VALUES (:id, :t, :codigo, :nombre, :origen, :pid, :pver, :c, :estado, "
+                ":apr, :apr_en, :h, :emision, :proxima, :u) ON CONFLICT (id) DO NOTHING"),
+                {"id": identificador, "t": plantilla_id, "codigo": version["codigo"],
+                 "nombre": version["nombre"] or version["codigo"], "origen": "propio" if propio else "plantilla",
+                 "pid": None if propio else version["id"], "pver": None if propio else version["version"],
+                 "c": contenido, "estado": estado, "apr": autor if estado == "aprobado" else None,
+                 "apr_en": datetime(2026, 1, 15, tzinfo=timezone.utc) if estado == "aprobado" else None,
+                 "h": huella(contenido), "emision": _FECHA_EMISION, "proxima": proxima, "u": autor})
             await session.execute(text(
                 "INSERT INTO biblioteca_documentos_historial(id, tenant_id, documento_id, revision, accion, "
                 "contenido_markdown, sha256, actor_id) VALUES (:id, :t, :d, 1, 'creado', :c, :h, :u) "
                 "ON CONFLICT (id) DO NOTHING"),
-                {"id": _id_destino(plantilla_id, f"{codigo}/1"), "t": plantilla_id, "d": identificador,
-                 "c": contenido, "h": huella(contenido), "u": autor})
+                {"id": _id_destino(plantilla_id, f"DEMO-{version['codigo']}/1"), "t": plantilla_id,
+                 "d": identificador, "c": contenido, "h": huella(contenido), "u": autor})
     finally:
         if previo:
             await _fijar_tenant(session, previo)

@@ -101,8 +101,21 @@
     "biblioteca": {
       "documentos": [
         {
-          "titulo": "Política de protección de datos (borrador ficticio)",
+          "plantilla": "BIB-001",
           "estado": "borrador"
+        },
+        {
+          "plantilla": "BIB-002",
+          "estado": "en_revision"
+        },
+        {
+          "plantilla": "BIB-006",
+          "estado": "aprobado"
+        },
+        {
+          "plantilla": "BIB-003",
+          "estado": "vencido",
+          "origen": "propio"
         }
       ]
     },
