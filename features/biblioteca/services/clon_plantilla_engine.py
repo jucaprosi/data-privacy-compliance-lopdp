@@ -131,11 +131,21 @@ def _bloque_de_la_sala(datos: Mapping | None) -> Mapping:
     return datos.get("salas", {}).get("biblioteca", {}) if "salas" in datos else datos
 
 
+# ¤adpa ¤demo
+async def _sembrar_catalogo(session: AsyncSession) -> None:
+    """BIB-404: tras los documentos, el catálogo ficticio, solo con APP_ENV=demo (R1)."""
+    from app_core.entorno.guardias import entorno_actual
+    if entorno_actual() == "demo":
+        from features.biblioteca.services.catalogo_demo_engine import sembrar_catalogo_demo
+        await sembrar_catalogo_demo(session, {})
+
+
 # ¤adpa ¤seguridad-tenant
 async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: Mapping | None = None) -> None:
     """Siembra los documentos ficticios de la plantilla; repetirla deja el mismo estado. No hace commit."""
     documentos = _bloque_de_la_sala(datos).get("documentos", [])
     if not documentos:
+        await _sembrar_catalogo(session)
         return
     previo = await _contexto_actual(session)
     try:
@@ -171,3 +181,4 @@ async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: 
     finally:
         if previo:
             await _fijar_tenant(session, previo)
+    await _sembrar_catalogo(session)

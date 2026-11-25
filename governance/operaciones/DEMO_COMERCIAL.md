@@ -1,4 +1,5 @@
 # Guía y Operación de la Demostración Comercial (DEMO-07)
+`¤plantillas-demo`
 
 **Entorno:** `evydentia-demo` (Google Cloud).  
 **Sala responsable:** `operaciones`.  
@@ -79,6 +80,7 @@ El backend valida que el correo autenticado pertenezca a la lista del secreto `D
 2. **Siembra y Clonación:**
    - Creación de sesión demo a partir de la plantilla cooperativa (`demo-plantilla-cooperativa`).
    - Se crean las personas ficticias vinculadas al tenant efímero del vendedor.
+   - Biblioteca → Plantillas muestra el catálogo ficticio de la demo (`BIB-091` a `BIB-096`, publicado por el flujo editorial con personas `.invalid`); «Usar en esta organización» crea el documento con los datos de la organización ficticia.
 3. **Selector «Ver como»:**
    - El vendedor puede alternar entre perfiles ficticios (DPO, Oficial de Seguridad, Responsable de Tratamiento) verificando la vista de cada rol sin alterar la persistencia de producción.
 4. **Finalización («Terminar demo»):**

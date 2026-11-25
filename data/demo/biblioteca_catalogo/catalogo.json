@@ -1,0 +1,56 @@
+{
+  "BIB-091": {
+    "dependencias": "Datos de la organización ficticia de la demostración.",
+    "fecha_revision": "2026-11-24",
+    "fuentes": "LOPDP arts. 7, 10, 43",
+    "instrucciones": "Documento de demostración con contenido ficticio. Usa «Usar en esta organización» para ver cómo se completa con los datos de la organización ficticia.",
+    "nombre": "Política de protección de datos (FICTICIA)",
+    "objetivo": "Política de protección de datos (FICTICIA): contenido ficticio para mostrar cómo funciona la Biblioteca en la demostración.",
+    "restricciones": "Documento de demostración con contenido ficticio. No es una plantilla validada ni sirve de asesoría jurídica."
+  },
+  "BIB-092": {
+    "dependencias": "Datos de la organización ficticia de la demostración.",
+    "fecha_revision": "2026-11-24",
+    "fuentes": "LOPDP arts. 12, 13",
+    "instrucciones": "Documento de demostración con contenido ficticio. Usa «Usar en esta organización» para ver cómo se completa con los datos de la organización ficticia.",
+    "nombre": "Aviso de privacidad para socios (FICTICIO)",
+    "objetivo": "Aviso de privacidad para socios (FICTICIO): contenido ficticio para mostrar cómo funciona la Biblioteca en la demostración.",
+    "restricciones": "Documento de demostración con contenido ficticio. No es una plantilla validada ni sirve de asesoría jurídica."
+  },
+  "BIB-093": {
+    "dependencias": "Datos de la organización ficticia de la demostración.",
+    "fecha_revision": "2026-11-24",
+    "fuentes": "LOPDP arts. 13 a 16, 62",
+    "instrucciones": "Documento de demostración con contenido ficticio. Usa «Usar en esta organización» para ver cómo se completa con los datos de la organización ficticia.",
+    "nombre": "Formulario de ejercicio de derechos (FICTICIO)",
+    "objetivo": "Formulario de ejercicio de derechos (FICTICIO): contenido ficticio para mostrar cómo funciona la Biblioteca en la demostración.",
+    "restricciones": "Documento de demostración con contenido ficticio. No es una plantilla validada ni sirve de asesoría jurídica."
+  },
+  "BIB-094": {
+    "dependencias": "Datos de la organización ficticia de la demostración.",
+    "fecha_revision": "2026-11-24",
+    "fuentes": "RGLOPDP art. 38; LOPDP art. 10",
+    "instrucciones": "Documento de demostración con contenido ficticio. Usa «Usar en esta organización» para ver cómo se completa con los datos de la organización ficticia.",
+    "nombre": "Registro de actividades de tratamiento (FICTICIO)",
+    "objetivo": "Registro de actividades de tratamiento (FICTICIO): contenido ficticio para mostrar cómo funciona la Biblioteca en la demostración.",
+    "restricciones": "Documento de demostración con contenido ficticio. No es una plantilla validada ni sirve de asesoría jurídica."
+  },
+  "BIB-095": {
+    "dependencias": "Datos de la organización ficticia de la demostración.",
+    "fecha_revision": "2026-11-24",
+    "fuentes": "LOPDP arts. 34, 43",
+    "instrucciones": "Documento de demostración con contenido ficticio. Usa «Usar en esta organización» para ver cómo se completa con los datos de la organización ficticia.",
+    "nombre": "Acuerdo de encargo de tratamiento (FICTICIO)",
+    "objetivo": "Acuerdo de encargo de tratamiento (FICTICIO): contenido ficticio para mostrar cómo funciona la Biblioteca en la demostración.",
+    "restricciones": "Documento de demostración con contenido ficticio. No es una plantilla validada ni sirve de asesoría jurídica."
+  },
+  "BIB-096": {
+    "dependencias": "Datos de la organización ficticia de la demostración.",
+    "fecha_revision": "2026-11-24",
+    "fuentes": "LOPDP arts. 43, 46",
+    "instrucciones": "Documento de demostración con contenido ficticio. Usa «Usar en esta organización» para ver cómo se completa con los datos de la organización ficticia.",
+    "nombre": "Procedimiento de brechas de seguridad (FICTICIO)",
+    "objetivo": "Procedimiento de brechas de seguridad (FICTICIO): contenido ficticio para mostrar cómo funciona la Biblioteca en la demostración.",
+    "restricciones": "Documento de demostración con contenido ficticio. No es una plantilla validada ni sirve de asesoría jurídica."
+  }
+}
