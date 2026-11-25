@@ -79,3 +79,9 @@ async def proponer_por_resolucion(session, id_resolucion: str, estado: str, esta
 
 # === RAT-07 ===
 # === fin RAT-07 ===
+
+# === NOTIF-02 ===
+# === fin NOTIF-02 ===
+
+# === BIB-411 ===
+# === fin BIB-411 ===

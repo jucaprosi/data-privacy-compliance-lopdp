@@ -21,9 +21,10 @@ rastros = ["¤arbitro"]
 ## Entrega
 - Columna `operadores_plataforma.usuario_id`, en la rama de Alembic de plataforma.
 - `alta` crea o recupera el usuario, y el subcomando nuevo `vincular` enlaza a los operadores ya activos.
-- Pasillo: `operador_activo(usuario_id)` y `listar_operadores_activos()`.
+- Pasillo: `operador_activo(usuario_id)`, `usuario_de_operador(identidad)` y `listar_operadores_activos()`.
+- Los mismos pasos en la base de la demo.
 
 ## Límites
-- No toca la nube ni las bases. `vincular` en producción lo ejecuta el propietario por un brief.
+- No toca la nube ni las bases. `alta` y `vincular` en producción y en `evydentia_demo` los ejecuta el propietario por un brief.
 - `users` se crea solo por `app_core/pasillo/organizacion.py` (`crear_o_recuperar_usuario`), sin tocar la sala organizacion.
 - En `operador_engine.py` solo se añade la lectura del usuario enlazado; `verificar_operador` no cambia.
