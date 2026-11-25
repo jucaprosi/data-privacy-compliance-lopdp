@@ -187,7 +187,7 @@ async def mundo():
                                                      "# Maestra sintética\n")
                 version = await bib.editar(sesion, ids["editor"], version["id"], bib.EditarFicha(
                     ficha=bib.Ficha(**FICHA), generacion=version["generacion"]))
-                for rol, tipo in (("tecnico", "tecnica"), ("juridico", "juridica")):
+                for rol, tipo in (("tecnico", "tecnica"),):
                     await bib.revisar(sesion, ids[rol], version["id"], bib.Dictamen(
                         tipo=tipo, aprobado=True, comentario="Dictamen sintético", generacion=version["generacion"]))
                 publicada = await bib.publicar(sesion, ids["publicador"], version["id"], bib.Transicion(
@@ -322,3 +322,11 @@ async def test_db_rls_forzada_aisla_las_cargas(mundo):
                 "INSERT INTO biblioteca_cargas(id, tenant_id, usuario_id, titulo, codigo, version_propia, formato, "
                 "nombre_archivo, tamano_declarado, expira_en) VALUES (:id, :t, :u, 'T', 'X', '1', 'DOCX', 'x.docx', 1, now())"
             ), {"id": str(uuid4()), "t": mundo.ta, "u": mundo.ids["redactor_a"]})
+
+
+# ¤adpa
+@pytest.fixture(autouse=True)
+def _validacion_normativa_validada(monkeypatch):
+    """BIB-403 R4: publicar exige validación normativa «validada»; estas pruebas no ejercen esa regla."""
+    from features.biblioteca.services import editorial as _editorial
+    monkeypatch.setattr(_editorial, "validacion_de_texto", lambda *a, **k: "validada")

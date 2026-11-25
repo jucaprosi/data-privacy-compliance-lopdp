@@ -4,9 +4,10 @@
 """BIB-109: plantillas Markdown del PMV (data/biblioteca/pmv) en el catálogo editorial.
 
   --verificar           sin escritura ni base de datos (código 0 si las doce son válidas y cargables).
-  --cargar --actor ID   carga en una rama de desarrollo: exige BIB109_DATABASE_URL y
-                        --confirmar-rama-desarrollo. Deja cada plantilla En revisión; nunca publica.
-                        Nunca producción ni la rama test compartida. No imprime la URL.
+  --cargar --actor ID   carga con la ficha de cada plantilla: exige BIB109_DATABASE_URL, --entorno
+                        (local por defecto) y --confirmar-entorno. Código 2, sin conectar, si la URL no
+                        corresponde al entorno pedido. Deja cada plantilla En revisión; nunca publica.
+                        Lo ejecuta una persona, nunca la IA. No imprime la URL.
 """
 from __future__ import annotations
 
@@ -20,14 +21,38 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ))
 
-from app_core.huellas_produccion import BaseNoLocal, exigir_base_local  # noqa: E402
+
+ENTORNOS = ("local", "pruebas", "produccion")
+
+
+# ¤adpa
+def entorno_de_url(url: str) -> str | None:
+    """Entorno que nombra la URL (sin abrir conexión): local, produccion, pruebas o `None` si no se reconoce."""
+    from app_core.huellas_produccion import apunta_a_produccion, es_base_local
+
+    if es_base_local(url):
+        return "local"
+    minusculas = url.lower()
+    if apunta_a_produccion(url) or any(h in minusculas for h in ("evydentia-production", "evydentia_prod")):
+        return "produccion"
+    return "pruebas" if "pruebas" in minusculas else None
+
+
+# ¤adpa
+def motivo_entorno(url: str, entorno: str, confirmado: bool) -> str | None:
+    """Motivo para no conectar (código 2), o `None`. La URL nunca se imprime."""
+    if not confirmado:
+        return "Falta --confirmar-entorno."
+    if entorno_de_url(url) != entorno:
+        return f"La URL no corresponde al entorno «{entorno}»; no se abrió conexión."
+    return None
 
 
 # ¤adpa
 def _imprimir_informe(informe: dict) -> None:
     print(f"{len(informe['plantillas'])} plantillas válidas en data/biblioteca/pmv")
     for p in informe["plantillas"]:
-        print(f"  {p['codigo']}  v{p['version']}  validacion_legal={p['validacion_legal']}  {p['sha256']}  {p['nombre']}")
+        print(f"  {p['codigo']}  v{p['version']}  {p['sha256']}  {p['nombre']}")
     for error in informe["errores"]:
         print(f"ERROR: {error}")
 
@@ -56,18 +81,19 @@ def main(argv: list[str] | None = None) -> int:
     modo.add_argument("--verificar", action="store_true")
     modo.add_argument("--cargar", action="store_true")
     parser.add_argument("--actor", help="Id de usuario con capacidad editorial 'editor'")
-    parser.add_argument("--confirmar-rama-desarrollo", action="store_true")
+    parser.add_argument("--entorno", choices=ENTORNOS, default="local")
+    parser.add_argument("--confirmar-entorno", "--confirmar-rama-desarrollo", dest="confirmar_entorno",
+                        action="store_true")
     args = parser.parse_args(argv)
 
     url = os.environ.get("BIB109_DATABASE_URL", "")
     if args.cargar:
-        if not url or not args.confirmar_rama_desarrollo or not args.actor:
-            print("Cargar exige BIB109_DATABASE_URL (rama de desarrollo), --actor y --confirmar-rama-desarrollo.")
+        if not url or not args.actor:
+            print("Cargar exige BIB109_DATABASE_URL, --actor, --entorno y --confirmar-entorno.")
             return 2
-        try:
-            exigir_base_local({"BIB109_DATABASE_URL": url}, variables=("BIB109_DATABASE_URL",))
-        except BaseNoLocal:
-            print("Solo base local de desarrollo permitida; no se abrió conexión.")
+        rechazo = motivo_entorno(url, args.entorno, args.confirmar_entorno)
+        if rechazo:
+            print(rechazo)
             return 2
 
     from features.biblioteca import biblioteca_service as bib

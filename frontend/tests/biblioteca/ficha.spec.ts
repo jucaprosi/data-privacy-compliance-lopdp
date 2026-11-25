@@ -80,7 +80,9 @@ test.describe("Biblioteca: ficha de plantilla (BIB-103, API simulada)", () => {
 
     await expect(ficha.getByRole("heading", { name: "Política de protección de datos personales" })).toBeVisible();
     await expect(ficha).toContainText("BIB-001 · versión 0.2.0 · formato MD · Plantilla de la plataforma");
-    await expect(ficha).toContainText("Estado editorial de la plantilla: Publicada · Pendiente de validación legal");
+    await expect(ficha).toContainText("Estado editorial de la plantilla: Publicada");
+    await expect(ficha).toContainText("Citas normativas: Pendientes de verificar");
+    await expect(ficha.getByText("Comprobamos que cada norma citada existe, que dice lo que se cita y que es la versión más reciente que conoce la plataforma. No valoramos si cada cláusula se aplica correctamente a tu organización.")).toBeVisible();
     await expect(ficha).toContainText("Fijar cómo la empresa protege los datos personales.");
     await expect(ficha.getByTestId("variable-organizacion.razon_social")).toContainText("La organización ya tiene este dato");
     await expect(ficha.getByTestId("variable-organizacion.direccion")).toContainText("Falta este dato en la organización");

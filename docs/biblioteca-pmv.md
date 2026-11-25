@@ -1,13 +1,10 @@
 # BIBLIOTECA de EVYDENTIA — PMV para pequeñas empresas privadas (LOPDP)
 
 > Estado: borrador de especificación, 2026-10-27; seguimiento actualizado el 2026-10-28. Sin código de funcionalidades.
-> **Referencias normativas.** Un artículo de la LOPDP, de su Reglamento General o de una resolución de la SPDP
-> solo se cita como firme si se ha cotejado con el texto de la fuente oficial. En este repositorio no consta
-> ese cotejo para ninguno de los artículos citados aquí, así que todos van marcados **POR VERIFICAR**.
-> Los datos de publicación de las normas están en `governance/artefactos/FUENTES_Y_BIBLIOGRAFIA.md`.
-> La reforma del art. 43 de la LOPDP por la Ley Orgánica para el Fortalecimiento de la Ciberseguridad
-> no figura en ese registro y también va **POR VERIFICAR**.
-> **PENDIENTE VALIDACIÓN** se reserva para las preguntas de interpretación del expediente del abogado.
+> **Referencias normativas.** Cada artículo citado en las plantillas tiene su lectura en la fuente oficial en
+> `governance/artefactos/CITAS_PLANTILLAS_VERIFICADAS.md` (LEG-08 y LEG-08b); los datos de publicación de las
+> normas están en `governance/artefactos/FUENTES_Y_BIBLIOGRAFIA.md`. Una cita sin lectura `verificada` no se carga.
+> **PENDIENTE VALIDACIÓN** es marca de borrador: una plantilla que la conserve no se carga. La validación normativa no es personal: la derivan las lecturas de `governance/artefactos/CITAS_PLANTILLAS_VERIFICADAS.md` (LEG-08), ver «Validación normativa».
 
 ## 0. Decisiones de partida
 
@@ -71,7 +68,7 @@ Columna «Fuente actual»: ✅ el campo ya existe; ➕ hay que crearlo; ✍ lo c
 
 `{{fecha_emision}}` se mantiene sin ámbito porque así se acordó. Es la única excepción a la regla del punto.
 
-**Delegado en dos variantes (decisión de la propietaria, 2026-10-27).** La mayoría de las pequeñas empresas privadas no está obligada a designar delegado (LOPDP art. 48; Reglamento art. 53; Res. SPDP-SPD-2025-0028-R, art. 10 — **POR VERIFICAR**). Por eso `dpo.*` solo puede usarse dentro de una parte condicional `{{#si dpo.designado}}…{{#sino}}…{{/si}}`: si hay un DPD vigente se muestran sus datos; si no, el texto alternativo («La organización no está obligada a designar delegado…»). La falta de delegado **no** bloquea el paso a revisión. El aviso para designarlo remite a **Cockpit DPD / DPO**.
+**Delegado en dos variantes (decisión de la propietaria, 2026-10-27).** La mayoría de las pequeñas empresas privadas no está obligada a designar delegado (LOPDP art. 48; Reglamento art. 53; Res. SPDP-SPD-2025-0028-R, art. 10). Por eso `dpo.*` solo puede usarse dentro de una parte condicional `{{#si dpo.designado}}…{{#sino}}…{{/si}}`: si hay un DPD vigente se muestran sus datos; si no, el texto alternativo («La organización no está obligada a designar delegado…»). La falta de delegado **no** bloquea el paso a revisión. El aviso para designarlo remite a **Cockpit DPD / DPO**.
 
 ### Partes condicionales y avisos (decisión de la propietaria, 2026-10-27)
 
@@ -80,7 +77,7 @@ Columna «Fuente actual»: ✅ el campo ya existe; ➕ hay que crearlo; ✍ lo c
   - `dpo.designado`: verdadera si la organización tiene un DPD vigente en `designaciones_formales` (tipo `dpd`).
   - `contexto.<clave>` declarada en `variables_contexto` con `tipo: si_no`.
 - **Avisos:** la plantilla puede declarar en sus metadatos `avisos` que se muestran en el borrador y en la ficha cuando se cumple su condición. No forman parte del texto del documento ni bloquean la revisión.
-- **Caso que lo motiva (documento BIB-011):** la videovigilancia sistemática de zonas de acceso público es tratamiento a gran escala (Res. SPDP-SPD-2026-0005-R, art. 14.3 — **POR VERIFICAR**), con evaluación de impacto previa y delegado obligatorio. BIB-011 pregunta `contexto.camaras_acceso_publico` y, si es «sí», avisa de esas obligaciones. Si la condición se cumple y no hay DPD vigente, el aviso es de nivel `alto`. **PENDIENTE VALIDACIÓN** (expediente del abogado, P1): si un local abierto al público cuenta como zona de acceso público.
+- **Caso que lo motiva (documento BIB-011):** la videovigilancia sistemática de zonas de acceso público es tratamiento a gran escala (Res. SPDP-SPD-2026-0005-R, art. 14.3), con evaluación de impacto previa y delegado obligatorio. BIB-011 pregunta `contexto.camaras_acceso_publico` y, si es «sí», avisa de esas obligaciones. Si la condición se cumple y no hay DPD vigente, el aviso es de nivel `alto`. La resolución no dice si un local abierto al público es una zona de acceso público: el aviso indica que, si sus cámaras graban áreas por donde pasa el público, se trate como tal (decisión del CTO).
 
 ## b) Formato estándar de una plantilla
 
@@ -93,8 +90,8 @@ data/biblioteca/pmv/
   ...
 ```
 
-- `data/biblioteca/pmv/` es la fuente editorial versionada en Git. Que un archivo esté en el repo no lo publica: entra en el catálogo por el flujo editorial existente (versión *en revisión* → revisión técnica y jurídica → publicar).
-- Ninguna plantilla se publica sin la aprobación individual de la propietaria.
+- `data/biblioteca/pmv/` es la fuente editorial versionada en Git. Que un archivo esté en el repo no lo publica: entra en el catálogo por el flujo editorial existente (versión *en revisión* → revisión técnica por una persona que no es autora → publicar con la validación normativa en `validada`).
+- Ninguna plantilla se publica sin la revisión técnica de una persona que no es autora y sin validación normativa `validada`. Cada versión se carga con su ficha (`data/biblioteca/pmv/fichas.json`).
 - No se mezcla con `data/biblioteca/kit_v1/`: los originales del kit no se editan.
 
 ### Estructura del archivo
@@ -111,8 +108,9 @@ sector: general           # general | <sector concreto>
 naturaleza: privada       # publica | privada | ambas
 tamano_empresa: [micro, pequena]
 version: 0.1.0            # semver; cada publicación crea una versión nueva
-base_lopdp: POR VERIFICAR # artículos y normas, solo con fuente oficial cotejada
-validacion_legal: pendiente   # pendiente | en_revision | validada | con_observaciones
+base_lopdp: "LOPDP arts. 7, 8" # artículos y normas con lectura `verificada`
+secciones_informativas:   # títulos de secciones sin efecto jurídico; el resto de las secciones lleva cita verificada
+  - titulo: 1. Objeto
 fecha_corte_normativo: 2026-10-27
 variables_contexto:       # variables `contexto.*` propias de este documento
   - clave: contexto.canal_solicitudes
@@ -137,7 +135,7 @@ Reglas del archivo:
 - Cada variable del cuerpo debe ser de la lista de variables comunes o estar declarada en `variables_contexto`. El validador rechaza las desconocidas.
 - El validador también rechaza: `dpo.*` fuera de un bloque `{{#si dpo.designado}}`; bloques sin cerrar o anidados; condiciones que no sean `dpo.designado` ni una `contexto.*` de tipo `si_no`; y avisos con una condición no declarada.
 - Los borradores aprobados marcan las variantes con comentarios HTML; al pasarlos a `data/biblioteca/pmv/` (BIB-109) se convierten a esta sintaxis sin cambiar el texto aprobado.
-- `validacion_legal` solo pasa a `validada` con el dictamen jurídico registrado en la revisión `juridica` del flujo editorial.
+- `validacion_legal` no se escribe en el archivo (un archivo que la declare se rechaza): se deriva (ver «Validación normativa»).
 - No se incluyen datos reales de personas, credenciales ni URL internas.
 
 ## c) Contrato de API mínimo
@@ -187,14 +185,13 @@ Los documentos *propio* (redactado en la plataforma) y *subido* (archivo) compar
 
 ## d) Seguimiento de los 12 documentos
 
-Leyenda: ⬜ pendiente · 🟨 en curso · ✅ hecho. Una fila o celda solo pasa a ✅ si tiene su nota en `docs/biblioteca-entregas.md`. «Validación legal» solo pasa a ✅ con el dictamen jurídico registrado.
+Leyenda: ⬜ pendiente · 🟨 en curso · ✅ hecho. Una fila o celda solo pasa a ✅ si tiene su nota en `docs/biblioteca-entregas.md`. «Validación legal» solo pasa a ✅ cuando la derivación da `validada`.
 
 **Contenido (2026-10-28):**
-- Las 12 plantillas están redactadas y la propietaria las aprobó como borradores: BIB-001 a BIB-005 en v0.2 y el resto en v0.1.
-- El dictamen jurídico está pendiente. Hay un expediente con 14 preguntas para el abogado.
-- Ninguna está publicada ni importada. Siguen fuera del repo hasta que BIB-109 las cargue, y cada publicación necesita la aprobación individual de la propietaria.
-- Sus citas normativas van **POR VERIFICAR**.
-- La columna Contenido queda en 🟨 hasta que haya dictamen y nota de entrega.
+- Las 12 plantillas están redactadas en `data/biblioteca/pmv/`, cada una con su ficha.
+- Su validación normativa se deriva de las lecturas de LEG-08 (R1-R3): una plantilla con una cita sin lectura `verificada` queda `pendiente`.
+- Ninguna está publicada. La carga las deja en revisión; publicar exige la revisión técnica y la validación `validada`.
+- La columna Contenido queda en 🟨 hasta que todas estén `validada` y haya nota de entrega.
 
 ### Tareas del PMV (2026-10-28)
 
@@ -253,7 +250,7 @@ Además, en todos los casos:
 
 ## f) BIB-006 desde el RAT (decisión D4)
 
-- BIB-006 no crea un registro paralelo: cada actividad del RAT de la organización (RAT-01) se convierte en una ficha con los nueve contenidos del Reglamento, art. 38 (**POR VERIFICAR**). El resultado rellena `contexto.actividades`.
+- BIB-006 no crea un registro paralelo: cada actividad del RAT de la organización (RAT-01) se convierte en una ficha con los nueve contenidos del Reglamento, art. 38. El resultado rellena `contexto.actividades`.
 - Lo hace BIB-201, en solo lectura y a través de la compuerta del módulo RAT. No escribe en tablas del RAT.
 - Correspondencia mínima (a confirmar con el modelo de datos de RAT-01 al implementar):
 
@@ -265,8 +262,29 @@ Además, en todos los casos:
 | 4. Titulares y categorías de datos | titulares y categorías de la actividad |
 | 5. Uso de perfiles | indicador de perfiles de la actividad |
 | 6. Transferencias internacionales | transferencias de la actividad |
-| 7. Base de legitimación | base de la actividad (LOPDP art. 7, **POR VERIFICAR**) |
+| 7. Base de legitimación | base de la actividad (LOPDP art. 7) |
 | 8. Plazos de conservación | plazo de la actividad |
 | 9. Medidas técnicas, jurídicas, administrativas y organizativas | medidas de la actividad |
 
 - Si al RAT le falta un dato, la ficha lo muestra como `⟦falta: …⟧`, igual que cualquier otra variable.
+
+## Validación normativa
+
+La validación no es un dictamen ni lo firma nadie. `validacion_legal` (`validada`, `en_revision`, `pendiente`, `con_observaciones`) se calcula:
+
+- Cada cita de la base legal y del cuerpo se extrae como clave atómica (`LOPDP-art-7`, `RLOPDP-art-8`, `RES-2025-0006-art-4`…) y debe tener una fila `verificada` en `CITAS_PLANTILLAS_VERIFICADAS.md`. Una `no_leida` deja la plantilla `pendiente`; una `no_encontrada`, `con_observaciones`.
+- `data/biblioteca/pmv/citas.json` (lo genera `python scripts/verificar_citas_plantillas.py --generar`, nunca a mano) enlaza cada plantilla con sus claves; el árbitro comprueba la ida y la vuelta.
+- Si el módulo de inteligencia normativa registra otra huella para una fuente citada, la plantilla pasa a `en_revision`. Hoy el módulo no descarga, así que este control no se dispara.
+- Cada sección `##`/`###` lleva al menos una cita verificada o se declara en `secciones_informativas` (y entonces no cita).
+- Alcance: acredita que la norma citada existe y dice lo citado en la versión leída. No acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa.
+
+## Cargar las plantillas
+
+Lo hace una persona, nunca la IA, y solo después de fusionar:
+
+```
+python scripts/cargar_plantillas_pmv.py --verificar
+python scripts/cargar_plantillas_pmv.py --cargar --actor ID --entorno local|pruebas|produccion --confirmar-entorno
+```
+
+Si la URL de `BIB109_DATABASE_URL` no corresponde al entorno pedido, el script sale con código 2 sin conectar. `scripts/capacidades_biblioteca.py` usa los mismos `--entorno` y `--confirmar-entorno`.

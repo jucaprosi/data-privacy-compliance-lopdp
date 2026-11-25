@@ -12,7 +12,9 @@ from features.biblioteca.domain.editorial import (
     ArchivoMaestro, Capacidad, CrearVersion, Dictamen, EditarFicha, Transicion,
     exigir_publicable, exigir_separacion, exigir_sustitucion, validar_archivo,
 )
+from features.biblioteca.domain.validacion import validacion_de_texto
 from features.biblioteca.services.autorizacion import autorizar
+from features.biblioteca.services.catalogo import leer_citas, huellas_por_url_fuente
 
 COLUMNAS = "id, codigo, version, formato, ficha, responsable_id, autores, estado, generacion, nombre_archivo, sha256, sustituye_id, creada_en"
 
@@ -120,8 +122,7 @@ async def cargar(session: AsyncSession, actor: str, identificador: str, entrada:
 
 # ¤adpa
 async def revisar(session: AsyncSession, actor: str, identificador: str, entrada: Dictamen) -> dict:
-    capacidad = Capacidad.TECNICO if entrada.tipo == "tecnica" else Capacidad.JURIDICO
-    await autorizar(session, actor, capacidad)
+    await autorizar(session, actor, Capacidad.TECNICO)
     version = await _version(session, identificador, entrada.generacion)
     _editable(version)
     exigir_separacion(actor, version["autores"])
@@ -146,7 +147,12 @@ async def publicar(session: AsyncSession, actor: str, identificador: str, entrad
     revisiones = (await session.execute(text(
         "SELECT tipo, aprobado, generacion, revisor_id FROM biblioteca_revisiones WHERE version_id=:id"
     ), {"id": identificador})).mappings().all()
-    exigir_publicable(version, [dict(r) for r in revisiones], actor)
+    validacion = "validada"  # DOCX y XLSX no tienen texto citable: solo la compuerta técnica
+    if version["formato"] == "MD":
+        cuerpo = (await session.execute(text("SELECT cuerpo_md FROM biblioteca_versiones WHERE id=:id"),
+                                        {"id": identificador})).scalar()
+        validacion = validacion_de_texto(cuerpo or "", leer_citas(), await huellas_por_url_fuente())
+    exigir_publicable(version, [dict(r) for r in revisiones], actor, validacion)
     exigir_sustitucion(await _publicada_vigente(session, codigo, identificador), version["sustituye_id"])
     if version["sustituye_id"]:
         anterior = await _version(session, version["sustituye_id"])
@@ -188,11 +194,11 @@ async def historial(session: AsyncSession, actor: str, identificador: str) -> li
 # === BIB-109 ===
 # ¤adpa
 async def crear_version_md(session: AsyncSession, actor: str, codigo: str, version: str,
-                           cuerpo: str | None, sustituye_id: str | None = None) -> dict:
+                           cuerpo: str | None, sustituye_id: str | None = None, ficha: dict | None = None) -> dict:
     """Crea una versión MD en revisión con los mismos controles que `crear`; nunca la publica."""
     import hashlib
     from features.biblioteca.domain.editorial import CrearVersionMd
-    entrada = CrearVersionMd(codigo=codigo, version=version, cuerpo=cuerpo, sustituye_id=sustituye_id)
+    entrada = CrearVersionMd(codigo=codigo, version=version, cuerpo=cuerpo, ficha=ficha, sustituye_id=sustituye_id)
     await autorizar(session, actor, Capacidad.EDITOR)
     await session.execute(text("SELECT pg_advisory_xact_lock(hashtextextended(:codigo, 0))"), {"codigo": entrada.codigo})
     exigir_sustitucion(await _publicada_vigente(session, entrada.codigo), entrada.sustituye_id)
@@ -207,10 +213,11 @@ async def crear_version_md(session: AsyncSession, actor: str, codigo: str, versi
             "INSERT INTO biblioteca_catalogo(codigo) VALUES (:codigo) ON CONFLICT DO NOTHING"
         ), {"codigo": entrada.codigo})
         await _guardar(session,
-            "INSERT INTO biblioteca_versiones(id,codigo,version,formato,responsable_id,autores,sustituye_id,cuerpo_md,sha256) "
-            "VALUES (:id,:codigo,:version,'MD',:actor,CAST(:autores AS jsonb),:sustituye,:cuerpo,:sha)",
+            "INSERT INTO biblioteca_versiones(id,codigo,version,formato,ficha,responsable_id,autores,sustituye_id,cuerpo_md,sha256) "
+            "VALUES (:id,:codigo,:version,'MD',CAST(:ficha AS jsonb),:actor,CAST(:autores AS jsonb),:sustituye,:cuerpo,:sha)",
             {"id": identificador, "codigo": entrada.codigo, "version": entrada.version, "actor": actor,
              "autores": json.dumps([actor]), "sustituye": entrada.sustituye_id, "cuerpo": entrada.cuerpo,
+             "ficha": entrada.ficha.model_dump_json() if entrada.ficha else None,
              "sha": huella})
     return await _version(session, identificador)
 # === fin BIB-109 ===

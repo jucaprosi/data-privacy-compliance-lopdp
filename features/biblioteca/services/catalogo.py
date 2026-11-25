@@ -8,13 +8,38 @@ verificada. Un usuario sin membresía vigente recibe BIB_SIN_ACCESO, no una list
 pantalla distinga «no hay nada» de «no tienes permiso». Solo se listan versiones publicadas: una
 editora ve también las que están en revisión por su capacidad editorial, y aquí se excluyen.
 """
+import json
+from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.plantillas_md import TIPOS
+from features.biblioteca.domain.validacion import validacion_de_texto
 from features.biblioteca.services.autorizacion import capacidades
+
+RUTA_CITAS = Path(__file__).resolve().parents[3] / "data" / "biblioteca" / "pmv" / "citas.json"
+
+
+# ¤adpa
+@lru_cache(maxsize=1)
+def leer_citas() -> dict | None:
+    """citas.json (generado por scripts/verificar_citas_plantillas.py --generar); None si no existe."""
+    if not RUTA_CITAS.exists():
+        return None
+    return json.loads(RUTA_CITAS.read_bytes().decode("utf-8"))
+
+
+# ¤adpa
+async def huellas_por_url_fuente() -> dict[str, str]:
+    """Puerto: url_fuente -> sha256 de la última versión que el módulo de inteligencia normativa conoce.
+
+    El proveedor por defecto devuelve `{}`: R2 no se dispara y la validación descansa en R1. El enlace real
+    al módulo (NORM) sustituye este proveedor; los tests lo sustituyen. Se llama una vez por lista.
+    """
+    return {}
 
 FUENTES = ("catalogo", "organizacion")
 # Un solo estado es descargable; las entradas planificadas o sin archivo nunca lo son.
@@ -61,11 +86,11 @@ def _validar_filtros(fuente: str | None, tipo: str | None, ola: int | None) -> N
 
 
 # ¤adpa
-def _como_plantilla(fila: dict) -> PlantillaCatalogo:
+def _como_plantilla(fila: dict, versiones: dict[str, str]) -> PlantillaCatalogo:
     metadatos = fila["metadatos"] or {}
     return PlantillaCatalogo(
         id=fila["id"], codigo=fila["codigo"], nombre=fila["nombre"], tipo=fila["tipo"], fuente="catalogo",
-        version=fila["version"], formato=fila["formato"], validacion_legal=metadatos.get("validacion_legal"),
+        version=fila["version"], formato=fila["formato"], validacion_legal=validacion_de_texto(fila["cuerpo_md"] or "", leer_citas(), versiones),
         ola=_entero(metadatos.get("ola")), estado=fila["estado"],
         descargable=descargable(fila["estado"], fila["formato"]),
     )
@@ -86,10 +111,11 @@ async def listar_catalogo(session: AsyncSession, actor: str, fuente: str | None 
     if fuente == "organizacion":
         return []
     filas = (await session.execute(text(
-        "SELECT v.id, v.codigo, v.version, v.formato, v.estado, c.nombre, c.tipo, c.metadatos "
+        "SELECT v.id, v.codigo, v.version, v.formato, v.estado, v.cuerpo_md, c.nombre, c.tipo, c.metadatos "
         "FROM biblioteca_versiones v LEFT JOIN biblioteca_catalogo c ON c.codigo=v.codigo "
         "WHERE v.estado='publicada' AND (CAST(:tipo AS text) IS NULL OR c.tipo=:tipo) "
         "AND (CAST(:ola AS integer) IS NULL OR c.metadatos->>'ola'=CAST(:ola AS text)) "
         "ORDER BY v.codigo, v.version LIMIT :limite"
     ), {"tipo": tipo, "ola": ola, "limite": LIMITE})).mappings().all()
-    return [_como_plantilla(dict(f)) for f in filas]
+    versiones = await huellas_por_url_fuente()  # una sola lectura por lista, sin N+1
+    return [_como_plantilla(dict(f), versiones) for f in filas]

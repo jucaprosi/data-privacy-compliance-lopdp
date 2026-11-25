@@ -36,8 +36,8 @@ def plantilla(cuerpo: str, extra: str = "", contexto: str = "") -> str:
     """Plantilla mínima válida salvo por lo que cada prueba cambie."""
     return (
         "---\ncodigo: BIB-001\nnombre: Prueba\ntipo: politica\nola: 1\nsector: general\nnaturaleza: privada\n"
-        "tamano_empresa: [micro, pequena]\nversion: 0.1.0\nbase_lopdp: \"PENDIENTE VALIDACIÓN\"\n"
-        "validacion_legal: pendiente\nfecha_corte_normativo: 2026-10-27\n"
+        "tamano_empresa: [micro, pequena]\nversion: 0.1.0\nbase_lopdp: \"LOPDP art. 8\"\n"
+        "fecha_corte_normativo: 2026-10-27\n"
         f"variables_contexto:\n{contexto}{extra}revision_meses: 12\n---\n\n{cuerpo}\n"
     )
 
@@ -129,7 +129,6 @@ def test_aviso_valido_aceptado():
 @pytest.mark.parametrize("cambio,motivo", [
     (("tipo: politica", "tipo: folleto"), "tipo"),
     (("naturaleza: privada", "naturaleza: mixta"), "naturaleza"),
-    (("validacion_legal: pendiente", "validacion_legal: aprobada"), "validacion_legal"),
     (("version: 0.1.0", "version: uno"), "version"),
     (("codigo: BIB-001", "codigo: BIB-002"), "codigo"),
     (("revision_meses: 12\n", ""), "falta metadato revision_meses"),
@@ -146,9 +145,10 @@ def test_cabecera_ilegible_rechazada(texto):
 
 
 # ¤adpa
-def test_cargador_no_admite_validacion_legal_validada():
-    texto = plantilla("x").replace("validacion_legal: pendiente", "validacion_legal: validada")
-    assert errores(texto) == []
+def test_cargador_no_admite_validacion_legal_declarada():
+    # BIB-403 R3: la validación legal se deriva de las citas; un archivo que la declare se rechaza.
+    texto = plantilla("x").replace("revision_meses: 12", "validacion_legal: validada" + chr(10) + "revision_meses: 12")
+    assert any("validacion_legal" in e for e in errores(texto))
     with pytest.raises(ErrorNegocio) as exc:
         bib.exigir_plantilla_cargable(texto, "BIB-001")
     assert exc.value.code == "BIB_ARCHIVO_INVALIDO"
@@ -164,7 +164,6 @@ def test_verificacion_sin_escritura_de_las_doce():
         declarada = next(l.split(":", 1)[1].strip() for l in datos.decode("utf-8").splitlines()
                          if l.startswith("version:"))
         assert p["sha256"] == hashlib.sha256(datos).hexdigest() and p["version"] == declarada
-        assert p["validacion_legal"] == "pendiente"
 
 
 # ¤adpa
@@ -247,7 +246,7 @@ async def aprobar_y_publicar(sesion, ids, version):
     if version["ficha"] is None:
         version = await bib.editar(sesion, ids["editor"], version["id"], bib.EditarFicha(
             ficha=bib.Ficha(**FICHA), generacion=version["generacion"]))
-    for rol, tipo in [("tecnico", "tecnica"), ("juridico", "juridica")]:
+    for rol, tipo in [("tecnico", "tecnica")]:
         await bib.revisar(sesion, ids[rol], version["id"], bib.Dictamen(
             tipo=tipo, aprobado=True, comentario="Dictamen sintético", generacion=version["generacion"]))
     return await bib.publicar(sesion, ids["publicador"], version["id"], bib.Transicion(
@@ -364,3 +363,11 @@ async def test_db_plantilla_cargada_no_se_publica_sin_revisiones(db_bib):
         await bib.publicar(sesion, ids["publicador"], version["id"], bib.Transicion(
             generacion=version["generacion"], motivo="Sin revisiones"))
     assert exc.value.code == "BIB_REVISION_PENDIENTE"
+
+
+# ¤adpa
+@pytest.fixture(autouse=True)
+def _validacion_normativa_validada(monkeypatch):
+    """BIB-403 R4: publicar exige validación normativa «validada»; estas pruebas no ejercen esa regla."""
+    from features.biblioteca.services import editorial as _editorial
+    monkeypatch.setattr(_editorial, "validacion_de_texto", lambda *a, **k: "validada")

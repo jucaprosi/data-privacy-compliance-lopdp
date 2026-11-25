@@ -181,7 +181,7 @@ async def plantilla(sesion, ids, tipo="politica", ola=1, publicar=True):
     if publicar:
         version = await bib.editar(sesion, ids["editor"], version["id"], bib.EditarFicha(
             ficha=bib.Ficha(**FICHA), generacion=version["generacion"]))
-        for rol, tipo_revision in [("tecnico", "tecnica"), ("juridico", "juridica")]:
+        for rol, tipo_revision in [("tecnico", "tecnica")]:
             await bib.revisar(sesion, ids[rol], version["id"], bib.Dictamen(
                 tipo=tipo_revision, aprobado=True, comentario="Dictamen sintético", generacion=version["generacion"]))
         version = await bib.publicar(sesion, ids["publicador"], version["id"], bib.Transicion(
@@ -240,3 +240,11 @@ async def test_db_vacio_no_es_falta_de_acceso(db_bib):
         with pytest.raises(ErrorNegocio) as exc:
             await bib.listar_catalogo(sesion, ids["ajeno"], **filtros)
         assert exc.value.code == "BIB_SIN_ACCESO" and exc.value.status_code == 403
+
+
+# ¤adpa
+@pytest.fixture(autouse=True)
+def _validacion_normativa_validada(monkeypatch):
+    """BIB-403 R4: publicar exige validación normativa «validada»; estas pruebas no ejercen esa regla."""
+    from features.biblioteca.services import editorial as _editorial
+    monkeypatch.setattr(_editorial, "validacion_de_texto", lambda *a, **k: "validada")

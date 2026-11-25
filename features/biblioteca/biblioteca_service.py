@@ -170,6 +170,15 @@ __all__ += ["CrearVersionMd", "exigir_plantilla_cargable", "validar_plantilla_md
             "cargar_plantilla_md", "cargar_plantillas_pmv", "listar_publicadas", "verificar_plantillas_pmv"]
 # === fin BIB-109 ===
 
+# === BIB-403 ===
+from features.biblioteca.domain.plantillas_md import leer_metadatos, separar
+from features.biblioteca.domain.validacion import (
+    errores_ida, errores_secciones, errores_vuelta, extraer_citas, validacion_de_texto,
+)
+__all__ += ["leer_metadatos", "separar", "errores_ida", "errores_secciones", "errores_vuelta", "extraer_citas",
+            "validacion_de_texto"]
+# === fin BIB-403 ===
+
 # === BIB-201 ===
 from features.biblioteca.domain.esquemas import (
     AvisoActivo, Borrador, CampoContexto, EntradaBorrador, GuardarBorrador, avisos_activos, leer_plantilla,

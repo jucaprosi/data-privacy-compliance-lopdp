@@ -11,6 +11,8 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.plantillas_md import TOKEN, metadatos_de, separar
+from features.biblioteca.domain.validacion import validacion_de_texto
+from features.biblioteca.services.catalogo import leer_citas, huellas_por_url_fuente
 
 AVISO_VISTA_PREVIA = ("Vista previa demostrativa: los datos son de ejemplo y no pertenecen a ninguna organización. "
                       "El documento real se genera con «Usar en esta organización».")
@@ -143,7 +145,7 @@ async def obtener_ficha(session: AsyncSession, usuario_id: str, tenant_id: str, 
     return {
         "id": base["id"], "codigo": base["codigo"], "nombre": base.get("nombre") or meta["nombre"],
         "tipo": meta["tipo"], "fuente": fuente, "version": meta["version"] if fuente == "catalogo" else base["version"],
-        "formato": "MD", "ola": int(meta["ola"]), "validacion_legal": meta["validacion_legal"],
+        "formato": "MD", "ola": int(meta["ola"]), "validacion_legal": validacion_de_texto(texto, leer_citas(), await huellas_por_url_fuente()),
         "estado_editorial": "publicada" if fuente == "catalogo" else "mi_plantilla",
         "fecha_corte_normativo": str(meta["fecha_corte_normativo"]), "base_lopdp": meta["base_lopdp"],
         "revision_meses": int(meta["revision_meses"]), "ficha": ficha, "avisos": meta.get("avisos") or [],

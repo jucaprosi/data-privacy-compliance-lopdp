@@ -9,6 +9,7 @@ listas en línea y listas de objetos simples); se leen sin dependencias nuevas.
 import hashlib
 import re
 from app_core.errors import ErrorNegocio
+from features.biblioteca.domain.validacion import errores_informativas
 
 COMUNES = frozenset({
     "organizacion.razon_social", "organizacion.nombre_comercial", "organizacion.ruc", "organizacion.sector",
@@ -22,15 +23,14 @@ COMUNES = frozenset({
     "tratamiento.destinatarios",
 })
 OBLIGATORIOS = ("codigo", "nombre", "tipo", "ola", "sector", "naturaleza", "tamano_empresa", "version",
-                "base_lopdp", "validacion_legal", "fecha_corte_normativo", "variables_contexto", "revision_meses")
+                "base_lopdp", "fecha_corte_normativo", "variables_contexto", "revision_meses")
 TIPOS = frozenset({"politica", "aviso", "formulario", "acuerdo", "contrato", "registro", "procedimiento",
                    "protocolo", "modelo"})
 NATURALEZAS = frozenset({"publica", "privada", "ambas"})
-VALIDACIONES = frozenset({"pendiente", "en_revision", "validada", "con_observaciones"})
 TIPOS_CONTEXTO = frozenset({"texto", "si_no", "lista"})
 NIVELES_AVISO = frozenset({"info", "alto"})
 CONDICION_DPO = "dpo.designado"
-MARCAS_BORRADOR = ("<!-- VARIANTE", "POR VERIFICAR")
+MARCAS_BORRADOR = ("<!-- VARIANTE", "POR VERIFICAR", "PENDIENTE VALIDACIÓN")
 CODIGO = re.compile(r"^BIB-0[0-9]{2}$")
 SEMVER = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 FECHA = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
@@ -108,8 +108,8 @@ def _validar_metadatos(meta: dict, codigo_esperado: str) -> tuple[list[str], dic
         fallos.append(f"tipo no admitido: {meta['tipo']}")
     if "naturaleza" in meta and meta["naturaleza"] not in NATURALEZAS:
         fallos.append(f"naturaleza no admitida: {meta['naturaleza']}")
-    if "validacion_legal" in meta and meta["validacion_legal"] not in VALIDACIONES:
-        fallos.append(f"validacion_legal no admitida: {meta['validacion_legal']}")
+    if "validacion_legal" in meta:
+        fallos.append("validacion_legal no se declara en el archivo: se deriva de las citas verificadas (BIB-403 R3)")
     if "version" in meta and not (isinstance(meta["version"], str) and SEMVER.match(meta["version"])):
         fallos.append(f"version no es semver: {meta['version']}")
     if "fecha_corte_normativo" in meta and not FECHA.match(str(meta["fecha_corte_normativo"])):
@@ -194,6 +194,11 @@ def validar_plantilla_md(texto: str, codigo_esperado: str) -> list[str]:
         return [f"cabecera ilegible: {error}"]
     fallos, contexto = _validar_metadatos(meta, codigo_esperado)
     fallos += _validar_cuerpo(cuerpo, contexto)
+    informativas = meta.get("secciones_informativas", [])
+    if not isinstance(informativas, list) or any(not isinstance(i, dict) or not i.get("titulo") for i in informativas):
+        fallos.append("secciones_informativas no es una lista de títulos")
+    else:
+        fallos += errores_informativas(cuerpo, [i["titulo"] for i in informativas])
     if any(marca in texto for marca in MARCAS_BORRADOR):
         fallos.append("quedan marcas de borrador")
     return fallos
@@ -206,11 +211,7 @@ def metadatos_de(texto: str) -> dict:
 
 # ¤adpa
 def exigir_plantilla_cargable(texto: str, codigo_esperado: str) -> dict:
-    """Valida para carga: solo entra sin dictamen jurídico, nunca como «validada»."""
+    """Valida para carga. La validación legal no sale del archivo: se deriva de las citas (BIB-403)."""
     if validar_plantilla_md(texto, codigo_esperado):
         raise ErrorNegocio("BIB_ARCHIVO_INVALIDO")
-    meta = metadatos_de(texto)
-    # «validada» exige el dictamen de la revisión jurídica del flujo editorial; un archivo no lo acredita.
-    if meta["validacion_legal"] == "validada":
-        raise ErrorNegocio("BIB_ARCHIVO_INVALIDO")
-    return meta
+    return metadatos_de(texto)

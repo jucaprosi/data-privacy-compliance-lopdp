@@ -1,0 +1,110 @@
+{
+  "BIB-001": {
+    "dependencias": "Variables de contexto de la organización: Resumen de las medidas de seguridad que aplica la organización; Transferencias internacionales de datos (o «No se realizan»).",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "LOPDP (RO 5S 459, 26-05-2021; art. 43 reformado por la Ley Orgánica para el Fortalecimiento de la Ciberseguridad, RO 5S 290, 22-05-2026) arts. 7-26, 43, 46, 48, 55-60; RGLOPDP (Decreto Ejecutivo 904) arts. 5-9, 12-16, 19-20, 24-28, 53; Res. SPDP-SPD-2025-0028-R art. 10",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Política de protección de datos personales",
+    "objetivo": "Política de protección de datos personales: plantilla de tipo politica para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  },
+  "BIB-002": {
+    "dependencias": "Variables de contexto de la organización: Dónde se recogen los datos de clientes (tienda, web, WhatsApp, facturación…); Transferencias internacionales de datos (o «No se realizan»); Qué se hace con los datos (registrar, facturar, enviar, analizar compras…); Otras finalidades o usos posteriores (o «Ninguna»); Decisiones automatizadas o perfiles (o «No tomamos decisiones automatizadas»).",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "LOPDP (RO 5S 459, 26-05-2021) arts. 7, 8, 10, 12-23, 48, 55-60; RGLOPDP (Decreto Ejecutivo 904) arts. 6, 8, 9, 12, 16; Res. SPDP-SPD-2025-0028-R art. 10",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Aviso de privacidad para clientes",
+    "objetivo": "Aviso de privacidad para clientes: plantilla de tipo aviso para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  },
+  "BIB-003": {
+    "dependencias": "Variables de contexto de la organización: Finalidades que requieren consentimiento, una por línea (por ejemplo, envío de promociones); Cómo retirar el consentimiento, por un medio tan sencillo como el de recogida (correo, formulario, respuesta «BAJA»…).",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "LOPDP (RO 5S 459, 26-05-2021) arts. 8, 21; RGLOPDP (Decreto Ejecutivo 904) arts. 5, 6, 19, 20",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Formulario de consentimiento",
+    "objetivo": "Formulario de consentimiento: plantilla de tipo formulario para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  },
+  "BIB-004": {
+    "dependencias": "Variables de contexto de la organización: Nombres y apellidos de la persona que firma; Cargo o puesto; Datos personales a los que accede en su puesto (clientes, nómina, proveedores…).",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "LOPDP (RO 5S 459, 26-05-2021) art. 10 g, 43; RGLOPDP (Decreto Ejecutivo 904) art. 24; Res. SPDP-SPD-2025-0006-R (cláusulas, por analogía contractual)",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Acuerdo de confidencialidad para empleados",
+    "objetivo": "Acuerdo de confidencialidad para empleados: plantilla de tipo acuerdo para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  },
+  "BIB-005": {
+    "dependencias": "Variables de contexto de la organización: Razón social del encargado (proveedor que trata los datos); RUC del encargado; Representante del encargado que firma; Servicio que presta (contabilidad, nube, mensajería, nómina…); Naturaleza del tratamiento (qué operaciones hace con los datos: almacenar, consultar, procesar nómina…); Finalidad del tratamiento encargado; Categorías de datos personales a los que accede; Titulares de los datos (clientes, empleados, proveedores…); Duración del encargo; Plazo de conservación de los datos por el encargado; Subencargados autorizados (o «Ninguno»); Medio electrónico para avisar de vulneraciones (por defecto, el correo de privacidad del responsable).",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "LOPDP (RO 5S 459, 26-05-2021) arts. 34, 43, 55-60; RGLOPDP (Decreto Ejecutivo 904) arts. 27, 40-47; Res. SPDP-SPD-2025-0006-R arts. 1-4 y Anexo I (modelo responsable-encargado, referencial); Res. SPDP-SPD-2026-0040-R art. 11 (vigente desde su publicación en el Registro Oficial)",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Contrato de encargo de tratamiento",
+    "objetivo": "Contrato de encargo de tratamiento: plantilla de tipo contrato para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  },
+  "BIB-006": {
+    "dependencias": "Variables de contexto de la organización: Por qué la organización lleva el registro (100 o más trabajadores, tratamiento no ocasional, riesgo, categorías especiales o voluntario); Actividades de tratamiento (una ficha por actividad; en el PMV se generan desde el RAT de la plataforma, decisión D4).",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "RGLOPDP (Decreto Ejecutivo 904) arts. 38, 39, 44; LOPDP (RO 5S 459, 26-05-2021) arts. 7, 10 i, 55-60",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Registro de actividades de tratamiento simple",
+    "objetivo": "Registro de actividades de tratamiento simple: plantilla de tipo registro para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  },
+  "BIB-007": {
+    "dependencias": "Variables de contexto de la organización: Canales para presentar solicitudes (correo de privacidad, formulario web, oficina…); Cargo de la persona que atiende las solicitudes.",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "LOPDP (RO 5S 459, 26-05-2021) arts. 12-20, 24; RGLOPDP (Decreto Ejecutivo 904) arts. 12-16",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Procedimiento y formulario de solicitudes de titulares",
+    "objetivo": "Procedimiento y formulario de solicitudes de titulares: plantilla de tipo procedimiento para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  },
+  "BIB-008": {
+    "dependencias": "Variables de contexto de la organización: Cargo de la persona que firma las respuestas.",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "LOPDP (RO 5S 459, 26-05-2021) arts. 12-20, 24; RGLOPDP (Decreto Ejecutivo 904) arts. 12-16",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Modelos de respuesta a solicitudes",
+    "objetivo": "Modelos de respuesta a solicitudes: plantilla de tipo modelo para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  },
+  "BIB-009": {
+    "dependencias": "Variables de contexto de la organización: Cargo de la persona que coordina la respuesta a vulneraciones; Organismo de regulación y control competente para el sector de la organización; CSIRT correspondiente y su contacto; Canal habitual de comunicación con los titulares (correo, web, WhatsApp…).",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "LOPDP (RO 5S 459, 26-05-2021) art. 43 (reformado por la Ley Orgánica para el Fortalecimiento de la Ciberseguridad, RO 5S 290, 22-05-2026) y art. 46; RGLOPDP (Decreto Ejecutivo 904) arts. 24-28; Res. SPDP-SPD-2026-0040-R (norma técnica de notificaciones; vigente desde su publicación en el Registro Oficial)",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Protocolo de vulneraciones de seguridad y formato de registro",
+    "objetivo": "Protocolo de vulneraciones de seguridad y formato de registro: plantilla de tipo protocolo para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  },
+  "BIB-010": {
+    "dependencias": "Variables de contexto de la organización: Datos que se piden a los candidatos (hoja de vida, referencias…); Cuánto se guardan las hojas de vida de candidatos no seleccionados; Datos que se tratan de los empleados (identificación, contacto, cuenta bancaria, nómina, seguridad social…); A quién se comunican los datos laborales (IESS, SRI, Ministerio del Trabajo, banco, contador externo…); Controles en el trabajo (control de asistencia, videovigilancia, monitoreo de equipos) o «Ninguno».",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "LOPDP (RO 5S 459, 26-05-2021) arts. 7, 8, 10, 12-23, 26, 48; RGLOPDP (Decreto Ejecutivo 904) arts. 8, 9, 16; Res. SPDP-SPD-2025-0041-R (interés legítimo) arts. 4, 5, 15, 16; Res. SPDP-SPD-2025-0028-R art. 10",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Aviso de privacidad para empleados y candidatos",
+    "objetivo": "Aviso de privacidad para empleados y candidatos: plantilla de tipo aviso para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  },
+  "BIB-011": {
+    "dependencias": "Variables de contexto de la organización: ¿Las cámaras graban de forma continua zonas abiertas al público (entrada, local, acera)?; Zonas con cámaras (entrada, caja, bodega, parqueadero…); Necesidad concreta que justifica las cámaras (prevención de robos, control de accesos…); Cuántos días se guardan las grabaciones; Quién puede ver las grabaciones (cargo o empresa de seguridad).",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "LOPDP (RO 5S 459, 26-05-2021) arts. 7.8, 10, 12-20; RGLOPDP (Decreto Ejecutivo 904) arts. 8, 9, 16, 31; Res. SPDP-SPD-2025-0041-R (interés legítimo) arts. 4, 5, 15, 16; Res. SPDP-SPD-2026-0005-R (gran escala) arts. 12, 14.3, 15-18 (vigente desde su publicación en el Registro Oficial)",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Aviso de videovigilancia",
+    "objetivo": "Aviso de videovigilancia: plantilla de tipo aviso para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  },
+  "BIB-012": {
+    "dependencias": "Variables de contexto de la organización: Formularios de la web y para qué sirve cada uno (contacto, cotización, registro, boletín…); Cookies y herramientas que usa la web (solo técnicas, analítica, publicidad…) y sus proveedores; Proveedores que tratan datos de la web (hosting, correo, CRM, analítica) y su país.",
+    "fecha_revision": "2026-10-27",
+    "fuentes": "LOPDP (RO 5S 459, 26-05-2021) arts. 7, 8, 12-20, 21, 55-60; RGLOPDP (Decreto Ejecutivo 904) arts. 5, 6, 8, 9, 16, 19; Res. SPDP-SPD-2025-0041-R (interés legítimo) arts. 4.4, 11, 17; Res. SPDP-SPD-2025-0006-R (cláusulas, Anexo I referencial); Res. SPDP-SPDP-2024-0019-R (política de la SPDP, solo como modelo)",
+    "instrucciones": "Completa las variables de contexto indicadas en el formulario, revisa cada sección con tu situación real y conserva las citas normativas. No uses el documento si alguna variable obligatoria queda sin completar.",
+    "nombre": "Aviso de privacidad web y cláusula de formularios",
+    "objetivo": "Aviso de privacidad web y cláusula de formularios: plantilla de tipo aviso para organizaciones privadas de tamaño micro y pequeño, lista para completar con los datos de la organización.",
+    "restricciones": "La validación normativa acredita que la norma citada existe y dice lo citado en la versión leída; no acredita que la cláusula aplique bien la norma a la organización ni que la plantilla esté completa."
+  }
+}
