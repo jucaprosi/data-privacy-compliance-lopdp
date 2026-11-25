@@ -3,10 +3,10 @@ id = "NORM-07"
 titulo = "Fecha de vigencia opcional al revisar una resolución, y la revisión dispara la propuesta de la IA"
 ola = "D"
 estado = "pendiente"
-tanda = 109
+tanda = 110
 sala = "inteligencia_normativa"
-depende_de = ["BIB-406"]
-propiedad = ["alembic/versions/20261125_norm07_fecha_vigencia.py", "features/inteligencia_normativa/services/revision.py", "features/inteligencia_normativa/inteligencia_normativa_service.py", "api/routers/inteligencia_normativa.py", "app_core/pasillo/inteligencia_normativa.py", "frontend/src/components/normativa/PanelResolucion.tsx", "frontend/src/components/normativa/cliente.ts", "tests/test_norm05_privilegios_backend.py", "tests/test_norm07_fecha_vigencia.py"]
+depende_de = ["BIB-406", "BIB-407"]
+propiedad = ["alembic/versions/20261125_norm07_fecha_vigencia.py", "features/biblioteca/services/comparacion_versiones.py", "tests/test_bib407_comparacion.py", "features/inteligencia_normativa/services/revision.py", "features/inteligencia_normativa/inteligencia_normativa_service.py", "api/routers/inteligencia_normativa.py", "app_core/pasillo/inteligencia_normativa.py", "frontend/src/components/normativa/PanelResolucion.tsx", "frontend/src/components/normativa/cliente.ts", "tests/test_norm05_privilegios_backend.py", "tests/test_norm07_fecha_vigencia.py"]
 crea = ["alembic/versions/20261125_norm07_fecha_vigencia.py", "tests/test_norm07_fecha_vigencia.py"]
 arbitro = "pytest tests/test_norm07_fecha_vigencia.py tests/test_norm05_privilegios_backend.py tests/test_alembic_cabeza_por_sala.py tests/test_adpa_bulkhead.py; mutaciones m1 a m5."
 rastros = ["¤monitoreo-job", "¤arbitro"]
@@ -25,5 +25,6 @@ rastros = ["¤monitoreo-job", "¤arbitro"]
 - Prueba exógena con mutaciones.
 
 ## Límites
+- En `features/biblioteca/services/comparacion_versiones.py` (BIB-407) solo cambia la llamada de la vigencia (l. ~31), que pasa a `fecha_vigencia_por_url`, y en `tests/test_bib407_comparacion.py` solo la prueba de la vigencia. Entra en el mismo PR que la función, para que `main` nunca llame con una URL a una función que espera un uuid.
 - En `test_norm05_privilegios_backend.py` (NORM-05, hecha) solo cambia la lista de columnas con UPDATE, que gana `fecha_vigencia`; el resto de los privilegios no cambia.
 - En `inteligencia_normativa_service.py` solo cambia `revisar_estado`.
