@@ -2,7 +2,7 @@
 id = "GEN-06"
 titulo = "Alembic sin marca: archivo y revisión 20261031_diag_escala_madurez, con su descendiente y un docstring"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 tanda = 101
 sala = "diagnostico"
 depende_de = ["GEN-02", "DIAG-08", "DPO-02", "BIB-103"]
