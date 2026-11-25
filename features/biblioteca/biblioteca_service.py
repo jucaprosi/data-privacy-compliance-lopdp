@@ -411,3 +411,16 @@ __all__ += ["CapacidadAsignada", "conceder_capacidad", "listar_capacidades", "re
 from features.biblioteca.services.autorizacion import capacidades as capacidades_propias
 __all__ += ["capacidades_propias"]
 # === fin BIB-118 ===
+
+# === BIB-406 ===
+from features.biblioteca.domain.propuestas_ia import (
+    Descarte, PedirPropuesta, ResultadoPropuesta, VersionMaestraIA, VistaEditorialIA,
+)
+from features.biblioteca.services.editorial import descartar, leer_version
+from features.biblioteca.services.propuestas_ia import proponer, proponer_por_resolucion
+# La lectura editorial devuelve también el origen de cada versión (persona o IA) y quién la pidió.
+VersionMaestra = VersionMaestraIA
+VistaEditorial = VistaEditorialIA
+__all__ += ["Descarte", "PedirPropuesta", "ResultadoPropuesta", "VersionMaestraIA", "VistaEditorialIA",
+            "descartar", "leer_version", "proponer", "proponer_por_resolucion"]
+# === fin BIB-406 ===

@@ -17,6 +17,17 @@ from features.biblioteca.services.autorizacion import autorizar
 from features.biblioteca.services.catalogo import leer_citas, huellas_por_url_fuente
 
 COLUMNAS = "id, codigo, version, formato, ficha, responsable_id, autores, estado, generacion, nombre_archivo, sha256, sustituye_id, creada_en"
+# BIB-406: la lectura devuelve también el origen de la versión (persona o IA) y el nombre de quien la pidió.
+_LEER_VERSION = (
+    "SELECT v.id, v.codigo, v.version, v.formato, v.ficha, v.responsable_id, v.autores, v.estado, v.generacion, v.nombre_archivo, v."
+    "sha256, v.sustituye_id, v.creada_en, v.redactada_por, v.modelo_ia, v.origen_ia, v.id_resolucion, v.motivo_ia, v.cambios_ia, v.nota_descarte, v.descartada_por, v.descartada_en, u.nombre AS solicitante_nombre "
+    "FROM biblioteca_versiones v LEFT JOIN users u ON u.id=v.responsable_id WHERE v.id=:id"
+)
+_LISTAR_VERSIONES = (
+    "SELECT v.id, v.codigo, v.version, v.formato, v.ficha, v.responsable_id, v.autores, v.estado, v.generacion, v.nombre_archivo, v."
+    "sha256, v.sustituye_id, v.creada_en, v.redactada_por, v.modelo_ia, v.origen_ia, v.id_resolucion, v.motivo_ia, v.cambios_ia, v.nota_descarte, v.descartada_por, v.descartada_en, u.nombre AS solicitante_nombre "
+    "FROM biblioteca_versiones v LEFT JOIN users u ON u.id=v.responsable_id ORDER BY v.creada_en DESC LIMIT 200"
+)
 
 
 # ¤adpa
@@ -50,11 +61,18 @@ async def _publicada_vigente(session: AsyncSession, codigo: str, excluir: str | 
 
 
 # ¤adpa
+async def leer_version(session: AsyncSession, identificador: str) -> dict:
+    """BIB-406: la versión con su origen y el nombre de quien la pidió, como la devuelve la lectura."""
+    fila = (await session.execute(text(_LEER_VERSION), {"id": identificador})).mappings().first()
+    if not fila:
+        raise ErrorNegocio("BIB_NO_ENCONTRADA")
+    return dict(fila)
+
+
+# ¤adpa
 async def listar(session: AsyncSession, actor: str) -> dict:
     permisos = await autorizar(session, actor)
-    versiones = (await session.execute(text(
-        f"SELECT {COLUMNAS} FROM biblioteca_versiones ORDER BY creada_en DESC LIMIT 200"
-    ))).mappings().all()
+    versiones = (await session.execute(text(_LISTAR_VERSIONES))).mappings().all()
     revisiones = (await session.execute(text(
         "SELECT version_id, generacion, tipo, aprobado, revisor_id, comentario, creada_en "
         "FROM biblioteca_revisiones ORDER BY creada_en"
@@ -94,8 +112,18 @@ def _editable(version: dict) -> None:
 
 
 # ¤adpa
+async def _exigir_de_personas(session: AsyncSession, identificador: str) -> None:
+    """BIB-406 R5b: una versión de la IA no se edita (ni cuerpo, ni ficha, ni autores)."""
+    origen = (await session.execute(text(
+        "SELECT redactada_por FROM biblioteca_versiones WHERE id=:id"), {"id": identificador})).scalar()
+    if origen == "ia":
+        raise ErrorNegocio("BIB_VERSION_IA_NO_EDITABLE")
+
+
+# ¤adpa
 async def editar(session: AsyncSession, actor: str, identificador: str, entrada: EditarFicha) -> dict:
     await autorizar(session, actor, Capacidad.EDITOR)
+    await _exigir_de_personas(session, identificador)
     version = await _version(session, identificador, entrada.generacion)
     _editable(version)
     await session.execute(text(
@@ -109,6 +137,7 @@ async def editar(session: AsyncSession, actor: str, identificador: str, entrada:
 # ¤adpa
 async def cargar(session: AsyncSession, actor: str, identificador: str, entrada: ArchivoMaestro) -> dict:
     await autorizar(session, actor, Capacidad.EDITOR)
+    await _exigir_de_personas(session, identificador)
     version = await _version(session, identificador, entrada.generacion)
     _editable(version)
     datos, checksum = validar_archivo(entrada, version["formato"])
@@ -178,6 +207,23 @@ async def retirar(session: AsyncSession, actor: str, identificador: str, entrada
         "UPDATE biblioteca_versiones SET estado='retirada',motivo=:motivo WHERE id=:id"
     ), {"id": identificador, "motivo": entrada.motivo})
     return await _version(session, identificador)
+
+
+# ¤adpa
+async def descartar(session: AsyncSession, actor: str, identificador: str, nota: str, generacion: int) -> dict:
+    """BIB-406 R5: la versión en revisión pasa a `retirada` con una nota obligatoria y queda en el historial."""
+    permisos = await autorizar(session, actor)
+    if not {Capacidad.EDITOR.value, Capacidad.TECNICO.value, Capacidad.PUBLICADOR.value} & set(permisos):
+        raise ErrorNegocio("BIB_SIN_CAPACIDAD")
+    if not nota.strip():
+        raise ErrorNegocio("BIB_NOTA_DESCARTE_REQUERIDA")
+    version = await _version(session, identificador, generacion)
+    _editable(version)
+    await session.execute(text(
+        "UPDATE biblioteca_versiones SET estado='retirada', motivo=:nota, nota_descarte=:nota, "
+        "descartada_por=:actor, descartada_en=now() WHERE id=:id"
+    ), {"id": identificador, "nota": nota, "actor": actor})
+    return await leer_version(session, identificador)
 
 
 # ¤adpa

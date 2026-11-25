@@ -41,6 +41,7 @@ __all__ = [
     "registrar_traza",
     "TrazaTranscripcion",
     "transcribir_pdf",
+    "generar_trazado_sin_tope",
     "vectorizar",
     "crear_cache_contenido",
     "inyectar_cliente_de_prueba",
@@ -270,6 +271,45 @@ async def transcribir_pdf(pdf: bytes, prompt: PromptVersionado, *, modelo: str) 
         logger.warning("Vertex no devolvió la versión del modelo")
         raise InferenciaNoDisponible()
     return texto.strip(), TrazaTranscripcion(version.strip(), modelo, prompt.id, prompt.version)
+
+
+# BIB-406 R2c · Generación trazada para el catálogo común de la plataforma (plantillas, sin datos personales).
+# Mismo patrón que `transcribir_pdf`: no consume el tope de ninguna organización (IA-12 R3, NORM-06 R2).
+async def generar_trazado_sin_tope(
+    prompt: PromptVersionado, valores: dict, esquema: type[BaseModel], *, modelo: str
+) -> tuple[BaseModel, TrazaTranscripcion]:
+    """Resultado validado y su traza. Falla cerrada: modelo no permitido, respuesta inválida o sin `model_version`."""
+    if modelo not in MODELOS_PERMITIDOS:
+        raise InferenciaNoDisponible()
+    sistema_seguro = sanitizar_texto_pii(prompt.sistema)
+    usuario_seguro = sanitizar_texto_pii(prompt.renderizar(valores))
+    try:
+        cliente = _obtener_cliente()
+        ultimo: Exception | None = None
+        for _ in range(2):  # un reintento como máximo
+            try:
+                respuesta = await cliente_vertex.generar_json(
+                    cliente, modelo, sistema_seguro, usuario_seguro, esquema
+                )
+                texto = getattr(respuesta, "text", None)
+                if not texto:
+                    raise ValueError("respuesta vacía")
+                resultado = esquema.model_validate_json(texto)
+                break
+            except Exception as exc:  # noqa: BLE001
+                ultimo = exc
+        else:
+            raise ultimo  # type: ignore[misc]
+    except InferenciaNoDisponible:
+        raise
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Fallo de inferencia Vertex: %s", type(exc).__name__)
+        raise InferenciaNoDisponible() from exc
+    version = getattr(respuesta, "model_version", None)
+    if not isinstance(version, str) or not version.strip():
+        logger.warning("Vertex no devolvió la versión del modelo")
+        raise InferenciaNoDisponible()
+    return resultado, TrazaTranscripcion(version.strip(), modelo, prompt.id, prompt.version)
 
 
 # IA-12 · Vectores y caché de contexto. R3: corpus normativo común sin datos personales, no consume tope.

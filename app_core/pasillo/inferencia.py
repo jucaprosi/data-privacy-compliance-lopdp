@@ -71,3 +71,10 @@ async def transcribir_pdf(pdf, prompt, *, modelo):
     from features.inferencia import inferencia_service
 
     return await inferencia_service.transcribir_pdf(pdf, prompt, modelo=modelo)
+
+
+async def generar_trazado_sin_tope(prompt, valores, esquema, *, modelo):
+    """BIB-406 R2c: generación trazada del catálogo común de la plataforma; no consume tope."""
+    from features.inferencia import inferencia_service
+
+    return await inferencia_service.generar_trazado_sin_tope(prompt, valores, esquema, modelo=modelo)

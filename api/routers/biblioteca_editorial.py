@@ -61,3 +61,18 @@ async def retirar(identificador: str, entrada: biblioteca.Transicion, session: S
 @router.get("/versiones/{identificador}/historial", response_model=list[biblioteca.EventoEditorial])
 async def historial(identificador: str, session: Sesion, actor: Actor):
     return await biblioteca.historial(session, actor, identificador)
+
+
+# === BIB-406 ===
+# ¤adpa
+@router.post("/propuestas", status_code=202, response_model=biblioteca.ResultadoPropuesta)
+async def proponer(entrada: biblioteca.PedirPropuesta, session: Sesion, actor: Actor):
+    """El botón «Proponer cambio»: versión en revisión, «sin cambios» o «ya hay una propuesta en revisión»."""
+    return await biblioteca.proponer(session, actor, entrada.codigo, entrada.motivo)
+
+
+# ¤adpa
+@router.post("/versiones/{identificador}/descartar", response_model=biblioteca.VersionMaestra)
+async def descartar(identificador: str, entrada: biblioteca.Descarte, session: Sesion, actor: Actor):
+    return await biblioteca.descartar(session, actor, identificador, entrada.nota, entrada.generacion)
+# === fin BIB-406 ===
