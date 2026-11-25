@@ -424,3 +424,9 @@ VistaEditorial = VistaEditorialIA
 __all__ += ["Descarte", "PedirPropuesta", "ResultadoPropuesta", "VersionMaestraIA", "VistaEditorialIA",
             "descartar", "leer_version", "proponer", "proponer_por_resolucion"]
 # === fin BIB-406 ===
+
+# === BIB-407 ===
+from features.biblioteca.domain.comparacion import Comparacion
+from features.biblioteca.services.comparacion_versiones import comparar_version
+__all__ += ["Comparacion", "comparar_version"]
+# === fin BIB-407 ===
