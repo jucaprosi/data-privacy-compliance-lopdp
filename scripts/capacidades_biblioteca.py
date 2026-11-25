@@ -11,7 +11,7 @@ Lo ejecuta una persona, nunca la IA, con la credencial del DUEÑO de la base de 
 
 Guardas, todas antes de abrir conexión (código 2):
   - BIB_CAPACIDADES_DATABASE_URL obligatoria;
-  - --entorno local|pruebas|produccion (local por defecto) y --confirmar-entorno;
+  - --entorno local|pruebas|produccion|demo (local por defecto) y --confirmar-entorno;
   - la URL debe corresponder al entorno pedido (`--entorno produccion` con una URL local es código 2).
   `--confirmar-rama-desarrollo` sigue aceptándose como alias de --confirmar-entorno.
 No imprime la URL. No hay opción de baja: revocar es un UPDATE.
@@ -29,19 +29,25 @@ sys.path.insert(0, str(RAIZ))
 VARIABLE_URL = "BIB_CAPACIDADES_DATABASE_URL"
 # Instancia y base de producción de Google Cloud (EVYDENTIA): una URL que las nombre nunca se usa.
 HUELLAS_CLOUD_SQL_PRODUCCION = ("evydentia-production", "evydentia_prod")
+HUELLAS_DEMO = ("evydentia-demo-db", "evydentia_demo")  # instancia y base de la demo (BIB-409 R1, como DEMO-12 R1)
 
 
-ENTORNOS = ("local", "pruebas", "produccion")
+ENTORNOS = ("local", "pruebas", "produccion", "demo")
 
 
 # ¤adpa
 def entorno_de_url(url: str) -> str | None:
-    """Entorno que nombra la URL (sin abrir conexión): local, produccion, pruebas o `None` si no se reconoce."""
+    """Entorno que nombra la URL (sin abrir conexión): demo, local, produccion, pruebas o `None` si no se reconoce.
+
+    La demo se reconoce antes que las demás reglas: su base por proxy local no debe pasar por «local».
+    """
     from app_core.huellas_produccion import apunta_a_produccion, es_base_local
 
+    minusculas = url.lower()
+    if any(h in minusculas for h in HUELLAS_DEMO):
+        return "demo"
     if es_base_local(url):
         return "local"
-    minusculas = url.lower()
     if apunta_a_produccion(url) or any(h in minusculas for h in HUELLAS_CLOUD_SQL_PRODUCCION):
         return "produccion"
     return "pruebas" if "pruebas" in minusculas else None
