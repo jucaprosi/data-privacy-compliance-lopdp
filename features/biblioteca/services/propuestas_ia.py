@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.editorial import Capacidad
 from features.biblioteca.domain.propuestas_ia import (
-    AUTORES_IA, CREADA, LIMITE_DE_USO, ORIGEN_PETICION, ORIGEN_RESOLUCION, SIN_CAMBIOS, SalidaPropuestaIA,
+    AUTORES_IA, CREADA, EN_REVISION, LIMITE_DE_USO, ORIGEN_PETICION, ORIGEN_RESOLUCION, SIN_CAMBIOS, SalidaPropuestaIA,
     aplicar_cambios, con_version, debe_proponer, plantillas_afectadas, version_siguiente,
 )
 from features.biblioteca.services.autorizacion import capacidades
@@ -96,6 +96,14 @@ async def _publicada(session: AsyncSession, codigo: str) -> dict | None:
 
 
 # ¤adpa
+async def hay_propuesta_en_revision(session: AsyncSession, codigo: str) -> bool:
+    """Límite de gasto de la sala: una sola versión de la IA «en_revision» por plantilla."""
+    return bool((await session.execute(text(
+        "SELECT 1 FROM biblioteca_versiones WHERE codigo=:codigo AND redactada_por='ia' AND estado='en_revision'"
+    ), {"codigo": codigo})).scalar())
+
+
+# ¤adpa
 async def _registrar_traza(session: AsyncSession, traza, version_id: str) -> None:
     if traza is None:
         return
@@ -112,6 +120,8 @@ async def _proponer_para(session: AsyncSession, actor: str, codigo: str, motivo:
     publicada = await _publicada(session, codigo)
     if publicada is None or not publicada["cuerpo_md"]:
         raise ErrorNegocio("BIB_SIN_PUBLICADA")
+    if await hay_propuesta_en_revision(session, codigo):
+        raise ErrorNegocio("BIB_PROPUESTA_EN_REVISION")
     citas = leer_citas() or {}
     claves = sorted(c for c in citas.get("plantillas", {}).get(codigo, [])
                     if citas.get("estados", {}).get(c) == "verificada")
@@ -154,6 +164,8 @@ async def proponer(session: AsyncSession, actor: str, codigo: str, motivo: str, 
     try:
         version = await _proponer_para(session, actor, codigo, motivo, ORIGEN_PETICION, None, org_id)
     except ErrorNegocio as exc:
+        if exc.code == "BIB_PROPUESTA_EN_REVISION":
+            return {"resultado": EN_REVISION, "versiones": []}
         if exc.status_code == 429:
             return {"resultado": LIMITE_DE_USO, "versiones": []}
         raise
@@ -178,6 +190,8 @@ async def proponer_por_resolucion(session: AsyncSession, id_resolucion: str, est
         try:
             version = await _proponer_para(session, actor, codigo, motivo, ORIGEN_RESOLUCION, id_resolucion, org_id)
         except ErrorNegocio as exc:
+            if exc.code == "BIB_PROPUESTA_EN_REVISION":
+                continue
             if exc.status_code == 429:
                 return {"resultado": LIMITE_DE_USO, "versiones": versiones}
             raise

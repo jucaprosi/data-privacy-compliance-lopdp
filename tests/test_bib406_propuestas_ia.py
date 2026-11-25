@@ -85,6 +85,10 @@ def guardia_disparo(debe) -> list[str]:
         fallos.append("«reformada» o «derogada» no proponen")
     if debe("observada", "vigente"):
         fallos.append("«observada» propone")
+    if any(debe(e, e) for e in ("vigente", "observada", "reformada", "derogada")):
+        fallos.append("reconfirmar el mismo estado propone")
+    if not (debe("reformada", None) and debe("vigente", "reformada")):
+        fallos.append("un cambio a estado distinto no propone")
     return fallos
 
 
@@ -131,6 +135,32 @@ def test_r1_disparo_por_estado():
 def test_m7_proponer_en_la_primera_revision_da_rojo():
     assert "la primera revisión «vigente» propone" in guardia_disparo(
         lambda estado, anterior: estado in ("vigente", "reformada", "derogada"))
+
+
+def test_m8_proponer_al_reconfirmar_el_mismo_estado_da_rojo():
+    assert "reconfirmar el mismo estado propone" in guardia_disparo(
+        lambda estado, anterior: estado in ("reformada", "derogada")
+        or (estado == "vigente" and anterior is not None))
+
+
+@pytest.mark.asyncio
+async def test_una_sola_propuesta_de_la_ia_en_revision_por_plantilla(servicio):
+    def responder(sql, parametros):
+        return _Resultado(1 if "redactada_por='ia' AND estado='en_revision'" in sql else None)
+    sesion = SesionSimulada(responder)
+    resultado = await servicio.proponer(sesion, "persona-1", "BIB-003", "Otra", "org-1")
+    assert resultado["resultado"] == "propuesta_en_revision"
+    assert not any(s.startswith("INSERT INTO biblioteca_versiones") for s, _ in sesion.sentencias)
+
+
+@pytest.mark.asyncio
+async def test_m9_crear_otra_propuesta_con_una_en_revision_da_rojo(servicio, monkeypatch):
+    async def nunca(session, codigo):
+        return False
+    monkeypatch.setattr(servicio, "hay_propuesta_en_revision", nunca)
+    sesion = SesionSimulada(lambda sql, p: _Resultado(1 if "en_revision" in sql else None))
+    resultado = await servicio.proponer(sesion, "persona-1", "BIB-003", "Otra", "org-1")
+    assert resultado["resultado"] == "creada"  # sin la regla, entra una segunda propuesta: la regla es la que la para
 
 
 def test_disparador_parte_de_bib403_con_los_cambios_de_bib406():

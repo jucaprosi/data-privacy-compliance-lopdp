@@ -19,7 +19,7 @@ AUTOR_IA = "ia"
 AUTORES_IA = [AUTOR_IA]
 ORIGEN_RESOLUCION, ORIGEN_PETICION = "resolucion", "peticion"
 ESTADOS_QUE_PROPONEN = frozenset({"reformada", "derogada"})
-SIN_CAMBIOS, CREADA, LIMITE_DE_USO = "sin_cambios", "creada", "limite_de_uso"
+SIN_CAMBIOS, CREADA, LIMITE_DE_USO, EN_REVISION = "sin_cambios", "creada", "limite_de_uso", "propuesta_en_revision"
 
 # === BIB-406 ===
 registrar(
@@ -28,6 +28,7 @@ registrar(
     CodigoErrorNegocio("BIB_NOTA_DESCARTE_REQUERIDA", 422, "Para descartar una versión escribe una nota."),
     CodigoErrorNegocio("BIB_PROPUESTA_NO_DISPONIBLE", 503,
                        "Las propuestas de la IA no están disponibles en este entorno."),
+    CodigoErrorNegocio("BIB_PROPUESTA_EN_REVISION", 409, "Ya hay una propuesta en revisión para esta plantilla."),
     CodigoErrorNegocio("BIB_SIN_PUBLICADA", 409, "La plantilla no tiene una versión publicada de la que partir."),
 )
 # === fin BIB-406 ===
@@ -81,16 +82,22 @@ class VistaEditorialIA(VistaEditorialMd):
 
 # ¤adpa
 class ResultadoPropuesta(Contrato):
-    resultado: Literal["creada", "sin_cambios", "limite_de_uso"]
+    resultado: Literal["creada", "sin_cambios", "limite_de_uso", "propuesta_en_revision"]
     versiones: list[VersionMaestraIA] = Field(default_factory=list)
 
 
 # ¤adpa
 def debe_proponer(estado: str, estado_anterior: str | None) -> bool:
-    """R1: `reformada` o `derogada` proponen; `vigente`, solo si la resolución ya tenía otro estado antes."""
+    """R1: el estado anterior lo pasa quien llama (NORM-07); la biblioteca no lee el historial normativo.
+
+    Reconfirmar el mismo estado no propone; la primera revisión solo propone si es `reformada` o `derogada`;
+    `vigente` propone desde un estado distinto.
+    """
+    if estado == estado_anterior:
+        return False
     if estado in ESTADOS_QUE_PROPONEN:
         return True
-    return estado == "vigente" and estado_anterior is not None and estado_anterior != "vigente"
+    return estado == "vigente" and estado_anterior is not None
 
 
 # ¤adpa
