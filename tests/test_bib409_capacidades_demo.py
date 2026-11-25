@@ -96,3 +96,12 @@ def test_la_guia_dice_quien_aprueba():
     bloque = _bloque_demo()
     assert "BIB-406 R4" in bloque and "una sola persona de las tres" in bloque
     assert "BIB-403 R4" in bloque and "distinta de quien la cargó" in bloque
+
+
+def test_la_guia_no_deja_variables_de_entorno_puestas():
+    import re
+    bloque = _bloque_demo()
+    puestas = set(re.findall(r"\$env:(\w+)\s*=", bloque))
+    quitadas = set(re.findall(r"Remove-Item Env:(\w+)", bloque))
+    assert {"APP_ENV", "MIGRATION_DATABASE_URL", "BIB109_DATABASE_URL", "BIB_CAPACIDADES_DATABASE_URL"} <= puestas
+    assert puestas <= quitadas

@@ -382,6 +382,7 @@ La demo (proyecto `evydentia-demo`, base `evydentia_demo` en `evydentia-demo-db`
    $env:MIGRATION_DATABASE_URL = "<URL local de evydentia_demo>"
    python scripts/demo/sembrar_plantilla.py
    Remove-Item Env:MIGRATION_DATABASE_URL
+   Remove-Item Env:APP_ENV
    ```
 
 En la demo, cada DOCX y XLSX generado lleva en el pie «Demostración · datos ficticios»; fuera de ella la salida no cambia. La descarga de archivos maestros entrega la plantilla del catálogo, sin datos de la organización, y no cambia.
