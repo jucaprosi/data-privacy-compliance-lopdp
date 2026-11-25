@@ -148,7 +148,7 @@ async def test_una_sola_propuesta_de_la_ia_en_revision_por_plantilla(servicio):
     def responder(sql, parametros):
         return _Resultado(1 if "redactada_por='ia' AND estado='en_revision'" in sql else None)
     sesion = SesionSimulada(responder)
-    resultado = await servicio.proponer(sesion, "persona-1", "BIB-003", "Otra", "org-1")
+    resultado = await servicio.proponer(sesion, "persona-1", "BIB-003", "Otra")
     assert resultado["resultado"] == "propuesta_en_revision"
     assert not any(s.startswith("INSERT INTO biblioteca_versiones") for s, _ in sesion.sentencias)
 
@@ -159,7 +159,7 @@ async def test_m10_crear_la_segunda_propuesta_da_rojo(servicio, monkeypatch):
         return False
     monkeypatch.setattr(servicio, "hay_propuesta_en_revision", nunca)
     sesion = SesionSimulada(lambda sql, p: _Resultado(1 if "en_revision" in sql else None))
-    resultado = await servicio.proponer(sesion, "persona-1", "BIB-003", "Otra", "org-1")
+    resultado = await servicio.proponer(sesion, "persona-1", "BIB-003", "Otra")
     assert resultado["resultado"] == "creada"  # sin la regla, entra una segunda propuesta: la regla es la que la para
 
 
@@ -274,7 +274,7 @@ def guardia_autoria(insercion: dict, actor: str) -> list[str]:
 @pytest.mark.asyncio
 async def test_r3_la_ia_es_la_autora_y_quien_dispara_no(servicio):
     sesion = SesionSimulada()
-    resultado = await servicio.proponer(sesion, "persona-1", "BIB-003", "Actualizar la cita", "org-1")
+    resultado = await servicio.proponer(sesion, "persona-1", "BIB-003", "Actualizar la cita")
     assert resultado["resultado"] == "creada"
     insercion = sesion.insercion()
     assert guardia_autoria(insercion, "persona-1") == []
@@ -295,16 +295,58 @@ async def test_r2_sin_cambios_no_se_crea_version(servicio):
         return SalidaPropuestaIA(cambios=[]), None, "modelo-x"
     servicio.inyectar_redactor_de_prueba(nada)
     sesion = SesionSimulada()
-    assert (await servicio.proponer(sesion, "persona-1", "BIB-003", "Nada", "org-1"))["resultado"] == "sin_cambios"
+    assert (await servicio.proponer(sesion, "persona-1", "BIB-003", "Nada"))["resultado"] == "sin_cambios"
     assert not any(s.startswith("INSERT INTO biblioteca_versiones") for s, _ in sesion.sentencias)
 
 
+async def guardia_sin_tope(redactar, monkeypatch) -> list[str]:
+    """R2c: la redacción va por la generación sin tope y el tope de la organización no cambia."""
+    from types import SimpleNamespace
+    from app_core.pasillo import inferencia as pasillo_inferencia
+    from features.inferencia import inferencia_service
+
+    consumos = []
+
+    async def consumir(org_id):
+        consumos.append(org_id)
+
+    async def generar_json(cliente, modelo, sistema, usuario, esquema):
+        return SimpleNamespace(text='{"cambios": []}', model_version="gemini-prueba-001")
+
+    monkeypatch.setattr(inferencia_service.cliente_vertex, "generar_json", generar_json)
+    monkeypatch.setattr(inferencia_service, "_region_valida", lambda: ("us-central1", "us-central1"))
+    monkeypatch.setattr(pasillo_inferencia, "estado", lambda: SimpleNamespace(disponible=True))
+    inferencia_service.inyectar_cliente_de_prueba(object())
+    inferencia_service.inyectar_consumidor_de_prueba(consumir)
+    try:
+        salida, traza, modelo = await redactar({"codigo": "BIB-003", "version": "0.1.0", "motivo": "m",
+                                                 "claves": "", "cuerpo": "x"})
+    finally:
+        inferencia_service.inyectar_cliente_de_prueba(None)
+        inferencia_service.inyectar_consumidor_de_prueba(None)
+    fallos = ["consume el tope de una organización"] if consumos else []
+    if modelo != "gemini-prueba-001" or traza is None:
+        fallos.append("no guarda el modelo y la traza")
+    return fallos
+
+
 @pytest.mark.asyncio
-async def test_r1_limite_de_uso(servicio):
-    async def tope(valores):
-        raise ErrorNegocio("IA_TOPE_ORGANIZACION", status_code=429)
-    servicio.inyectar_redactor_de_prueba(tope)
-    assert (await servicio.proponer(SesionSimulada(), "p", "BIB-003", "x", "org-1"))["resultado"] == "limite_de_uso"
+async def test_r2c_la_propuesta_no_consume_tope(monkeypatch):
+    from features.biblioteca.services import propuestas_ia as svc
+    svc.inyectar_redactor_de_prueba(None)
+    assert await guardia_sin_tope(svc._redactar, monkeypatch) == []
+
+
+@pytest.mark.asyncio
+async def test_m9_consumir_tope_da_rojo(monkeypatch):
+    from app_core.pasillo import inferencia as pasillo_inferencia
+    from features.biblioteca.services import propuestas_ia as svc
+
+    async def con_tope(valores):
+        salida, traza = await pasillo_inferencia.generar_trazado(
+            svc._prompt(), valores, SalidaPropuestaIA, modelo=pasillo_inferencia.MODELO_GENERACION, org_id="org-1")
+        return salida, traza, traza.modelo_version
+    assert "consume el tope de una organización" in await guardia_sin_tope(con_tope, monkeypatch)
 
 
 @pytest.mark.asyncio
@@ -318,13 +360,14 @@ async def test_r1_resolucion_reformada_propone_solo_a_quien_la_cita(servicio, mo
         return Resolucion()
     servicio.inyectar_normativa_de_prueba(obtener)
     sesion = SesionSimulada()
-    resultado = await servicio.proponer_por_resolucion(sesion, "res-1", "reformada", "vigente", "operador-1", org_id="org-1")
+    resultado = await servicio.proponer_por_resolucion(sesion, "res-1", "reformada", "vigente", "operador-1")
     codigos = [p["codigo"] for s, p in sesion.sentencias if s.startswith("INSERT INTO biblioteca_versiones")]
     assert codigos == ["BIB-003"] and resultado["resultado"] == "creada"
+    assert resultado["omitidas"] == []
     assert all(p["origen"] == "resolucion" and p["resolucion"] == "res-1"
                for s, p in sesion.sentencias if s.startswith("INSERT INTO biblioteca_versiones"))
     primera = SesionSimulada()
-    assert (await servicio.proponer_por_resolucion(primera, "res-1", "vigente", None, "op", org_id="o"))["resultado"] == "sin_cambios"
+    assert (await servicio.proponer_por_resolucion(primera, "res-1", "vigente", None, "op"))["resultado"] == "sin_cambios"
     assert primera.sentencias == []
 
 
@@ -499,7 +542,7 @@ async def _version_ia(sesion, ids, monkeypatch, actor_rol="aprobadora"):
                                                    despues="Texto nuevo.", cita=verificada)]), None, "modelo-x"
     svc.inyectar_redactor_de_prueba(redactor)
     try:
-        resultado = await svc.proponer(sesion, ids[actor_rol], codigo, "Petición sintética", "org-sin-tope")
+        resultado = await svc.proponer(sesion, ids[actor_rol], codigo, "Petición sintética")
     finally:
         svc.inyectar_redactor_de_prueba(None)
     return resultado["versiones"][0]

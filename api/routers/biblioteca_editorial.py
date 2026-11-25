@@ -64,15 +64,11 @@ async def historial(identificador: str, session: Sesion, actor: Actor):
 
 
 # === BIB-406 ===
-from app_core.security import get_current_tenant  # noqa: E402
-
-
 # ¤adpa
 @router.post("/propuestas", status_code=202, response_model=biblioteca.ResultadoPropuesta)
-async def proponer(entrada: biblioteca.PedirPropuesta, session: Sesion, actor: Actor,
-                   org_id: Annotated[str, Depends(get_current_tenant)]):
-    """El botón «Proponer cambio»: la IA redacta una versión en revisión, o responde sin cambios o límite."""
-    return await biblioteca.proponer(session, actor, entrada.codigo, entrada.motivo, org_id)
+async def proponer(entrada: biblioteca.PedirPropuesta, session: Sesion, actor: Actor):
+    """El botón «Proponer cambio»: versión en revisión, «sin cambios» o «ya hay una propuesta en revisión»."""
+    return await biblioteca.proponer(session, actor, entrada.codigo, entrada.motivo)
 
 
 # ¤adpa

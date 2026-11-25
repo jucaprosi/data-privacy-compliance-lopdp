@@ -8,6 +8,7 @@ La inferencia y la normativa se usan por sus pasillos (R-ADPA). La versión nace
 """
 import hashlib
 import json
+import logging
 from uuid import uuid4
 
 from sqlalchemy import text
@@ -16,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.editorial import Capacidad
 from features.biblioteca.domain.propuestas_ia import (
-    AUTORES_IA, CREADA, EN_REVISION, LIMITE_DE_USO, ORIGEN_PETICION, ORIGEN_RESOLUCION, SIN_CAMBIOS, SalidaPropuestaIA,
+    AUTORES_IA, CREADA, EN_REVISION, ORIGEN_PETICION, ORIGEN_RESOLUCION, SIN_CAMBIOS, SalidaPropuestaIA,
     aplicar_cambios, con_version, debe_proponer, plantillas_afectadas, version_siguiente,
 )
 from features.biblioteca.services.autorizacion import capacidades
@@ -34,6 +35,7 @@ _PLANTILLA = (
     "Claves de cita verificadas:\n{claves}\n\nTexto publicado:\n{cuerpo}"
 )
 
+logger = logging.getLogger(__name__)
 _redactor_de_prueba = None
 _normativa_de_prueba = None
 
@@ -60,7 +62,8 @@ def _prompt():
 
 
 # ¤adpa
-async def _redactar(valores: dict, org_id: str):
+async def _redactar(valores: dict):
+    """R2c: generación trazada sin tope, por el pasillo de inferencia (catálogo común, IA-12 R3, NORM-06 R2)."""
     if _redactor_de_prueba is not None:
         return await _redactor_de_prueba(valores)
     from app_core.pasillo import inferencia as pasillo_inferencia
@@ -70,8 +73,8 @@ async def _redactar(valores: dict, org_id: str):
     no_disponible, _ = pasillo_inferencia.errores()
     modelo = pasillo_inferencia.MODELO_GENERACION
     try:
-        salida, traza = await pasillo_inferencia.generar_trazado(
-            _prompt(), valores, SalidaPropuestaIA, modelo=modelo, org_id=org_id)
+        salida, traza = await pasillo_inferencia.generar_trazado_sin_tope(
+            _prompt(), valores, SalidaPropuestaIA, modelo=modelo)
     except no_disponible as exc:
         raise ErrorNegocio("BIB_PROPUESTA_NO_DISPONIBLE") from exc
     return salida, traza, traza.modelo_version
@@ -104,18 +107,8 @@ async def hay_propuesta_en_revision(session: AsyncSession, codigo: str) -> bool:
 
 
 # ¤adpa
-async def _registrar_traza(session: AsyncSession, traza, version_id: str) -> None:
-    if traza is None:
-        return
-    from app_core.pasillo import inferencia as pasillo_inferencia
-
-    await session.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": traza.tenant_id})
-    await pasillo_inferencia.registrar_traza(session, traza, "biblioteca_version", version_id)
-
-
-# ¤adpa
 async def _proponer_para(session: AsyncSession, actor: str, codigo: str, motivo: str, origen: str,
-                         id_resolucion: str | None, org_id: str) -> dict | None:
+                         id_resolucion: str | None) -> dict | None:
     """Pide la redacción y, si queda algún cambio con cita verificada, crea la versión de la IA (R2, R3)."""
     publicada = await _publicada(session, codigo)
     if publicada is None or not publicada["cuerpo_md"]:
@@ -127,7 +120,7 @@ async def _proponer_para(session: AsyncSession, actor: str, codigo: str, motivo:
                     if citas.get("estados", {}).get(c) == "verificada")
     salida, traza, modelo = await _redactar({
         "codigo": codigo, "version": publicada["version"], "motivo": motivo,
-        "claves": "\n".join(claves), "cuerpo": publicada["cuerpo_md"]}, org_id)
+        "claves": "\n".join(claves), "cuerpo": publicada["cuerpo_md"]})
     cuerpo, aplicados = aplicar_cambios(publicada["cuerpo_md"], salida.cambios, citas)
     if not aplicados:
         return None
@@ -147,14 +140,16 @@ async def _proponer_para(session: AsyncSession, actor: str, codigo: str, motivo:
             "actor": actor, "autores": json.dumps(AUTORES_IA), "sustituye": publicada["id"], "cuerpo": cuerpo,
             "sha": hashlib.sha256(cuerpo.encode("utf-8")).hexdigest(), "modelo": modelo, "origen": origen,
             "resolucion": id_resolucion, "motivo": motivo, "cambios": json.dumps(aplicados, ensure_ascii=False)})
-        await _registrar_traza(session, traza, identificador)
+    if traza is not None:
+        logger.info("BIB-406 propuesta %s de %s: modelo %s, prompt %s v%s", identificador, codigo,
+                    traza.modelo_version, traza.prompt_id, traza.prompt_version)
     from features.biblioteca.services.editorial import leer_version
 
     return await leer_version(session, identificador)
 
 
 # ¤adpa
-async def proponer(session: AsyncSession, actor: str, codigo: str, motivo: str, org_id: str) -> dict:
+async def proponer(session: AsyncSession, actor: str, codigo: str, motivo: str) -> dict:
     """El botón «Proponer cambio» (R1): la persona que lo pulsa, con `editor` o `revisor_tecnico`."""
     permisos = await capacidades(session, actor)
     if not {Capacidad.EDITOR.value, Capacidad.TECNICO.value} & set(permisos):
@@ -162,19 +157,17 @@ async def proponer(session: AsyncSession, actor: str, codigo: str, motivo: str, 
     if not motivo.strip():
         raise ErrorNegocio("BIB_PROPUESTA_NO_DISPONIBLE")
     try:
-        version = await _proponer_para(session, actor, codigo, motivo, ORIGEN_PETICION, None, org_id)
+        version = await _proponer_para(session, actor, codigo, motivo, ORIGEN_PETICION, None)
     except ErrorNegocio as exc:
         if exc.code == "BIB_PROPUESTA_EN_REVISION":
             return {"resultado": EN_REVISION, "versiones": []}
-        if exc.status_code == 429:
-            return {"resultado": LIMITE_DE_USO, "versiones": []}
         raise
     return {"resultado": CREADA, "versiones": [version]} if version else {"resultado": SIN_CAMBIOS, "versiones": []}
 
 
 # ¤adpa
 async def proponer_por_resolucion(session: AsyncSession, id_resolucion: str, estado: str,
-                                  estado_anterior: str | None, actor: str, *, org_id: str) -> dict:
+                                  estado_anterior: str | None, actor: str) -> dict:
     """R1: tras revisar una resolución, una versión por cada plantilla publicada que cita su URL oficial.
 
     El actor es el operador de la plataforma que revisó la resolución; queda en el origen, no como autor.
@@ -183,18 +176,18 @@ async def proponer_por_resolucion(session: AsyncSession, id_resolucion: str, est
         return {"resultado": SIN_CAMBIOS, "versiones": []}
     resolucion = await _resolucion(id_resolucion)
     motivo = f"La resolución {getattr(resolucion, 'titulo', id_resolucion)} se revisó como «{estado}»."
-    versiones = []
+    versiones, omitidas = [], []
     for codigo in plantillas_afectadas(leer_citas() or {}, resolucion.url_fuente):
         if await _publicada(session, codigo) is None:
             continue
         try:
-            version = await _proponer_para(session, actor, codigo, motivo, ORIGEN_RESOLUCION, id_resolucion, org_id)
+            version = await _proponer_para(session, actor, codigo, motivo, ORIGEN_RESOLUCION, id_resolucion)
         except ErrorNegocio as exc:
-            if exc.code == "BIB_PROPUESTA_EN_REVISION":
+            if exc.code == "BIB_PROPUESTA_EN_REVISION":  # R2b: se omite y queda en la traza
+                omitidas.append(codigo)
+                logger.info("BIB-406 %s omitida: ya hay una propuesta de la IA en revisión", codigo)
                 continue
-            if exc.status_code == 429:
-                return {"resultado": LIMITE_DE_USO, "versiones": versiones}
             raise
         if version:
             versiones.append(version)
-    return {"resultado": CREADA if versiones else SIN_CAMBIOS, "versiones": versiones}
+    return {"resultado": CREADA if versiones else SIN_CAMBIOS, "versiones": versiones, "omitidas": omitidas}

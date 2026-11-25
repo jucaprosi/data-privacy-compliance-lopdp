@@ -19,7 +19,7 @@ AUTOR_IA = "ia"
 AUTORES_IA = [AUTOR_IA]
 ORIGEN_RESOLUCION, ORIGEN_PETICION = "resolucion", "peticion"
 ESTADOS_QUE_PROPONEN = frozenset({"reformada", "derogada"})
-SIN_CAMBIOS, CREADA, LIMITE_DE_USO, EN_REVISION = "sin_cambios", "creada", "limite_de_uso", "propuesta_en_revision"
+SIN_CAMBIOS, CREADA, EN_REVISION = "sin_cambios", "creada", "propuesta_en_revision"
 
 # === BIB-406 ===
 registrar(
@@ -82,8 +82,9 @@ class VistaEditorialIA(VistaEditorialMd):
 
 # ¤adpa
 class ResultadoPropuesta(Contrato):
-    resultado: Literal["creada", "sin_cambios", "limite_de_uso", "propuesta_en_revision"]
+    resultado: Literal["creada", "sin_cambios", "propuesta_en_revision"]
     versiones: list[VersionMaestraIA] = Field(default_factory=list)
+    omitidas: list[str] = Field(default_factory=list)
 
 
 # ¤adpa
