@@ -17,8 +17,16 @@ Sin API nueva.
 - **R2 · Cuándo.** Se envía un correo al crearse el aviso de NOTIF-02 y en cada recordatorio, a la misma persona del aviso.
 - **R3 · Texto** (UX/UI, 2026-11-25):
   - **Asunto:** «Versión por revisar: {plantilla}».
-  - **Cuerpo:** «Hola, {nombre}: Hay una versión nueva de la plantilla «{plantilla}» pendiente de revisión técnica. Motivo del cambio: {norma}, {artículo}, que entra en vigencia el {fecha}. Origen: {impacto o petición}. Revísala en la plataforma: {enlace}. Recibes este correo porque tienes el permiso de revisión técnica de la Biblioteca.»
-  - **Recordatorio:** asunto «Recordatorio: {plantilla} sigue por revisar», y en el cuerpo «…sigue sin revisión técnica. La norma que motiva el cambio entra en vigencia el {fecha} (faltan {n} días).».
+  - **Cuerpo:** «Hola, {nombre}: Hay una versión nueva de la plantilla «{plantilla}» pendiente de revisión técnica. {línea de motivo} Revísala en la plataforma: {enlace}. Recibes este correo porque tienes el permiso de revisión técnica de la Biblioteca.»
+  - **Línea de motivo**, una sola según el caso, como en NOTIF-02 R2:
+    - resolución con fecha futura: «Motivo del cambio: {norma}, {artículo}, que entra en vigencia el {fecha}.»;
+    - resolución con fecha pasada: «Motivo del cambio: {norma}, {artículo}, que entró en vigencia el {fecha}.»;
+    - resolución sin fecha: «Motivo del cambio: {norma}, {artículo}. La norma no indica fecha de vigencia.»;
+    - petición (el botón): «Motivo del cambio: petición de {nombre de quien la pidió}{: «{texto de la petición}»}.». Sin norma, sin artículo y sin fecha.
+  - **Recordatorio:** asunto «Recordatorio: {plantilla} sigue por revisar». En el cuerpo, según el caso:
+    - con fecha futura: «…sigue sin revisión técnica. La norma que motiva el cambio entra en vigencia el {fecha} (faltan {n} días).»;
+    - sin fecha, con fecha pasada o por petición (recordatorio por días desde la creación, D3): «…sigue sin revisión técnica desde hace {n} días.».
+  - {fecha} va en largo y en español («25 de noviembre de 2026»). Ningún hueco se imprime vacío ni como «None»: si un dato falta, se usa la variante que no lo nombra. La redacción final de las variantes la confirma el UX/UI.
   - Sin «conforme», «cumple», «garantiza», «certificado» ni «legal», y sin nombres de proveedores.
 - **R4 · Fallo.** Si el envío falla, el aviso en la plataforma queda igual y el fallo se registra; no se reintenta en la misma corrida.
 - **R5 · Entornos.** `NotificadorEntornoPermitido` sigue filtrando por entorno, como hoy (`destinatarios_entorno.py`).
@@ -34,6 +42,7 @@ Sin pantalla: solo correo.
 | **Dado** el proveedor configurado y un aviso nuevo, **entonces** sale un correo con el asunto y el enlace de R3. Mutación m1: no enviarlo al crear el aviso da rojo. | `tests/test_notif03_correo.py` |
 | **Dado** el proveedor sin configurar, **entonces** `notificador_configurado()` es `NotificadorNoConfigurado` y el aviso se crea igual. Mutación m2: lanzar error sin proveedor da rojo. | ídem |
 | **Dado** un recordatorio, **entonces** el correo dice «faltan {n} días» y ninguna de las palabras de R3. Mutación m3: escribir «cumple» da rojo. | ídem |
+| **Dado** un aviso de una resolución sin fecha y otro de una petición, **entonces** el primero dice «La norma no indica fecha de vigencia.» y su recordatorio cuenta días desde la creación; el segundo nombra a quien la pidió y no tiene norma, artículo ni fecha. Mutación m4: un correo sin fecha que imprime «entra en vigencia el None» o deja el hueco vacío da rojo. | ídem |
 | **Dado** la sala, **entonces** solo importa otras salas por sus pasillos. | `tests/test_adpa_bulkhead.py` |
 
 ## 6. Trazabilidad

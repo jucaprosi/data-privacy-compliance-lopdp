@@ -8,7 +8,7 @@ sala = "notificaciones"
 depende_de = ["NOTIF-02"]
 propiedad = ["features/notificaciones/services/adaptadores.py", "features/notificaciones/services/correo_versiones.py", "features/notificaciones/notificaciones_service.py", "features/notificaciones/services/avisos_plataforma.py", "tests/test_notif03_correo.py"]
 crea = ["features/notificaciones/services/correo_versiones.py", "tests/test_notif03_correo.py"]
-arbitro = "pytest tests/test_notif03_correo.py tests/test_adpa_bulkhead.py; mutaciones m1 a m3."
+arbitro = "pytest tests/test_notif03_correo.py tests/test_adpa_bulkhead.py; mutaciones m1 a m4."
 rastros = ["¤arbitro"]
 +++
 
@@ -24,5 +24,6 @@ rastros = ["¤arbitro"]
 - Prueba exógena con mutaciones, sin red.
 
 ## Límites
+- La implementación no empieza hasta que el propietario elija el proveedor de correo en el brief `PROPIETARIO_CORREO_Y_PROGRAMACION_AVISOS.md` (R1). Hasta entonces, la tanda 111 no se lanza.
 - No toca la nube. El proveedor, su secreto y su activación son del propietario, por el brief.
 - En `avisos_plataforma.py` (NOTIF-02, tanda anterior) y `notificaciones_service.py` solo se añade el envío del correo. En `adaptadores.py` solo se añade el adaptador; `NotificadorNoConfigurado` sigue siendo el de por defecto.
