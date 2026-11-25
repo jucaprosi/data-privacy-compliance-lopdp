@@ -154,13 +154,18 @@ async def test_una_sola_propuesta_de_la_ia_en_revision_por_plantilla(servicio):
 
 
 @pytest.mark.asyncio
-async def test_m9_crear_otra_propuesta_con_una_en_revision_da_rojo(servicio, monkeypatch):
+async def test_m10_crear_la_segunda_propuesta_da_rojo(servicio, monkeypatch):
     async def nunca(session, codigo):
         return False
     monkeypatch.setattr(servicio, "hay_propuesta_en_revision", nunca)
     sesion = SesionSimulada(lambda sql, p: _Resultado(1 if "en_revision" in sql else None))
     resultado = await servicio.proponer(sesion, "persona-1", "BIB-003", "Otra", "org-1")
     assert resultado["resultado"] == "creada"  # sin la regla, entra una segunda propuesta: la regla es la que la para
+
+
+def test_m11_proponer_al_pasar_a_observada_da_rojo():
+    assert "«observada» propone" in guardia_disparo(
+        lambda estado, anterior: estado != anterior and (estado != "vigente" or anterior is not None))
 
 
 def test_disparador_parte_de_bib403_con_los_cambios_de_bib406():
@@ -313,13 +318,13 @@ async def test_r1_resolucion_reformada_propone_solo_a_quien_la_cita(servicio, mo
         return Resolucion()
     servicio.inyectar_normativa_de_prueba(obtener)
     sesion = SesionSimulada()
-    resultado = await servicio.proponer_por_resolucion(sesion, "res-1", "reformada", "operador-1", org_id="org-1")
+    resultado = await servicio.proponer_por_resolucion(sesion, "res-1", "reformada", "vigente", "operador-1", org_id="org-1")
     codigos = [p["codigo"] for s, p in sesion.sentencias if s.startswith("INSERT INTO biblioteca_versiones")]
     assert codigos == ["BIB-003"] and resultado["resultado"] == "creada"
     assert all(p["origen"] == "resolucion" and p["resolucion"] == "res-1"
                for s, p in sesion.sentencias if s.startswith("INSERT INTO biblioteca_versiones"))
     primera = SesionSimulada()
-    assert (await servicio.proponer_por_resolucion(primera, "res-1", "vigente", "op", org_id="o"))["resultado"] == "sin_cambios"
+    assert (await servicio.proponer_por_resolucion(primera, "res-1", "vigente", None, "op", org_id="o"))["resultado"] == "sin_cambios"
     assert primera.sentencias == []
 
 

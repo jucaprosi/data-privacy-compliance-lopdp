@@ -173,8 +173,8 @@ async def proponer(session: AsyncSession, actor: str, codigo: str, motivo: str, 
 
 
 # ¤adpa
-async def proponer_por_resolucion(session: AsyncSession, id_resolucion: str, estado: str, actor: str, *,
-                                  estado_anterior: str | None = None, org_id: str) -> dict:
+async def proponer_por_resolucion(session: AsyncSession, id_resolucion: str, estado: str,
+                                  estado_anterior: str | None, actor: str, *, org_id: str) -> dict:
     """R1: tras revisar una resolución, una versión por cada plantilla publicada que cita su URL oficial.
 
     El actor es el operador de la plataforma que revisó la resolución; queda en el origen, no como autor.
