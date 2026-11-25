@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from app_core.errors import CodigoErrorNegocio
 from features.biblioteca.domain.base import Contrato
-from features.biblioteca.domain.editorial import VersionMaestraMd, VistaEditorialMd
+from features.biblioteca.domain import editorial as _editorial
 from features.biblioteca.domain.errores import registrar
 
 AUTOR_IA = "ia"
@@ -61,8 +61,11 @@ class Descarte(Contrato):
 
 
 # ¤adpa
-class VersionMaestraIA(VersionMaestraMd):
-    """La versión editorial con su origen (persona o IA) y el nombre de quien la pidió."""
+class VersionMaestraMd(_editorial.VersionMaestraMd):
+    """La versión editorial con su origen (persona o IA) y el nombre de quien la pidió.
+
+    Conserva el nombre del esquema de la API (contrato congelado): solo añade propiedades.
+    """
     redactada_por: Literal["persona", "ia"] = "persona"
     modelo_ia: str | None = None
     origen_ia: Literal["resolucion", "peticion"] | None = None
@@ -76,14 +79,17 @@ class VersionMaestraIA(VersionMaestraMd):
 
 
 # ¤adpa
-class VistaEditorialIA(VistaEditorialMd):
-    versiones: list[VersionMaestraIA]
+class VistaEditorialMd(_editorial.VistaEditorialMd):
+    versiones: list[VersionMaestraMd]
+
+
+VersionMaestraIA, VistaEditorialIA = VersionMaestraMd, VistaEditorialMd
 
 
 # ¤adpa
 class ResultadoPropuesta(Contrato):
     resultado: Literal["creada", "sin_cambios", "propuesta_en_revision"]
-    versiones: list[VersionMaestraIA] = Field(default_factory=list)
+    versiones: list[VersionMaestraMd] = Field(default_factory=list)
     omitidas: list[str] = Field(default_factory=list)
 
 

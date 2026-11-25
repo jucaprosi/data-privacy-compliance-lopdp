@@ -17,9 +17,17 @@ from features.biblioteca.services.autorizacion import autorizar
 from features.biblioteca.services.catalogo import leer_citas, huellas_por_url_fuente
 
 COLUMNAS = "id, codigo, version, formato, ficha, responsable_id, autores, estado, generacion, nombre_archivo, sha256, sustituye_id, creada_en"
-# BIB-406: origen de la versión (persona o IA); la lectura los devuelve con el nombre de quien la pidió.
-COLUMNAS_IA = ("redactada_por, modelo_ia, origen_ia, id_resolucion, motivo_ia, cambios_ia, nota_descarte, "
-               "descartada_por, descartada_en")
+# BIB-406: la lectura devuelve también el origen de la versión (persona o IA) y el nombre de quien la pidió.
+_LEER_VERSION = (
+    "SELECT v.id, v.codigo, v.version, v.formato, v.ficha, v.responsable_id, v.autores, v.estado, v.generacion, v.nombre_archivo, v."
+    "sha256, v.sustituye_id, v.creada_en, v.redactada_por, v.modelo_ia, v.origen_ia, v.id_resolucion, v.motivo_ia, v.cambios_ia, v.nota_descarte, v.descartada_por, v.descartada_en, u.nombre AS solicitante_nombre "
+    "FROM biblioteca_versiones v LEFT JOIN users u ON u.id=v.responsable_id WHERE v.id=:id"
+)
+_LISTAR_VERSIONES = (
+    "SELECT v.id, v.codigo, v.version, v.formato, v.ficha, v.responsable_id, v.autores, v.estado, v.generacion, v.nombre_archivo, v."
+    "sha256, v.sustituye_id, v.creada_en, v.redactada_por, v.modelo_ia, v.origen_ia, v.id_resolucion, v.motivo_ia, v.cambios_ia, v.nota_descarte, v.descartada_por, v.descartada_en, u.nombre AS solicitante_nombre "
+    "FROM biblioteca_versiones v LEFT JOIN users u ON u.id=v.responsable_id ORDER BY v.creada_en DESC LIMIT 200"
+)
 
 
 # ¤adpa
@@ -53,17 +61,9 @@ async def _publicada_vigente(session: AsyncSession, codigo: str, excluir: str | 
 
 
 # ¤adpa
-def _con_prefijo(prefijo: str) -> str:
-    return ", ".join(prefijo + c.strip() for c in f"{COLUMNAS}, {COLUMNAS_IA}".split(","))
-
-
-# ¤adpa
 async def leer_version(session: AsyncSession, identificador: str) -> dict:
     """BIB-406: la versión con su origen y el nombre de quien la pidió, como la devuelve la lectura."""
-    fila = (await session.execute(text(
-        f"SELECT {_con_prefijo('v.')}, u.nombre AS solicitante_nombre FROM biblioteca_versiones v "
-        "LEFT JOIN users u ON u.id=v.responsable_id WHERE v.id=:id"
-    ), {"id": identificador})).mappings().first()
+    fila = (await session.execute(text(_LEER_VERSION), {"id": identificador})).mappings().first()
     if not fila:
         raise ErrorNegocio("BIB_NO_ENCONTRADA")
     return dict(fila)
@@ -72,10 +72,7 @@ async def leer_version(session: AsyncSession, identificador: str) -> dict:
 # ¤adpa
 async def listar(session: AsyncSession, actor: str) -> dict:
     permisos = await autorizar(session, actor)
-    versiones = (await session.execute(text(
-        f"SELECT {_con_prefijo('v.')}, u.nombre AS solicitante_nombre FROM biblioteca_versiones v "
-        "LEFT JOIN users u ON u.id=v.responsable_id ORDER BY v.creada_en DESC LIMIT 200"
-    ))).mappings().all()
+    versiones = (await session.execute(text(_LISTAR_VERSIONES))).mappings().all()
     revisiones = (await session.execute(text(
         "SELECT version_id, generacion, tipo, aprobado, revisor_id, comentario, creada_en "
         "FROM biblioteca_revisiones ORDER BY creada_en"
