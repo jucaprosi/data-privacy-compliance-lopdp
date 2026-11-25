@@ -35,9 +35,9 @@ async def _sembrar(propietario, estado="pendiente_revision", fecha=None) -> str:
         i = (await s.execute(
             text("INSERT INTO normativa_resoluciones (numero_resolucion, anio_emision, titulo, organo_emisor, materia, "
                  "url_fuente, seccion_fuente, archivo_sha256, ruta_original, tamano_bytes, estado, fecha_vigencia) "
-                 "VALUES ('N07-1', 2026, 'Título', 'SPDP', 'General', 'https://x.invalid/a.pdf', 'resoluciones', :h, "
+                 "VALUES (:n, 2026, 'Título', 'SPDP', 'General', 'https://x.invalid/a.pdf', 'resoluciones', :h, "
                  "'spdp/a.pdf', 10, :e, :f) RETURNING id::text"),
-            {"h": uuid.uuid4().hex * 2, "e": estado, "f": fecha})).scalar_one()
+            {"n": f"N07-{uuid.uuid4().hex[:10]}", "h": uuid.uuid4().hex * 2, "e": estado, "f": fecha})).scalar_one()
         await s.commit()
     return i
 
