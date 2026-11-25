@@ -25,9 +25,18 @@ Sin API nueva.
   Se siembran al menos cuatro documentos, de plantillas distintas, que cubren los cuatro estados de `_ESTADOS_SEMBRABLES`. Al menos uno lleva origen `propio`, copia de una plantilla publicada, para que el filtro «Origen» tenga resultados en sus dos valores.
 - **R3 · Falla cerrado.** Si un código no tiene versión publicada, la siembra lanza `ValueError` con el código, y no queda ningún documento sembrado: todo va en la misma transacción.
 - **R4 · Títulos.** El título es el nombre de la plantilla, sin «(borrador ficticio)». La leyenda de la demo sigue siendo la de §5.6 del PRD. UX/UI confirma que no hace falta otra marca por documento.
-- **R5 · Tarjeta duplicada.** El propietario corre, de solo lectura, un recuento por organización de sesión (`select tenant_id, titulo, count(*) from biblioteca_documentos group by 1, 2 having count(*) > 1`). Si da filas, la siembra o el clon duplican, y se corrige aquí. Si no da filas, la segunda tarjeta es el detalle, y no se cambia nada del frontend.
-- **R6 · Procedimiento.** `docs/biblioteca-pmv.md` añade el bloque de la demo: `--entorno demo --confirmar-entorno`, desde `main` y tras fusionar, y la carga antes de la primera siembra.
+- **R5 · Tarjeta duplicada.** El propietario corre, de solo lectura, un recuento por organización de sesión dentro de `BEGIN TRANSACTION READ ONLY`, por Antigravity o Cloud SQL Studio (sin psql, como en DEMO-11): `SELECT tenant_id, nombre, count(*) FROM biblioteca_documentos GROUP BY 1, 2 HAVING count(*) > 1;`. Si da filas, la siembra o el clon duplican, y se corrige aquí. Si no da filas, la segunda tarjeta es el detalle, y no se cambia nada del frontend.
+- **R6 · Procedimiento.** `docs/biblioteca-pmv.md` añade el bloque de la demo, que ejecuta el propietario desde `main` y tras fusionar, en este orden:
+  1. **Carga:** `--cargar --entorno demo --confirmar-entorno`. Deja cada plantilla «En revisión» y nunca publica (`cargar_plantillas_pmv.py:9`).
+  2. **Revisión y publicación:** en la web de la demo, un usuario editor distinto del autor de la carga (BIB-403 R4) abre cada plantilla nombrada en `cooperativa_demo.json`, aprueba la revisión técnica en el expediente («Aprobar con autoridad vigente», `FlujoRevision.tsx`), valida sus citas y la publica. Como mínimo se publican esas plantillas.
+  3. **Comprobación:** de solo lectura, como en R5: cada código nombrado en el JSON tiene una versión publicada. Si falta alguno, se para y no se siembra (R3 lo cubre de todos modos).
+  4. **Retiro de lo ficticio** (R8) y, después, **siembra**.
 - **R7 · Sin prohibiciones** (GEN-01 R3).
+- **R8 · Retiro de lo ya sembrado.** Hoy la demo tiene `DEMO-DOC-01` ficticio en el tenant plantilla y en los tenants ya clonados.
+  - **Sin colisión de ids:** el id de cada documento nuevo sale de `_id_destino(plantilla_id, "DEMO-" + código de plantilla)`, nunca de la posición, así que no puede coincidir con el viejo `DEMO-DOC-01`.
+  - **Tenant plantilla:** el paso 4 de R6 retira las filas de código `DEMO-DOC-%` del tenant plantilla y su historial, en una sola transacción, con el mismo patrón que la purga (`jobs/purga_demo/politicas_purga.sql:87-91`): desactivar el disparador `biblioteca_documento_historial_inmutable`, borrar el historial y los documentos de ese tenant y código, y reactivar el disparador. Lo ejecuta el propietario con el rol de la purga, por Antigravity o Cloud SQL Studio, con un recuento antes (espera 1 documento y sus filas de historial) y después (espera 0). Si el recuento previo no coincide, se para y avisa al CTO.
+  - **Tenants ya clonados:** no se tocan. Caducan y los borra la purga nocturna (DEMO-05). Las sesiones nuevas clonan ya el conjunto nuevo.
+  - **Alcance:** solo la base de la demo. Sin migración y sin cambios en producción.
 - **R-ADPA · Ortogonalidad ZERAG (`DEMO-12`).** Solo los archivos de la propiedad. El script importa la sala solo por `biblioteca_service.py` (`tests/test_adpa_bulkhead.py`). La prueba no usa `import yaml`.
 
 ## 4. Interfaz
@@ -43,6 +52,7 @@ Sin cambios de interfaz. La lista de documentos de la demo muestra los títulos 
 | **Dado** la siembra, **entonces** hay al menos cuatro documentos, de los cuatro estados y de los dos orígenes. Mutación m3: dejar un solo estado da rojo. | ídem |
 | **Dado** un código sin versión publicada, **entonces** la siembra lanza `ValueError` y no queda ningún documento. Mutación m4: saltarse el código en silencio da rojo. | ídem |
 | **Dado** el clon de la demo, **entonces** los nombres son los de las plantillas, sin «(borrador ficticio)». | `tests/test_demo_clon_biblioteca.py` |
+| **Dado** un tenant plantilla con el viejo `DEMO-DOC-01`, **entonces** la siembra nueva no reutiliza su id y crea los documentos de R2. | `tests/test_demo12_plantillas_reales.py` |
 | **Dado** el script, **entonces** importa la sala solo por su servicio. | `tests/test_adpa_bulkhead.py` |
 
 ## 6. Trazabilidad
