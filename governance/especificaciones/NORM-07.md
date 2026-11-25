@@ -19,7 +19,7 @@ Migración `20261125_norm07_fecha_vigencia.py`: `ALTER TABLE normativa_resolucio
 ## 3. Reglas
 
 - **R1 · Fecha opcional.** Al revisar, el operador puede dar la fecha de entrada en vigencia. Si no la da, se conserva la que hubiera. Se guarda con la revisión, en el mismo UPDATE.
-- **R2 · Disparo.** Si el estado revisado es `reformada`, `derogada` o `vigente`, después de confirmar la revisión se llama a `proponer_por_resolucion(id_resolucion, estado, actor)` de `app_core/pasillo/biblioteca.py`, con el operador como actor. Si la propuesta falla, la revisión queda hecha y el fallo se registra en la bitácora.
+- **R2 · Disparo.** Si el estado revisado es `reformada` o `derogada`, o `vigente` cuando la resolución ya tenía antes un estado distinto (BIB-406 R1), después de confirmar la revisión se llama a `proponer_por_resolucion(id_resolucion, estado, actor)` de `app_core/pasillo/biblioteca.py`, con el operador como actor. Si la propuesta falla, la revisión queda hecha y el fallo se registra en la bitácora.
 - **R3 · Lectura.** `app_core/pasillo/inteligencia_normativa.py` expone `fecha_vigencia_de(id_resolucion)`, que leen BIB-407 y NOTIF-02.
 - **R-SP · Sin prohibiciones** (GEN-01 R3).
 - **R-ADPA · Ortogonalidad ZERAG (`NORM-07`).** Solo los archivos de la propiedad. Otras salas se usan solo por sus pasillos (`app_core/pasillo/`). Las pruebas no usan `import yaml`.
