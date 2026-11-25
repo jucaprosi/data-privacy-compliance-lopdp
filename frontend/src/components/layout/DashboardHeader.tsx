@@ -10,6 +10,8 @@ import SelectorOrganizacion from "@/components/layout/SelectorOrganizacion";
 // === BIB-101 ===
 import BotonBiblioteca from "@/components/biblioteca/panel/BotonBiblioteca";
 // === fin BIB-101 ===
+// === NOTIF-02 ===
+// === fin NOTIF-02 ===
 // --- INICIO FE-25 ---
 // --- FIN FE-25 ---
 
@@ -64,6 +66,8 @@ export default function DashboardHeader({
         {/* === BIB-101 === */}
         <BotonBiblioteca />
         {/* === fin BIB-101 === */}
+        {/* === NOTIF-02 === */}
+        {/* === fin NOTIF-02 === */}
         {sessionEmail && (
           <div className="flex items-center space-x-2" data-testid="sesion-activa">
             {/* === FE-21 === */}
