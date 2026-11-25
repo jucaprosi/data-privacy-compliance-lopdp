@@ -160,3 +160,28 @@ def test_m7_pendiente_validacion_es_marca_de_borrador():
     assert "quedan marcas de borrador" in validar_plantilla_md(texto, "BIB-007")  # conserva la marca 7 (LEG-08)
     limpio = texto.replace("PENDIENTE VALIDACIÓN", "x")
     assert "quedan marcas de borrador" not in validar_plantilla_md(limpio, "BIB-007")
+
+
+def test_r6_fichas_json_cubre_las_doce_con_el_contrato_ficha():
+    from pathlib import Path
+    from features.biblioteca.services.plantillas_md import CODIGOS, leer_fichas
+    fichas = leer_fichas(Path("."))
+    assert set(fichas) == set(CODIGOS)
+    assert all(f["restricciones"] and f["fecha_revision"] for f in fichas.values())
+
+
+def test_r6_script_de_carga_pasa_la_ficha_m8():
+    # m8: si _aplicar dejara de pasar la ficha, publicar daría BIB_PUBLICACION_INCOMPLETA (el flujo con base va al CI).
+    import inspect
+    from features.biblioteca.services import plantillas_md
+    assert "ficha=paso[\"ficha\"]" in inspect.getsource(plantillas_md._aplicar)
+
+
+def test_r6_entorno_produccion_con_url_local_es_codigo_2(monkeypatch, capsys):
+    import importlib
+    cargar = importlib.import_module("scripts.cargar_plantillas_pmv")
+    monkeypatch.setenv("BIB109_DATABASE_URL", "postgresql+asyncpg://u:p@localhost:5432/x")
+    codigo = cargar.main(["--cargar", "--actor", "u", "--entorno", "produccion", "--confirmar-entorno"])
+    assert codigo == 2 and "localhost" not in capsys.readouterr().out
+    codigo = cargar.main(["--cargar", "--actor", "u", "--entorno", "local"])
+    assert codigo == 2  # sin --confirmar-entorno
