@@ -8,7 +8,7 @@ sala = "notificaciones"
 depende_de = ["NOTIF-02"]
 propiedad = ["features/notificaciones/services/adaptadores.py", "features/notificaciones/services/correo_versiones.py", "features/notificaciones/notificaciones_service.py", "features/notificaciones/services/avisos_plataforma.py", "tests/test_notif03_correo.py"]
 crea = ["features/notificaciones/services/correo_versiones.py", "tests/test_notif03_correo.py"]
-arbitro = "pytest tests/test_notif03_correo.py tests/test_adpa_bulkhead.py; mutaciones m1 a m4."
+arbitro = "pytest tests/test_notif03_correo.py tests/test_adpa_bulkhead.py; mutaciones m1 a m7."
 rastros = ["¤arbitro"]
 +++
 
