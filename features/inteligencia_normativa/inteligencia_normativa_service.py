@@ -351,6 +351,10 @@ async def fecha_vigencia_de(id_resolucion: str):
     """NORM-07 R3: fecha de entrada en vigencia de una resolución, o None."""
     async with _sesion() as sesion:
         return await revision.fecha_vigencia_de(sesion, id_resolucion)
+async def fecha_vigencia_por_url(url: str):
+    """NORM-07 R3: fecha de vigencia de la única resolución con esa URL oficial, o None."""
+    async with _sesion() as sesion:
+        return await revision.fecha_vigencia_por_url(sesion, url)
 # === fin NORM-03 ===
 
 

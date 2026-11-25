@@ -28,7 +28,7 @@ async def _vigencias(urls: set[str]) -> dict[str, date | None]:
     """R3: la fecha de vigencia sale del pasillo normativo (NORM-07) si ya la ofrece; si no, va nula."""
     from app_core.pasillo import inteligencia_normativa as pasillo_normativa
 
-    leer = getattr(pasillo_normativa, "fecha_vigencia_de", None)
+    leer = getattr(pasillo_normativa, "fecha_vigencia_por_url", None)
     if leer is None:
         return {}
     fechas = {}

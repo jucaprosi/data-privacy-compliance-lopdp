@@ -177,17 +177,21 @@ async def test_sin_capacidad_no_compara(monkeypatch, servicio):
 
 @pytest.mark.asyncio
 async def test_con_norm07_la_vigencia_la_lee_el_pasillo_sin_importar_lo_privado_de_la_sala(servicio, monkeypatch):
-    """NORM-07: la fecha sale de `pasillo.fecha_vigencia_de`. Mutación: leer la sala por import directo da rojo."""
+    """NORM-07: la fecha sale de `pasillo.fecha_vigencia_por_url`. Mutaciones: leer la sala por import directo (m6) o pasar la URL a `fecha_vigencia_de` (m5) dan rojo."""
     from datetime import date
 
     from app_core.pasillo import inteligencia_normativa as pasillo
 
     llamadas = []
 
-    async def fecha_vigencia_de(clave):
-        llamadas.append(clave)
+    async def fecha_vigencia_por_url(url):
+        llamadas.append(url)
         return date(2026, 12, 1)
 
+    async def fecha_vigencia_de(id_resolucion):  # espera un uuid: con una URL fallaría el CAST (mutación m5)
+        raise AssertionError("BIB-407 no debe pasar una URL a fecha_vigencia_de")
+
+    monkeypatch.setattr(pasillo, "fecha_vigencia_por_url", fecha_vigencia_por_url)
     monkeypatch.setattr(pasillo, "fecha_vigencia_de", fecha_vigencia_de)
     url = "https://ejemplo.invalid/a.pdf"
     assert await servicio._vigencias({url}) == {url: date(2026, 12, 1)}

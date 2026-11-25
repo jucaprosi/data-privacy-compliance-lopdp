@@ -30,14 +30,14 @@ except RuntimeError:
 con_base = pytest.mark.skipif(not HAY_BASE, reason="necesita PostgreSQL (DATABASE_URL)")
 
 
-async def _sembrar(propietario, estado="pendiente_revision", fecha=None) -> str:  # noqa: F811
+async def _sembrar(propietario, estado="pendiente_revision", fecha=None, url="https://x.invalid/a.pdf") -> str:  # noqa: F811
     async with propietario() as s:
         i = (await s.execute(
             text("INSERT INTO normativa_resoluciones (numero_resolucion, anio_emision, titulo, organo_emisor, materia, "
                  "url_fuente, seccion_fuente, archivo_sha256, ruta_original, tamano_bytes, estado, fecha_vigencia) "
-                 "VALUES (:n, 2026, 'Título', 'SPDP', 'General', 'https://x.invalid/a.pdf', 'resoluciones', :h, "
+                 "VALUES (:n, 2026, 'Título', 'SPDP', 'General', :u, 'resoluciones', :h, "
                  "'spdp/a.pdf', 10, :e, :f) RETURNING id::text"),
-            {"n": f"N07-{uuid.uuid4().hex[:10]}", "h": uuid.uuid4().hex * 2, "e": estado, "f": fecha})).scalar_one()
+            {"n": f"N07-{uuid.uuid4().hex[:10]}", "h": uuid.uuid4().hex * 2, "e": estado, "f": fecha, "u": url})).scalar_one()
         await s.commit()
     return i
 
@@ -189,3 +189,37 @@ def test_la_peticion_acepta_una_fecha_iso_opcional_y_rechaza_otra():
     assert RevisionRequest(estado="vigente", nota=NOTA, fecha_vigencia="2026-12-01").fecha_vigencia == FECHA
     with pytest.raises(ValidationError):
         RevisionRequest(estado="vigente", nota=NOTA, fecha_vigencia="01/12/2026")
+
+
+# ------------------------------------------------------------ R3: por URL (BIB-407 cita la URL oficial)
+
+@pytest.mark.parametrize("entrada,salida", [
+    ("https://x.invalid/a.pdf", "https://x.invalid/a.pdf"), (" https://x.invalid/a.pdf/ ", "https://x.invalid/a.pdf"),
+    ("https://x.invalid/a.pdf//", "https://x.invalid/a.pdf"),
+])
+def test_la_url_se_compara_sin_espacios_al_borde_ni_barra_final(entrada, salida):
+    from features.inteligencia_normativa.services import revision as rev
+
+    assert rev.url_normalizada(entrada) == salida
+
+
+@con_base
+async def test_db_por_url_devuelve_la_fecha_con_o_sin_barra_final(propietario, como_app, biblioteca):  # noqa: F811
+    from app_core.pasillo import inteligencia_normativa as pasillo
+
+    await _sembrar(propietario, fecha=FECHA, url="https://x.invalid/a.pdf/")
+    assert await pasillo.fecha_vigencia_por_url("https://x.invalid/a.pdf") == FECHA
+    assert await pasillo.fecha_vigencia_por_url(" https://x.invalid/a.pdf/ ") == FECHA
+
+
+@con_base
+async def test_db_por_url_sin_resolucion_con_dos_o_sin_fecha_es_none_sin_error(propietario, como_app, biblioteca):  # noqa: F811
+    """Mutación: devolver la primera fila cuando hay dos resoluciones con la misma URL da rojo."""
+    from app_core.pasillo import inteligencia_normativa as pasillo
+
+    assert await pasillo.fecha_vigencia_por_url("https://no-esta.invalid/z.pdf") is None
+    await _sembrar(propietario, fecha=FECHA, url="https://x.invalid/dos.pdf")
+    await _sembrar(propietario, fecha=FECHA, url="https://x.invalid/dos.pdf/")
+    assert await pasillo.fecha_vigencia_por_url("https://x.invalid/dos.pdf") is None
+    await _sembrar(propietario, url="https://x.invalid/sin-fecha.pdf")
+    assert await pasillo.fecha_vigencia_por_url("https://x.invalid/sin-fecha.pdf") is None

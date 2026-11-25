@@ -192,6 +192,20 @@ async def fecha_vigencia_de(sesion, id_resolucion: str) -> Optional[date]:
     return fila.fecha_vigencia
 
 
+def url_normalizada(url: str) -> str:
+    """NORM-07 R3: la URL se compara sin espacios al borde ni barra final."""
+    return (url or "").strip().rstrip("/")
+
+
+async def fecha_vigencia_por_url(sesion, url: str) -> Optional[date]:
+    """La fecha si exactamente una resolución tiene esa `url_fuente`; `None` si no hay ninguna, hay varias o no tiene fecha."""
+    filas = (await sesion.execute(
+        text("SELECT fecha_vigencia FROM normativa_resoluciones "
+             "WHERE rtrim(btrim(url_fuente), '/') = :u LIMIT 2"), {"u": url_normalizada(url)},
+    )).all()
+    return filas[0].fecha_vigencia if len(filas) == 1 else None
+
+
 async def clave_original(sesion, id_resolucion: str) -> str:
     fila = (await sesion.execute(
         text("SELECT ruta_original FROM normativa_resoluciones WHERE id = CAST(:i AS uuid)"), {"i": id_resolucion},

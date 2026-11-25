@@ -40,3 +40,10 @@ async def fecha_vigencia_de(id_resolucion):
     from features.inteligencia_normativa import inteligencia_normativa_service as svc
 
     return await svc.fecha_vigencia_de(id_resolucion)
+
+
+async def fecha_vigencia_por_url(url):
+    """Fecha de vigencia de la resolución con esa URL oficial (la usa BIB-407), o None (NORM-07 R3)."""
+    from features.inteligencia_normativa import inteligencia_normativa_service as svc
+
+    return await svc.fecha_vigencia_por_url(url)
