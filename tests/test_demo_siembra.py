@@ -69,12 +69,13 @@ async def _retirar_catalogo_demo(db_engine, montaje: dict) -> None:
             await s.commit()
             return
         await s.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": PLANTILLA_TENANT_ID})
-        sembrados = "SELECT id FROM biblioteca_documentos WHERE tenant_id=:t AND codigo = ANY(:c)"
         await s.execute(text("ALTER TABLE biblioteca_documentos_historial DISABLE TRIGGER USER"))
-        await s.execute(text(f"DELETE FROM biblioteca_documentos_historial WHERE documento_id IN ({sembrados})"),
+        await s.execute(text("DELETE FROM biblioteca_documentos_historial WHERE documento_id IN ("
+                                "SELECT id FROM biblioteca_documentos WHERE tenant_id=:t AND codigo = ANY(:c))"),
                         {"t": PLANTILLA_TENANT_ID, "c": _CODIGOS_DEMO})
         await s.execute(text("ALTER TABLE biblioteca_documentos_historial ENABLE TRIGGER USER"))
-        await s.execute(text(f"DELETE FROM biblioteca_documentos WHERE id IN ({sembrados})"),
+        await s.execute(text("DELETE FROM biblioteca_documentos WHERE id IN ("
+                                "SELECT id FROM biblioteca_documentos WHERE tenant_id=:t AND codigo = ANY(:c))"),
                         {"t": PLANTILLA_TENANT_ID, "c": _CODIGOS_DEMO})
         await s.execute(text("ALTER TABLE biblioteca_versiones DISABLE TRIGGER USER"))
         await s.execute(text("DELETE FROM biblioteca_versiones WHERE id = ANY(:v)"), {"v": montaje["versiones"]})

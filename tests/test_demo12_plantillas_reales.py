@@ -112,11 +112,12 @@ def test_r8_los_ids_salen_del_codigo_de_plantilla_nunca_de_la_posicion():
 # --- R4b · Pie de la demo -------------------------------------------------------------------------
 
 TEXTO = "# Política\n\nTexto **negrita**.\n\n- uno\n\n| A | B |\n|---|---|\n| sí | 2026-01-15 |\n"
-# Huellas medidas en origin/main 61797614, antes de DEMO-12 (fuera de la demo la salida no cambia).
-DOCX_HOY = {None: "a679ae3aa7994f7d66e352dc71519f51c9dd43588c1675890c36b521b5e4a03c",
-            ("x",): "93ba002910e93dad56da520b6d41b433365e0b897b83be88e77aa4cf500de9e5"}
-XLSX_HOY = {None: "32dcdbeff34746bc84340edc8ead54235a5a0d91d50a17c69824cb61e49bf33a",
-            ("x",): "6f82730e4771e1ceccbbabe6458c2bc3b4e1123960322be4211f67843878b461"}
+# Huellas de las partes descomprimidas (nombre y bytes, ordenadas), medidas con el código de origin/main 61797614,
+# antes de DEMO-12. No se compara el ZIP entero: los bytes comprimidos dependen del zlib de cada plataforma.
+DOCX_HOY = {None: "ead3022b49903db2304e8209a5197611dd26d0b8f5d1eb1f716638f3b29a74d1",
+            ("x",): "9e9482f979bf3aef517410c00651a2afa623a4dccd1917c6b4df8c5744234c80"}
+XLSX_HOY = {None: "94c29891a16744dc8212bfaf0e9724e5f54a3e73cd5a99e01801d2927bb0f219",
+            ("x",): "7473c5fb8f5f9a39893e079081c8f89771a1c950d74e1f9d10945e1c63334e3e"}
 OPENPYXL_MEDIDO = "3.1.5"
 
 
@@ -142,6 +143,12 @@ def _partes(archivo: bytes) -> dict[str, str]:
         return {n: z.read(n).decode("utf-8") for n in z.namelist() if n.endswith((".xml", ".rels"))}
 
 
+def _huella_de_partes(archivo: bytes) -> str:
+    with zipfile.ZipFile(BytesIO(archivo)) as z:
+        partes = sorted((n, z.read(n)) for n in z.namelist())
+    return hashlib.sha256(repr(partes).encode()).hexdigest()
+
+
 def test_fuera_de_la_demo_los_generadores_dan_los_mismos_bytes_que_hoy():
     import openpyxl
     from features.biblioteca.services.generador_docx import generar_docx
@@ -150,12 +157,14 @@ def test_fuera_de_la_demo_los_generadores_dan_los_mismos_bytes_que_hoy():
 
     partes = bloques(TEXTO)
     for marca, esperado in DOCX_HOY.items():
-        assert hashlib.sha256(generar_docx(partes, list(marca) if marca else None)).hexdigest() == esperado
-    if openpyxl.__version__ == OPENPYXL_MEDIDO:  # el XLSX depende de la versión del escritor
+        assert _huella_de_partes(generar_docx(partes, list(marca) if marca else None)) == esperado
+    # El XML del XLSX lo escribe openpyxl (sin versión fija en requirements): la huella se compara solo con la
+    # versión medida; con otra, la igualdad con development de la prueba siguiente cubre lo mismo.
+    if openpyxl.__version__ == OPENPYXL_MEDIDO:
         for marca, esperado in XLSX_HOY.items():
             libro = generar_xlsx("BIB-001 · Política", {"organizacion.ruc": "9999"}, partes, date(2026, 1, 15),
                                  list(marca) if marca else None)
-            assert hashlib.sha256(libro).hexdigest() == esperado
+            assert _huella_de_partes(libro) == esperado
 
 
 @pytest.mark.parametrize("entorno", ["production", "pruebas"])
