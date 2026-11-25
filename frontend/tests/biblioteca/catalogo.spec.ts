@@ -49,13 +49,17 @@ test.describe("Biblioteca: catálogo de plantillas (BIB-102, API simulada)", () 
       const url = new URL(ruta.request().url());
       pedidas.push(url.search);
       const ola = url.searchParams.get("ola");
-      const lista = [plantilla("BIB-001"), plantilla("BIB-002", { ola: 2, tipo: "aviso", estado: "en_revision" })];
+      const lista = [plantilla("BIB-001"), plantilla("BIB-002", { ola: 2, tipo: "aviso", estado: "en_revision", validacion_legal: "validada" })];
       return ruta.fulfill({ json: ola ? lista.filter((p) => String(p.ola) === ola) : lista });
     });
 
     await expect(catalogo.getByTestId("plantilla-BIB-001")).toContainText("versión 0.1.0");
-    await expect(catalogo.getByTestId("plantilla-BIB-001")).toContainText("Validación legal: pendiente");
+    await expect(catalogo.getByTestId("plantilla-BIB-001")).toContainText("Citas normativas: Pendientes de verificar");
+    await expect(catalogo.getByText("Comprobamos que cada norma citada existe, que dice lo que se cita y que es la versión más reciente que conoce la plataforma. No valoramos si cada cláusula se aplica correctamente a tu organización.")).toBeVisible();
+    await expect(catalogo.getByTestId("plantilla-BIB-001")).not.toContainText(/legal|validada|vigente/i);
     await expect(catalogo.getByTestId("plantilla-BIB-002")).toContainText("En revisión");
+    await expect(catalogo.getByTestId("plantilla-BIB-002")).toContainText("Citas normativas: Verificadas en fuente oficial");
+    await expect(catalogo.getByTestId("plantilla-BIB-002")).not.toContainText("validada");
     // Ninguna entrada ofrece descargar, ni publicada ni en otro estado.
     await expect(catalogo.getByRole("button", { name: /descarg/i })).toHaveCount(0);
     expect(pedidas[0]).toBe("");

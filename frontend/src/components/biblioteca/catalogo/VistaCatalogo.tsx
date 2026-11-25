@@ -26,6 +26,14 @@ const ESTADOS: Record<string, string> = {
   publicada: "Publicada", en_revision: "En revisión", sustituida: "Sustituida", retirada: "Retirada",
 };
 
+// BIB-403 §4 (UX/UI): el valor interno «validada» no se muestra nunca.
+const CITAS_NORMATIVAS: Record<string, string> = {
+  pendiente: "Pendientes de verificar", en_revision: "En revisión",
+  validada: "Verificadas en fuente oficial", con_observaciones: "Con observaciones",
+};
+const AYUDA_CITAS =
+  "Comprobamos que cada norma citada existe, que dice lo que se cita y que es la versión más reciente que conoce la plataforma. No valoramos si cada cláusula se aplica correctamente a tu organización.";
+
 function Tarjeta({ p, elegida, elegir }: { p: PlantillaCatalogo; elegida: boolean; elegir: () => void }) {
   return (
     <li data-testid={`plantilla-${p.codigo}`} className="rounded-md border border-[var(--ui-borde)] p-3">
@@ -51,7 +59,9 @@ function Tarjeta({ p, elegida, elegir }: { p: PlantillaCatalogo; elegida: boolea
       <p className="mt-1 flex flex-wrap gap-x-3 text-[var(--ui-texto-suave)]">
         <span>{nombreDe(FUENTES, p.fuente)}</span>
         <span>{ESTADOS[p.estado] ?? p.estado}</span>
-        <span>Validación legal: {p.validacion_legal ?? "sin dictamen registrado"}</span>
+        <span aria-describedby="ayuda-citas-catalogo">
+          Citas normativas: {CITAS_NORMATIVAS[p.validacion_legal ?? "pendiente"] ?? "Pendientes de verificar"}
+        </span>
       </p>
     </li>
   );
@@ -107,12 +117,15 @@ export default function VistaCatalogo(_: PropsVistaBiblioteca) {
       {resultado === null && <p role="status">Cargando plantillas…</p>}
 
       {resultado?.estado === "listo" && resultado.plantillas.length > 0 && (
+        <>
+        <p id="ayuda-citas-catalogo" className="text-[var(--ui-texto-suave)]">{AYUDA_CITAS}</p>
         <ul aria-label="Plantillas" className="flex flex-col gap-2">
           {resultado.plantillas.map((p) => (
             <Tarjeta key={p.id} p={p} elegida={plantillaId === p.id}
               elegir={() => elegirPlantilla(plantillaId === p.id ? null : p.id)} />
           ))}
         </ul>
+        </>
       )}
 
       {resultado?.estado === "listo" && resultado.plantillas.length === 0 && (

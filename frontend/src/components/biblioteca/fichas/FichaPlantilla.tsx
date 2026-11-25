@@ -17,10 +17,13 @@ import {
 } from "@/lib/biblioteca/fichas";
 import { useSeleccionBiblioteca, type PropsVistaBiblioteca } from "@/lib/biblioteca/registro";
 
-const VALIDACION = {
-  pendiente: "Pendiente de validación legal", en_revision: "Validación legal en revisión",
-  validada: "Validada legalmente", con_observaciones: "Validación legal con observaciones",
+// BIB-403 §4 (UX/UI): el valor interno «validada» no se muestra nunca.
+const CITAS_NORMATIVAS = {
+  pendiente: "Pendientes de verificar", en_revision: "En revisión",
+  validada: "Verificadas en fuente oficial", con_observaciones: "Con observaciones",
 } as const;
+const AYUDA_CITAS =
+  "Comprobamos que cada norma citada existe, que dice lo que se cita y que es la versión más reciente que conoce la plataforma. No valoramos si cada cláusula se aplica correctamente a tu organización.";
 const SIN_DATO: Record<OrigenVariable, string> = {
   organizacion: "Falta este dato en la organización", delegado: "La organización no tiene delegado vigente",
   persona: "Lo completa la persona al crear el documento", al_crear: "Se completa al crear el documento",
@@ -81,8 +84,12 @@ export default function FichaPlantilla({ variante }: PropsVistaBiblioteca) {
             </p>
             <p>
               <span className="font-medium">Estado editorial de la plantilla:</span>{" "}
-              {ficha.estado_editorial === "publicada" ? "Publicada" : "Copia de la organización"} · {VALIDACION[ficha.validacion_legal]}
+              {ficha.estado_editorial === "publicada" ? "Publicada" : "Copia de la organización"}
             </p>
+            <p aria-describedby="ayuda-citas-normativas">
+              <span className="font-medium">Citas normativas:</span> {CITAS_NORMATIVAS[ficha.validacion_legal]}
+            </p>
+            <p id="ayuda-citas-normativas" className="text-[var(--ui-texto-suave)]">{AYUDA_CITAS}</p>
             <p className="text-[var(--ui-texto-suave)]">
               Normativa vigente al {ficha.fecha_corte_normativo} · revisión cada {ficha.revision_meses} meses
               {ficha.origen_plantilla_id && ` · copia de la versión ${ficha.origen_version}`}
