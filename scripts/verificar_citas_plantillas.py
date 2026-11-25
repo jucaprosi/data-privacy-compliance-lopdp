@@ -19,9 +19,8 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ))
 
-from features.biblioteca.domain.plantillas_md import leer_metadatos, separar  # noqa: E402
-from features.biblioteca.domain.validacion import (  # noqa: E402
-    errores_ida, errores_secciones, errores_vuelta, extraer_citas,
+from features.biblioteca.biblioteca_service import (  # noqa: E402
+    errores_ida, errores_secciones, errores_vuelta, extraer_citas, leer_metadatos, separar,
 )
 
 ARTEFACTO = RAIZ / "governance" / "artefactos" / "CITAS_PLANTILLAS_VERIFICADAS.md"

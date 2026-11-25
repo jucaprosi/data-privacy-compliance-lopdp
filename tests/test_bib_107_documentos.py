@@ -142,7 +142,7 @@ async def _publicar(sesion, ids):
     version = await bib.crear_version_md(sesion, ids["editor"], "TEST-" + uuid4().hex[:10].upper(), "0.1.0", CUERPO)
     version = await bib.editar(sesion, ids["editor"], version["id"], bib.EditarFicha(
         ficha=bib.Ficha(**FICHA), generacion=version["generacion"]))
-    for rol, tipo in (("tecnico", "tecnica"), ("juridico", "juridica")):
+    for rol, tipo in (("tecnico", "tecnica"),):
         await bib.revisar(sesion, ids[rol], version["id"], bib.Dictamen(
             tipo=tipo, aprobado=True, comentario="Dictamen sintético", generacion=version["generacion"]))
     return await bib.publicar(sesion, ids["publicador"], version["id"], bib.Transicion(
@@ -479,3 +479,11 @@ async def test_api_documento_ajeno_404_organizacion_en_el_cuerpo_rechazada_y_lec
     assert (await api.get(f"{base}/{doc['id']}", headers=lector)).status_code == 200
     assert (await api.post(base, headers=lector, json={"plantilla_id": mundo.plantilla_id})).status_code == 403
     assert (await api.patch(f"{base}/{doc['id']}", headers=lector, json={"contenido_markdown": "x", "revision": 1})).status_code == 403
+
+
+# ¤adpa
+@pytest.fixture(autouse=True)
+def _validacion_normativa_validada(monkeypatch):
+    """BIB-403 R4: publicar exige validación normativa «validada»; estas pruebas no ejercen esa regla."""
+    from features.biblioteca.services import editorial as _editorial
+    monkeypatch.setattr(_editorial, "validacion_de_texto", lambda *a, **k: "validada")
