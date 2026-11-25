@@ -37,6 +37,14 @@ REGLAS = [
 ]
 
 
+# Errores medidos (R1) que decidió el CTO en la revisión de #1063 (2026-11-25):
+# solo identifican la norma o añaden la cita del principio. Otra diferencia da rojo.
+CORRECCIONES_CTO = {
+    "BIB-004": [('La obligación de confidencialidad se mantiene durante la relación laboral y después de que termine.', 'La obligación de confidencialidad se mantiene durante la relación laboral y después de que termine (LOPDP art. 10 g).')],
+    "BIB-009": [('plazos del art. 43.', 'plazos del art. 43 de la LOPDP.')],
+}
+
+
 def git_show(ruta: str) -> str:
     return subprocess.run(
         ["git", "show", f"{ORIGEN}:{ruta}"], check=True, capture_output=True
@@ -64,7 +72,11 @@ def actual(codigo: str) -> str:
 
 
 def errores_autora(codigo: str, texto: str) -> list[str]:
-    esperado = sin_metadato_bib403(corregir(git_show(f"{CARPETA}/{codigo}.md")))
+    esperado = corregir(git_show(f"{CARPETA}/{codigo}.md"))
+    for antes, despues in CORRECCIONES_CTO.get(codigo, []):
+        assert esperado.count(antes) == 1, (codigo, antes)
+        esperado = esperado.replace(antes, despues)
+    esperado = sin_metadato_bib403(esperado)
     errores = []
     if sin_metadato_bib403(texto) != esperado:
         errores.append("el cuerpo no es el de la autora")
