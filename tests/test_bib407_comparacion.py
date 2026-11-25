@@ -176,13 +176,22 @@ async def test_sin_capacidad_no_compara(monkeypatch, servicio):
 
 
 @pytest.mark.asyncio
-async def test_sin_norm07_la_vigencia_va_nula_sin_importar_la_sala_normativa(servicio):
-    import sys
-    antes = {m for m in sys.modules if m.startswith("features.inteligencia_normativa")}
-    fechas = await servicio._vigencias({"https://ejemplo.invalid/a.pdf"})
-    assert fechas.get("https://ejemplo.invalid/a.pdf") is None
-    nuevos = {m for m in sys.modules if m.startswith("features.inteligencia_normativa")} - antes
-    assert nuevos == set()
+async def test_con_norm07_la_vigencia_la_lee_el_pasillo_sin_importar_lo_privado_de_la_sala(servicio, monkeypatch):
+    """NORM-07: la fecha sale de `pasillo.fecha_vigencia_de`. Mutación: leer la sala por import directo da rojo."""
+    from datetime import date
+
+    from app_core.pasillo import inteligencia_normativa as pasillo
+
+    llamadas = []
+
+    async def fecha_vigencia_de(clave):
+        llamadas.append(clave)
+        return date(2026, 12, 1)
+
+    monkeypatch.setattr(pasillo, "fecha_vigencia_de", fecha_vigencia_de)
+    url = "https://ejemplo.invalid/a.pdf"
+    assert await servicio._vigencias({url}) == {url: date(2026, 12, 1)}
+    assert llamadas == [url]
 
 
 def test_api_expone_la_comparacion():
