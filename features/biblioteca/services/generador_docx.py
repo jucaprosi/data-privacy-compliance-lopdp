@@ -111,18 +111,20 @@ def _bloque(b: Bloque) -> str:
 
 
 # ¤adpa
-def _pie(texto: str) -> str:
-    return (f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="{W}">'
-            f'<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:t xml:space="preserve">{escape(texto)}</w:t></w:r>'
-            '</w:p></w:ftr>')
+def _pie(texto: str | list[str]) -> str:
+    lineas = [texto] if isinstance(texto, str) else texto  # BIB-410: una línea por pie, el de la demo primero
+    parrafos = "".join(f'<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:t xml:space="preserve">{escape(t)}</w:t></w:r></w:p>'
+                       for t in lineas)
+    return f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="{W}">{parrafos}</w:ftr>'
 
 
 # ¤adpa
-def generar_docx(contenido: list[Bloque], faltantes: list[str] | None = None, pie: str | None = None) -> bytes:
+def generar_docx(contenido: list[Bloque], faltantes: list[str] | None = None,
+                 pie: str | list[str] | None = None) -> bytes:
     """DOCX de uso. Con `faltantes` (modo borrador) abre con la marca BORRADOR y el listado.
 
-    Con `pie` (la leyenda de la demo, DEMO-12 R4b) añade un pie de página con ese texto y nada más; sin él,
-    los bytes son los de siempre.
+    Con `pie` (la leyenda de la demo, DEMO-12 R4b, y el pie de la plantilla, BIB-410 R4; una lista da un párrafo
+    por pie) añade un pie de página con ese texto y nada más; sin él, los bytes son los de siempre.
     """
     partes = []
     if faltantes is not None:
