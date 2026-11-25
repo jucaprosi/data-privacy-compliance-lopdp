@@ -1,12 +1,9 @@
 # BIBLIOTECA de EVYDENTIA — PMV para pequeñas empresas privadas (LOPDP)
 
 > Estado: borrador de especificación, 2026-10-27; seguimiento actualizado el 2026-10-28. Sin código de funcionalidades.
-> **Referencias normativas.** Un artículo de la LOPDP, de su Reglamento General o de una resolución de la SPDP
-> solo se cita como firme si se ha cotejado con el texto de la fuente oficial. En este repositorio no consta
-> ese cotejo para ninguno de los artículos citados aquí, así que todos van marcados **POR VERIFICAR**.
-> Los datos de publicación de las normas están en `governance/artefactos/FUENTES_Y_BIBLIOGRAFIA.md`.
-> La reforma del art. 43 de la LOPDP por la Ley Orgánica para el Fortalecimiento de la Ciberseguridad
-> no figura en ese registro y también va **POR VERIFICAR**.
+> **Referencias normativas.** Cada artículo citado en las plantillas tiene su lectura en la fuente oficial en
+> `governance/artefactos/CITAS_PLANTILLAS_VERIFICADAS.md` (LEG-08 y LEG-08b); los datos de publicación de las
+> normas están en `governance/artefactos/FUENTES_Y_BIBLIOGRAFIA.md`. Una cita sin lectura `verificada` no se carga.
 > **PENDIENTE VALIDACIÓN** es marca de borrador: una plantilla que la conserve no se carga. La validación normativa no es personal: la derivan las lecturas de `governance/artefactos/CITAS_PLANTILLAS_VERIFICADAS.md` (LEG-08), ver «Validación normativa».
 
 ## 0. Decisiones de partida
@@ -71,7 +68,7 @@ Columna «Fuente actual»: ✅ el campo ya existe; ➕ hay que crearlo; ✍ lo c
 
 `{{fecha_emision}}` se mantiene sin ámbito porque así se acordó. Es la única excepción a la regla del punto.
 
-**Delegado en dos variantes (decisión de la propietaria, 2026-10-27).** La mayoría de las pequeñas empresas privadas no está obligada a designar delegado (LOPDP art. 48; Reglamento art. 53; Res. SPDP-SPD-2025-0028-R, art. 10 — **POR VERIFICAR**). Por eso `dpo.*` solo puede usarse dentro de una parte condicional `{{#si dpo.designado}}…{{#sino}}…{{/si}}`: si hay un DPD vigente se muestran sus datos; si no, el texto alternativo («La organización no está obligada a designar delegado…»). La falta de delegado **no** bloquea el paso a revisión. El aviso para designarlo remite a **Cockpit DPD / DPO**.
+**Delegado en dos variantes (decisión de la propietaria, 2026-10-27).** La mayoría de las pequeñas empresas privadas no está obligada a designar delegado (LOPDP art. 48; Reglamento art. 53; Res. SPDP-SPD-2025-0028-R, art. 10). Por eso `dpo.*` solo puede usarse dentro de una parte condicional `{{#si dpo.designado}}…{{#sino}}…{{/si}}`: si hay un DPD vigente se muestran sus datos; si no, el texto alternativo («La organización no está obligada a designar delegado…»). La falta de delegado **no** bloquea el paso a revisión. El aviso para designarlo remite a **Cockpit DPD / DPO**.
 
 ### Partes condicionales y avisos (decisión de la propietaria, 2026-10-27)
 
@@ -80,7 +77,7 @@ Columna «Fuente actual»: ✅ el campo ya existe; ➕ hay que crearlo; ✍ lo c
   - `dpo.designado`: verdadera si la organización tiene un DPD vigente en `designaciones_formales` (tipo `dpd`).
   - `contexto.<clave>` declarada en `variables_contexto` con `tipo: si_no`.
 - **Avisos:** la plantilla puede declarar en sus metadatos `avisos` que se muestran en el borrador y en la ficha cuando se cumple su condición. No forman parte del texto del documento ni bloquean la revisión.
-- **Caso que lo motiva (documento BIB-011):** la videovigilancia sistemática de zonas de acceso público es tratamiento a gran escala (Res. SPDP-SPD-2026-0005-R, art. 14.3 — **POR VERIFICAR**), con evaluación de impacto previa y delegado obligatorio. BIB-011 pregunta `contexto.camaras_acceso_publico` y, si es «sí», avisa de esas obligaciones. Si la condición se cumple y no hay DPD vigente, el aviso es de nivel `alto`. **PENDIENTE VALIDACIÓN** (expediente del abogado, P1): si un local abierto al público cuenta como zona de acceso público.
+- **Caso que lo motiva (documento BIB-011):** la videovigilancia sistemática de zonas de acceso público es tratamiento a gran escala (Res. SPDP-SPD-2026-0005-R, art. 14.3), con evaluación de impacto previa y delegado obligatorio. BIB-011 pregunta `contexto.camaras_acceso_publico` y, si es «sí», avisa de esas obligaciones. Si la condición se cumple y no hay DPD vigente, el aviso es de nivel `alto`. La resolución no dice si un local abierto al público es una zona de acceso público: el aviso indica que, si sus cámaras graban áreas por donde pasa el público, se trate como tal (decisión del CTO).
 
 ## b) Formato estándar de una plantilla
 
@@ -111,7 +108,7 @@ sector: general           # general | <sector concreto>
 naturaleza: privada       # publica | privada | ambas
 tamano_empresa: [micro, pequena]
 version: 0.1.0            # semver; cada publicación crea una versión nueva
-base_lopdp: POR VERIFICAR # artículos y normas, solo con fuente oficial cotejada
+base_lopdp: "LOPDP arts. 7, 8" # artículos y normas con lectura `verificada`
 secciones_informativas:   # títulos de secciones sin efecto jurídico; el resto de las secciones lleva cita verificada
   - titulo: 1. Objeto
 fecha_corte_normativo: 2026-10-27
@@ -253,7 +250,7 @@ Además, en todos los casos:
 
 ## f) BIB-006 desde el RAT (decisión D4)
 
-- BIB-006 no crea un registro paralelo: cada actividad del RAT de la organización (RAT-01) se convierte en una ficha con los nueve contenidos del Reglamento, art. 38 (**POR VERIFICAR**). El resultado rellena `contexto.actividades`.
+- BIB-006 no crea un registro paralelo: cada actividad del RAT de la organización (RAT-01) se convierte en una ficha con los nueve contenidos del Reglamento, art. 38. El resultado rellena `contexto.actividades`.
 - Lo hace BIB-201, en solo lectura y a través de la compuerta del módulo RAT. No escribe en tablas del RAT.
 - Correspondencia mínima (a confirmar con el modelo de datos de RAT-01 al implementar):
 
@@ -265,7 +262,7 @@ Además, en todos los casos:
 | 4. Titulares y categorías de datos | titulares y categorías de la actividad |
 | 5. Uso de perfiles | indicador de perfiles de la actividad |
 | 6. Transferencias internacionales | transferencias de la actividad |
-| 7. Base de legitimación | base de la actividad (LOPDP art. 7, **POR VERIFICAR**) |
+| 7. Base de legitimación | base de la actividad (LOPDP art. 7) |
 | 8. Plazos de conservación | plazo de la actividad |
 | 9. Medidas técnicas, jurídicas, administrativas y organizativas | medidas de la actividad |
 
