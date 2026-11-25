@@ -7,7 +7,7 @@ Hechos medidos en `origin/main` ed575cd2:
 - `normativa_resoluciones` no guarda la fecha de entrada en vigencia.
 - `registrar_revision` (`services/revision.py:136`) escribe como `lopdp_app`, y solo puede hacer UPDATE de cuatro columnas (`norm05_revision_sin_rol_monitoreo.py:32`).
 - `revisar_estado` lo ejecuta un operador de la plataforma (`api/routers/inteligencia_normativa.py:115`, `require_operador`).
-- La sala no tiene aún rama de Alembic propia: esta es su primera migración, que cuelga de `BASE_COMUN` (`ret02_clave_objeto`) con `branch_labels = ("inteligencia_normativa",)`.
+- La sala ya tiene rama de Alembic: la etiqueta está en `alembic/versions/20261104_norm03_analisis_impacto.py:18` y la cabeza es `norm06_transcripciones` (`origin/main` f78f8b92). La migración de esta ficha cuelga de `norm06_transcripciones`, sin `branch_labels`, para que la sala siga con una sola cabeza.
 
 Migración `20261125_norm07_fecha_vigencia.py`: `ALTER TABLE normativa_resoluciones ADD COLUMN fecha_vigencia date` (nula) y `GRANT UPDATE (fecha_vigencia)` a `lopdp_app`, con su `downgrade`.
 
