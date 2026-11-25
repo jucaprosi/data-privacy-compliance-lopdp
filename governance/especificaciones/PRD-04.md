@@ -1,5 +1,5 @@
 # PRD-04 · Las decisiones del 2026-11-24 en el PRD
-`¤sdd` `¤triaje` `¤vpa` `¤cita-verificada` `¤plantillas-demo` `¤monitoreo-job` `¤transcripcion-normativa`
+`¤sdd` `¤triaje` `¤vpa` `¤cita-verificada` `¤monitoreo-job` `¤transcripcion-normativa`
 
 ## 1. Datos
 
@@ -9,7 +9,6 @@ Sin datos persistentes. Cambia texto de `PRD.md`, `VPA_MAP.md`, `CITAS_PLANTILLA
 | :--- | :--- | :--- |
 | Plantilla publicable con cita verificada por sección o declarada informativa; la revisión jurídica es la validación normativa | BIB-403 | Módulo 7, «Publicación con cita verificada»; leyes 6 y 7 |
 | Artefacto `CITAS_PLANTILLAS_VERIFICADAS.md` con la huella del PDF oficial | LEG-08 | Módulo 7, «Publicación con cita verificada»; ley 6 |
-| Catálogo de plantillas ficticias en la demo | BIB-404 | Módulo 7, «Plantillas de la demo», y §5.6 |
 | Monitoreo como Cloud Run Job con cuenta y usuario de base propios; el backend lee y lanza el Job | NORM-04, NORM-05 | Módulo 6.1, «Ejecución y reparto de privilegios»; ley 13 |
 | Escaneados transcritos con Gemini en Vertex AI | NORM-06 | Módulo 6.3, «Transcripción de originales escaneados»; ley 7 |
 
@@ -27,11 +26,10 @@ Sin API nueva.
   | Rastro | Eje | Fichas |
   | :--- | :--- | :--- |
   | `¤cita-verificada` | 1.3 (Biblioteca) | LEG-08, BIB-403 |
-  | `¤plantillas-demo` | 1.3 (Biblioteca) | BIB-404 |
   | `¤monitoreo-job` | 1.4 (Inteligencia normativa) | NORM-04, NORM-05 |
   | `¤transcripcion-normativa` | 1.4 (Inteligencia normativa) | NORM-06 |
-- **R6 · Difusión.** El rastro va en los `rastros` de cada ficha, en la línea de etiquetas y en la §6 de su especificación, en el apartado del PRD, en `CITAS_PLANTILLAS_VERIFICADAS.md`, en el brief del bucket y en la cabecera de `almacen_normativo.py`, `trabajo_monitoreo.py` y `test_norm04_almacen_y_trabajo.py`. Las fichas por fusionar (BIB-403, BIB-404, NORM-05 y NORM-06) lo ponen en la cabecera de los archivos que crean, según su §6.
-- **R7 · Invariante.** «Solo el Job del monitoreo escribe el corpus normativo» se da de alta en positivo en `INVARIANTS.md` con NORM-05, cuyo árbitro conectado como `lopdp_app` (`test_norm05_privilegios_backend.py`) aún no existe en main. Darla de alta hoy dejaría una invariante sin árbitro ejecutable. Las otras tres decisiones son reglas de su módulo, con árbitro propio en su ficha, y no invariantes del sistema.
+- **R6 · Difusión.** El rastro va en los `rastros` de cada ficha, en la línea de etiquetas y en la §6 de su especificación, en el apartado del PRD, en `CITAS_PLANTILLAS_VERIFICADAS.md`, en el brief del bucket y en la cabecera de `almacen_normativo.py`, `trabajo_monitoreo.py` y `test_norm04_almacen_y_trabajo.py`. Las fichas por fusionar (BIB-403, NORM-05 y NORM-06) lo ponen en la cabecera de los archivos que crean, según su §6.
+- **R7 · Invariante.** «Solo el Job del monitoreo escribe el corpus normativo» se da de alta en positivo en `INVARIANTS.md` con NORM-05, cuyo árbitro conectado como `lopdp_app` (`test_norm05_privilegios_backend.py`) aún no existe en main. Darla de alta hoy dejaría una invariante sin árbitro ejecutable. Las otras dos decisiones son reglas de su módulo, con árbitro propio en su ficha, y no invariantes del sistema.
 - **R4 · Sin árbitro mecánico de la §6 (decisión del Arquitecto).** `verificar_especificaciones.py` no cambia:
   - un árbitro solo podría comprobar que aparece el texto `PRD`, no que el apartado citado sustente la decisión, y eso invita a citas de trámite;
   - las especificaciones técnicas (CI, arneses, migraciones) no tienen apartado del PRD, y separarlas pediría un campo o una excepción más;
@@ -57,4 +55,4 @@ Sin interfaz.
 
 - **PRD:** leyes fundacionales 6, 7 y 13; §4, Módulos 6.1, 6.3 y 7.
 - Brief del CTO `ARQUITECTO_PRD_DECISIONES_2026-11-24.v2.md` (2026-11-24), que sustituye al primero; base `origin/main` 07bd95b5.
-- Decisiones del propietario del 2026-11-24 recogidas en LEG-08, BIB-403, BIB-404, NORM-04, NORM-05 y NORM-06.
+- Decisiones del propietario del 2026-11-24 recogidas en LEG-08, BIB-403, NORM-04, NORM-05 y NORM-06.
