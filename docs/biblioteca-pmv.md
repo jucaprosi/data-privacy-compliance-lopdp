@@ -291,22 +291,38 @@ Si la URL de `BIB109_DATABASE_URL` no corresponde al entorno pedido, el script s
 
 ### En la demo (DEMO-12)
 
-La demo (proyecto `evydentia-demo`, base `evydentia_demo` en `evydentia-demo-db`) usa las mismas plantillas BIB-001 a BIB-012 que producción, con los datos ficticios de la organización de `data/demo/cooperativa_demo.json`. Lo ejecuta el propietario, desde `main` y tras fusionar, en este orden. Ninguna sesión de IA lo ejecuta.
+La demo (proyecto `evydentia-demo`, base `evydentia_demo` en `evydentia-demo-db`) usa las mismas plantillas BIB-001 a BIB-012 que producción, con los datos ficticios de la organización de `data/demo/cooperativa_demo.json`. Lo ejecuta el propietario por Antigravity, desde `main` y tras fusionar, en este orden. Ninguna sesión de IA lo ejecuta. En cada comando, Antigravity pone la URL de `evydentia_demo` en la variable indicada (nunca se escribe el valor de un secreto en la guía) y la borra al terminar.
 
-1. **Carga.** Mismo flujo editorial que producción (BIB-403). Deja cada plantilla «En revisión» y nunca publica. Con una URL que no sea la de la demo, o sin `--confirmar-entorno`, sale con código 2 sin conectar.
+1. **Capacidades.** Antes de cargar. Se conceden `editor`, `revisor_tecnico` y `publicador` a Aleczandra, José y Juan Carlos, cada uno concedido por otra de las tres personas (nadie se concede capacidades a sí mismo). Con una URL que no sea la de la demo, o sin `--confirmar-entorno`, el script sale con código 2 sin conectar.
 
    ```powershell
    cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
    git switch main
    git pull
-   $env:BIB109_DATABASE_URL = "<URL de evydentia_demo por cloud-sql-proxy>"
+   $env:BIB_CAPACIDADES_DATABASE_URL = "<URL de evydentia_demo con la credencial del dueño>"
+   foreach ($capacidad in "editor", "revisor_tecnico", "publicador") {
+     python scripts/capacidades_biblioteca.py --conceder --usuario <id de Aleczandra> --capacidad $capacidad --otorgante <id de José> --motivo "Demo: capacidades editoriales" --entorno demo --confirmar-entorno
+     python scripts/capacidades_biblioteca.py --conceder --usuario <id de José> --capacidad $capacidad --otorgante <id de Juan Carlos> --motivo "Demo: capacidades editoriales" --entorno demo --confirmar-entorno
+     python scripts/capacidades_biblioteca.py --conceder --usuario <id de Juan Carlos> --capacidad $capacidad --otorgante <id de Aleczandra> --motivo "Demo: capacidades editoriales" --entorno demo --confirmar-entorno
+   }
+   python scripts/capacidades_biblioteca.py --listar --entorno demo --confirmar-entorno
+   Remove-Item Env:BIB_CAPACIDADES_DATABASE_URL
+   ```
+
+2. **Carga.** Mismo flujo editorial que producción (BIB-403). Deja cada plantilla «En revisión» y nunca publica. Con una URL que no sea la de la demo, o sin `--confirmar-entorno`, sale con código 2 sin conectar.
+
+   ```powershell
+   cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+   $env:BIB109_DATABASE_URL = "<URL de evydentia_demo>"
    python scripts/cargar_plantillas_pmv.py --cargar --actor <id del editor que carga> --entorno demo --confirmar-entorno
    Remove-Item Env:BIB109_DATABASE_URL
    ```
 
-2. **Revisión y publicación.** En la web de la demo, un usuario editor distinto del autor de la carga (BIB-403 R4) abre cada plantilla nombrada en `salas.biblioteca.documentos` de `cooperativa_demo.json` (hoy BIB-001, BIB-002, BIB-003 y BIB-006), aprueba la revisión técnica en el expediente («Aprobar con autoridad vigente»), valida sus citas y la publica. Como mínimo se publican esas plantillas.
+3. **Revisión y publicación.** En la web de la demo, una de las tres personas con `revisor_tecnico` y `publicador` (distinta de quien cargó, BIB-403 R4) abre cada plantilla nombrada en `salas.biblioteca.documentos` de `cooperativa_demo.json` (hoy BIB-001, BIB-002, BIB-003 y BIB-006), aprueba la revisión técnica en el expediente («Aprobar con autoridad vigente»), valida sus citas y la publica. Como mínimo se publican esas plantillas.
 
-3. **Comprobación.** De solo lectura, por Antigravity o Cloud SQL Studio, sin psql: cada código nombrado en el JSON tiene una versión publicada. Si falta alguno, se para y no se siembra (la siembra falla cerrado de todos modos).
+   **Quién aprueba.** Una versión redactada por la IA la revisa y la publica una sola persona de las tres (BIB-406 R4). Una versión cargada a mano la revisa y la publica una persona distinta de quien la cargó (BIB-403 R4).
+
+4. **Comprobación.** De solo lectura, por Antigravity o Cloud SQL Studio, sin psql: cada código nombrado en el JSON tiene una versión publicada. Si falta alguno, se para y no se siembra (la siembra falla cerrado de todos modos).
 
    ```sql
    BEGIN TRANSACTION READ ONLY;
@@ -317,7 +333,7 @@ La demo (proyecto `evydentia-demo`, base `evydentia_demo` en `evydentia-demo-db`
 
    Toda fila con `version` vacía es una plantilla sin publicar.
 
-4. **Retiro de lo ficticio y, después, siembra.** Primero se retira el documento ficticio `DEMO-DOC-01` del tenant plantilla (`demo-plantilla-cooperativa`), con el rol dueño de las tablas, el que migra (secreto `DATABASE_URL` de `evydentia-demo`, el mismo de `migrar-demo`), por Antigravity con `cloud-sql-proxy` o por Cloud SQL Studio, en una sola transacción. Nada va a `jobs/`: el rol `purga_demo` no es dueño de las tablas. Los tenants ya clonados no se tocan: caducan y los borra la purga nocturna (DEMO-05).
+5. **Retiro de lo ficticio.** Primero se retira el documento ficticio `DEMO-DOC-01` del tenant plantilla (`demo-plantilla-cooperativa`), con el rol dueño de las tablas, el que migra (secreto `DATABASE_URL` de `evydentia-demo`, el mismo de `migrar-demo`), por Antigravity con `cloud-sql-proxy` o por Cloud SQL Studio, en una sola transacción. Nada va a `jobs/`: el rol `purga_demo` no es dueño de las tablas. Los tenants ya clonados no se tocan: caducan y los borra la purga nocturna (DEMO-05).
 
    ```sql
    BEGIN;
@@ -358,5 +374,14 @@ La demo (proyecto `evydentia-demo`, base `evydentia_demo` en `evydentia-demo-db`
    ```
 
    Cualquier `RAISE` deja la transacción abortada: se ejecuta `ROLLBACK`, se para y se avisa al CTO. Después se siembra la plantilla de la demo: los documentos nacen de las versiones publicadas, con ids derivados del código de plantilla (`DEMO-BIB-001`…), que nunca coinciden con el viejo `DEMO-DOC-01`.
+
+6. **Siembra.** Por Antigravity, con la URL local que este abre hacia `evydentia_demo` y el rol que migra. Falla cerrado si falta una versión publicada.
+
+   ```powershell
+   $env:APP_ENV = "demo"
+   $env:MIGRATION_DATABASE_URL = "<URL local de evydentia_demo>"
+   python scripts/demo/sembrar_plantilla.py
+   Remove-Item Env:MIGRATION_DATABASE_URL
+   ```
 
 En la demo, cada DOCX y XLSX generado lleva en el pie «Demostración · datos ficticios»; fuera de ella la salida no cambia. La descarga de archivos maestros entrega la plantilla del catálogo, sin datos de la organización, y no cambia.
