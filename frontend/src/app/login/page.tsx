@@ -113,6 +113,8 @@ export default function LoginPage() {
     receptorDemo.current = r;
   }, []);
   // === fin DEMO-04 ===
+  // === BIB-412 ===
+  // === fin BIB-412 ===
 
   // El modo depende del navegador (en desarrollo lo fijan las pruebas): se resuelve ya montado.
   React.useEffect(() => {

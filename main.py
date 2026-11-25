@@ -166,6 +166,8 @@ ROUTERS_MAP = [
     # === fin CON-01 ===
     # === NOTIF-02 ===
     # === fin NOTIF-02 ===
+    # === NOTIF-04 ===
+    # === fin NOTIF-04 ===
 ]
 
 
