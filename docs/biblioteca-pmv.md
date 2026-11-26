@@ -287,38 +287,60 @@ python scripts/cargar_plantillas_pmv.py --verificar
 python scripts/cargar_plantillas_pmv.py --cargar --actor ID --entorno local|pruebas|produccion|demo --confirmar-entorno
 ```
 
-Si la URL de `BIB109_DATABASE_URL` no corresponde al entorno pedido, el script sale con código 2 sin conectar. `scripts/capacidades_biblioteca.py` usa los mismos `--entorno` y `--confirmar-entorno`.
+Si la URL de `BIB109_DATABASE_URL` no corresponde al entorno pedido, el script sale con código 2 sin conectar. Una URL local (127.0.0.1) cuya base es la de producción (`evydentia_prod`) o la de la demo (`evydentia_demo`) se reconoce como `produccion` o `demo`, no como `local`. Con `--entorno produccion` sin `--confirmar-entorno` el script sale con código 2, sin conectar y sin imprimir la URL. `scripts/capacidades_biblioteca.py` queda para local y pruebas: en la demo y en producción las capacidades se conceden en la web.
+
+### En producción
+
+Lo ejecuta el propietario, desde `main` y tras fusionar. Ninguna sesión de IA lo ejecuta. El orden es este:
+
+1. **Operadores.** Alta de cada operador y su `vincular` (OPE-01). `listar` muestra el `usuario_id` de cada uno.
+
+   ```powershell
+   cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+   python -m features.plataforma.administrar_operadores alta <correo> "<nombre>"
+   python -m features.plataforma.administrar_operadores vincular
+   python -m features.plataforma.administrar_operadores listar
+   ```
+
+2. **Capacidades.** En `/plataforma/capacidades` (BIB-414) cada operador recibe `editor`, `revisor_tecnico` y `publicador`, concedidas por otro operador.
+
+3. **Carga por script.** Deja cada plantilla «En revisión» y nunca publica. `--actor` es el `usuario_id` del operador que carga.
+
+   ```powershell
+   $env:BIB109_DATABASE_URL = "<URL de la base de producción>"
+   python scripts/cargar_plantillas_pmv.py --cargar --actor <usuario_id del operador que carga> --entorno produccion --confirmar-entorno
+   Remove-Item Env:BIB109_DATABASE_URL
+   ```
+
+4. **Revisión y publicación.** En `/plataforma/biblioteca` (BIB-412), por quien tenga `revisor_tecnico` y `publicador`, con la regla de «Quién aprueba» de la demo (más abajo).
 
 ### En la demo (DEMO-12)
 
 La demo (proyecto `evydentia-demo`, base `evydentia_demo` en `evydentia-demo-db`) usa las mismas plantillas BIB-001 a BIB-012 que producción, con los datos ficticios de la organización de `data/demo/cooperativa_demo.json`. Lo ejecuta el propietario por Antigravity, desde `main` y tras fusionar, en este orden. Ninguna sesión de IA lo ejecuta. En cada comando, Antigravity pone la URL de `evydentia_demo` en la variable indicada (nunca se escribe el valor de un secreto en la guía) y la borra al terminar.
 
-1. **Capacidades.** Antes de cargar. Se conceden `editor`, `revisor_tecnico` y `publicador` a Aleczandra, José y Juan Carlos, cada uno concedido por otra de las tres personas (nadie se concede capacidades a sí mismo). Con una URL que no sea la de la demo, o sin `--confirmar-entorno`, el script sale con código 2 sin conectar.
+1. **Operadores.** Alta y `vincular` de los tres operadores (Aleczandra, José y Juan Carlos) en `evydentia_demo`, por Antigravity.
 
    ```powershell
    cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
    git switch main
    git pull
-   $env:BIB_CAPACIDADES_DATABASE_URL = "<URL de evydentia_demo con la credencial del dueño>"
-   foreach ($capacidad in "editor", "revisor_tecnico", "publicador") {
-     python scripts/capacidades_biblioteca.py --conceder --usuario <id de Aleczandra> --capacidad $capacidad --otorgante <id de José> --motivo "Demo: capacidades editoriales" --entorno demo --confirmar-entorno
-     python scripts/capacidades_biblioteca.py --conceder --usuario <id de José> --capacidad $capacidad --otorgante <id de Juan Carlos> --motivo "Demo: capacidades editoriales" --entorno demo --confirmar-entorno
-     python scripts/capacidades_biblioteca.py --conceder --usuario <id de Juan Carlos> --capacidad $capacidad --otorgante <id de Aleczandra> --motivo "Demo: capacidades editoriales" --entorno demo --confirmar-entorno
-   }
-   python scripts/capacidades_biblioteca.py --listar --entorno demo --confirmar-entorno
-   Remove-Item Env:BIB_CAPACIDADES_DATABASE_URL
+   $env:MIGRATION_DATABASE_URL = "<URL de evydentia_demo con la credencial del dueño>"
+   python -m features.plataforma.administrar_operadores alta <correo> "<nombre>"
+   python -m features.plataforma.administrar_operadores vincular
+   Remove-Item Env:MIGRATION_DATABASE_URL
    ```
 
-2. **Carga.** Mismo flujo editorial que producción (BIB-403). Deja cada plantilla «En revisión» y nunca publica. Con una URL que no sea la de la demo, o sin `--confirmar-entorno`, sale con código 2 sin conectar.
+2. **Capacidades.** En `/plataforma/capacidades` de la demo se conceden `editor`, `revisor_tecnico` y `publicador` a cada una de las tres personas, cada una por otro operador (nadie se concede capacidades a sí mismo).
+
+3. **Carga y publicación.** Carga por script, donde `--actor` es el `usuario_id` del operador que carga (`python -m features.plataforma.administrar_operadores listar`). Deja cada plantilla «En revisión» y nunca publica. Con una URL que no sea la de la demo, o sin `--confirmar-entorno`, sale con código 2 sin conectar.
 
    ```powershell
-   cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
    $env:BIB109_DATABASE_URL = "<URL de evydentia_demo>"
-   python scripts/cargar_plantillas_pmv.py --cargar --actor <id del editor que carga> --entorno demo --confirmar-entorno
+   python scripts/cargar_plantillas_pmv.py --cargar --actor <usuario_id del operador que carga> --entorno demo --confirmar-entorno
    Remove-Item Env:BIB109_DATABASE_URL
    ```
 
-3. **Revisión y publicación.** En la web de la demo, una de las tres personas con `revisor_tecnico` y `publicador` (distinta de quien cargó, BIB-403 R4) abre cada plantilla nombrada en `salas.biblioteca.documentos` de `cooperativa_demo.json` (hoy BIB-001, BIB-002, BIB-003 y BIB-006), aprueba la revisión técnica en el expediente («Aprobar con autoridad vigente»), valida sus citas y la publica. Como mínimo se publican esas plantillas.
+   Después, la revisión y la publicación se hacen en `/plataforma/biblioteca` de la demo, entrando por la entrada del equipo editorial (BIB-412 R3b). Una de las tres personas con `revisor_tecnico` y `publicador` abre cada plantilla nombrada en `salas.biblioteca.documentos` de `cooperativa_demo.json` (hoy BIB-001, BIB-002, BIB-003 y BIB-006), aprueba la revisión técnica, valida sus citas y la publica. Como mínimo se publican esas plantillas.
 
    **Quién aprueba.** Una versión redactada por la IA la revisa y la publica una sola persona de las tres (BIB-406 R4). Una versión cargada a mano la revisa y la publica una persona distinta de quien la cargó (BIB-403 R4).
 
