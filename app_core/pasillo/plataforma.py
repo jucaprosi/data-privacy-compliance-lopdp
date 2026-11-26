@@ -32,3 +32,26 @@ async def contar_organizaciones_activas(session) -> int:
 
     return await plataforma_service.contar_organizaciones_activas(session)
 # === fin NORM-02b ===
+# === OPE-01 ===
+
+
+async def operador_activo(session, usuario_id: str) -> bool:
+    """El usuario es un operador activo de la plataforma; se lee en cada llamada (OPE-01 R3)."""
+    from features.plataforma import plataforma_service
+
+    return await plataforma_service.operador_activo(session, usuario_id)
+
+
+async def usuario_de_operador(session, email: str, sub) -> "str | None":
+    """El `usuario_id` del operador activo con esa identidad verificada, o None (OPE-01 R2)."""
+    from features.plataforma import plataforma_service
+
+    return await plataforma_service.usuario_de_operador(session, email, sub)
+
+
+async def listar_operadores_activos(session) -> list[dict]:
+    """Operadores activos con `usuario_id`, `nombre`, `email` y `ha_entrado` (OPE-01)."""
+    from features.plataforma import plataforma_service
+
+    return await plataforma_service.listar_operadores_activos(session)
+# === fin OPE-01 ===

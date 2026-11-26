@@ -531,3 +531,75 @@ async def aceptar_invitacion(
         rol_asignado="admin_organizacion",
         mensaje="Invitación aceptada exitosamente. Se ha concedido el rol de Administrador de Organización.",
     )
+
+
+# === OPE-01 ===
+# Cada operador activo tiene su usuario en `users` (creado por el pasillo de organizacion, sin membresía en
+# ningún tenant). `verificar_operador` no cambia: aquí solo se añade la lectura del usuario enlazado.
+_OPERADOR_DE_IDENTIDAD = text(
+    "SELECT id, google_sub, usuario_id FROM operadores_plataforma "
+    "WHERE (LOWER(email) = :email OR (google_sub IS NOT NULL AND google_sub = :sub)) AND activo"
+)
+_VINCULAR_SUB = text(
+    "UPDATE operadores_plataforma SET google_sub = :sub, updated_at = NOW() WHERE id = :id AND google_sub IS NULL"
+)
+_ACTIVO = text("SELECT activo FROM operadores_plataforma WHERE usuario_id = :u")
+_SIN_USUARIO = text(
+    "SELECT id, email, nombre FROM operadores_plataforma WHERE activo AND usuario_id IS NULL ORDER BY email"
+)
+_OPERADOR_POR_ID = text("SELECT id, email, nombre, usuario_id FROM operadores_plataforma WHERE id = :id")
+_GUARDAR_USUARIO = text(
+    "UPDATE operadores_plataforma SET usuario_id = :u, updated_at = NOW() WHERE id = :id AND usuario_id IS NULL"
+)
+_ACTIVOS = text(
+    "SELECT o.usuario_id, o.nombre, o.email, (u.google_sub IS NOT NULL) AS ha_entrado "
+    "FROM operadores_plataforma o LEFT JOIN users u ON u.id = o.usuario_id WHERE o.activo ORDER BY o.email"
+)
+
+
+async def enlazar_usuario(session: AsyncSession, operador_id: str) -> str:
+    """R1: crea o recupera el usuario del operador (mismo correo) y guarda `usuario_id`. Repetible sin efecto."""
+    fila = (await session.execute(_OPERADOR_POR_ID, {"id": operador_id})).mappings().first()
+    if fila is None:
+        raise ValueError(f"No existe el operador {operador_id}.")
+    if fila["usuario_id"]:
+        return fila["usuario_id"]
+    nombre = (fila["nombre"] or fila["email"].split("@")[0]).strip()
+    usuario = await organizacion.crear_o_recuperar_usuario(session=session, email=fila["email"], nombre=nombre)
+    await session.execute(_GUARDAR_USUARIO, {"u": usuario["id"], "id": operador_id})
+    return usuario["id"]
+
+
+async def vincular_operadores(session: AsyncSession) -> list[dict]:
+    """R1: enlaza cada operador activo sin `usuario_id` y devuelve los activos con su usuario."""
+    for fila in (await session.execute(_SIN_USUARIO)).mappings().all():
+        await enlazar_usuario(session, fila["id"])
+    return await listar_operadores_activos(session)
+
+
+async def operador_activo(session: AsyncSession, usuario_id: str) -> bool:
+    """R3: lee `activo` en cada llamada, sin caché; tras `baja` la siguiente llamada ya da False."""
+    return bool((await session.execute(_ACTIVO, {"u": usuario_id})).scalar())
+
+
+async def usuario_de_operador(session: AsyncSession, email: str, sub: Optional[str]) -> Optional[str]:
+    """R2: con la identidad ya verificada, el `usuario_id` del operador activo; nunca el resolutor de la demo.
+
+    Vincula el `google_sub` la primera vez, como `verificar_operador`; un `sub` distinto del vinculado,
+    o un operador sin `usuario_id`, no identifica a nadie.
+    """
+    fila = (await session.execute(
+        _OPERADOR_DE_IDENTIDAD, {"email": email.strip().lower(), "sub": sub or ""})).mappings().first()
+    if fila is None:
+        return None
+    if fila["google_sub"] and sub != fila["google_sub"]:
+        return None
+    if sub and not fila["google_sub"]:
+        await session.execute(_VINCULAR_SUB, {"sub": sub, "id": fila["id"]})
+    return fila["usuario_id"] or None
+
+
+async def listar_operadores_activos(session: AsyncSession) -> list[dict]:
+    """Los operadores activos con `usuario_id`, `nombre`, `email` y `ha_entrado` (sub vinculado en `users`)."""
+    return [dict(f) for f in (await session.execute(_ACTIVOS)).mappings().all()]
+# === fin OPE-01 ===
