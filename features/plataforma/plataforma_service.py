@@ -61,3 +61,16 @@ from features.plataforma.services.destinatarios_normativos_engine import (  # no
 
 __all__.extend(["contar_organizaciones_activas", "destinatarios_normativos"])
 # === fin NORM-02b ===
+
+# === OPE-01 ===
+from features.plataforma.services.operador_engine import (  # noqa: E402
+    enlazar_usuario,
+    listar_operadores_activos,
+    operador_activo,
+    usuario_de_operador,
+    vincular_operadores,
+)
+
+__all__ += ["enlazar_usuario", "listar_operadores_activos", "operador_activo", "usuario_de_operador",
+            "vincular_operadores"]
+# === fin OPE-01 ===
