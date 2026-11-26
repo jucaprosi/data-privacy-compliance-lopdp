@@ -30,7 +30,7 @@ def upgrade() -> None:
             enlace varchar(300),
             leido_en timestamptz,
             pendiente boolean NOT NULL DEFAULT true,
-            recordatorios_enviados integer NOT NULL DEFAULT 0 CHECK (recordatorios_enviados >= 0),
+            recordatorios_hechos integer NOT NULL DEFAULT 0 CHECK (recordatorios_hechos >= 0),
             proximo_recordatorio timestamptz,
             creado_en timestamptz NOT NULL DEFAULT now(),
             actualizado_en timestamptz NOT NULL DEFAULT now(),
