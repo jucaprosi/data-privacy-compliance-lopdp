@@ -84,7 +84,7 @@ def test_la_guia_nombra_antigravity_y_la_siembra():
 
 def test_m3_la_guia_pone_las_capacidades_antes_de_la_carga():
     bloque = _bloque_demo()
-    capacidades = bloque.index("scripts/capacidades_biblioteca.py --conceder")
+    capacidades = bloque.index("/plataforma/capacidades")  # BIB-413 R4: la concesión es en la web de la demo
     carga = bloque.index("scripts/cargar_plantillas_pmv.py --cargar")
     siembra = bloque.index("scripts/demo/sembrar_plantilla.py")
     assert capacidades < carga < siembra
@@ -103,5 +103,5 @@ def test_la_guia_no_deja_variables_de_entorno_puestas():
     bloque = _bloque_demo()
     puestas = set(re.findall(r"\$env:(\w+)\s*=", bloque))
     quitadas = set(re.findall(r"Remove-Item Env:(\w+)", bloque))
-    assert {"APP_ENV", "MIGRATION_DATABASE_URL", "BIB109_DATABASE_URL", "BIB_CAPACIDADES_DATABASE_URL"} <= puestas
+    assert {"APP_ENV", "MIGRATION_DATABASE_URL", "BIB109_DATABASE_URL"} <= puestas  # BIB-413 R4: sin BIB_CAPACIDADES_DATABASE_URL
     assert puestas <= quitadas
