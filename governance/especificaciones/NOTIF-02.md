@@ -9,7 +9,7 @@ Hechos medidos en `origin/main` ed575cd2:
 - La sala no tiene rama de Alembic. Esta es su primera migración, que cuelga de `BASE_COMUN` con `branch_labels = ("notificaciones",)`.
 - Los routers se registran por secciones marcadas en `main.py`, y los menús, pantallas y la cabecera por secciones en `menus/index.ts`, `pantallas/index.tsx` y `DashboardHeader.tsx`.
 
-Tabla `avisos_plataforma`: `id`, `usuario_id` (→ `users`), `tipo` (`version_por_revisar`), `referencia` (id de la versión), `titulo`, `texto`, `enlace`, `leido_en` nulo, `pendiente` boolean, `recordatorios_enviados` entero, `proximo_recordatorio` nulo, `creado_en` y `actualizado_en`. UNIQUE (`usuario_id`, `tipo`, `referencia`). RLS: cada persona lee y marca solo los suyos. La tabla se añade a `TABLAS_POR_SALA` como de `notificaciones`.
+Tabla `avisos_plataforma`: `id`, `usuario_id` (→ `users`), `tipo` (`version_por_revisar`), `referencia` (id de la versión), `titulo`, `texto`, `enlace`, `leido_en` nulo, `pendiente` boolean, `recordatorios_hechos` entero, `proximo_recordatorio` nulo, `creado_en` y `actualizado_en`. UNIQUE (`usuario_id`, `tipo`, `referencia`). RLS: cada persona lee y marca solo los suyos. La tabla se añade a `TABLAS_POR_SALA` como de `notificaciones`.
 
 ## 2. API
 
@@ -20,7 +20,7 @@ En `api/routers/avisos.py`, para cualquier persona con sesión:
 
 ## 3. Reglas
 
-- **R1 · Origen del aviso.** `sincronizar` lee por `app_core/pasillo/biblioteca.py` las versiones `en_revision` (`versiones_en_revision()`, con plantilla, origen e `id_resolucion`) y, por el pasillo normativo, `fecha_vigencia_de` (NORM-07). Crea un aviso por versión y por persona con `revisor_tecnico` vigente, sin duplicar (UNIQUE).
+- **R1 · Origen del aviso.** `sincronizar` lee por `app_core/pasillo/biblioteca.py` las versiones `en_revision` (`versiones_en_revision()`, con plantilla, origen e `id_resolucion`) y a quienes tienen `revisor_tecnico` vigente (`revisores_tecnicos()`), con las funciones de lectura de BIB-415, porque el operador que ejecuta `sincronizar` no tiene capacidades de biblioteca y, por el pasillo normativo, `fecha_vigencia_de` (NORM-07). Crea un aviso por versión y por cada una de esas personas, sin duplicar (UNIQUE).
 - **R2 · Texto** (UX/UI, 2026-11-25). Es la única fuente de los textos del aviso; el correo de NOTIF-03 los reutiliza. Título «Versión por revisar: {plantilla}». Enlace «Revisar la versión», al detalle de BIB-408. Línea de motivo, una sola según el caso:
   - resolución con fecha futura: «Motivo del cambio: {norma}, {artículo}, que entra en vigencia el {fecha}.»;
   - resolución que entra en vigencia hoy: «Motivo del cambio: {norma}, {artículo}, que entra en vigencia hoy.»;
