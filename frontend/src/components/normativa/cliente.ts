@@ -32,6 +32,7 @@ export interface DetalleResolucion extends Resolucion {
   revisada_por: string | null;
   revisada_en: string | null;
   nota_revision: string | null;
+  fecha_vigencia: string | null;
   versiones: VersionResolucion[];
 }
 export interface Corrida {
@@ -100,6 +101,8 @@ export async function listarBitacora(): Promise<Corrida[]> {
 export async function buscarNovedades(): Promise<void> {
   await pedir("/monitoreo", { method: "POST" });
 }
-export async function registrarRevision(id: string, estado: EstadoRevision, nota: string): Promise<void> {
-  await pedir(`/resoluciones/${encodeURIComponent(id)}/revision`, { method: "POST", body: JSON.stringify({ estado, nota }) });
+/** `fechaVigencia` (AAAA-MM-DD) es opcional: vacía, el servidor conserva la que hubiera (NORM-07). */
+export async function registrarRevision(id: string, estado: EstadoRevision, nota: string, fechaVigencia?: string): Promise<void> {
+  const cuerpo = fechaVigencia ? { estado, nota, fecha_vigencia: fechaVigencia } : { estado, nota };
+  await pedir(`/resoluciones/${encodeURIComponent(id)}/revision`, { method: "POST", body: JSON.stringify(cuerpo) });
 }

@@ -115,7 +115,11 @@ async def test_lopdp_app_solo_actualiza_las_cuatro_columnas(propietario, como_ap
     i = await _sembrar(propietario)
     await _debe_fallar(como_app, "UPDATE normativa_resoluciones SET titulo = 'otro' WHERE id = CAST(:i AS uuid)", {"i": i})
     async with como_app() as s:
-        await s.execute(text("UPDATE normativa_resoluciones SET nota_revision = 'x' WHERE id = CAST(:i AS uuid)"), {"i": i})
+        # las cuatro columnas de NORM-05 y `fecha_vigencia` (NORM-07), juntas: un CHECK exige la nota con `revisada_en`
+        await s.execute(
+            text("UPDATE normativa_resoluciones SET estado = 'vigente', revisada_por = 'x', revisada_en = now(), "
+                 "nota_revision = 'Cotejada con el Registro Oficial.', fecha_vigencia = '2026-12-01' "
+                 "WHERE id = CAST(:i AS uuid)"), {"i": i})
         await s.rollback()
 
 

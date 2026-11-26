@@ -2,7 +2,7 @@
 id = "NORM-07"
 titulo = "Fecha de vigencia opcional al revisar una resolución, y la revisión dispara la propuesta de la IA"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 110
 sala = "inteligencia_normativa"
 depende_de = ["BIB-406", "BIB-407"]
