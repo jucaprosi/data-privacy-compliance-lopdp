@@ -18,11 +18,6 @@ branch_labels: Union[str, Sequence[str], None] = ("notificaciones",)
 depends_on: Union[str, Sequence[str], None] = None
 
 
-# La columna se llama como la especificación manda; el nombre se arma aparte porque el árbitro de salas
-# (tests/test_alembic_cabeza_por_sala.py) lo confunde con la tabla homónima de «roadmap».
-_ENVIADOS = "recordatorios" + "_enviados"
-
-
 def upgrade() -> None:
     op.execute("""
         CREATE TABLE avisos_plataforma (
@@ -35,7 +30,7 @@ def upgrade() -> None:
             enlace varchar(300),
             leido_en timestamptz,
             pendiente boolean NOT NULL DEFAULT true,
-            {enviados} integer NOT NULL DEFAULT 0 CHECK ({enviados} >= 0),
+            recordatorios_enviados integer NOT NULL DEFAULT 0 CHECK (recordatorios_enviados >= 0),
             proximo_recordatorio timestamptz,
             creado_en timestamptz NOT NULL DEFAULT now(),
             actualizado_en timestamptz NOT NULL DEFAULT now(),
@@ -53,7 +48,7 @@ def upgrade() -> None:
             WITH CHECK (usuario_id = current_setting('app.current_user_id', true));
         REVOKE ALL ON avisos_plataforma FROM PUBLIC, lopdp_app;
         GRANT SELECT, INSERT, UPDATE ON avisos_plataforma TO lopdp_app;
-    """.replace("{enviados}", _ENVIADOS))
+    """)
 
 
 def downgrade() -> None:
