@@ -24,7 +24,7 @@ export function FichaEditorial({ version, ocupada, guardar }: {
         required value={ficha[clave]} maxLength={clave === "nombre" ? 200 : clave === "instrucciones" ? 8000 : 4000}
         onChange={e => setFicha({ ...ficha, [clave]: e.target.value })} />
     </label>)}
-    <p>Guardar cambios exige nuevas revisiones técnica y jurídica.</p>
+    <p>Guardar cambios exige una nueva revisión técnica.</p>
     <button disabled={ocupada} className="rounded bg-purple-700 p-2 text-[var(--ui-primario-texto)]">Guardar ficha</button>
   </form>;
 }

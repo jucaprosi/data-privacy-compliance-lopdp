@@ -16,6 +16,9 @@ import {
   type DocumentoCreado, type FichaPlantilla as Ficha, type OrigenVariable,
 } from "@/lib/biblioteca/fichas";
 import { useSeleccionBiblioteca, type PropsVistaBiblioteca } from "@/lib/biblioteca/registro";
+import { SIN_FILTROS, consultarCatalogo } from "@/lib/biblioteca/catalogo";
+import { LeyendaNota } from "@/components/biblioteca/editorial/ComparacionVersion";
+import type { Leyenda } from "@/lib/biblioteca/editorial";
 
 // BIB-403 §4 (UX/UI): el valor interno «validada» no se muestra nunca.
 const CITAS_NORMATIVAS = {
@@ -49,12 +52,25 @@ export default function FichaPlantilla({ variante }: PropsVistaBiblioteca) {
   const [error, setError] = React.useState<string | null>(null);
   const [ocupada, setOcupada] = React.useState(false);
   const [creado, setCreado] = React.useState<DocumentoCreado | null>(null);
+  const [leyenda, setLeyenda] = React.useState<Leyenda | null>(null);
 
   React.useEffect(() => {
     setFicha(null); setError(null); setCreado(null);
     if (!plantillaId) return;
     let vigente = true;
     obtenerFicha(plantillaId).then((f) => { if (vigente) setFicha(f); }).catch((e) => { if (vigente) setError(mensajeDe(e)); });
+    return () => { vigente = false; };
+  }, [plantillaId]);
+
+  // BIB-410: la leyenda de la plantilla elegida sale del catálogo; sin aprobación registrada no se muestra.
+  React.useEffect(() => {
+    setLeyenda(null);
+    if (!plantillaId) return;
+    let vigente = true;
+    consultarCatalogo(SIN_FILTROS).then((r) => {
+      if (!vigente || r.estado !== "listo") return;
+      setLeyenda((r.plantillas.find((p) => p.id === plantillaId) as { leyenda?: Leyenda | null } | undefined)?.leyenda ?? null);
+    });
     return () => { vigente = false; };
   }, [plantillaId]);
 
@@ -90,6 +106,7 @@ export default function FichaPlantilla({ variante }: PropsVistaBiblioteca) {
               <span className="font-medium">Citas normativas:</span> {CITAS_NORMATIVAS[ficha.validacion_legal]}
             </p>
             <p id="ayuda-citas-normativas" className="text-[var(--ui-texto-suave)]">{AYUDA_CITAS}</p>
+            <LeyendaNota leyenda={leyenda} />
             <p className="text-[var(--ui-texto-suave)]">
               Normativa vigente al {ficha.fecha_corte_normativo} · revisión cada {ficha.revision_meses} meses
               {ficha.origen_plantilla_id && ` · copia de la versión ${ficha.origen_version}`}

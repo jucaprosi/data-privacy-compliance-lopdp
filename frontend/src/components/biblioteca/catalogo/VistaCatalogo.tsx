@@ -18,6 +18,8 @@ import {
 } from "@/lib/biblioteca/catalogo";
 import { useSeleccionBiblioteca, type PropsVistaBiblioteca } from "@/lib/biblioteca/registro";
 import { useBibliotecaStore } from "@/store/useBibliotecaStore";
+import { LeyendaNota } from "@/components/biblioteca/editorial/ComparacionVersion";
+import type { Leyenda } from "@/lib/biblioteca/editorial";
 
 const nombreDe = (lista: ReadonlyArray<{ id: string; nombre: string }>, id: string | null) =>
   lista.find((x) => x.id === id)?.nombre ?? id ?? "—";
@@ -34,7 +36,8 @@ const CITAS_NORMATIVAS: Record<string, string> = {
 const AYUDA_CITAS =
   "Comprobamos que cada norma citada existe, que dice lo que se cita y que es la versión más reciente que conoce la plataforma. No valoramos si cada cláusula se aplica correctamente a tu organización.";
 
-function Tarjeta({ p, elegida, elegir }: { p: PlantillaCatalogo; elegida: boolean; elegir: () => void }) {
+// BIB-410: el catálogo devuelve la leyenda de redacción y aprobación; nula sin aprobación registrada (entonces no se muestra).
+function Tarjeta({ p, elegida, elegir }: { p: PlantillaCatalogo & { leyenda?: Leyenda | null }; elegida: boolean; elegir: () => void }) {
   return (
     <li data-testid={`plantilla-${p.codigo}`} className="rounded-md border border-[var(--ui-borde)] p-3">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -63,6 +66,7 @@ function Tarjeta({ p, elegida, elegir }: { p: PlantillaCatalogo; elegida: boolea
           Citas normativas: {CITAS_NORMATIVAS[p.validacion_legal ?? "pendiente"] ?? "Pendientes de verificar"}
         </span>
       </p>
+      <LeyendaNota leyenda={p.leyenda} />
     </li>
   );
 }
