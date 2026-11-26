@@ -43,8 +43,8 @@ test.describe("Interfaz editorial con API simulada (no acredita persistencia/RLS
     await page.getByRole("button", { name: "Crear versión en revisión" }).click();
     await expect(page.getByRole("main", { name: "Administración editorial" }).getByRole("status")).toContainText("no está publicada");
     expect(enviada).toEqual({ codigo: "TEST-01", version: "1.0", formato: "DOCX", sustituye_id: null });
-    await expect(page.getByRole("button", { name: "Publicar versión" })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Registrar revisión técnica" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Publicar versión" })).toHaveAttribute("aria-disabled", "true");
+    await expect(page.getByRole("button", { name: "Registrar revisión técnica" })).toHaveAttribute("aria-disabled", "true");
   });
 
   test("publicador ve faltantes y publicación deshabilitada sin revisiones", async ({ page }) => {
