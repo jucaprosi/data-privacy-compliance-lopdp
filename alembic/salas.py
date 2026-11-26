@@ -20,6 +20,7 @@ TABLAS_POR_SALA: dict[str, str] = {
     "areas": "organizacion",
     "audit_events": "organizacion",
     "auditoria_plataforma": "plataforma",
+    "avisos_plataforma": "notificaciones",
     "biblioteca_aplicabilidad_modificaciones": "biblioteca",
     "biblioteca_auditoria": "biblioteca",
     "biblioteca_auditoria_capacidades": "biblioteca",
