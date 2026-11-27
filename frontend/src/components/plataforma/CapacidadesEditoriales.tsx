@@ -50,7 +50,7 @@ export default function CapacidadesEditoriales() {
       <h1 className="text-2xl font-bold">Capacidades editoriales</h1>
       <p>Quienes mantienen el catálogo de plantillas de la plataforma. Cada concesión y cada retiro quedan registrados con su motivo.</p>
     </header>
-    {error && <p role="alert" className="rounded border border-[var(--ui-borde)] p-3">{error}</p>}
+    {error && <p role="alert" className="rounded border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] p-3 text-[var(--ui-error-texto)]">{error}</p>}
     {!equipo && !error && <p role="status">Cargando…</p>}
     {equipo && <table className="w-full text-left max-md:block">
       <caption className="mb-2 text-left font-semibold">Operadores de la plataforma</caption>
@@ -80,7 +80,7 @@ export default function CapacidadesEditoriales() {
                 {m.capacidades.filter((c): c is CapacidadConcedible => (CAPACIDADES_CONCEDIBLES as readonly string[]).includes(c)).map((c) =>
                   <button key={c} type="button" {...desactivada} aria-label={`Retirar ${minuscula(c)} a ${m.nombre}`}
                     onClick={(e) => { if (!propia) abrir(m, { tipo: "retirar", capacidad: c }, e); }}
-                    className="rounded border p-2 aria-disabled:opacity-60">Retirar {ETIQUETAS_CAPACIDAD[c]}</button>)}
+                    className="rounded border border-[var(--ui-peligro-texto)] p-2 text-[var(--ui-peligro-texto)] aria-disabled:opacity-60">Retirar {ETIQUETAS_CAPACIDAD[c]}</button>)}
               </div>
               {propia && <p id={ayuda} className="mt-1 text-sm text-[var(--ui-texto-suave)]">{TEXTO_PROPIA}</p>}
             </td>

@@ -69,11 +69,11 @@ export default function DialogoCapacidad({ miembro, modo, onCerrar, onHecho }: {
     }
   }
 
-  return <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4">
+  return <div className="fixed inset-0 z-50 grid place-items-center bg-[color-mix(in_srgb,var(--foreground)_50%,transparent)] p-4">
     <div role="dialog" aria-modal="true" aria-labelledby="titulo-dialogo-capacidad"
       className="grid max-h-full w-full max-w-lg gap-3 overflow-y-auto rounded border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-5">
       <h2 id="titulo-dialogo-capacidad" className="text-lg font-semibold">{titulo}</h2>
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert" className="rounded border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] p-3 text-[var(--ui-error-texto)]">{error}</p>}
       {hecho ? <p role="status">{estado}</p> : <form className="grid gap-3" onSubmit={enviar} noValidate>
         {esConceder && <fieldset className="grid gap-2">
           <legend className="font-medium">Capacidades</legend>
@@ -84,7 +84,7 @@ export default function DialogoCapacidad({ miembro, modo, onCerrar, onHecho }: {
               <span className="block text-sm text-[var(--ui-texto-suave)]">{DESCRIPCION[c]}</span></span>
           </label>)}
         </fieldset>}
-        {aviso && <p role="status">Recuerda: nadie puede revisar ni publicar las versiones que creó.</p>}
+        {aviso && <p role="status" className="rounded border border-[var(--ui-aviso-borde)] bg-[var(--ui-aviso-fondo)] p-3 text-[var(--ui-aviso-texto)]">Recuerda: nadie puede revisar ni publicar las versiones que creó.</p>}
         <label className="grid gap-1">Motivo
           <span id="ayuda-motivo-capacidad" className="text-sm text-[var(--ui-texto-suave)]">
             {esConceder ? "Explica por qué se concede. Queda en el historial." : "Explica por qué se retira. Queda en el historial."}
@@ -92,7 +92,7 @@ export default function DialogoCapacidad({ miembro, modo, onCerrar, onHecho }: {
           <textarea className="rounded border p-2" value={motivo} maxLength={4000} aria-describedby="ayuda-motivo-capacidad"
             aria-invalid={errorMotivo} onChange={(e) => setMotivo(e.target.value)} />
         </label>
-        {errorMotivo && <p role="alert">{TEXTO_MOTIVO}</p>}
+        {errorMotivo && <p role="alert" className="rounded border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] p-3 text-[var(--ui-error-texto)]">{TEXTO_MOTIVO}</p>}
         <div className="flex gap-3">
           <button ref={cancelar} type="button" onClick={onCerrar} className="rounded border p-2">Cancelar</button>
           <button disabled={ocupada} className="rounded bg-[var(--ui-primario)] p-2 text-[var(--ui-primario-texto)]">
