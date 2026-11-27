@@ -61,7 +61,7 @@ def test_base_comun_es_una_revision_del_grafo_y_la_historia_no_cambia_de_forma()
     for sala in set(salas.TABLAS_POR_SALA.values()):
         if sala not in etiquetadas:
             assert AS.cabeza_de_sala(sala) == salas.BASE_COMUN
-    assert AS.cabeza_de_sala("biblioteca") == "20261125_bib406_propuestas_ia"
+    assert AS.cabeza_de_sala("biblioteca") == "20261126_bib415_lectura_avisos"
 
 
 def test_toda_tabla_del_mapa_tiene_sala_de_features():
