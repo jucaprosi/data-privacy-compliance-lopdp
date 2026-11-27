@@ -2,7 +2,7 @@
 id = "OPE-01"
 titulo = "Cada operador de la plataforma tiene su usuario, enlazado y sin organización"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 tanda = 112
 sala = "plataforma"
 depende_de = []
