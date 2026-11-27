@@ -303,7 +303,7 @@ export default function DashboardPage() {
                       onClick={() => elegir(item.id)}
                       className={`w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition group cursor-pointer ${
                         isSelected
-                          ? "bg-[var(--ui-boton)] text-[var(--foreground)] border border-[var(--ui-borde)] font-medium"
+                          ? "bg-[var(--ui-boton)] text-[var(--foreground)] border border-[var(--ui-borde-control)] font-medium"
                           : "text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] hover:bg-[var(--ui-boton-hover)] border border-transparent"
                       }`}
                     >
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => elegir("configuracion")}
-                  className="w-full p-3 border-t border-[color:var(--ui-primario)] bg-[var(--ui-info-fondo)] shrink-0 text-left text-[var(--ui-enlace)] hover:bg-[var(--ui-info-fondo)] transition cursor-pointer"
+                  className="w-full p-3 border-t border-[color:var(--ui-primario)] bg-[var(--ui-superficie-2)] shrink-0 text-left text-[var(--foreground)] hover:bg-[var(--ui-boton-hover)] transition cursor-pointer"
                   title="Completar el perfil organizacional"
                 >
                   <div className="flex items-center gap-2 font-bold text-xs tracking-wide">
