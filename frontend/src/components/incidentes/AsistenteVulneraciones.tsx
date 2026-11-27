@@ -74,7 +74,7 @@ export default function AsistenteVulneraciones() {
           </p>
           <button
             type="button"
-            className="self-start rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton)] px-3 py-1.5 text-sm"
+            className="self-start rounded-md border border-[var(--ui-borde-control)] bg-[var(--ui-boton)] px-3 py-1.5 text-sm"
             onClick={() => void cargar(rol)}
           >
             Volver a cargar

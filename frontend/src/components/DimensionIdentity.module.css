@@ -43,13 +43,13 @@
 
 .identity[data-dimension="D01"] { --dimension-accent: #6d28d9; } /* violeta */
 .identity[data-dimension="D02"] { --dimension-accent: #047857; } /* esmeralda */
-.identity[data-dimension="D03"] { --dimension-accent: #c2410c; } /* naranja */
+.identity[data-dimension="D03"] { --dimension-accent: #9a3412; } /* naranja */
 .identity[data-dimension="D04"] { --dimension-accent: #1d4ed8; } /* azul */
-.identity[data-dimension="D05"] { --dimension-accent: #4d7c0f; } /* lima */
+.identity[data-dimension="D05"] { --dimension-accent: #3f6212; } /* lima */
 .identity[data-dimension="D06"] { --dimension-accent: #be185d; } /* rosa */
 .identity[data-dimension="D07"] { --dimension-accent: #374151; } /* grafito */
 .identity[data-dimension="D08"] { --dimension-accent: #7f1d1d; } /* granate */
-.identity[data-dimension="D09"] { --dimension-accent: #8b7200; } /* mostaza */
+.identity[data-dimension="D09"] { --dimension-accent: #6b5500; } /* mostaza */
 .identity[data-dimension="D10"] { --dimension-accent: #0e7490; } /* cian */
 
 :global(.theme-dark) .card {

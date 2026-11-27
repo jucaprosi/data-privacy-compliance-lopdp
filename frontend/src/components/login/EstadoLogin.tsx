@@ -89,7 +89,7 @@ const CONTENIDO: Record<TipoAviso, Contenido> = {
 };
 
 const BOTON =
-  "inline-flex min-h-10 w-full items-center justify-center rounded-md bg-[#7a2bc4] px-3 py-2 text-sm font-semibold text-[#ffffff] cursor-pointer aria-disabled:cursor-wait aria-disabled:opacity-90";
+  "inline-flex min-h-10 w-full items-center justify-center rounded-md bg-[var(--ui-primario)] px-3 py-2 text-sm font-semibold text-[var(--ui-primario-texto)] cursor-pointer aria-disabled:cursor-wait aria-disabled:opacity-90";
 
 export default function EstadoLogin({
   tipo,
@@ -119,10 +119,10 @@ export default function EstadoLogin({
       role="alert"
       data-tipo={tipo}
       data-testid={testId}
-      className="flex w-full flex-col gap-3 rounded-md border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-900"
+      className="flex w-full flex-col gap-3 rounded-md border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] px-3 py-3 text-sm text-[var(--ui-error-texto)]"
     >
       {contenido.titulo && (
-        <h2 ref={tituloRef} tabIndex={-1} className="text-base font-semibold text-red-900 outline-none">
+        <h2 ref={tituloRef} tabIndex={-1} className="text-base font-semibold text-[var(--ui-error-texto)] outline-none">
           {contenido.titulo}
         </h2>
       )}
@@ -133,7 +133,7 @@ export default function EstadoLogin({
           <button ref={accionRef} type="button" onClick={onOtraCuenta} className={BOTON}>
             Usar otra cuenta de Google
           </button>
-          <p className="text-xs text-zinc-700">{AYUDA_OTRA_CUENTA}</p>
+          <p className="text-xs text-[var(--ui-texto-suave)]">{AYUDA_OTRA_CUENTA}</p>
         </>
       )}
 
@@ -151,7 +151,7 @@ export default function EstadoLogin({
             {reintentando ? "Reintentando…" : "Reintentar"}
           </button>
           {reintentando && (
-            <p role="status" className="text-xs text-zinc-700">
+            <p role="status" className="text-xs text-[var(--ui-texto-suave)]">
               {CONSULTANDO}
             </p>
           )}

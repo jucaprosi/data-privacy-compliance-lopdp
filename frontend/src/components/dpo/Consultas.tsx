@@ -46,11 +46,11 @@ const VACIO_POR_FILTRO: Record<string, string> = {
 };
 
 const CAMPO =
-  "w-full rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] px-3 py-2 text-sm text-[var(--ui-texto)]";
+  "w-full rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] px-3 py-2 text-sm text-[var(--ui-texto)]";
 const BOTON =
-  "rounded-lg bg-[var(--ui-boton)] px-3 py-1.5 text-xs font-semibold text-[var(--ui-texto)] border border-[var(--ui-borde)] disabled:opacity-50 cursor-pointer";
+  "rounded-lg bg-[var(--ui-boton)] px-3 py-1.5 text-xs font-semibold text-[var(--ui-texto)] border border-[var(--ui-borde-control)] disabled:opacity-50 cursor-pointer";
 const BOTON_PRIMARIO =
-  "rounded-lg bg-[var(--ui-primario)] px-3 py-1.5 text-xs font-semibold text-[var(--ui-primario-texto)] border border-[var(--ui-borde)] disabled:opacity-50 cursor-pointer";
+  "rounded-lg bg-[var(--ui-primario)] px-3 py-1.5 text-xs font-semibold text-[var(--ui-primario-texto)] border border-[var(--ui-primario)] disabled:opacity-50 cursor-pointer";
 
 const MSG_CERRADA = "Esta consulta ya está cerrada. Para otra pregunta, crea una nueva consulta.";
 

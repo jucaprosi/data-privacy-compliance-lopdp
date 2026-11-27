@@ -24,12 +24,12 @@ export default function PantallaDemoMensaje({ codigo, titulo, texto, extra, acci
       role="alert"
       data-testid="demo-mensaje"
       data-codigo={codigo}
-      className="flex w-full max-w-sm flex-col items-center gap-3 rounded-xl border border-red-200 bg-white p-6 text-center text-zinc-800"
+      className="flex w-full max-w-sm flex-col items-center gap-3 rounded-xl border border-[var(--ui-error-borde)] bg-[var(--ui-superficie)] p-6 text-center text-[var(--foreground)]"
     >
-      <AlertCircle aria-hidden="true" className="h-6 w-6 text-red-600" />
+      <AlertCircle aria-hidden="true" className="h-6 w-6 text-[var(--ui-error-texto)]" />
       <h2 className="text-base font-semibold">{titulo}</h2>
-      {texto && <p className="text-sm text-zinc-600">{texto}</p>}
-      {extra && <p className="text-sm text-zinc-600">{extra}</p>}
+      {texto && <p className="text-sm text-[var(--ui-texto-suave)]">{texto}</p>}
+      {extra && <p className="text-sm text-[var(--ui-texto-suave)]">{extra}</p>}
       {accion}
     </div>
   );
