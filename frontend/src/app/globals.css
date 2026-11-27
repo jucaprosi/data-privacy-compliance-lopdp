@@ -391,6 +391,13 @@ html, body {
   --ui-primario-hover: #1d4ed8;
   --ui-primario-texto: #ffffff;
   --ui-borde-control: #71717a;
+  --ui-exito-fondo: #ecfdf5;
+  --ui-exito-borde: #047857;
+  --ui-exito-texto: #065f46;
+  --ui-info-fondo: #eff6ff;
+  --ui-info-borde: #1d4ed8;
+  --ui-info-texto: #1e40af;
+  --ui-enlace: #2563eb;
   --ui-aviso-fondo: #fffbeb;
   --ui-aviso-borde: #b45309;
   --ui-aviso-titulo: #92400e;
@@ -415,6 +422,13 @@ html, body {
   --ui-primario-hover: #1d4ed8;
   --ui-primario-texto: #ffffff;
   --ui-borde-control: #8a8a93;
+  --ui-exito-fondo: #052e1c;
+  --ui-exito-borde: #34d399;
+  --ui-exito-texto: #a7f3d0;
+  --ui-info-fondo: #0b1b3a;
+  --ui-info-borde: #60a5fa;
+  --ui-info-texto: #bfdbfe;
+  --ui-enlace: #60a5fa;
   --ui-aviso-fondo: #1c1405;
   --ui-aviso-borde: #b45309;
   --ui-aviso-titulo: #fde68a;
