@@ -33,9 +33,9 @@ export function ComparacionVersion({ comparacion }: { comparacion: Comparacion }
       <h3 className="font-semibold">{s.titulo || "Encabezado"}</h3>
       {s.cambios.map((c, j) => <div key={j} className="grid gap-2 rounded border border-[var(--ui-borde)] p-3">
         <div><p className="font-medium">Texto actual</p>
-          <p className="whitespace-pre-wrap break-words"><del className="bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-100">{c.antes}</del></p></div>
+          <p className="whitespace-pre-wrap break-words"><del className="bg-[var(--ui-error-fondo)] text-[var(--ui-error-texto)]">{c.antes}</del></p></div>
         <div><p className="font-medium">Texto propuesto</p>
-          <p className="whitespace-pre-wrap break-words"><ins className="bg-green-100 text-green-900 no-underline dark:bg-green-950 dark:text-green-100">{c.despues}</ins></p></div>
+          <p className="whitespace-pre-wrap break-words"><ins className="bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)] no-underline">{c.despues}</ins></p></div>
         <MotivoDelCambio cambio={c} />
       </div>)}
     </div>)}
