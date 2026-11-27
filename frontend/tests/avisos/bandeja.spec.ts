@@ -47,7 +47,8 @@ test("«Marcar como leído» saca el aviso de «Sin leer»", async ({ page }) =>
   await expect(page.getByRole("heading", { level: 2, name: "Avisos" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 3, name: /Versión por revisar/ })).toBeVisible();
   await page.getByRole("button", { name: "Marcar como leído" }).click();
-  await expect(page.getByRole("status")).toHaveText("No tienes avisos sin leer.");
+  // La pantalla tiene otros avisos con role=status (entorno): se busca el de la bandeja por su texto.
+  await expect(page.getByRole("status").filter({ hasText: "No tienes avisos sin leer." })).toBeVisible();
 });
 
 test("con un 500 se ven el error y «Reintentar»", async ({ page }) => {
