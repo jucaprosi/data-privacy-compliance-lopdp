@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.routers.plataforma import require_operador
 from app_core.db.session import get_session
-from features.notificaciones.services import avisos_capacidades
+from features.notificaciones import notificaciones_service as svc
 
 AUTO_REGISTRO = True
 PREFIJO = "/api/v1"
@@ -19,6 +19,6 @@ router = APIRouter(prefix="/avisos", tags=["Avisos de la plataforma"])
 @router.post("/sincronizar-capacidades", status_code=status.HTTP_200_OK)
 async def sincronizar_capacidades(operador: dict = Depends(require_operador),
                                   session: AsyncSession = Depends(get_session)) -> dict:
-    resultado = await avisos_capacidades.sincronizar(session)
+    resultado = await svc.avisos_capacidades.sincronizar(session)
     await session.commit()
     return resultado

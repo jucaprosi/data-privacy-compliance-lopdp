@@ -202,4 +202,7 @@ __all__.append("avisos_servicio")
 # === fin NOTIF-03 ===
 
 # === NOTIF-04 ===
+from features.notificaciones.services import avisos_capacidades  # noqa: E402
+
+__all__.append("avisos_capacidades")
 # === fin NOTIF-04 ===
