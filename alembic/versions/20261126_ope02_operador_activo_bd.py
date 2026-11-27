@@ -2,7 +2,7 @@
 # ¤¤backend-developer ¤seguridad
 """OPE-02: la plataforma expone en la base si alguien es operador activo.
 
-Revision ID: 20261126_ope02_operador_activo_bd
+Revision ID: 20261126_ope02_operador_activo (el archivo conserva el sufijo _bd: el id cabe en los 32 caracteres de alembic_version)
 Revises: 20261125_ope01_operador_usuario (cabeza de la sala `plataforma`)
 
 `plataforma_operador_activo(usuario_id varchar)` es el pasillo de la sala `plataforma` dentro de la base: las
@@ -15,7 +15,7 @@ from typing import Sequence, Union
 
 from alembic import op
 
-revision: str = "20261126_ope02_operador_activo_bd"
+revision: str = "20261126_ope02_operador_activo"
 down_revision: Union[str, Sequence[str], None] = "20261125_ope01_operador_usuario"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

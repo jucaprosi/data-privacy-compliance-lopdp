@@ -150,7 +150,7 @@ async def test_db_m3_execute_a_public_da_rojo(mundo):
 # --- Sin base ---
 
 def test_la_migracion_cuelga_de_ope01_y_deja_una_cabeza_de_plataforma():
-    assert MIG.revision == "20261126_ope02_operador_activo_bd"
+    assert MIG.revision == "20261126_ope02_operador_activo" and len(MIG.revision) <= 32  # alembic_version.version_num
     assert MIG.down_revision == "20261125_ope01_operador_usuario" and MIG.branch_labels is None
     otras = [p for p in (RAIZ / "alembic" / "versions").glob("*.py")
              if p != _ruta and "down_revision" in p.read_text(encoding="utf-8")
