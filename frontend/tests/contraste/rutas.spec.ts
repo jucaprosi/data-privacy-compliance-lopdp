@@ -11,7 +11,7 @@
  * `test.fixme`; lo que no aparece en ninguna lista se mide desde que nace (R3).
  *
  * Los controles desactivados y los textos de relleno quedan fuera del medidor por criterio WCAG 1.4.3 (exentos).
- * Hoy ninguna ruta medida abre un diálogo; la ficha que migre una con diálogo lo añade a `ESTADOS`.
+ * Los estados que la prueba no alcanza sola (diálogos, vistas NIIF) los declara cada ficha en `estados/FE-NN.ts` (`ESTADOS`).
  *
  * Mutaciones (cada una hace fallar la prueba que se indica):
  *  - m1: bajar un texto de `/plataforma` a 3:1 -> «/plataforma · datos».
@@ -26,12 +26,24 @@ import { fijarAjustes, TENANT_PRUEBA } from "../auth/utilesAuth";
 import { abrirSubmenu, configurarProyecto } from "../utiles";
 import { SUBMENUS } from "@/components/layout/menus";
 import { modulosNavegacionNIIF } from "@/components/layout/dashboardNavigation";
+import { ESTADOS as E33 } from "./estados/FE-33";
+import { ESTADOS as E34 } from "./estados/FE-34";
+import { ESTADOS as E35 } from "./estados/FE-35";
+import { ESTADOS as E36 } from "./estados/FE-36";
+import { ESTADOS as E37 } from "./estados/FE-37";
+import { ESTADOS as E38 } from "./estados/FE-38";
+import { ESTADOS as E39 } from "./estados/FE-39";
 
 const RAIZ = join(__dirname, "..", "..");
 const TEMAS = ["theme-light", "theme-dark"] as const; // claro primero (R1)
 const ANCHOS = [375, 1280] as const;
 const ESTADOS = ["carga", "vacio", "error", "datos", "foco"] as const;
 type Estado = (typeof ESTADOS)[number];
+const MODULOS = [E33, E34, E35, E36, E37, E38, E39];
+/** Estados que declaran los módulos de cada ficha para una ruta o vista (clave «<unidad> · <estado>»). */
+export function estadosDeclarados(unidad: string): [string, (page: Page) => Promise<void>][] {
+  return MODULOS.flatMap((m) => Object.entries(m)).filter(([k]) => k.startsWith(`${unidad} · `)).map(([k, f]) => [k.slice(unidad.length + 3), f]);
+}
 
 // ---------------------------------------------------------------- inventario
 /** Rutas `page.tsx` de producto, como se nombran en los archivos de pendientes (`/aceptar/[token]`). */
@@ -132,18 +144,19 @@ async function medir(page: Page, contexto: string) {
   expect((await razonesDeBorde(page, "main input, main select, main textarea, main button")).filter((r) => r < 3), `bordes · ${contexto}`).toEqual([]);
 }
 
-async function medirEstado(page: Page, ruta: string, estado: Estado, tema: string, ancho: number) {
+async function medirEstado(page: Page, ruta: string, estado: Estado, tema: string, ancho: number, paso?: () => Promise<void>, nombreEstado?: string) {
   await page.setViewportSize({ width: ancho, height: 900 });
   await fijarAjustes(page, { modo: "headers", tenant: TENANT_PRUEBA });
   await simular(page, estado);
   await page.goto(concreta(ruta));
   await ponerTema(page, tema);
-  const contexto = `${ruta} · ${estado} · ${tema} · ${ancho} px`;
+  const contexto = `${ruta} · ${nombreEstado ?? estado} · ${tema} · ${ancho} px`;
   if (estado === "foco") {
     await page.locator("main a, main button, main input, main select").first().focus().catch(() => undefined);
   } else if (estado !== "carga") {
     await page.waitForLoadState("networkidle");
   }
+  if (paso) await paso();
   await medir(page, contexto);
 }
 
@@ -159,6 +172,7 @@ for (const ruta of rutasDeProducto()) {
       }
       test(nombre, async ({ page }) => {
         for (const estado of ESTADOS) await medirEstado(page, ruta, estado, tema, ancho);
+        for (const [nombreEstado, paso] of estadosDeclarados(ruta)) await medirEstado(page, ruta, "datos", tema, ancho, async () => { await paso(page); }, nombreEstado);
       });
     }
   }
@@ -177,6 +191,10 @@ async function medirVista(page: Page, vista: string, tema: string, ancho: number
   await abrirSubmenu(page, submenu);
   await ponerTema(page, tema);
   await medir(page, `vista ${vista} · ${tema} · ${ancho} px`);
+  for (const [nombreEstado, paso] of estadosDeclarados(`vista:${vista}`)) {
+    await paso(page);
+    await medir(page, `vista ${vista} · ${nombreEstado} · ${tema} · ${ancho} px`);
+  }
 }
 
 test.describe("cada vista del tablero se mide por separado", () => {

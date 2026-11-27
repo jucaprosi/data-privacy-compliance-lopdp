@@ -7,3 +7,4 @@
 /proveedor/[token]  # frontend/src/app/proveedor/[token]/page.tsx
 /solicitud/[slug]  # frontend/src/app/solicitud/[slug]/page.tsx
 /solicitud/seguir/[codigo]  # frontend/src/app/solicitud/seguir/[codigo]/page.tsx
+/solicitud/seguir  # frontend/src/app/solicitud/seguir/page.tsx

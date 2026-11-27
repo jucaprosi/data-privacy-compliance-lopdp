@@ -1,6 +1,8 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 # Pendientes de FE-32 (reparto por propiedad de archivos, #1110): una ruta (/…) o vista (vista:<id>) por línea, con «# archivo» que la justifica.
 # La ficha dueña borra sus líneas al terminar.
+/  # frontend/src/app/dashboard/page.tsx (marco)
+/cartera  # frontend/src/app/dashboard/page.tsx (marco)
 /dashboard  # frontend/src/app/dashboard/page.tsx
 vista:alta_organizacion  # frontend/src/app/dashboard/page.tsx (marco)
 vista:arco  # frontend/src/app/dashboard/page.tsx (marco)
