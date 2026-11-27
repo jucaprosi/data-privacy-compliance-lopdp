@@ -62,8 +62,8 @@ export function pendientes(): Map<string, string> {
   const mapa = new Map<string, string>();
   for (const f of readdirSync(dir).filter((n) => /^FE-\d+\.txt$/.test(n)).sort()) {
     for (const linea of readFileSync(join(dir, f), "utf8").split(/\r?\n/)) {
-      const t = linea.trim();
-      if (t && !t.startsWith("#")) mapa.set(t, f.replace(".txt", ""));
+      const t = linea.split("#")[0].trim(); // «<ruta o vista>  # <archivo que la justifica>»
+      if (t && !mapa.has(t)) mapa.set(t, f.replace(".txt", "")); // en varias listas: se mide cuando salga de la última
     }
   }
   return mapa;

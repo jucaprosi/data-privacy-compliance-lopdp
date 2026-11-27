@@ -1,10 +1,9 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-# Pendientes de FE-32 R3: una ruta (/…) o vista (vista:<id>) por línea. La ficha dueña borra sus líneas al migrar.
-/
-/login
-/invitacion
-/aceptar/[token]
-/solicitud/[slug]
-/solicitud/seguir
-/solicitud/seguir/[codigo]
-/proveedor/[token]
+# Pendientes de FE-32 (reparto por propiedad de archivos, #1110): una ruta (/…) o vista (vista:<id>) por línea, con «# archivo» que la justifica.
+# La ficha dueña borra sus líneas al terminar.
+/aceptar/[token]  # frontend/src/app/aceptar/[token]/page.tsx
+/invitacion  # frontend/src/app/invitacion/page.tsx
+/login  # frontend/src/app/login/page.tsx
+/proveedor/[token]  # frontend/src/app/proveedor/[token]/page.tsx
+/solicitud/[slug]  # frontend/src/app/solicitud/[slug]/page.tsx
+/solicitud/seguir/[codigo]  # frontend/src/app/solicitud/seguir/[codigo]/page.tsx

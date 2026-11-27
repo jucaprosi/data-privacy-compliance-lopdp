@@ -1,9 +1,9 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-# Pendientes de FE-32 R3: una ruta (/…) o vista (vista:<id>) por línea. La ficha dueña borra sus líneas al migrar.
-vista:niif_ingesta
-vista:niif_reclasificacion
-vista:niif_subtotales
-vista:niif_mpm
-vista:niif_diagnostico
-vista:niif_exportacion
-vista:niif_doctrina
+# Pendientes de FE-32 (reparto por propiedad de archivos, #1110): una ruta (/…) o vista (vista:<id>) por línea, con «# archivo» que la justifica.
+# La ficha dueña borra sus líneas al terminar.
+/dashboard  # frontend/src/components/modules/NiifIngestaView.tsx
+vista:auditoria  # frontend/src/components/modules/NiifIngestaView.tsx
+vista:niif_ingesta  # frontend/src/components/modules/NiifIngestaView.tsx
+vista:niif_mpm  # frontend/src/components/modules/NiifMpmView.tsx
+vista:niif_reclasificacion  # frontend/src/components/modules/NiifReclasificacionView.tsx
+vista:niif_subtotales  # frontend/src/components/modules/NiifSubtotalesView.tsx
