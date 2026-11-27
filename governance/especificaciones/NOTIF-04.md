@@ -7,6 +7,8 @@ Migración `alembic/versions/20261127_notif04_tipo_capacidad.py`, id de revisió
 
 Usa `avisos_plataforma` de NOTIF-02, con el tipo nuevo `capacidad_editorial` y `referencia` = el `id` del cambio. Lee `cambios_de_capacidades(desde)` por el pasillo de la biblioteca (BIB-411) y `listar_operadores_activos()` por el de plataforma (OPE-01). Base `origin/main` f78f8b92.
 
+La compuerta de la sala, `features/notificaciones/notificaciones_service.py`, expone `avisos_capacidades` en su sección `NOTIF-04`; `api/routers/avisos_capacidades.py` lo importa solo desde ella.
+
 ## 2. API
 
 `POST /avisos/sincronizar-capacidades` (`api/routers/avisos_capacidades.py`), para un operador, como `POST /avisos/sincronizar` de NOTIF-02. Lo llama la misma ejecución programada, que el propietario amplía por el brief. Los avisos se ven en Inicio › Avisos.
