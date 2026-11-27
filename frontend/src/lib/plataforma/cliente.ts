@@ -12,8 +12,8 @@ import type {
 
 const BASE = "/api/v1/plataforma";
 
-// FE-31 R4: texto fijo para OPERADOR_NO_AUTORIZADO; el mensaje en español del servidor se conserva (las pantallas de
-// invitación lo interpretan); sin JSON, el genérico. Nunca el estado HTTP.
+// FE-31 R4: texto fijo para OPERADOR_NO_AUTORIZADO; el detail del servidor solo con code estable; si no, el genérico.
+// Nunca el estado HTTP.
 const TEXTO_NO_AUTORIZADO = "No tienes permiso para administrar organizaciones.";
 const TEXTO_GENERICO = "No se pudo completar la operación. Inténtalo de nuevo.";
 
@@ -26,6 +26,13 @@ export class ErrorPlataforma extends Error {
     super(mensaje);
     this.name = "ErrorPlataforma";
   }
+}
+
+function textoDeError(estado: number, error: ErrorApiPlataforma): string {
+  if (error.code === "OPERADOR_NO_AUTORIZADO") return TEXTO_NO_AUTORIZADO;
+  // El detail del servidor solo con un code estable y detail en cadena (no los 422 de FastAPI ni los 5xx).
+  if (estado < 500 && typeof error.code === "string" && error.code && typeof error.detail === "string" && error.detail) return error.detail;
+  return TEXTO_GENERICO;
 }
 
 async function solicitar<T>(ruta: string, init: RequestInit = {}): Promise<T> {
@@ -44,7 +51,7 @@ async function solicitar<T>(ruta: string, init: RequestInit = {}): Promise<T> {
     }
     throw new ErrorPlataforma(
       respuesta.status,
-      error.code === "OPERADOR_NO_AUTORIZADO" ? TEXTO_NO_AUTORIZADO : error.detail || TEXTO_GENERICO,
+      textoDeError(respuesta.status, error),
       error.code,
     );
   }

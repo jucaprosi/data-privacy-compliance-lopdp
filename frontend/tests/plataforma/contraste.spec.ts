@@ -11,6 +11,8 @@
  *  - m3: añadir `bg-amber-950/20` -> «las tres pantallas no llevan clases de la paleta fija».
  *  - m4: mostrar el estado HTTP en el error -> «el error muestra su texto fijo…».
  *  - m5: mostrar «Todavía no hay organizaciones.» tras un fallo -> «una carga fallida…».
+ *  - m6: escribir la regla global de borde sin `:where` -> «un campo en error…».
+ *  - m7: mostrar el `detail` sin exigir `code` -> «un 422 … y un 500 con detail muestran el genérico».
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -170,5 +172,35 @@ test.describe("errores legibles (R4) y vacío solo si está vacío (R5)", () => 
     await expect(page.locator("main [role='alert']")).toHaveText("No se pudo completar la operación. Inténtalo de nuevo.");
     await expect(page.getByRole("button", { name: "Reintentar" })).toBeVisible();
     await expect(page.getByText("Todavía no hay organizaciones.")).toHaveCount(0);
+  });
+  test("un 422 con detail en lista y un 500 con detail muestran el genérico; un 409 con code muestra su detail", async ({ page }) => {
+    const alerta = page.locator("main [role='alert']");
+    await abrir(page, "/plataforma", "theme-light", 1280, { crear: { estado: 422, cuerpo: { detail: [{ msg: "campo requerido" }] } } });
+    await rellenar(page);
+    await expect(alerta).toHaveText("No se pudo completar la operación. Inténtalo de nuevo.");
+    await page.unrouteAll();
+    await simular(page, { crear: { estado: 500, cuerpo: { code: "ERROR_INTERNO", detail: "TEXTO CRUDO" } } });
+    await page.getByRole("button", { name: "Crear y emitir invitación" }).click();
+    await expect(alerta).toHaveText("No se pudo completar la operación. Inténtalo de nuevo.");
+    await expect(page.getByText("TEXTO CRUDO")).toHaveCount(0);
+    await page.unrouteAll();
+    await simular(page, { crear: { estado: 409, cuerpo: { code: "ORG_YA_ADMINISTRADA", detail: "La organización ya tiene un administrador activo." } } });
+    await page.getByRole("button", { name: "Crear y emitir invitación" }).click();
+    await expect(alerta).toHaveText("La organización ya tiene un administrador activo.");
+  });
+
+  test("un campo en error en el tema claro lleva el borde de error, no el de control", async ({ page }) => {
+    await abrir(page, "/plataforma", "theme-light", 1280);
+    await expect(page.getByLabel("Sector")).toBeVisible();
+    const colores = await page.evaluate(() => {
+      const valor = (v: string) => { const e = document.createElement("span"); e.style.color = `var(${v})`; document.body.append(e); const c = getComputedStyle(e).color; e.remove(); return c; };
+      const campo = (invalido: boolean) => {
+        const i = document.createElement("input"); if (invalido) i.setAttribute("aria-invalid", "true");
+        document.querySelector("main")!.append(i); const c = getComputedStyle(i).borderTopColor; i.remove(); return c;
+      };
+      return { control: valor("--ui-borde-control"), error: valor("--ui-error-borde"), normal: campo(false), invalido: campo(true) };
+    });
+    expect(colores.normal).toBe(colores.control);
+    expect(colores.invalido).toBe(colores.error);
   });
 });

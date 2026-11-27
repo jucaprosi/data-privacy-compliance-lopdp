@@ -345,7 +345,14 @@ html, body {
 .theme-light select {
   background-color: #ffffff !important;
   color: #09090b !important;
-  border-color: var(--ui-borde-control) !important;
+}
+
+/* Borde de los campos del tema claro (FE-31 R2): 3:1. Sin ganar por especificidad: el de error prevalece. */
+.theme-light :where(input:not([type="checkbox"]):not([type="radio"]), textarea, select) {
+  border-color: var(--ui-borde-control);
+}
+:where(.theme-light input, .theme-light textarea, .theme-light select)[aria-invalid="true"] {
+  border-color: var(--ui-error-borde);
 }
 
 .theme-light input:focus,
