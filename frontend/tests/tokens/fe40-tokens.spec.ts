@@ -1,7 +1,7 @@
 // © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
 // ¤adpa ¤arbitro
 // FE-40: los siete tokens de éxito, información y enlace existen en cada tema con sus valores y cumplen contraste.
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { medirContraste } from "../contraste";
 
 const TOKENS = [
@@ -42,14 +42,20 @@ function razon(a: string, b: string): number {
   return (x + 0.05) / (y + 0.05);
 }
 
+// QA-16: el tema lo aplica la app (`ThemeRootSync` desde el store guardado), no la prueba: se fija en el estado
+// guardado de `jubys-audit-storage` (versión 6 del store) antes de cargar.
+async function fijarTema(page: Page, tema: "claro" | "oscuro") {
+  await page.addInitScript((t) => {
+    localStorage.setItem("jubys-audit-storage", JSON.stringify({ state: { theme: t }, version: 6 }));
+  }, tema === "claro" ? "light" : "dark");
+}
+
 for (const tema of ["claro", "oscuro"] as const) {
   test.describe(`tema ${tema}`, () => {
     test("los siete tokens tienen su valor de la especificación", async ({ page }) => {
+      await fijarTema(page, tema);
       await page.goto("/");
-      await page.evaluate((clase) => {
-        document.documentElement.classList.remove("theme-light", "theme-dark");
-        document.documentElement.classList.add(clase);
-      }, tema === "claro" ? "theme-light" : "theme-dark");
+      await expect(page.locator("html")).toHaveClass(new RegExp(tema === "claro" ? "theme-light" : "theme-dark"));
       const valores: Record<string, string> = await page.evaluate((nombres) => {
         const cs = getComputedStyle(document.documentElement);
         return Object.fromEntries(nombres.map((n) => [n, cs.getPropertyValue(n).trim().toLowerCase()]));
@@ -60,10 +66,10 @@ for (const tema of ["claro", "oscuro"] as const) {
     });
 
     test("contraste AA en muestras pintadas: éxito, información y enlace (medirContraste)", async ({ page }) => {
+      await fijarTema(page, tema);
       await page.goto("/");
-      await page.evaluate((clase) => {
-        document.documentElement.classList.remove("theme-light", "theme-dark");
-        document.documentElement.classList.add(clase);
+      await expect(page.locator("html")).toHaveClass(new RegExp(tema === "claro" ? "theme-light" : "theme-dark"));
+      await page.evaluate(() => {
         const muestras = document.createElement("div");
         muestras.id = "fe40-muestras";
         muestras.style.cssText = "background:var(--ui-superficie);padding:16px;display:grid;gap:8px;";
@@ -72,16 +78,14 @@ for (const tema of ["claro", "oscuro"] as const) {
           <p style="background:var(--ui-info-fondo);color:var(--ui-info-texto);padding:8px;margin:0">Información</p>
           <p style="background:var(--ui-superficie);color:var(--ui-enlace);padding:8px;margin:0">Enlace</p>`;
         document.body.appendChild(muestras);
-      }, tema === "claro" ? "theme-light" : "theme-dark");
+      });
       expect(await medirContraste(page, "#fe40-muestras")).toEqual([]);
     });
 
     test("valores de la especificación y razón exacta del enlace", async ({ page }) => {
+      await fijarTema(page, tema);
       await page.goto("/");
-      await page.evaluate((clase) => {
-        document.documentElement.classList.remove("theme-light", "theme-dark");
-        document.documentElement.classList.add(clase);
-      }, tema === "claro" ? "theme-light" : "theme-dark");
+      await expect(page.locator("html")).toHaveClass(new RegExp(tema === "claro" ? "theme-light" : "theme-dark"));
       const v: Record<string, string> = await page.evaluate((nombres) => {
         const cs = getComputedStyle(document.documentElement);
         return Object.fromEntries(nombres.map((n) => [n, cs.getPropertyValue(n).trim().toLowerCase()]));
