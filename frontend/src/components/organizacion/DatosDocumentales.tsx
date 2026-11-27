@@ -111,11 +111,11 @@ export default function DatosDocumentales({ rol, puedeEditar, className = "" }: 
     <section
       aria-labelledby={`${idBase}-titulo`}
       data-testid="datos-documentales"
-      className={`bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl p-5 shadow-sm space-y-4 ${className}`}
+      className={`bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 shadow-sm space-y-4 ${className}`}
     >
-      <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[var(--ui-borde)] pb-2.5">
-        <h3 id={`${idBase}-titulo`} className="text-xs font-bold uppercase tracking-wider text-white flex items-center">
-          <FileText className="w-4 h-4 mr-1.5 text-[#3892f3]" />
+      <div className="flex items-center justify-between border-b border-[var(--ui-borde)] pb-2.5">
+        <h3 id={`${idBase}-titulo`} className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)] flex items-center">
+          <FileText className="w-4 h-4 mr-1.5 text-[var(--ui-enlace)]" />
           Datos para documentos
         </h3>
         {estado.fase === "lista" && (
@@ -130,7 +130,7 @@ export default function DatosDocumentales({ rol, puedeEditar, className = "" }: 
 
       {estado.fase === "cargando" && <p role="status" className="text-xs text-[var(--ui-texto-suave)]">Consultando los datos para documentos…</p>}
       {estado.fase === "error" && (
-        <p role="alert" className="text-xs text-amber-700">
+        <p role="alert" className="text-xs text-[var(--ui-aviso-texto)]">
           No se pudieron consultar los datos para documentos ({estado.mensaje}).
         </p>
       )}
@@ -173,17 +173,17 @@ export default function DatosDocumentales({ rol, puedeEditar, className = "" }: 
                           setBorrador({ ...borrador, [d.campo]: e.target.value });
                           if (error) setErrores({ ...errores, [d.campo]: undefined });
                         }}
-                        className={`w-full bg-zinc-50 dark:bg-[var(--ui-campo)] border rounded-lg px-3 py-2 text-white placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition ${
-                          error ? "border-red-500" : "border-zinc-300 dark:border-[var(--ui-borde)]"
+                        className={`w-full bg-[var(--ui-campo)] border rounded-lg px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--ui-texto-suave)] text-xs focus:outline-none focus:border-[var(--ui-primario)] transition ${
+                          error ? "border-[var(--ui-error-borde)]" : "border-[var(--ui-borde-control)]"
                         }`}
                       />
                       {error ? (
-                        <p id={`${id}-error`} className="mt-1 text-[10px] text-red-600">
+                        <p id={`${id}-error`} className="mt-1 text-[10px] text-[var(--ui-error-texto)]">
                           {error}
                         </p>
                       ) : (
                         d.ayuda && (
-                          <p id={`${id}-ayuda`} className="mt-1 text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400">
+                          <p id={`${id}-ayuda`} className="mt-1 text-[10px] text-[var(--ui-texto-suave)]">
                             {d.ayuda}
                           </p>
                         )
@@ -201,7 +201,7 @@ export default function DatosDocumentales({ rol, puedeEditar, className = "" }: 
                 <p className="text-[var(--ui-texto-suave)]">Solo el administrador de la organización puede cambiar estos datos.</p>
               )}
               {aviso && (
-                <p role={aviso.tipo === "error" ? "alert" : "status"} className={aviso.tipo === "error" ? "text-red-600" : "text-[#00c853]"}>
+                <p role={aviso.tipo === "error" ? "alert" : "status"} className={aviso.tipo === "error" ? "text-[var(--ui-error-texto)]" : "text-[var(--ui-exito-texto)]"}>
                   {aviso.texto}
                 </p>
               )}
@@ -210,7 +210,7 @@ export default function DatosDocumentales({ rol, puedeEditar, className = "" }: 
               <button
                 type="submit"
                 disabled={guardando}
-                className="text-white px-4 py-2 text-xs font-semibold rounded-lg bg-[#3892f3] hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                className="text-[var(--ui-primario-texto)] px-4 py-2 text-xs font-semibold rounded-lg bg-[var(--ui-primario)] hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {guardando ? "Guardando…" : "Guardar datos para documentos"}
               </button>
