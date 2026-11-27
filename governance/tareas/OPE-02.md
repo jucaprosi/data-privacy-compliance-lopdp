@@ -2,7 +2,7 @@
 id = "OPE-02"
 titulo = "La plataforma expone en la base si alguien es operador activo"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 112
 sala = "plataforma"
 depende_de = []
