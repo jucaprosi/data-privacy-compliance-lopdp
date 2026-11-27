@@ -85,6 +85,10 @@ test.describe("Biblioteca editorial desde Plataforma (BIB-412)", () => {
         status: plataforma, json: plataforma === 200 ? [] : { detail: "Solo el operador." } }));
       await page.route("**/api/v1/biblioteca/editorial", (r) => r.fulfill({ json: {
         actor_id: "operador", capacidades: ["editor"], versiones: [], revisiones: [] } }));
+      // QA-14: en `next dev` cada ruta se compila bajo demanda; con varios workers a la vez la compilación de /login
+      // superaba el `expect`. Se calientan las rutas antes de medir (sin tocar timeouts ni reintentos).
+      await page.request.get("/login");
+      await page.request.get("/plataforma/biblioteca");
       // El servidor pinta el aviso de entorno de la demo; aquí se pinta ya hidratada la página y se llega al login
       // por navegación del cliente (si se añadiera antes de hidratar, React lo descartaría).
       await page.goto("/plataforma");
