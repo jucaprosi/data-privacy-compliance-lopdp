@@ -85,10 +85,23 @@ test.describe("Biblioteca editorial desde Plataforma (BIB-412)", () => {
         status: plataforma, json: plataforma === 200 ? [] : { detail: "Solo el operador." } }));
       await page.route("**/api/v1/biblioteca/editorial", (r) => r.fulfill({ json: {
         actor_id: "operador", capacidades: ["editor"], versiones: [], revisiones: [] } }));
+      // QA-14: en `next dev` cada ruta se compila bajo demanda, y la navegación del cliente a /login pide, aparte del HTML,
+      // la carga RSC (`/login?_rsc=`) y el chunk cliente de la página; con varios workers a la vez eso superaba el `expect`.
+      // Se calientan las tres cosas antes de medir (sin tocar timeouts ni reintentos): el HTML y el chunk, con una
+      // navegación real a /login; la carga RSC, con su petición; y /plataforma/biblioteca, que usa la prueba de más abajo.
+      await page.goto("/login");
+      await page.request.get("/login", { headers: { RSC: "1" } });
+      await page.request.get("/plataforma/biblioteca");
       // El servidor pinta el aviso de entorno de la demo; aquí se pinta ya hidratada la página y se llega al login
       // por navegación del cliente (si se añadiera antes de hidratar, React lo descartaría).
       await page.goto("/plataforma");
       await expect(page.getByRole("navigation", { name: "Plataforma" })).toBeVisible();
+      // QA-14: la navegación visible es HTML del servidor; `window.next.router` existe desde que carga el bundle, antes de
+      // hidratar. Se espera a que React haya hidratado la página (adjunta sus fibras a los nodos) antes de navegar.
+      await page.waitForFunction(() => {
+        const principal = document.querySelector("main");
+        return !!principal && Object.keys(principal).some((k) => k.startsWith("__reactFiber$"));
+      });
       await page.evaluate(() => {
         const aviso = document.createElement("div");
         aviso.setAttribute("data-testid", "aviso-entorno");
