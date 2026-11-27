@@ -337,6 +337,8 @@ async def db_bib():
                     "SELECT :id,:cap,o.id,'Fixture sintética rollback' FROM o"), {"id": ids[rol], "cap": capacidad})
                 # Siembra de operadores (R1 de BIB-411): solo un operador activo tiene capacidades editoriales.
                 await conexion.execute(text("INSERT INTO operadores_plataforma (id, email, nombre, usuario_id) SELECT 'op-'||u.id, u.email, u.nombre, u.id FROM users u WHERE u.id=:u ON CONFLICT DO NOTHING"), {"u": ids[rol]})
+            # Siembra de operadores (R1 y R8 de BIB-411): «sin_permiso» es operador activo sin capacidades.
+            await conexion.execute(text("INSERT INTO operadores_plataforma (id, email, nombre, usuario_id) SELECT 'op-'||u.id, u.email, u.nombre, u.id FROM users u WHERE u.id=:u ON CONFLICT DO NOTHING"), {"u": ids["sin_permiso"]})
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
             async with AsyncSession(bind=conexion, expire_on_commit=False, join_transaction_mode="create_savepoint") as sesion:
                 yield sesion, ids
@@ -550,17 +552,18 @@ async def test_api_real_identidad_verificada_ignora_usuario_y_rol_de_cabeceras(d
     from types import SimpleNamespace
     from fastapi import FastAPI, HTTPException
     from httpx import ASGITransport, AsyncClient
-    from api import rbac
     from api.errores import error_negocio_handler
     from api.routers.biblioteca_editorial import router
     from app_core.db.session import get_session
     sesion, ids = db_bib
     monkeypatch.setenv("AUTH_MODE", "oidc")
-    async def identidad(_sesion, authorization):
-        if authorization != "Bearer credencial-sintetica-de-prueba":
+    from app_core import security
+    # R8 (BIB-411): la identidad sale del token verificado y se resuelve al operador (usuario_de_operador).
+    async def identidad(token):
+        if token != "credencial-sintetica-de-prueba":
             raise HTTPException(401, "Identidad no verificada")
-        return SimpleNamespace(usuario_id=ids["sin_permiso"])
-    monkeypatch.setattr(rbac, "usuario_verificado", identidad)
+        return SimpleNamespace(sub="sub-" + ids["sin_permiso"], email=ids["sin_permiso"] + "@example.test")
+    monkeypatch.setattr(security, "verificar_token_google", identidad)
     app = FastAPI()
     app.include_router(router, prefix="/api/v1")
     app.add_exception_handler(ErrorNegocio, error_negocio_handler)
