@@ -100,7 +100,7 @@ export function DescargarInforme({
           className={
             bloqueadoPorRevision
               ? "inline-flex items-center gap-2 rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton)] px-3 py-2 text-xs font-semibold text-[var(--ui-texto-suave)] cursor-not-allowed"
-              : "inline-flex items-center gap-2 rounded-md bg-[var(--ui-primario)] px-3 py-2 text-xs font-semibold text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] disabled:opacity-50"
+              : "inline-flex items-center gap-2 rounded-md bg-[var(--ui-primario)] px-3 py-2 text-xs font-semibold text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-enlace)] disabled:opacity-50"
           }
         >
           {cargando ? (
@@ -133,7 +133,7 @@ export function DescargarInforme({
       {error && (
         <p
           role="alert"
-          className="rounded-md border border-[#ff1744]/40 bg-[var(--ui-superficie)] px-3 py-2 text-xs text-zinc-100"
+          className="rounded-md border border-[var(--ui-error-borde)] bg-[var(--ui-superficie)] px-3 py-2 text-xs text-[var(--foreground)]"
         >
           {error}
         </p>

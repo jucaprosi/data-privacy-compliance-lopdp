@@ -74,14 +74,14 @@ function FilaArea({
               Cancelar
             </button>
             {aviso && (
-              <p role="alert" className="text-[11px] text-[#ff6b86] basis-full">
+              <p role="alert" className="text-[11px] text-[var(--ui-error-texto)] basis-full">
                 {aviso}
               </p>
             )}
           </form>
         ) : (
           <>
-            <span className="text-sm text-zinc-100">{nodo.area.nombre}</span>
+            <span className="text-sm text-[var(--foreground)]">{nodo.area.nombre}</span>
             {nodo.area.codigo && <span className="text-[11px] text-[var(--ui-texto-suave)]">{nodo.area.codigo}</span>}
             <button type="button" className={BOTON} onClick={() => onEditar(nodo.area.id)} aria-label={`Editar ${nodo.area.nombre}`}>
               Editar
@@ -191,7 +191,7 @@ export function AreasTab({ areas, alCambiar }: AreasTabProps) {
           </button>
         </div>
         {aviso && (
-          <p role="alert" className="text-[11px] text-[#ff6b86] sm:col-span-4">
+          <p role="alert" className="text-[11px] text-[var(--ui-error-texto)] sm:col-span-4">
             {aviso}
           </p>
         )}
@@ -200,7 +200,7 @@ export function AreasTab({ areas, alCambiar }: AreasTabProps) {
       {error && <BloqueError error={error} testId="error-areas" />}
 
       {arbol.length === 0 ? (
-        <p role="status" className="text-xs text-zinc-400">
+        <p role="status" className="text-xs text-[var(--ui-texto-suave)]">
           Todavía no hay áreas. Crea la primera para poder acotar roles a un área.
         </p>
       ) : (

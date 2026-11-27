@@ -45,11 +45,11 @@ export interface PlaneacionFormProps {
 }
 
 const CAMPO =
-  "w-full rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] px-3 py-2 text-sm text-zinc-100 " +
-  "placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#3892f3] disabled:opacity-60";
-const ETIQUETA = "block text-xs font-semibold text-zinc-300 mb-1";
+  "w-full rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] px-3 py-2 text-sm text-[var(--foreground)] " +
+  "placeholder:text-[var(--ui-texto-suave)] focus:outline-none focus:ring-2 focus:ring-[var(--ui-enlace)] disabled:opacity-60";
+const ETIQUETA = "block text-xs font-semibold text-[var(--ui-texto-suave)] mb-1";
 const AYUDA = "text-[11px] text-[var(--ui-texto-suave)] mt-1";
-const MENSAJE_ERROR = "text-[11px] text-[#ff6b86] mt-1";
+const MENSAJE_ERROR = "text-[11px] text-[var(--ui-error-texto)] mt-1";
 
 export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
   const idBase = useId();
@@ -120,8 +120,8 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
       className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-5"
     >
       <header>
-        <h2 className="text-sm font-bold uppercase tracking-wider text-white">Variables de planeación</h2>
-        <p className="text-[11px] text-zinc-400 mt-0.5">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--foreground)]">Variables de planeación</h2>
+        <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">
           Con estas variables se genera la hoja de ruta de adecuación. Los campos con asterisco son obligatorios.
         </p>
       </header>
@@ -129,9 +129,9 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
       {!puedeGenerar && (
         <div
           role="note"
-          className="flex items-start gap-2.5 p-3 rounded-lg bg-[#ffb300]/10 border border-[#ffb300]/40 text-xs"
+          className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ui-aviso-fondo)] border border-[var(--ui-aviso-borde)] text-xs"
         >
-          <Lock className="w-4 h-4 shrink-0 mt-0.5 text-[#ffb300]" aria-hidden="true" />
+          <Lock className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-aviso-texto)]" aria-hidden="true" />
           <p>
             Tu rol actual es <strong>{rol}</strong>. Solo el rol <strong>implementador</strong> puede generar la hoja de
             ruta; aquí puedes consultar las variables en modo de solo lectura.
@@ -337,14 +337,14 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
         </div>
 
         <details className="rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-3">
-          <summary className="cursor-pointer text-xs font-semibold text-zinc-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] rounded">
+          <summary className="cursor-pointer text-xs font-semibold text-[var(--ui-texto-suave)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-enlace)] rounded">
             Evidencia que ya existe por control (opcional)
           </summary>
           <fieldset className="mt-3 border-0 p-0 m-0">
             <legend className="sr-only">Controles con evidencia disponible</legend>
             <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
               {CONTROLES.map((control) => (
-                <label key={control} className="flex items-center gap-1.5 text-xs text-zinc-300">
+                <label key={control} className="flex items-center gap-1.5 text-xs text-[var(--ui-texto-suave)]">
                   <input
                     type="checkbox"
                     checked={Boolean(form.evidencia_por_control[control])}
@@ -354,7 +354,7 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
                         [control]: e.target.checked,
                       })
                     }
-                    className="accent-[#3892f3]"
+                    className="accent-[var(--ui-enlace)]"
                   />
                   {control}
                 </label>
@@ -368,28 +368,28 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
         <div
           role="status"
           aria-live="polite"
-          className="flex items-start gap-2.5 p-3 rounded-lg bg-[#3892f3]/10 border border-[#3892f3]/40 text-xs"
+          className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ui-info-fondo)] border border-[var(--ui-info-borde)] text-xs"
         >
-          <Loader2 className="w-4 h-4 shrink-0 mt-0.5 text-[#3892f3] animate-spin" aria-hidden="true" />
+          <Loader2 className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-enlace)] animate-spin" aria-hidden="true" />
           <div className="space-y-1">
             <p data-testid="progreso-mensaje">{mensajeDeProgreso(segundos)}</p>
-            <p className="text-zinc-400">Tiempo transcurrido: {segundos} s</p>
+            <p className="text-[var(--ui-texto-suave)]">Tiempo transcurrido: {segundos} s</p>
           </div>
         </div>
       )}
 
       {errorGeneracion && (
-        <div role="alert" className="flex items-start gap-2.5 p-3 rounded-lg bg-[#ff1744]/10 border border-[#ff1744]/40 text-xs">
-          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#ff1744]" aria-hidden="true" />
+        <div role="alert" className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ui-error-fondo)] border border-[var(--ui-error-borde)] text-xs">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-error-texto)]" aria-hidden="true" />
           <div className="space-y-1">
             <p data-testid="error-mensaje">{errorGeneracion.mensaje}</p>
             {errorGeneracion.codigo && (
-              <p className="text-zinc-400">
+              <p className="text-[var(--ui-texto-suave)]">
                 Código: <span data-testid="error-codigo">{errorGeneracion.codigo}</span>
               </p>
             )}
             {errorGeneracion.accion && (
-              <p className="text-zinc-400">
+              <p className="text-[var(--ui-texto-suave)]">
                 Acción requerida: <span data-testid="error-accion">{errorGeneracion.accion}</span>
               </p>
             )}
@@ -400,9 +400,9 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
       {roadmapId && !generando && !errorGeneracion && (
         <div
           role="status"
-          className="flex items-start gap-2.5 p-3 rounded-lg bg-[#00c853]/10 border border-[#00c853]/40 text-xs"
+          className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ui-exito-fondo)] border border-[var(--ui-exito-borde)] text-xs"
         >
-          <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-[#00c853]" aria-hidden="true" />
+          <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-exito-texto)]" aria-hidden="true" />
           <p>
             La hoja de ruta se generó correctamente. Identificador: <span data-testid="roadmap-id">{roadmapId}</span>
           </p>
@@ -413,7 +413,7 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
         <button
           type="submit"
           disabled={bloqueado}
-          className="inline-flex items-center gap-2 rounded-lg bg-[var(--ui-primario)] px-4 py-2 text-sm font-semibold text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141417] focus-visible:ring-[#3892f3] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 rounded-lg bg-[var(--ui-primario)] px-4 py-2 text-sm font-semibold text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141417] focus-visible:ring-[var(--ui-enlace)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {generando ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : null}
           {generando ? "Generando…" : errorGeneracion ? "Reintentar generación" : "Generar hoja de ruta"}

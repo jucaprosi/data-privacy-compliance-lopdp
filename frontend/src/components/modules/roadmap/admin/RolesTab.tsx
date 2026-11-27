@@ -155,7 +155,7 @@ export function RolesTab({ usuarios, areas, asignaciones, alCambiar, alIrAConfig
             {ocupado ? "Asignando…" : "Asignar rol"}
           </button>
           {aviso && (
-            <p role="alert" className="text-[11px] text-[#ff6b86]">
+            <p role="alert" className="text-[11px] text-[var(--ui-error-texto)]">
               {aviso}
             </p>
           )}
@@ -165,7 +165,7 @@ export function RolesTab({ usuarios, areas, asignaciones, alCambiar, alIrAConfig
       {error && <BloqueError error={error} testId="error-roles" onIrAConfiguracion={alIrAConfiguracion} />}
 
       {asignaciones.length === 0 ? (
-        <p role="status" className="text-xs text-zinc-400">
+        <p role="status" className="text-xs text-[var(--ui-texto-suave)]">
           Todavía no hay roles asignados.
         </p>
       ) : (
@@ -195,16 +195,16 @@ export function RolesTab({ usuarios, areas, asignaciones, alCambiar, alIrAConfig
               const persona = nombreUsuario.get(a.user_id) ?? a.user_id;
               return (
                 <tr key={a.id} data-testid={`rol-${a.id}`} className="border-b border-[var(--ui-borde)] align-top">
-                  <td className="py-2 pr-3 text-zinc-100">{persona}</td>
-                  <td className="py-2 pr-3 text-zinc-200">{ETIQUETA_ROL[a.role]}</td>
-                  <td className="py-2 pr-3 text-zinc-300">{a.area_id ? nombreArea.get(a.area_id) ?? a.area_id : "Toda la organización"}</td>
-                  <td className="py-2 pr-3 text-zinc-300">
+                  <td className="py-2 pr-3 text-[var(--foreground)]">{persona}</td>
+                  <td className="py-2 pr-3 text-[var(--foreground)]">{ETIQUETA_ROL[a.role]}</td>
+                  <td className="py-2 pr-3 text-[var(--ui-texto-suave)]">{a.area_id ? nombreArea.get(a.area_id) ?? a.area_id : "Toda la organización"}</td>
+                  <td className="py-2 pr-3 text-[var(--ui-texto-suave)]">
                     {a.valid_to ? `Hasta ${new Date(a.valid_to).toLocaleDateString("es-EC")}` : "Sin vencimiento"}
                   </td>
                   <td className="py-2">
                     {aRevocar === a.id ? (
                       <div role="group" aria-label={`Confirmar la revocación del rol de ${persona}`} className="space-y-1.5">
-                        <p className="text-[11px] text-zinc-300">
+                        <p className="text-[11px] text-[var(--ui-texto-suave)]">
                           ¿Revocar el rol de {ETIQUETA_ROL[a.role].toLowerCase()} a {persona}?
                         </p>
                         <div className="flex gap-2">
