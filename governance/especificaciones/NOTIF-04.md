@@ -20,14 +20,14 @@ La compuerta de la sala, `features/notificaciones/notificaciones_service.py`, ex
   - para quien la recibe o la pierde: «{por} te concedió la capacidad {X}.» o «{por} te retiró la capacidad {X}.»;
   - para los demás: «{por} concedió a {a quién} la capacidad {X}.» o «{por} retiró a {a quién} la capacidad {X}.»;
   - {X} es Editor, Revisor técnico o Publicador. Después, «Motivo: «{motivo}».», con el motivo cortado a 200 caracteres, con «…» si se corta, y en texto plano; sin motivo no hay hueco.
-  - Enlace «Ver capacidades editoriales», a `/plataforma/capacidades`. Sin recordatorios.
+  - Enlace a `/plataforma/capacidades`, que la bandeja nombra «Ver capacidades editoriales» por su destino (NOTIF-05). Sin recordatorios.
 - **R3 · Palabras.** Las de NOTIF-02 R5.
 - **R-SP · Sin prohibiciones** (GEN-01 R3).
 - **R-ADPA · Ortogonalidad ZERAG (`NOTIF-04`).** Solo los archivos de la propiedad. Otras salas, solo por sus pasillos.
 
 ## 4. Interfaz
 
-La bandeja de NOTIF-02, sin cambios.
+La bandeja de NOTIF-02. El texto del enlace lo pone NOTIF-05 según el destino.
 
 ## 5. Aceptación
 
