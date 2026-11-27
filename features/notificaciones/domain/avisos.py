@@ -38,7 +38,7 @@ def motivo(*, origen: str, hoy: date, norma: str | None = None, articulo: str | 
         cuerpo = _plano(texto)
         if len(cuerpo) > LIMITE_PETICION:
             cuerpo = cuerpo[:LIMITE_PETICION] + "…"
-        quien = f"Motivo del cambio: petición de {_plano(nombre)}"
+        quien = f"Motivo del cambio: petición de {_plano(nombre)}" if _plano(nombre) else "Motivo del cambio: petición"
         return f"{quien}: «{cuerpo}»." if cuerpo else f"{quien}."
     base = f"Motivo del cambio: {_plano(norma)}"
     if _plano(articulo):

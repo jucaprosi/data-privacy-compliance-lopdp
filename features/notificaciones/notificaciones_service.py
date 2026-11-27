@@ -191,3 +191,9 @@ __all__.append("construir_aviso_impacto")
 # ¤adpa Los códigos de error de esta sala viven en features/notificaciones/domain/errores.py y se registran al importarlo.
 from features.notificaciones.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+# === NOTIF-02 ===
+from features.notificaciones.services import avisos_plataforma as avisos_servicio  # noqa: E402
+
+__all__.append("avisos_servicio")
+# === fin NOTIF-02 ===

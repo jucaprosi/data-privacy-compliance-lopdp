@@ -121,3 +121,9 @@ def test_fin_del_aviso():
 def test_las_palabras_prohibidas_no_estan_en_los_textos_fijos():
     for t in (av.ENLACE_TEXTO, av.TEXTO_FIN, av.titulo("Plantilla")):
         _limpio(t)
+
+
+def test_peticion_sin_nombre_no_deja_huecos():
+    t = av.motivo(origen="peticion", nombre=None, texto=None, hoy=HOY)
+    assert t == "Motivo del cambio: petición."
+    _limpio(t)
