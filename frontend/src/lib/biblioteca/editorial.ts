@@ -3,7 +3,7 @@
 // ¤¤developer-architect
 import { httpBiblioteca } from "./http";
 
-export type Capacidad = "editor" | "revisor_tecnico" | "revisor_juridico" | "publicador";
+export type Capacidad = "editor" | "revisor_tecnico" | "publicador";
 export interface Ficha {
   nombre: string; objetivo: string; fuentes: string; fecha_revision: string;
   instrucciones: string; dependencias: string; restricciones: string;

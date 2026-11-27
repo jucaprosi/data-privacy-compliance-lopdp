@@ -7,10 +7,9 @@ import { ETIQUETAS_CAPACIDAD, type CapacidadEditorial } from "@/lib/biblioteca/c
 export const SIN_PERMISOS_EDITORIALES =
   "No tienes permisos editoriales en la Biblioteca. Los asigna el equipo de la plataforma.";
 
-const DESCRIPCION: Record<CapacidadEditorial, string> = {
+export const DESCRIPCION: Record<CapacidadEditorial, string> = {
   editor: "Crea versiones y carga el archivo maestro.",
   revisor_tecnico: "Aprueba o rechaza el contenido técnico.",
-  revisor_juridico: "Aprueba o rechaza el contenido jurídico.",
   publicador: "Publica o retira versiones con ambas revisiones aprobadas.",
 };
 const ORDEN = Object.keys(ETIQUETAS_CAPACIDAD) as CapacidadEditorial[];
