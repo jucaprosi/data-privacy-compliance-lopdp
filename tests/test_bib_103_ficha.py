@@ -174,7 +174,7 @@ async def db_bib():
             if not (await conexion.execute(text("SELECT to_regclass('biblioteca_mis_plantillas')"))).scalar():
                 pytest.fail("Aplicar la migración de BIB-103 en la base de pruebas antes de este árbitro", pytrace=False)
             ids = {rol: "bib103-" + rol + "-" + uuid4().hex for rol in
-                   ("editor", "tecnico", "juridico", "publicador", "miembro_a", "miembro_b")}
+                   ("editor", "tecnico", "publicador", "miembro_a", "miembro_b")}
             org_a, org_b = "bib103-org-" + uuid4().hex, "bib103-org-" + uuid4().hex
             for rol, usuario in ids.items():
                 await conexion.execute(text("INSERT INTO users(id,email,nombre) VALUES (:id,:email,:nombre)"),
@@ -188,12 +188,13 @@ async def db_bib():
                 await conexion.execute(text(
                     "INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES (:id, :u, :t, 'dpo')"),
                     {"id": str(uuid4()), "u": usuario, "t": tid})
-            for rol, capacidad in [("editor", "editor"), ("tecnico", "revisor_tecnico"),
-                                   ("juridico", "revisor_juridico"), ("publicador", "publicador")]:
+            for rol, capacidad in [("editor", "editor"), ("tecnico", "revisor_tecnico"), ("publicador", "publicador")]:
                 await conexion.execute(text("WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
                                             "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
                                             "SELECT :id,:cap,o.id,'Fixture sintética rollback' FROM o"),
                                        {"id": ids[rol], "cap": capacidad})
+                # Siembra de operadores (R1 de BIB-411): solo un operador activo tiene capacidades editoriales.
+                await conexion.execute(text("INSERT INTO operadores_plataforma (id, email, nombre, usuario_id) SELECT 'op-'||u.id, u.email, u.nombre, u.id FROM users u WHERE u.id=:u ON CONFLICT DO NOTHING"), {"u": ids[rol]})
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
             async with AsyncSession(bind=conexion, expire_on_commit=False,
                                     join_transaction_mode="create_savepoint") as sesion:

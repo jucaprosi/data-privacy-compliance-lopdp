@@ -106,16 +106,17 @@ class Mundo:
 
 
 async def _semilla_global(conexion) -> dict[str, str]:
-    editorial = {rol: "bib307-" + rol + "-" + uuid4().hex[:8] for rol in ("editor", "tecnico", "juridico", "publicador")}
+    editorial = {rol: "bib307-" + rol + "-" + uuid4().hex[:8] for rol in ("editor", "tecnico", "publicador")}
     for rol, usuario in editorial.items():
         await conexion.execute(text("INSERT INTO users(id,email,nombre) VALUES (:id,:e,:n)"),
                                {"id": usuario, "e": usuario + "@example.test", "n": rol})
-    for rol, capacidad in (("editor", "editor"), ("tecnico", "revisor_tecnico"),
-                           ("juridico", "revisor_juridico"), ("publicador", "publicador")):
+    for rol, capacidad in (("editor", "editor"), ("tecnico", "revisor_tecnico"), ("publicador", "publicador")):
         await conexion.execute(text("WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
                                     "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
                                     "SELECT :id,:cap,o.id,'Fixture BIB-307 rollback' FROM o"),
                                {"id": editorial[rol], "cap": capacidad})
+        # Siembra de operadores (R1 de BIB-411): solo un operador activo tiene capacidades editoriales.
+        await conexion.execute(text("INSERT INTO operadores_plataforma (id, email, nombre, usuario_id) SELECT 'op-'||u.id, u.email, u.nombre, u.id FROM users u WHERE u.id=:u ON CONFLICT DO NOTHING"), {"u": editorial[rol]})
     return editorial
 
 

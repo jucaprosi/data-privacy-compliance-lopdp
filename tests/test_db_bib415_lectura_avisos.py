@@ -53,6 +53,8 @@ async def _version(s: AsyncSession, codigo: str, version: str, estado: str, auto
 
 
 async def _capacidad(s: AsyncSession, usuario: str, otorgante: str, revocada: bool) -> None:
+    # Siembra de operadores (R1 de BIB-411): solo un operador activo tiene capacidades editoriales.
+    await s.execute(text("INSERT INTO operadores_plataforma (id, email, nombre, usuario_id) SELECT 'op-'||u.id, u.email, u.nombre, u.id FROM users u WHERE u.id=:u ON CONFLICT DO NOTHING"), {"u": usuario})
     if revocada:
         await s.execute(text(
             "INSERT INTO biblioteca_capacidades (usuario_id, capacidad, concedida_por, motivo, revocada_en, "

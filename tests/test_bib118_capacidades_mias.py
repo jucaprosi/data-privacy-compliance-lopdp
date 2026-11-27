@@ -18,7 +18,7 @@ import pytest
 import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from api.rbac import get_usuario_autenticado
+from api.routers.biblioteca_capacidades import operador_de_la_peticion  # R8 (BIB-411)
 from app_core.db.session import get_session
 from features.biblioteca import biblioteca_service as bib
 from main import app
@@ -66,11 +66,13 @@ async def mundo():
                 await conexion.execute(text("INSERT INTO users(id,email,nombre) VALUES (:id,:e,'Sintético')"),
                                        {"id": usuario, "e": usuario + "@correo.invalid"})
             for usuario, capacidad in ((ids["doble"], "editor"), (ids["doble"], "revisor_tecnico"),
-                                       (ids["otra"], "publicador"), (ids["otra"], "revisor_juridico")):
+                                       (ids["otra"], "publicador")):
                 await conexion.execute(text(
                     "WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
                     "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
                     "SELECT :u,:c,o.id,'Fixture sintética rollback' FROM o"), {"u": usuario, "c": capacidad})
+                # Siembra de operadores (R1 de BIB-411): solo un operador activo tiene capacidades editoriales.
+                await conexion.execute(text("INSERT INTO operadores_plataforma (id, email, nombre, usuario_id) SELECT 'op-'||u.id, u.email, u.nombre, u.id FROM users u WHERE u.id=:u ON CONFLICT DO NOTHING"), {"u": usuario})
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
             async with AsyncSession(bind=conexion, expire_on_commit=False,
                                     join_transaction_mode="create_savepoint") as sesion:
@@ -85,13 +87,13 @@ async def _pedir(sesion: AsyncSession, actor: str) -> httpx.Response:
     async def sesion_de_prueba():
         yield sesion
     app.dependency_overrides[get_session] = sesion_de_prueba
-    app.dependency_overrides[get_usuario_autenticado] = lambda: actor
+    app.dependency_overrides[operador_de_la_peticion] = lambda: actor
     try:
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://prueba") as api:
             return await api.get(RUTA)
     finally:
         app.dependency_overrides.pop(get_session, None)
-        app.dependency_overrides.pop(get_usuario_autenticado, None)
+        app.dependency_overrides.pop(operador_de_la_peticion, None)
 
 
 # ¤arbitro
