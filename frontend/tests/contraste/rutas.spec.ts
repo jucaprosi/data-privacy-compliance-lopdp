@@ -26,20 +26,23 @@ import { fijarAjustes, TENANT_PRUEBA } from "../auth/utilesAuth";
 import { abrirSubmenu, configurarProyecto } from "../utiles";
 import { SUBMENUS } from "@/components/layout/menus";
 import { modulosNavegacionNIIF } from "@/components/layout/dashboardNavigation";
-import { ESTADOS as E33 } from "./estados/FE-33";
-import { ESTADOS as E34 } from "./estados/FE-34";
-import { ESTADOS as E35 } from "./estados/FE-35";
-import { ESTADOS as E36 } from "./estados/FE-36";
-import { ESTADOS as E37 } from "./estados/FE-37";
-import { ESTADOS as E38 } from "./estados/FE-38";
-import { ESTADOS as E39 } from "./estados/FE-39";
+import * as M33 from "./estados/FE-33";
+import * as M34 from "./estados/FE-34";
+import * as M35 from "./estados/FE-35";
+import * as M36 from "./estados/FE-36";
+import * as M37 from "./estados/FE-37";
+import * as M38 from "./estados/FE-38";
+import * as M39 from "./estados/FE-39";
 
 const RAIZ = join(__dirname, "..", "..");
 const TEMAS = ["theme-light", "theme-dark"] as const; // claro primero (R1)
 const ANCHOS = [375, 1280] as const;
 const ESTADOS = ["carga", "vacio", "error", "datos", "foco"] as const;
 type Estado = (typeof ESTADOS)[number];
-const MODULOS = [E33, E34, E35, E36, E37, E38, E39];
+const FICHAS: { ESTADOS: Record<string, (page: Page) => Promise<void>>; APERTURAS?: Record<string, (page: Page) => Promise<void>> }[] = [M33, M34, M35, M36, M37, M38, M39];
+const MODULOS = FICHAS.map((m) => m.ESTADOS);
+/** Aperturas de vistas que no son submenús (p. ej. las NIIF), declaradas por los módulos de estados (clave `vista:<id>`). */
+const APERTURAS = Object.assign({}, ...FICHAS.map((m) => m.APERTURAS ?? {})) as Record<string, (page: Page) => Promise<void>>;
 /** Estados que declaran los módulos de cada ficha para una ruta o vista (clave «<unidad> · <estado>»). */
 export function estadosDeclarados(unidad: string): [string, (page: Page) => Promise<void>][] {
   return MODULOS.flatMap((m) => Object.entries(m)).filter(([k]) => k.startsWith(`${unidad} · `)).map(([k, f]) => [k.slice(unidad.length + 3), f]);
@@ -187,8 +190,10 @@ async function medirVista(page: Page, vista: string, tema: string, ancho: number
   await page.goto("/");
   await configurarProyecto(page, "Entidad FE-32");
   const submenu = SUBMENUS.find((s) => s.vista === vista);
-  if (!submenu) throw new Error(`La vista «${vista}» no es un submenú del tablero: la ficha que la migra añade aquí cómo se abre.`);
-  await abrirSubmenu(page, submenu);
+  const apertura = APERTURAS[`vista:${vista}`];
+  if (submenu) await abrirSubmenu(page, submenu);
+  else if (apertura) await apertura(page);
+  else throw new Error(`La vista «${vista}» no es un submenú del tablero ni tiene apertura: la ficha que la migra la declara en APERTURAS de su módulo estados/FE-NN.ts.`);
   await ponerTema(page, tema);
   await medir(page, `vista ${vista} · ${tema} · ${ancho} px`);
   for (const [nombreEstado, paso] of estadosDeclarados(`vista:${vista}`)) {
