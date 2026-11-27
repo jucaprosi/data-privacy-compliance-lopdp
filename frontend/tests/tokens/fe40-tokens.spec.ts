@@ -2,6 +2,7 @@
 // ¤adpa ¤arbitro
 // FE-40: los siete tokens de éxito, información y enlace existen en cada tema con sus valores y cumplen contraste.
 import { expect, test } from "@playwright/test";
+import { medirContraste } from "../contraste";
 
 const TOKENS = [
   "--ui-exito-fondo", "--ui-exito-borde", "--ui-exito-texto",
@@ -58,7 +59,24 @@ for (const tema of ["claro", "oscuro"] as const) {
       }
     });
 
-    test("contraste: éxito e información ≥ 4,5:1; enlace sobre superficie 5,17:1 (claro) o 7,23:1 (oscuro)", async ({ page }) => {
+    test("contraste AA en muestras pintadas: éxito, información y enlace (medirContraste)", async ({ page }) => {
+      await page.goto("/");
+      await page.evaluate((clase) => {
+        document.documentElement.classList.remove("theme-light", "theme-dark");
+        document.documentElement.classList.add(clase);
+        const muestras = document.createElement("div");
+        muestras.id = "fe40-muestras";
+        muestras.style.cssText = "background:var(--ui-superficie);padding:16px;display:grid;gap:8px;";
+        muestras.innerHTML = `
+          <p style="background:var(--ui-exito-fondo);color:var(--ui-exito-texto);padding:8px;margin:0">Éxito</p>
+          <p style="background:var(--ui-info-fondo);color:var(--ui-info-texto);padding:8px;margin:0">Información</p>
+          <p style="background:var(--ui-superficie);color:var(--ui-enlace);padding:8px;margin:0">Enlace</p>`;
+        document.body.appendChild(muestras);
+      }, tema === "claro" ? "theme-light" : "theme-dark");
+      expect(await medirContraste(page, "#fe40-muestras")).toEqual([]);
+    });
+
+    test("valores de la especificación y razón exacta del enlace", async ({ page }) => {
       await page.goto("/");
       await page.evaluate((clase) => {
         document.documentElement.classList.remove("theme-light", "theme-dark");
@@ -68,10 +86,7 @@ for (const tema of ["claro", "oscuro"] as const) {
         const cs = getComputedStyle(document.documentElement);
         return Object.fromEntries(nombres.map((n) => [n, cs.getPropertyValue(n).trim().toLowerCase()]));
       }, TOKENS);
-      expect(razon(v["--ui-exito-texto"], v["--ui-exito-fondo"])).toBeGreaterThanOrEqual(4.5);
-      expect(razon(v["--ui-info-texto"], v["--ui-info-fondo"])).toBeGreaterThanOrEqual(4.5);
-      const esperadoEnlace = tema === "claro" ? 5.17 : 7.23;
-      expect(razon(v["--ui-enlace"], v["--ui-superficie"])).toBeCloseTo(esperadoEnlace, 2);
+      expect(razon(v["--ui-enlace"], v["--ui-superficie"])).toBeCloseTo(tema === "claro" ? 5.17 : 7.23, 2);
     });
   });
 }
