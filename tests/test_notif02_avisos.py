@@ -199,6 +199,7 @@ async def _avisos(como_app, usuario):  # noqa: F811
 
 
 @con_base
+@pytest.mark.asyncio
 async def test_db_dos_revisores_dos_avisos_y_repetir_no_crea_mas(propietario, como_app, pasillos):  # noqa: F811
     """Mutación m1: quitar el UNIQUE (o su ON CONFLICT) da rojo."""
     a, b = await _usuario(propietario), await _usuario(propietario)
@@ -213,6 +214,7 @@ async def test_db_dos_revisores_dos_avisos_y_repetir_no_crea_mas(propietario, co
 
 
 @con_base
+@pytest.mark.asyncio
 async def test_db_el_unique_lo_impone_la_base(propietario, como_app):  # noqa: F811
     """Mutación m1: sin el UNIQUE, la segunda inserción pasa y esta prueba da rojo."""
     u = await _usuario(propietario)
@@ -225,6 +227,7 @@ async def test_db_el_unique_lo_impone_la_base(propietario, como_app):  # noqa: F
 
 
 @con_base
+@pytest.mark.asyncio
 async def test_db_cada_persona_ve_y_marca_solo_lo_suyo(propietario, como_app, pasillos):  # noqa: F811
     """Mutación m4: quitar la política de lectura (o de cambio) da rojo."""
     a, b = await _usuario(propietario), await _usuario(propietario)
@@ -247,6 +250,7 @@ async def test_db_cada_persona_ve_y_marca_solo_lo_suyo(propietario, como_app, pa
 
 
 @con_base
+@pytest.mark.asyncio
 async def test_db_al_dejar_de_estar_en_revision_el_aviso_queda_cerrado(propietario, como_app, pasillos):  # noqa: F811
     """Mutación m3: dejar el enlace da rojo."""
     a = await _usuario(propietario)
@@ -263,6 +267,7 @@ async def test_db_al_dejar_de_estar_en_revision_el_aviso_queda_cerrado(propietar
 
 
 @con_base
+@pytest.mark.asyncio
 async def test_db_recordatorio_sin_fecha_actualiza_el_mismo_aviso_y_lo_deja_sin_leer(propietario, como_app, pasillos):  # noqa: F811
     a = await _usuario(propietario)
     v = _version("v-rec")
