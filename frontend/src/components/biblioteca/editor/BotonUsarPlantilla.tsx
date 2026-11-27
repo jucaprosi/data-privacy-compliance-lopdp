@@ -220,11 +220,11 @@ export default function BotonUsarPlantilla() {
             disabled
             aria-disabled="true"
             data-testid="boton-usar-plantilla"
-            className="rounded-md border border-[var(--ui-borde)] bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 font-medium text-[var(--ui-texto-suave)] cursor-not-allowed opacity-60"
+            className="rounded-md border border-[var(--ui-borde)] bg-[var(--ui-superficie-2)] px-3 py-1.5 font-medium text-[var(--ui-texto-suave)] cursor-not-allowed opacity-60"
           >
             No disponible
           </button>
-          <p role="status" className="text-xs text-amber-700 dark:text-amber-300">
+          <p role="status" className="text-xs text-[var(--ui-aviso-texto)]">
             La creación de documentos desde esta plantilla no está disponible en este momento.
           </p>
         </div>
@@ -234,20 +234,20 @@ export default function BotonUsarPlantilla() {
           onClick={handleIniciar}
           disabled={cargandoFicha || procesando}
           data-testid="boton-usar-plantilla"
-          className="cursor-pointer rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton-hover)] px-3 py-1.5 font-medium hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-60"
+          className="cursor-pointer rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton-hover)] px-3 py-1.5 font-medium hover:bg-[var(--ui-boton)] disabled:opacity-60"
         >
           {procesando ? "Creando borrador…" : "Usar en esta organización"}
         </button>
       )}
 
       {errorApi && (
-        <p role="alert" data-testid="alerta-error-usar" className="text-xs text-red-700 dark:text-red-300">
+        <p role="alert" data-testid="alerta-error-usar" className="text-xs text-[var(--ui-error-texto)]">
           {errorApi}
         </p>
       )}
 
       {documentoCreado && (
-        <p role="status" data-testid="mensaje-documento-creado" className="text-xs text-green-700 dark:text-green-300">
+        <p role="status" data-testid="mensaje-documento-creado" className="text-xs text-[var(--ui-exito-texto)]">
           Documento creado en borrador
           {documentoCreado.variables_faltantes?.length > 0 &&
             ` · faltan ${documentoCreado.variables_faltantes.length} datos para pasar a revisión`}.
@@ -279,14 +279,14 @@ export default function BotonUsarPlantilla() {
                 data-testid="input-fecha-emision"
                 value={fechaEmision}
                 onChange={(e) => setFechaEmision(e.target.value)}
-                className="rounded border border-[var(--ui-borde)] px-2 py-1 bg-white dark:bg-zinc-900"
+                className="rounded border border-[var(--ui-borde-control)] px-2 py-1 bg-[var(--ui-campo)]"
               />
             </div>
 
             {variables.map((v) => (
               <div key={v.clave} className="flex flex-col gap-1">
                 <label htmlFor={`campo-${v.clave}`} className="font-medium">
-                  {v.etiqueta} {v.obligatoria && <span className="text-red-600">*</span>}
+                  {v.etiqueta} {v.obligatoria && <span className="text-[var(--ui-error-texto)]">*</span>}
                 </label>
 
                 {v.tipo === "si_no" ? (
@@ -295,7 +295,7 @@ export default function BotonUsarPlantilla() {
                     data-testid={`select-${v.clave}`}
                     value={valores[v.clave] || "no"}
                     onChange={(e) => actualizarValor(v.clave, e.target.value)}
-                    className="rounded border border-[var(--ui-borde)] px-2 py-1 bg-white dark:bg-zinc-900"
+                    className="rounded border border-[var(--ui-borde-control)] px-2 py-1 bg-[var(--ui-campo)]"
                   >
                     <option value="si">Sí</option>
                     <option value="no">No</option>
@@ -308,7 +308,7 @@ export default function BotonUsarPlantilla() {
                     placeholder="Ingrese elementos separados por línea o coma"
                     value={valores[v.clave] || ""}
                     onChange={(e) => actualizarValor(v.clave, e.target.value)}
-                    className="rounded border border-[var(--ui-borde)] px-2 py-1 bg-white dark:bg-zinc-900"
+                    className="rounded border border-[var(--ui-borde-control)] px-2 py-1 bg-[var(--ui-campo)]"
                   />
                 ) : (
                   <input
@@ -317,12 +317,12 @@ export default function BotonUsarPlantilla() {
                     data-testid={`input-${v.clave}`}
                     value={valores[v.clave] || ""}
                     onChange={(e) => actualizarValor(v.clave, e.target.value)}
-                    className="rounded border border-[var(--ui-borde)] px-2 py-1 bg-white dark:bg-zinc-900"
+                    className="rounded border border-[var(--ui-borde-control)] px-2 py-1 bg-[var(--ui-campo)]"
                   />
                 )}
 
                 {errores[v.clave] && (
-                  <span role="alert" className="text-red-600 text-xs font-medium">
+                  <span role="alert" className="text-[var(--ui-error-texto)] text-xs font-medium">
                     {errores[v.clave]}
                   </span>
                 )}
@@ -334,7 +334,7 @@ export default function BotonUsarPlantilla() {
                 type="submit"
                 disabled={procesando}
                 data-testid="boton-confirmar-creacion"
-                className="cursor-pointer rounded-md bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 font-medium disabled:opacity-60"
+                className="cursor-pointer rounded-md bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] px-3 py-1.5 font-medium disabled:opacity-60"
               >
                 {procesando ? "Creando…" : "Crear borrador"}
               </button>

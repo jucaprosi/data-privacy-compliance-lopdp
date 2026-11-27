@@ -94,7 +94,7 @@ export default function BibliotecaWorkspace({ variante = "completa" }: Props) {
               onClick={() => elegirPestana(p.id)}
               className={`-mb-px rounded-t-md border px-3 py-1.5 font-medium cursor-pointer ${
                 elegida
-                  ? "border-[var(--ui-borde)] border-b-[var(--ui-campo)] bg-[var(--ui-campo)]"
+                  ? "border-[var(--ui-borde-control)] border-b-[var(--ui-campo)] bg-[var(--ui-campo)]"
                   : "border-transparent text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton-hover)]"
               }`}
             >
@@ -105,7 +105,7 @@ export default function BibliotecaWorkspace({ variante = "completa" }: Props) {
       </div>
 
       {estado === "denegado" && (
-        <p role="alert" className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-red-700 dark:text-red-300">
+        <p role="alert" className="rounded-md border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] px-3 py-2 text-[var(--ui-error-texto)]">
           {mensaje}
         </p>
       )}
