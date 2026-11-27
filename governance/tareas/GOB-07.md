@@ -2,7 +2,7 @@
 id = "GOB-07"
 titulo = "El tema claro es el predeterminado y la referencia de diseño"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 tanda = 113
 sala = "gobernanza"
 depende_de = []
