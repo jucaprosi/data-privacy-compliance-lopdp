@@ -102,7 +102,7 @@ export default function EditorBorrador() {
   if (error && !documento) {
     return (
       <div data-testid="editor-error" className="p-4 text-xs">
-        <p role="alert" className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-red-700 dark:text-red-300">
+        <p role="alert" className="rounded-md border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] px-3 py-2 text-[var(--ui-error-texto)]">
           {error}
         </p>
       </div>
@@ -196,8 +196,8 @@ export default function EditorBorrador() {
               role="note"
               className={`rounded-md border px-3 py-2 ${
                 aviso.nivel === "alto"
-                  ? "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-300 font-medium"
-                  : "border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-200"
+                  ? "border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] text-[var(--ui-error-texto)] font-medium"
+                  : "border-[var(--ui-aviso-borde)] bg-[var(--ui-aviso-fondo)] text-[var(--ui-aviso-texto)]"
               }`}
             >
               {aviso.texto}
@@ -217,19 +217,19 @@ export default function EditorBorrador() {
         </h4>
         {variablesFaltantes.length > 0 ? (
           <div className="flex flex-col gap-1">
-            <p className="text-amber-700 dark:text-amber-300">
+            <p className="text-[var(--ui-aviso-texto)]">
               El documento muestra campos que aún no tienen valor. No podrá pasar a revisión mientras queden datos pendientes:
             </p>
             <ul data-testid="lista-variables-faltantes" className="grid gap-1 pl-4 list-disc">
               {variablesFaltantes.map((clave) => (
-                <li key={clave} data-testid={`falta-${clave}`} className="font-mono text-amber-800 dark:text-amber-200">
+                <li key={clave} data-testid={`falta-${clave}`} className="font-mono text-[var(--ui-aviso-texto)]">
                   ⟦falta: {clave}⟧
                 </li>
               ))}
             </ul>
           </div>
         ) : (
-          <p className="text-green-700 dark:text-green-300">
+          <p className="text-[var(--ui-exito-texto)]">
             No quedan variables faltantes en este borrador.
           </p>
         )}
@@ -240,13 +240,13 @@ export default function EditorBorrador() {
         <div
           role="alert"
           data-testid="alerta-conflicto"
-          className="rounded-md border border-amber-500/40 bg-amber-500/15 p-3 flex flex-col gap-2"
+          className="rounded-md border border-[var(--ui-aviso-borde)] bg-[var(--ui-aviso-fondo)] p-3 flex flex-col gap-2"
         >
           <div className="flex flex-col gap-1">
-            <p className="font-semibold text-amber-900 dark:text-amber-100">
+            <p className="font-semibold text-[var(--ui-aviso-titulo)]">
               Conflicto de edición (409)
             </p>
-            <p className="text-amber-800 dark:text-amber-200">{conflicto}</p>
+            <p className="text-[var(--ui-aviso-texto)]">{conflicto}</p>
           </div>
           <div>
             <button
@@ -254,7 +254,7 @@ export default function EditorBorrador() {
               onClick={handleRecargar}
               disabled={recargando}
               data-testid="boton-recargar"
-              className="cursor-pointer rounded-md border border-amber-600/50 bg-amber-100 dark:bg-amber-900/40 px-3 py-1 font-medium text-amber-900 dark:text-amber-100 hover:bg-amber-200"
+              className="cursor-pointer rounded-md border border-[var(--ui-aviso-borde)] bg-[var(--ui-aviso-fondo)] px-3 py-1 font-medium text-[var(--ui-aviso-titulo)] hover:bg-[var(--ui-superficie-2)]"
             >
               {recargando ? "Recargando…" : "Recargar última versión"}
             </button>
@@ -267,7 +267,7 @@ export default function EditorBorrador() {
         <p
           role="alert"
           data-testid="alerta-error"
-          className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-red-700 dark:text-red-300"
+          className="rounded-md border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] px-3 py-2 text-[var(--ui-error-texto)]"
         >
           {error}
         </p>
@@ -278,7 +278,7 @@ export default function EditorBorrador() {
         <p
           role="status"
           data-testid="mensaje-guardado"
-          className="rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-green-700 dark:text-green-300"
+          className="rounded-md border border-[var(--ui-exito-borde)] bg-[var(--ui-exito-fondo)] px-3 py-2 text-[var(--ui-exito-texto)]"
         >
           Guardado correctamente (revisión {documento.revision})
         </p>
@@ -298,7 +298,7 @@ export default function EditorBorrador() {
             setContenido(e.target.value);
             setGuardadoExitoso(false);
           }}
-          className="w-full font-mono text-xs rounded-md border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full font-mono text-xs rounded-md border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] p-3 focus:outline-none focus:ring-1 focus:ring-[var(--ui-primario)]"
         />
       </section>
 
@@ -309,7 +309,7 @@ export default function EditorBorrador() {
           onClick={handleGuardar}
           disabled={guardando || recargando}
           data-testid="boton-guardar"
-          className="cursor-pointer rounded-md bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-medium disabled:opacity-60"
+          className="cursor-pointer rounded-md bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] px-4 py-2 font-medium disabled:opacity-60"
         >
           {guardando ? "Guardando…" : "Guardar borrador"}
         </button>

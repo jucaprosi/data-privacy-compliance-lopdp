@@ -36,21 +36,21 @@ export default function PerfilOperacionForm({ resaltarPendientes = false, classN
 
   return (
     <div
-      className={`bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl p-5 shadow-sm space-y-3 ${className}`}
+      className={`bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 shadow-sm space-y-3 ${className}`}
     >
-      <div className="border-b border-zinc-200 dark:border-[var(--ui-borde)] pb-2.5">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center">
-          <SlidersHorizontal className="w-4 h-4 mr-1.5 text-[#9a3bf1]" />
-          Perfil de Operación <span className="text-red-700 dark:text-red-400 ml-1">*</span>
+      <div className="border-b border-[var(--ui-borde)] pb-2.5">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)] flex items-center">
+          <SlidersHorizontal className="w-4 h-4 mr-1.5 text-[var(--ui-enlace)]" />
+          Perfil de Operación <span className="text-[var(--ui-error-texto)] ml-1">*</span>
         </h3>
-        <p className="text-[11px] text-[var(--ui-texto-suave)] dark:text-zinc-400 mt-0.5">
+        <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">
           Responda Sí o No a todas las preguntas: son obligatorias y no se puede continuar con alguna sin responder. Si
           no está seguro, consulte con el área correspondiente antes de contestar: sus respuestas definen qué
           controles se evaluarán.
         </p>
       </div>
 
-      <div className="border border-zinc-200 dark:border-[var(--ui-borde)] rounded-lg overflow-hidden text-xs">
+      <div className="border border-[var(--ui-borde)] rounded-lg overflow-hidden text-xs">
         {SELECTORES_PERFIL.map((sel, i) => {
           const sinResponder = perfil[sel.clave] === null || perfil[sel.clave] === undefined;
           const marcar = resaltarPendientes && sinResponder;
@@ -59,16 +59,16 @@ export default function PerfilOperacionForm({ resaltarPendientes = false, classN
               key={sel.clave}
               data-pendiente={sinResponder ? "true" : "false"}
               className={`flex flex-col sm:flex-row sm:items-center gap-2 px-3.5 py-2.5 border-l-4 ${
-                marcar ? "border-l-[#ff1744] bg-[#ff1744]/5" : "border-l-transparent"
-              } ${!marcar ? (i % 2 === 0 ? "bg-zinc-50 dark:bg-[var(--ui-campo)]" : "bg-white dark:bg-[var(--ui-superficie)]") : ""}`}
+                marcar ? "border-l-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)]" : "border-l-transparent"
+              } ${!marcar ? (i % 2 === 0 ? "bg-[var(--ui-superficie-2)]" : "bg-[var(--ui-superficie)]") : ""}`}
             >
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-white" id={`perfil-${sel.clave}`}>
+                <p className="font-semibold text-[var(--foreground)]" id={`perfil-${sel.clave}`}>
                   {sel.pregunta}
                 </p>
-                <p className="text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400 mt-0.5">{sel.ayuda}</p>
+                <p className="text-[10px] text-[var(--ui-texto-suave)] mt-0.5">{sel.ayuda}</p>
                 {marcar && (
-                  <p role="alert" className="text-[10px] font-semibold text-[#ff1744] mt-0.5">
+                  <p role="alert" className="text-[10px] font-semibold text-[var(--ui-error-texto)] mt-0.5">
                     Responda esta pregunta para continuar.
                   </p>
                 )}
@@ -80,13 +80,13 @@ export default function PerfilOperacionForm({ resaltarPendientes = false, classN
                 className="flex items-center gap-5 shrink-0"
               >
                 {(["si", "no"] as const).map((valor) => (
-                  <label key={valor} className="flex items-center gap-1.5 cursor-pointer text-white">
+                  <label key={valor} className="flex items-center gap-1.5 cursor-pointer text-[var(--foreground)]">
                     <input
                       type="radio"
                       name={`perfil-${sel.clave}`}
                       checked={perfil[sel.clave] === valor}
                       onChange={() => responder(sel.clave, valor)}
-                      className="accent-[#9a3bf1]"
+                      className="accent-[var(--ui-primario)]"
                     />
                     {valor === "si" ? "Sí" : "No"}
                   </label>
@@ -98,12 +98,12 @@ export default function PerfilOperacionForm({ resaltarPendientes = false, classN
       </div>
 
       {avisoDpd && (
-        <p role="alert" className="text-[11px] text-[#ffab00] bg-[#ffab00]/10 border border-[#ffab00]/30 rounded-lg px-3 py-2">
+        <p role="alert" className="text-[11px] text-[var(--ui-aviso-texto)] bg-[var(--ui-aviso-fondo)] border border-[var(--ui-aviso-borde)] rounded-lg px-3 py-2">
           {avisoDpd}
         </p>
       )}
 
-      <p className={`text-[11px] ${pendientes === 0 ? "text-[#00c853]" : "text-[var(--ui-texto-suave)] dark:text-zinc-400"}`}>
+      <p className={`text-[11px] ${pendientes === 0 ? "text-[var(--ui-exito-texto)]" : "text-[var(--ui-texto-suave)]"}`}>
         {pendientes === 0
           ? "Perfil completo."
           : `Faltan ${pendientes} pregunta(s) por responder. No podrá continuar hasta completarlas todas.`}

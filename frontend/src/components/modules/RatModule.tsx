@@ -148,18 +148,18 @@ export default function RatModule() {
 
   return (
     <div className="space-y-5">
-      <div className="flex justify-between items-center pb-4 border-b border-zinc-800">
+      <div className="flex justify-between items-center pb-4 border-b border-[var(--ui-borde)]">
         <div>
-          <h2 className="text-xl font-bold text-zinc-100 flex items-center">
-            <FileSpreadsheet className="w-5 h-5 mr-2 text-emerald-400" /> RAT Maestro (Compliance Graph SSOT)
+          <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center">
+            <FileSpreadsheet className="w-5 h-5 mr-2 text-[var(--ui-exito-texto)]" /> RAT Maestro (Compliance Graph SSOT)
           </h2>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
             Registro unificado de actividades de tratamiento (Art. 41 LOPDP). Fuente única de verdad.
           </p>
         </div>
         <button
           onClick={abrirModalNuevo}
-          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center shadow-lg transition"
+          className="px-3.5 py-2 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] text-xs font-semibold rounded-lg flex items-center shadow-lg transition"
         >
           <Plus className="w-4 h-4 mr-1.5" />
           Nueva Actividad
@@ -174,9 +174,9 @@ export default function RatModule() {
       {errorCarga && <p role="alert" className="text-xs">No se pudo cargar el RAT: {errorCarga}</p>}
 
       {/* Table */}
-      <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl overflow-hidden">
-        <table className="w-full text-left text-xs text-zinc-300">
-          <thead className="bg-zinc-950/70 text-zinc-400 border-b border-zinc-800 font-semibold">
+      <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl overflow-hidden">
+        <table className="w-full text-left text-xs text-[var(--ui-texto-suave)]">
+          <thead className="bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] border-b border-[var(--ui-borde)] font-semibold">
             <tr>
               <th className="p-3">Código</th>
               <th className="p-3">Actividad / Tratamiento</th>
@@ -188,48 +188,48 @@ export default function RatModule() {
               <th className="p-3 text-center">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-800/40">
+          <tbody className="divide-y divide-[var(--ui-borde)]">
             {cargando ? (
               <tr>
-                <td colSpan={8} className="p-6 text-center text-zinc-500">
+                <td colSpan={8} className="p-6 text-center text-[var(--ui-texto-suave)]">
                   Cargando inventario maestro...
                 </td>
               </tr>
             ) : actividades.length === 0 ? (
               <tr>
-                <td colSpan={8} className="p-6 text-center text-zinc-500">
+                <td colSpan={8} className="p-6 text-center text-[var(--ui-texto-suave)]">
                   No hay actividades registradas en el RAT.
                 </td>
               </tr>
             ) : (
               actividades.map((act) => (
-                <tr key={act.codigo} className="hover:bg-zinc-800/30 transition">
-                  <td className="p-3 font-mono text-zinc-400 font-bold">{act.codigo}</td>
+                <tr key={act.codigo} className="hover:bg-[var(--ui-superficie-2)] transition">
+                  <td className="p-3 font-mono text-[var(--ui-texto-suave)] font-bold">{act.codigo}</td>
                   <td className="p-3">
-                    <div className="font-semibold text-zinc-200">{act.nombre}</div>
-                    <div className="text-[11px] text-zinc-500 line-clamp-1">{act.finalidad}</div>
+                    <div className="font-semibold text-[var(--foreground)]">{act.nombre}</div>
+                    <div className="text-[11px] text-[var(--ui-texto-suave)] line-clamp-1">{act.finalidad}</div>
                   </td>
                   <td className="p-3">{act.area_responsable}</td>
                   <td className="p-3">
-                    <span className="bg-zinc-800 px-2 py-0.5 rounded text-[11px] font-mono text-emerald-400 border border-zinc-700">
+                    <span className="bg-[var(--ui-superficie-2)] px-2 py-0.5 rounded text-[11px] font-mono text-[var(--ui-exito-texto)] border border-[var(--ui-borde)]">
                       {act.base_legal}
                     </span>
                   </td>
                   <td className="p-3 text-center font-mono">{act.volumen_titulares_estimado.toLocaleString()}</td>
                   <td className="p-3 text-center">
                     {act.datos_sensibles ? (
-                      <span className="text-rose-400 font-semibold">SÍ</span>
+                      <span className="text-[var(--ui-error-texto)] font-semibold">SÍ</span>
                     ) : (
-                      <span className="text-zinc-600">NO</span>
+                      <span className="text-[var(--ui-texto-suave)]">NO</span>
                     )}
                   </td>
                   <td className="p-3 text-center">
                     {act.es_gran_escala ? (
-                      <span className="bg-rose-950 text-rose-300 border border-rose-800 px-2 py-0.5 rounded text-[10px] font-bold">
+                      <span className="bg-[var(--ui-error-fondo)] text-[var(--ui-error-texto)] border border-[var(--ui-error-borde)] px-2 py-0.5 rounded text-[10px] font-bold">
                         MTGE
                       </span>
                     ) : (
-                      <span className="text-zinc-500 text-[11px]">Estándar</span>
+                      <span className="text-[var(--ui-texto-suave)] text-[11px]">Estándar</span>
                     )}
                   </td>
                   <td className="p-3 text-center space-x-2">
@@ -237,7 +237,7 @@ export default function RatModule() {
                       type="button"
                       onClick={() => abrirModalEditar(act)}
                       aria-label={`Editar ${act.nombre}`}
-                      className="underline text-[11px] text-zinc-300 hover:text-white"
+                      className="underline text-[11px] text-[var(--ui-texto-suave)] hover:text-[var(--foreground)]"
                     >
                       Editar
                     </button>
@@ -246,7 +246,7 @@ export default function RatModule() {
                         type="button"
                         onClick={() => setFichaAbierta(act)}
                         aria-label={`Ver validaciones de ${act.nombre}`}
-                        className="underline text-[11px] text-zinc-300 hover:text-white"
+                        className="underline text-[11px] text-[var(--ui-texto-suave)] hover:text-[var(--foreground)]"
                       >
                         Ver
                       </button>
@@ -257,7 +257,7 @@ export default function RatModule() {
                         type="button"
                         onClick={() => setTitularesAbiertos(act)}
                         aria-label={`Ver titulares de ${act.nombre}`}
-                        className="underline text-[11px] text-emerald-400 hover:text-emerald-300"
+                        className="underline text-[11px] text-[var(--ui-exito-texto)] hover:text-[var(--foreground)]"
                       >
                         Titulares
                       </button>
@@ -273,7 +273,7 @@ export default function RatModule() {
 
       {/* === RAT-07 === */}
       {titularesAbiertos?.id && (
-        <div className="rounded-xl border border-zinc-700 p-4 space-y-2">
+        <div className="rounded-xl border border-[var(--ui-borde)] p-4 space-y-2">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold">Titulares de {titularesAbiertos.nombre}</h3>
             <button type="button" onClick={() => setTitularesAbiertos(null)} className="underline text-[11px]">
@@ -297,29 +297,29 @@ export default function RatModule() {
       {/* Modal Actividad */}
       {modalAbierto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-5 max-w-lg w-full text-zinc-100 shadow-2xl">
-            <h3 className="text-sm font-bold text-emerald-400 mb-3 flex items-center">
+          <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 max-w-lg w-full text-[var(--foreground)] shadow-2xl">
+            <h3 className="text-sm font-bold text-[var(--ui-exito-texto)] mb-3 flex items-center">
               <Database className="w-4 h-4 mr-2" />
               {nueva.id ? "Editar Actividad de Tratamiento" : "Registrar Nueva Actividad de Tratamiento"}
             </h3>
             <form onSubmit={guardarActividad} className="space-y-3 text-xs">
               <div>
-                <label className="block text-zinc-400 mb-1">Código Identificador</label>
+                <label className="block text-[var(--ui-texto-suave)] mb-1">Código Identificador</label>
                 <input
                   type="text"
                   value={nueva.codigo}
                   onChange={(e) => setNueva({ ...nueva, codigo: e.target.value })}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                  className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)]"
                   required
                 />
               </div>
               <div>
-                <label className="block text-zinc-400 mb-1">Nombre del Tratamiento</label>
+                <label className="block text-[var(--ui-texto-suave)] mb-1">Nombre del Tratamiento</label>
                 <input
                   type="text"
                   value={nueva.nombre}
                   onChange={(e) => setNueva({ ...nueva, nombre: e.target.value })}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                  className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)]"
                   required
                 />
               </div>
@@ -329,15 +329,15 @@ export default function RatModule() {
                 {/* Respaldo (a): Tratamiento existente sin área enlazada pero con áreas en la organización */}
                 {nueva.area_responsable && !nueva.area_id && !mostrarSelectorRespaldo && areas.length > 0 && !errorCargaAreas ? (
                   <div className="space-y-1">
-                    <span className="block text-zinc-400">Área responsable</span>
-                    <p className="text-zinc-200 font-medium">Área registrada: {nueva.area_responsable}</p>
+                    <span className="block text-[var(--ui-texto-suave)]">Área responsable</span>
+                    <p className="text-[var(--foreground)] font-medium">Área registrada: {nueva.area_responsable}</p>
                     <button
                       type="button"
                       onClick={() => {
                         setMostrarSelectorRespaldo(true);
                         setTimeout(() => areaSelectRef.current?.focus(), 50);
                       }}
-                      className="text-emerald-400 underline hover:text-emerald-300 text-xs inline-block"
+                      className="text-[var(--ui-exito-texto)] underline hover:text-[var(--foreground)] text-xs inline-block"
                     >
                       Elegir un área de la organización
                     </button>
@@ -345,7 +345,7 @@ export default function RatModule() {
                 ) : areas.length > 0 && !errorCargaAreas ? (
                   /* Selector regular */
                   <div>
-                    <label htmlFor="rat-area-select" className="block text-zinc-400 mb-1">
+                    <label htmlFor="rat-area-select" className="block text-[var(--ui-texto-suave)] mb-1">
                       Área responsable
                     </label>
                     <select
@@ -368,7 +368,7 @@ export default function RatModule() {
                         });
                         setErrorArea(null);
                       }}
-                      className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                      className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)]"
                       required
                     >
                       <option value="">{cargandoAreas ? "Cargando las áreas…" : "Elige un área"}</option>
@@ -378,16 +378,16 @@ export default function RatModule() {
                         </option>
                       ))}
                     </select>
-                    <p id="rat-area-ayuda" className="text-zinc-400 text-[11px] mt-1">
+                    <p id="rat-area-ayuda" className="text-[var(--ui-texto-suave)] text-[11px] mt-1">
                       Las áreas son las de la estructura de tu organización.
                     </p>
                     {mostrarSelectorRespaldo && (
-                      <p className="text-zinc-400 text-[11px] mt-1">
+                      <p className="text-[var(--ui-texto-suave)] text-[11px] mt-1">
                         Al guardar, el tratamiento queda enlazado al área que elijas.
                       </p>
                     )}
                     {errorArea && (
-                      <p id="rat-area-error" role="alert" className="text-rose-400 text-xs mt-1">
+                      <p id="rat-area-error" role="alert" className="text-[var(--ui-error-texto)] text-xs mt-1">
                         {errorArea}
                       </p>
                     )}
@@ -396,18 +396,18 @@ export default function RatModule() {
                   /* Respaldo (b): Organización sin áreas o error al cargar */
                   <div>
                     {errorCargaAreas && (
-                      <div role="alert" className="text-rose-400 text-xs mb-2 space-y-1">
+                      <div role="alert" className="text-[var(--ui-error-texto)] text-xs mb-2 space-y-1">
                         <p>No pudimos cargar las áreas de tu organización.</p>
                         <button
                           type="button"
                           onClick={cargarAreas}
-                          className="underline text-emerald-400 hover:text-emerald-300"
+                          className="underline text-[var(--ui-exito-texto)] hover:text-[var(--foreground)]"
                         >
                           Volver a cargar las áreas
                         </button>
                       </div>
                     )}
-                    <label htmlFor="rat-area-input" className="block text-zinc-400 mb-1">
+                    <label htmlFor="rat-area-input" className="block text-[var(--ui-texto-suave)] mb-1">
                       Área responsable
                     </label>
                     <input
@@ -421,14 +421,14 @@ export default function RatModule() {
                         setNueva({ ...nueva, area_responsable: e.target.value, area_id: null });
                         setErrorArea(null);
                       }}
-                      className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                      className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)]"
                       required
                     />
-                    <p role="note" className="text-zinc-400 text-[11px] mt-1">
+                    <p role="note" className="text-[var(--ui-texto-suave)] text-[11px] mt-1">
                       Tu organización aún no tiene áreas registradas. Puedes escribir el área a mano por ahora.
                     </p>
                     {errorArea && (
-                      <p id="rat-area-error" role="alert" className="text-rose-400 text-xs mt-1">
+                      <p id="rat-area-error" role="alert" className="text-[var(--ui-error-texto)] text-xs mt-1">
                         {errorArea}
                       </p>
                     )}
@@ -439,11 +439,11 @@ export default function RatModule() {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-zinc-400 mb-1">Base de Legitimación</label>
+                  <label className="block text-[var(--ui-texto-suave)] mb-1">Base de Legitimación</label>
                   <select
                     value={nueva.base_legal}
                     onChange={(e) => setNueva({ ...nueva, base_legal: e.target.value })}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                    className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)]"
                   >
                     <option value="CONSENTIMIENTO">CONSENTIMIENTO</option>
                     <option value="OBLIGACION_LEGAL">OBLIGACION_LEGAL</option>
@@ -452,36 +452,36 @@ export default function RatModule() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-zinc-400 mb-1">Titulares Estimados</label>
+                  <label className="block text-[var(--ui-texto-suave)] mb-1">Titulares Estimados</label>
                   <input
                     type="number"
                     value={nueva.volumen_titulares_estimado}
                     onChange={(e) => setNueva({ ...nueva, volumen_titulares_estimado: parseInt(e.target.value) || 0 })}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                    className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Finalidad Unívoca</label>
+                <label className="block text-[var(--ui-texto-suave)] mb-1">Finalidad Unívoca</label>
                 <textarea
                   value={nueva.finalidad}
                   onChange={(e) => setNueva({ ...nueva, finalidad: e.target.value })}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200 h-16"
+                  className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)] h-16"
                   required
                 />
               </div>
 
               {nueva.datos_sensibles && (
                 <div>
-                  <label htmlFor="rat-condicion-habilitante" className="block text-zinc-400 mb-1">
+                  <label htmlFor="rat-condicion-habilitante" className="block text-[var(--ui-texto-suave)] mb-1">
                     Condición habilitante (art. 26 LOPDP)
                   </label>
                   <select
                     id="rat-condicion-habilitante"
                     value={nueva.condicion_habilitante ?? ""}
                     onChange={(e) => setNueva({ ...nueva, condicion_habilitante: e.target.value || null })}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                    className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)]"
                   >
                     <option value="">Sin declarar</option>
                     {CONDICIONES_HABILITANTES.map((c) => (
@@ -494,7 +494,7 @@ export default function RatModule() {
               )}
 
               {errorGuardar && (
-                <p role="alert" className="text-rose-400 text-xs">
+                <p role="alert" className="text-[var(--ui-error-texto)] text-xs">
                   {errorGuardar}
                 </p>
               )}
@@ -505,21 +505,21 @@ export default function RatModule() {
                     type="checkbox"
                     checked={nueva.datos_sensibles}
                     onChange={(e) => setNueva({ ...nueva, datos_sensibles: e.target.checked })}
-                    className="rounded border-zinc-700 text-emerald-500"
+                    className="rounded border-[var(--ui-borde-control)] accent-[var(--ui-primario)]"
                   />
-                  <span className="text-zinc-300">Trata datos sensibles</span>
+                  <span className="text-[var(--ui-texto-suave)]">Trata datos sensibles</span>
                 </label>
                 <div className="space-x-2">
                   <button
                     type="button"
                     onClick={() => setModalAbierto(false)}
-                    className="px-3 py-1.5 bg-zinc-800 text-zinc-400 rounded hover:bg-zinc-700"
+                    className="px-3 py-1.5 bg-[var(--ui-boton)] text-[var(--foreground)] rounded hover:bg-[var(--ui-boton-hover)]"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-emerald-600 text-white rounded font-semibold hover:bg-emerald-500"
+                    className="px-4 py-1.5 bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] rounded font-semibold hover:bg-[var(--ui-primario-hover)]"
                   >
                     Guardar en RAT
                   </button>

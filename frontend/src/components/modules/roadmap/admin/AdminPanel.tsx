@@ -140,8 +140,8 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
   if (!esAdmin) {
     return (
       <section aria-label="Administración de la organización" className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5">
-        <div role="note" className="flex items-start gap-2.5 p-3 rounded-lg bg-[#ffb300]/10 border border-[#ffb300]/40 text-xs text-zinc-200">
-          <Lock className="w-4 h-4 shrink-0 mt-0.5 text-[#ffb300]" aria-hidden="true" />
+        <div role="note" className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ui-aviso-fondo)] border border-[var(--ui-aviso-borde)] text-xs text-[var(--foreground)]">
+          <Lock className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-aviso-texto)]" aria-hidden="true" />
           <p>
             Tu rol actual es <strong>{rol}</strong>. Solo la persona con el rol <strong>administrador de la organización</strong>{" "}
             gestiona usuarios, áreas, roles, estructura, designaciones y la configuración.
@@ -152,10 +152,10 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
   }
 
   return (
-    <section aria-label="Administración de la organización" className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-4 text-zinc-200">
+    <section aria-label="Administración de la organización" className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-4 text-[var(--foreground)]">
       <header>
-        <h2 className="text-sm font-bold uppercase tracking-wider text-white">Administración de la organización</h2>
-        <p className="text-[11px] text-zinc-400 mt-0.5">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--foreground)]">Administración de la organización</h2>
+        <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">
           Usuarios, áreas, roles, estructura orgánica, designaciones formales y configuración de la organización.
         </p>
       </header>
@@ -175,8 +175,8 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
             tabIndex={seccion === s.clave ? 0 : -1}
             onClick={() => setSeccion(s.clave)}
             onKeyDown={(e) => moverConTeclado(e, i)}
-            className={`rounded-md px-3 py-1.5 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] ${
-              seccion === s.clave ? "bg-[var(--ui-primario)] text-[var(--ui-primario-texto)]" : "bg-[var(--ui-boton)] text-zinc-300 hover:bg-[var(--ui-boton-hover)]"
+            className={`rounded-md px-3 py-1.5 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-enlace)] ${
+              seccion === s.clave ? "bg-[var(--ui-primario)] text-[var(--ui-primario-texto)]" : "bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton-hover)]"
             }`}
           >
             {s.etiqueta}
@@ -185,8 +185,8 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
       </div>
 
       {cargando && (
-        <p role="status" className="flex items-center gap-2 text-xs text-zinc-300">
-          <Loader2 className="w-4 h-4 animate-spin text-[#3892f3]" aria-hidden="true" />
+        <p role="status" className="flex items-center gap-2 text-xs text-[var(--ui-texto-suave)]">
+          <Loader2 className="w-4 h-4 animate-spin text-[var(--ui-enlace)]" aria-hidden="true" />
           Cargando la organización…
         </p>
       )}

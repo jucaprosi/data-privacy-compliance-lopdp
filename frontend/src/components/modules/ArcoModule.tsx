@@ -117,17 +117,17 @@ export default function ArcoModule() {
   }, []);
 
   const getEstadoColor = (estado: EstadoSolicitud, diasRestantes: number) => {
-    if (estado === "VENCIDA" || diasRestantes < 0) return "text-[#ff1744] bg-[#ff1744]/10 border-[#ff1744]/30";
-    if (estado === "CONTESTADA") return "text-[#00c853] bg-[#00c853]/10 border-[#00c853]/30";
-    if (diasRestantes <= 3) return "text-amber-400 bg-amber-400/10 border-amber-400/30";
-    return "text-[#3892f3] bg-[#3892f3]/10 border-[#3892f3]/30";
+    if (estado === "VENCIDA" || diasRestantes < 0) return "text-[var(--ui-error-texto)] bg-[var(--ui-error-fondo)] border-[var(--ui-error-borde)]";
+    if (estado === "CONTESTADA") return "text-[var(--ui-exito-texto)] bg-[var(--ui-exito-fondo)] border-[var(--ui-exito-borde)]";
+    if (diasRestantes <= 3) return "text-[var(--ui-aviso-texto)] bg-[var(--ui-aviso-fondo)] border-[var(--ui-aviso-borde)]";
+    return "text-[var(--ui-info-texto)] bg-[var(--ui-info-fondo)] border-[var(--ui-info-borde)]";
   };
 
   return (
     <div className="space-y-6">
       <div className="pb-4 border-b border-[var(--ui-borde)]">
-        <h2 className="text-xl font-bold text-zinc-100 flex items-center">
-          <UserCircle className="w-5 h-5 mr-2 text-[#3892f3]" />
+        <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center">
+          <UserCircle className="w-5 h-5 mr-2 text-[var(--ui-enlace)]" />
           Derechos ARCO+ y Titulares
         </h2>
         <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
@@ -152,11 +152,11 @@ export default function ArcoModule() {
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-12 space-y-3">
-          <Loader2 className="w-8 h-8 text-[#3892f3] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[var(--ui-enlace)] animate-spin" />
           <span className="text-sm text-[var(--ui-texto-suave)] font-mono">Cargando solicitudes…</span>
         </div>
       ) : error ? (
-        <div className="p-4 bg-[#ff1744]/10 border border-[#ff1744]/30 rounded-xl flex items-center text-[#ff1744] text-sm">
+        <div className="p-4 bg-[var(--ui-error-fondo)] border border-[var(--ui-error-borde)] rounded-xl flex items-center text-[var(--ui-error-texto)] text-sm">
           <AlertTriangle className="w-5 h-5 mr-3" />
           {error}
         </div>
@@ -168,13 +168,13 @@ export default function ArcoModule() {
              </div>
           )}
           {solicitudes.map((s) => (
-            <div key={s.id} className="p-4 bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl flex flex-wrap justify-between items-center hover:border-[#3892f3]/50 transition-colors">
+            <div key={s.id} className="p-4 bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl flex flex-wrap justify-between items-center hover:border-[var(--ui-enlace)] transition-colors">
               <div className="flex items-center space-x-4">
                 <div className={`p-2 rounded-lg border ${getEstadoColor(s.estado, s.diasRestantes)}`}>
                   {s.estado === "VENCIDA" ? <ShieldAlert className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
                 </div>
                 <div>
-                  <h4 className="font-medium text-sm text-zinc-200">{ETIQUETA_TIPO[s.tipo] ?? s.tipo} - {s.solicitante}</h4>
+                  <h4 className="font-medium text-sm text-[var(--foreground)]">{ETIQUETA_TIPO[s.tipo] ?? s.tipo} - {s.solicitante}</h4>
                   <div className="text-xs text-[var(--ui-texto-suave)] font-mono mt-1">ID: {s.id} | CC: {s.cedula}</div>
                   {DESCRIPCION_TIPO[s.tipo] && (
                     <div className="text-xs text-[var(--ui-texto-suave)] mt-1" data-testid="descripcion-tipo">
@@ -192,7 +192,7 @@ export default function ArcoModule() {
               <div className="flex items-center space-x-6">
                 <div className="text-right">
                   <div className="text-xs text-[var(--ui-texto-suave)]">Plazo legal estimado</div>
-                  <div className={`text-sm font-bold flex items-center justify-end mt-0.5 ${s.diasRestantes < 0 ? "text-[#ff1744]" : s.diasRestantes <= 3 ? "text-amber-400" : "text-[#00c853]"}`}>
+                  <div className={`text-sm font-bold flex items-center justify-end mt-0.5 ${s.diasRestantes < 0 ? "text-[var(--ui-error-texto)]" : s.diasRestantes <= 3 ? "text-[var(--ui-aviso-texto)]" : "text-[var(--ui-exito-texto)]"}`}>
                     <Clock className="w-3.5 h-3.5 mr-1" />
                     {s.diasRestantes < 0 ? (
                       <>
@@ -205,7 +205,7 @@ export default function ArcoModule() {
                     {`${s.plazoDias === null ? "" : `${s.plazoDias} días${s.unidad ? ` ${s.unidad}` : ""} · `}vence el ${s.vence}`}
                   </div>
                 </div>
-                <button onClick={() => setAbierta(abierta === s.id ? null : s.id)} aria-expanded={abierta === s.id} className="px-3 py-1.5 bg-[var(--ui-borde)] hover:bg-[#3892f3]/20 text-zinc-200 hover:text-[#3892f3] border border-[var(--ui-borde)] hover:border-[#3892f3]/50 rounded text-xs font-medium transition-colors cursor-pointer">
+                <button onClick={() => setAbierta(abierta === s.id ? null : s.id)} aria-expanded={abierta === s.id} className="px-3 py-1.5 bg-[var(--ui-boton)] hover:bg-[var(--ui-boton-hover)] text-[var(--foreground)] border border-[var(--ui-borde-control)] rounded text-xs font-medium transition-colors cursor-pointer">
                   Gestionar Expediente
                 </button>
               </div>

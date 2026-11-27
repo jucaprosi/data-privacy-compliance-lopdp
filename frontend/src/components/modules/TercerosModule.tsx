@@ -68,7 +68,7 @@ function Dato({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   return (
     <div className="min-w-0">
       <div className="text-xs text-[var(--ui-texto-suave)]">{etiqueta}</div>
-      <div className="text-sm text-zinc-200 break-words">{valor}</div>
+      <div className="text-sm text-[var(--foreground)] break-words">{valor}</div>
     </div>
   );
 }
@@ -150,7 +150,7 @@ function ModalGarantias({ tercero, onCerrar, onGuardado }: ModalProps) {
     }
   }
 
-  const campo = "w-full mt-1 px-2 py-1.5 rounded bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-sm text-zinc-200";
+  const campo = "w-full mt-1 px-2 py-1.5 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] text-sm text-[var(--foreground)]";
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div
@@ -159,9 +159,9 @@ function ModalGarantias({ tercero, onCerrar, onGuardado }: ModalProps) {
         aria-modal="true"
         aria-labelledby="titulo-garantias"
         onKeyDown={alTeclear}
-        className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-fondo,#0b0b0f)] p-5"
+        className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-5"
       >
-        <h3 id="titulo-garantias" className="text-base font-semibold text-zinc-100 mb-4">
+        <h3 id="titulo-garantias" className="text-base font-semibold text-[var(--foreground)] mb-4">
           Registrar garantías de {tercero.nombre}
         </h3>
         <form onSubmit={guardar} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -215,15 +215,15 @@ function ModalGarantias({ tercero, onCerrar, onGuardado }: ModalProps) {
             <input type="date" aria-label="Próxima revisión" className={campo} value={revision} onChange={(e) => setRevision(e.target.value)} />
           </label>
           {error && (
-            <p role="alert" className="sm:col-span-2 text-sm text-[#ff1744]">{TEXTOS.errorGuardar}</p>
+            <p role="alert" className="sm:col-span-2 text-sm text-[var(--ui-error-texto)]">{TEXTOS.errorGuardar}</p>
           )}
           <div className="sm:col-span-2 flex justify-end gap-2 mt-2">
             <button ref={cancelar} type="button" onClick={onCerrar}
-              className="px-3 py-1.5 rounded border border-[var(--ui-borde)] text-sm text-zinc-200">
+              className="px-3 py-1.5 rounded border border-[var(--ui-borde-control)] text-sm text-[var(--foreground)]">
               Cancelar
             </button>
             <button type="submit" disabled={enviando} aria-busy={enviando}
-              className="px-3 py-1.5 rounded bg-[#9a3bf1] text-sm font-medium text-white disabled:opacity-60">
+              className="px-3 py-1.5 rounded bg-[var(--ui-primario)] text-sm font-medium text-[var(--ui-primario-texto)] disabled:opacity-60">
               Guardar garantías
             </button>
           </div>
@@ -281,8 +281,8 @@ export default function TercerosModule() {
     <div className="space-y-6">
       <div className="pb-4 border-b border-[var(--ui-borde)] flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-zinc-100 flex items-center">
-            <Server className="w-5 h-5 mr-2 text-[#9a3bf1]" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center">
+            <Server className="w-5 h-5 mr-2 text-[var(--ui-enlace)]" aria-hidden="true" />
             Terceros, Encargados y Transferencias
           </h2>
           <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
@@ -291,16 +291,16 @@ export default function TercerosModule() {
         </div>
         {permisos.evaluar && (
           <button type="button" onClick={evaluar} disabled={evaluando} aria-busy={evaluando}
-            className="px-3 py-1.5 rounded bg-[#9a3bf1] text-sm font-medium text-white disabled:opacity-60">
+            className="px-3 py-1.5 rounded bg-[var(--ui-primario)] text-sm font-medium text-[var(--ui-primario-texto)] disabled:opacity-60">
             Evaluar terceros
           </button>
         )}
       </div>
-      <div role="status" data-testid="estado-evaluacion" className="text-sm text-zinc-200">{estadoEvaluacion}</div>
+      <div role="status" data-testid="estado-evaluacion" className="text-sm text-[var(--foreground)]">{estadoEvaluacion}</div>
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-12 space-y-3">
-          <Loader2 className="w-8 h-8 text-[#9a3bf1] animate-spin" aria-hidden="true" />
+          <Loader2 className="w-8 h-8 text-[var(--ui-enlace)] animate-spin" aria-hidden="true" />
           <span className="text-sm text-[var(--ui-texto-suave)]">{TEXTOS.cargando}</span>
         </div>
       ) : error ? (
@@ -320,12 +320,12 @@ export default function TercerosModule() {
             const conHallazgo = t.hallazgos.length > 0;
             return (
               <li key={t.id} data-testid={`tercero-${t.id}`}
-                className={`p-4 bg-[var(--ui-superficie)] border ${conHallazgo ? "border-[#ff1744]/50" : "border-[var(--ui-borde)]"} rounded-xl space-y-3`}>
+                className={`p-4 bg-[var(--ui-superficie)] border ${conHallazgo ? "border-[var(--ui-error-borde)]" : "border-[var(--ui-borde)]"} rounded-xl space-y-3`}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <Globe className="w-5 h-5 text-[#9a3bf1] shrink-0" aria-hidden="true" />
+                    <Globe className="w-5 h-5 text-[var(--ui-enlace)] shrink-0" aria-hidden="true" />
                     <div className="min-w-0">
-                      <h4 className="font-medium text-sm text-zinc-200 break-words">{t.nombre}</h4>
+                      <h4 className="font-medium text-sm text-[var(--foreground)] break-words">{t.nombre}</h4>
                       <div className="text-xs text-[var(--ui-texto-suave)] mt-0.5">
                         {ROLES[t.rol]} · {t.pais ? nombrePais(t.pais) : "Sin país declarado"}
                       </div>
@@ -341,7 +341,7 @@ export default function TercerosModule() {
                 </div>
                 {permisos.gestionar && (
                   <button type="button" onClick={() => setEditando(t)}
-                    className="px-3 py-1.5 rounded border border-[var(--ui-borde)] text-xs font-medium text-zinc-200">
+                    className="px-3 py-1.5 rounded border border-[var(--ui-borde-control)] text-xs font-medium text-[var(--foreground)]">
                     Registrar garantías
                   </button>
                 )}
