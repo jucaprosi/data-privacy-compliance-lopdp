@@ -30,8 +30,8 @@ interface EstadoAccion {
 type UsuarioAsignable = UserItem & { roles?: Array<{ role: string; area_id?: string | null }> };
 
 const SELECTOR =
-  "rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] px-2.5 py-1.5 text-xs text-zinc-100 " +
-  "focus:outline-none focus:ring-2 focus:ring-[#3892f3]";
+  "rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] px-2.5 py-1.5 text-xs text-[var(--foreground)] " +
+  "focus:outline-none focus:ring-2 focus:ring-[var(--ui-enlace)]";
 
 function aErrorAccion(err: unknown): ErrorAccion {
   if (err instanceof ApiError) return { mensaje: err.message, codigo: err.code, accion: err.action_required };
@@ -157,8 +157,8 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
 
   if ((cargaInicial || !alcanceListo) && !roadmap) {
     return (
-      <div role="status" className="flex items-center gap-2 text-sm text-zinc-300">
-        <Loader2 className="w-4 h-4 animate-spin text-[#3892f3]" aria-hidden="true" />
+      <div role="status" className="flex items-center gap-2 text-sm text-[var(--ui-texto-suave)]">
+        <Loader2 className="w-4 h-4 animate-spin text-[var(--ui-enlace)]" aria-hidden="true" />
         Cargando la hoja de ruta…
       </div>
     );
@@ -166,12 +166,12 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
 
   if (!roadmap) {
     return (
-      <div role="alert" className="flex items-start gap-2.5 p-3 rounded-lg bg-[#ff1744]/10 border border-[#ff1744]/40 text-xs text-zinc-200">
-        <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#ff1744]" aria-hidden="true" />
+      <div role="alert" className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ui-error-fondo)] border border-[var(--ui-error-borde)] text-xs text-[var(--foreground)]">
+        <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-error-texto)]" aria-hidden="true" />
         <div className="space-y-0.5">
           <p data-testid="error-carga">{errorCarga?.message ?? "No se pudo cargar la hoja de ruta."}</p>
-          {errorCarga?.code && <p className="text-zinc-400">Código: {errorCarga.code}</p>}
-          {errorCarga?.action_required && <p className="text-zinc-400">Acción requerida: {errorCarga.action_required}</p>}
+          {errorCarga?.code && <p className="text-[var(--ui-texto-suave)]">Código: {errorCarga.code}</p>}
+          {errorCarga?.action_required && <p className="text-[var(--ui-texto-suave)]">Acción requerida: {errorCarga.action_required}</p>}
         </div>
       </div>
     );
@@ -184,10 +184,10 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
   );
 
   return (
-    <section aria-label="Hoja de ruta" className="space-y-5 text-zinc-200">
+    <section aria-label="Hoja de ruta" className="space-y-5 text-[var(--foreground)]">
       <header className="space-y-1">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-white">Hoja de ruta</h2>
-        {roadmap.summary && <p className="text-xs text-zinc-400">{roadmap.summary}</p>}
+        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--foreground)]">Hoja de ruta</h2>
+        {roadmap.summary && <p className="text-xs text-[var(--ui-texto-suave)]">{roadmap.summary}</p>}
       </header>
       <RevisionHoja roadmapId={roadmapId} onEstadoCambio={setEstadoRevision} />
       <DescargarInforme roadmapId={roadmapId} revision={estadoRevision} sincronizado />
@@ -196,7 +196,7 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
 
       <div role="group" aria-label="Filtros" className="flex flex-wrap items-end gap-3">
         <div>
-          <label htmlFor="filtro-estado" className="block text-[11px] font-semibold text-zinc-300 mb-1">
+          <label htmlFor="filtro-estado" className="block text-[11px] font-semibold text-[var(--ui-texto-suave)] mb-1">
             Estado
           </label>
           <select
@@ -214,7 +214,7 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
           </select>
         </div>
         <div>
-          <label htmlFor="filtro-prioridad" className="block text-[11px] font-semibold text-zinc-300 mb-1">
+          <label htmlFor="filtro-prioridad" className="block text-[11px] font-semibold text-[var(--ui-texto-suave)] mb-1">
             Prioridad
           </label>
           <select
@@ -233,7 +233,7 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
         </div>
         {areasEnTareas.length > 0 && (
           <div>
-            <label htmlFor="filtro-area" className="block text-[11px] font-semibold text-zinc-300 mb-1">
+            <label htmlFor="filtro-area" className="block text-[11px] font-semibold text-[var(--ui-texto-suave)] mb-1">
               Área
             </label>
             <select
@@ -253,14 +253,14 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
             </select>
           </div>
         )}
-        <p role="status" data-testid="total-visibles" className="text-xs text-zinc-400 pb-1.5">
+        <p role="status" data-testid="total-visibles" className="text-xs text-[var(--ui-texto-suave)] pb-1.5">
           {totalVisibles} {totalVisibles === 1 ? "tarea visible" : "tareas visibles"}
           {cargando ? " · actualizando…" : ""}
         </p>
       </div>
 
       {totalVisibles === 0 && (
-        <p role="status" className="text-xs text-zinc-400">
+        <p role="status" className="text-xs text-[var(--ui-texto-suave)]">
           {rol === "responsable_area" && areasPermitidas !== null && areasPermitidas.length === 0
             ? "No tienes un área asignada, por eso no hay tareas que mostrar."
             : "Ninguna tarea coincide con los filtros elegidos."}
@@ -274,8 +274,8 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
           return (
             <section key={ola.id} aria-label={`Ola: ${ola.name}`} data-testid={`ola-${ola.id}`} className="space-y-3">
               <header>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-white">{ola.name}</h3>
-                {ola.objective && <p className="text-[11px] text-zinc-400 mt-0.5">{ola.objective}</p>}
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">{ola.name}</h3>
+                {ola.objective && <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">{ola.objective}</p>}
               </header>
               <div className="space-y-3">
                 {tareas.map((tarea) => {
@@ -284,7 +284,7 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
                     <div key={tarea.id} className="space-y-2">
                       {permisos.asignar && (
                         <div className="flex max-w-2xl flex-wrap items-end gap-2">
-                          <label htmlFor={`area-asignacion-${tarea.id}`} className="block text-[11px] font-semibold text-zinc-300 mb-1">
+                          <label htmlFor={`area-asignacion-${tarea.id}`} className="block text-[11px] font-semibold text-[var(--ui-texto-suave)] mb-1">
                             Área para {tarea.title}
                           </label>
                           <select
@@ -297,7 +297,7 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
                             {areas.map((area) => <option key={area.id} value={area.id}>{area.nombre}</option>)}
                           </select>
                           <div>
-                            <label htmlFor={`responsable-asignacion-${tarea.id}`} className="block text-[11px] font-semibold text-zinc-300 mb-1">
+                            <label htmlFor={`responsable-asignacion-${tarea.id}`} className="block text-[11px] font-semibold text-[var(--ui-texto-suave)] mb-1">
                               Responsable del área
                             </label>
                             <select
@@ -318,7 +318,7 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
                           </div>
                           <button
                             type="button"
-                            className="inline-flex items-center gap-1.5 rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton)] px-2.5 py-1.5 text-xs font-semibold text-zinc-100 hover:bg-[var(--ui-boton-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-[var(--ui-borde-control)] bg-[var(--ui-boton)] px-2.5 py-1.5 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--ui-boton-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-enlace)] disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={!responsablesAsignacion[tarea.id] || !(areasAsignacion[tarea.id] ?? tarea.area_id)}
                             onClick={() => void ejecutar(tarea.id, () => store().assignTask(
                               tarea.id,

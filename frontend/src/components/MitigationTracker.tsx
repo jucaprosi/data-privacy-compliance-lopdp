@@ -45,36 +45,36 @@ const KanbanColumn = ({ titulo, color, icono: Icon, mitigaciones }: { titulo: st
   <div className="flex flex-col bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl overflow-hidden h-full min-h-[300px]">
     <div className={`flex items-center px-4 py-3 border-b border-[var(--ui-borde)] bg-[var(--ui-campo)] shrink-0`}>
       <Icon className={`w-4 h-4 mr-2 ${color}`} />
-      <h3 className="font-semibold text-zinc-200 text-sm">{titulo}</h3>
+      <h3 className="font-semibold text-[var(--foreground)] text-sm">{titulo}</h3>
       <span className="ml-auto bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] text-[10px] font-mono px-2 py-0.5 rounded-full border border-[var(--ui-borde)]">
         {mitigaciones.length}
       </span>
     </div>
     <div className="p-3 space-y-3 overflow-y-auto flex-1">
       {mitigaciones.length === 0 ? (
-        <div className="text-center py-8 text-zinc-600 text-xs font-medium">
+        <div className="text-center py-8 text-[var(--ui-texto-suave)] text-xs font-medium">
           No hay tareas en esta categoría.
         </div>
       ) : (
         mitigaciones.map(m => (
-          <div key={m.id} className="bg-[var(--ui-boton)] border border-[var(--ui-borde)] rounded-lg p-3 hover:border-zinc-700 transition group cursor-pointer shadow-sm">
+          <div key={m.id} className="bg-[var(--ui-boton)] border border-[var(--ui-borde)] rounded-lg p-3 hover:border-[var(--ui-borde-control)] transition group cursor-pointer shadow-sm">
             <div className="flex justify-between items-start mb-2">
-              <h4 className="text-zinc-200 text-xs font-semibold leading-relaxed group-hover:text-white transition">
+              <h4 className="text-[var(--foreground)] text-xs font-semibold leading-relaxed group-hover:text-[var(--foreground)] transition">
                 {m.titulo}
               </h4>
             </div>
-            <p className="text-[#a0a0ab] text-[11px] line-clamp-2 mb-3">
+            <p className="text-[var(--ui-texto-suave)] text-[11px] line-clamp-2 mb-3">
               {m.descripcion}
             </p>
             <div className="flex items-center justify-between mt-auto pt-2 border-t border-[var(--ui-borde)]">
               <span className={`text-[9px] font-mono uppercase px-1.5 py-0.5 rounded border ${
-                m.estado === 'PENDIENTE' ? 'bg-zinc-500/10 text-[var(--ui-texto-suave)] border-zinc-500/30' :
-                m.estado === 'EN_PROGRESO' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
-                'bg-[#00c853]/10 text-[#00c853] border-[#00c853]/30'
+                m.estado === 'PENDIENTE' ? 'bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] border-[var(--ui-borde-control)]' :
+                m.estado === 'EN_PROGRESO' ? 'bg-[var(--ui-info-fondo)] text-[var(--ui-info-texto)] border-[var(--ui-info-borde)]' :
+                'bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)] border-[var(--ui-exito-borde)]'
               }`}>
                 {m.estado}
               </span>
-              <ChevronRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-[#9a3bf1] transition" />
+              <ChevronRight className="w-3.5 h-3.5 text-[var(--ui-texto-suave)] group-hover:text-[var(--ui-enlace)] transition" />
             </div>
           </div>
         ))
@@ -137,11 +137,11 @@ export default function MitigationTracker() {
       {/* Header AI Copilot */}
       <div className="flex items-center justify-between bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-4 shadow-sm shrink-0">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#9a3bf1] to-[#3892f3] flex items-center justify-center shadow-[0_0_15px_rgba(154,59,241,0.3)]">
-            <Bot className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-lg bg-[var(--ui-primario)] flex items-center justify-center shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+            <Bot className="w-5 h-5 text-[var(--ui-primario-texto)]" />
           </div>
           <div>
-            <h2 className="text-zinc-100 font-bold text-sm">AI Copilot Tracker</h2>
+            <h2 className="text-[var(--foreground)] font-bold text-sm">AI Copilot Tracker</h2>
             <p className="text-[var(--ui-texto-suave)] text-xs">Gestión automatizada de remediación LOPDP</p>
           </div>
         </div>
@@ -151,18 +151,18 @@ export default function MitigationTracker() {
           disabled={isGenerating || isLoading}
           className={`flex items-center px-4 py-2 text-xs font-semibold rounded-lg border transition-all ${
             isGenerating
-              ? "bg-[var(--ui-boton)] border-[var(--ui-borde)] text-[var(--ui-texto-suave)] cursor-not-allowed"
-              : "bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border-[var(--ui-borde)] hover:border-[#9a3bf1]/50 text-white shadow-sm cursor-pointer"
+              ? "bg-[var(--ui-boton)] border-[var(--ui-borde-control)] text-[var(--ui-texto-suave)] cursor-not-allowed"
+              : "bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border-[var(--ui-borde-control)] hover:border-[var(--ui-info-borde)] text-[var(--foreground)] shadow-sm cursor-pointer"
           }`}
         >
           {isGenerating ? (
             <>
-              <div className="w-3.5 h-3.5 border-2 border-zinc-500 border-t-transparent rounded-full animate-spin mr-2" />
+              <div className="w-3.5 h-3.5 border-2 border-[var(--ui-borde-control)] border-t-transparent rounded-full animate-spin mr-2" />
               Razonando...
             </>
           ) : (
             <>
-              <Zap className="w-3.5 h-3.5 mr-2 text-[#9a3bf1]" />
+              <Zap className="w-3.5 h-3.5 mr-2 text-[var(--ui-enlace)]" />
               Generar Plan Inteligente
             </>
           )}
@@ -182,19 +182,19 @@ export default function MitigationTracker() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1">
           <KanbanColumn 
             titulo="Riesgo ALTO (Crítico)" 
-            color="text-[#ff1744]" 
+            color="text-[var(--ui-error-texto)]" 
             icono={AlertTriangle} 
             mitigaciones={altas} 
           />
           <KanbanColumn 
             titulo="Riesgo MEDIO (Moderado)" 
-            color="text-amber-500" 
+            color="text-[var(--ui-aviso-texto)]" 
             icono={Clock} 
             mitigaciones={medias} 
           />
           <KanbanColumn 
             titulo="Riesgo BAJO (Aceptable)" 
-            color="text-[#00c853]" 
+            color="text-[var(--ui-exito-texto)]" 
             icono={ShieldCheck} 
             mitigaciones={bajas} 
           />
