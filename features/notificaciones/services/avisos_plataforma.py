@@ -5,23 +5,23 @@
 Las versiones y los revisores se leen solo por el pasillo de la biblioteca (BIB-415); la fecha de vigencia, por el
 pasillo normativo (NORM-07). Cada escritura fija la identidad de la persona dueña del aviso (RLS).
 """
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 from uuid import uuid4
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app_core.zona_negocio import ZONA_NEGOCIO
 from features.notificaciones.domain import avisos as av
 
 TIPO = "version_por_revisar"
 LIMITE = 50
-_ECUADOR = timezone(timedelta(hours=-5))
 ENLACE_VERSION = "/biblioteca?version={id}"  # detalle de BIB-408
 
 
 def _instante(d: date | None) -> datetime | None:
     """Inicio del día (hora de Ecuador) en que toca un recordatorio."""
-    return datetime(d.year, d.month, d.day, tzinfo=_ECUADOR) if d else None
+    return datetime(d.year, d.month, d.day, tzinfo=ZONA_NEGOCIO) if d else None
 
 
 async def _como(session: AsyncSession, usuario: str) -> None:

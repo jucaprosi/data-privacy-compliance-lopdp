@@ -5,18 +5,19 @@
 Esta es la única fuente de los textos: el correo de NOTIF-03 los reutiliza. Sin base de datos ni reloj propio.
 """
 import re
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
+
+from app_core.zona_negocio import hoy_negocio
 
 ENLACE_TEXTO = "Revisar la versión"
 TEXTO_FIN = "Ya no está pendiente"
 LIMITE_PETICION = 200
-_ECUADOR = timezone(timedelta(hours=-5))  # sin horario de verano
 _MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre",
           "noviembre", "diciembre"]
 
 
 def hoy_ecuador(ahora: datetime) -> date:
-    return ahora.astimezone(_ECUADOR).date()
+    return hoy_negocio(ahora)
 
 
 def fecha_larga(d: date) -> str:

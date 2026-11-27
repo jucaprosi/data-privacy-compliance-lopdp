@@ -5,7 +5,7 @@
  * API simulada: no acredita permisos ni persistencia (la RLS la prueba `tests/test_notif02_avisos.py`).
  */
 import { expect, test, type Page } from "@playwright/test";
-import { abrirAppLimpia } from "../utiles";
+import { abrirAppLimpia, configurarProyecto } from "../utiles";
 
 const AVISO = {
   id: "a1", titulo: "Versión por revisar: Política de privacidad",
@@ -25,6 +25,7 @@ async function simular(page: Page, avisos: unknown[], sinLeer: number, status = 
 
 async function abrirBandeja(page: Page) {
   await abrirAppLimpia(page);
+  await configurarProyecto(page, "Entidad NOTIF-02");
   await page.getByTestId("campana-avisos").click();
 }
 
