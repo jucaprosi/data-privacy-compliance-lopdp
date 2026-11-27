@@ -6,9 +6,9 @@ estado = "pendiente"
 tanda = 115
 sala = "notificaciones"
 depende_de = ["NOTIF-02", "BIB-411", "OPE-01"]
-propiedad = ["features/notificaciones/services/avisos_capacidades.py", "api/routers/avisos_capacidades.py", "main.py#NOTIF-04", "tests/test_notif04_avisos_capacidades.py"]
-crea = ["features/notificaciones/services/avisos_capacidades.py", "api/routers/avisos_capacidades.py", "tests/test_notif04_avisos_capacidades.py"]
-arbitro = "pytest tests/test_notif04_avisos_capacidades.py tests/test_adpa_bulkhead.py; mutaciones m1 a m3."
+propiedad = ["alembic/versions/20261127_notif04_tipo_capacidad.py", "tests/test_db_notif04_tipo_capacidad.py", "features/notificaciones/services/avisos_capacidades.py", "api/routers/avisos_capacidades.py", "main.py#NOTIF-04", "tests/test_notif04_avisos_capacidades.py"]
+crea = ["alembic/versions/20261127_notif04_tipo_capacidad.py", "tests/test_db_notif04_tipo_capacidad.py", "features/notificaciones/services/avisos_capacidades.py", "api/routers/avisos_capacidades.py", "tests/test_notif04_avisos_capacidades.py"]
+arbitro = "pytest tests/test_notif04_avisos_capacidades.py tests/test_db_notif04_tipo_capacidad.py tests/test_alembic_cabeza_por_sala.py tests/test_adpa_bulkhead.py; mutaciones m1 a m4."
 rastros = ["¤arbitro"]
 +++
 

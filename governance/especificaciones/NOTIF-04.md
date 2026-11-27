@@ -3,7 +3,9 @@
 
 ## 1. Datos
 
-Sin tablas ni migraciones. Usa `avisos_plataforma` de NOTIF-02, con el tipo nuevo `capacidad_editorial` y `referencia` = el `id` del cambio. Lee `cambios_de_capacidades(desde)` por el pasillo de la biblioteca (BIB-411) y `listar_operadores_activos()` por el de plataforma (OPE-01). Base `origin/main` f78f8b92.
+Migración `alembic/versions/20261127_notif04_tipo_capacidad.py`, id de revisión `notif04_tipo_capacidad`, que cuelga de `notif02_avisos` (cabeza de la rama `notificaciones`, medida en `origin/main` 40398cf6). Rehace el CHECK de `avisos_plataforma.tipo` (`20261125_notif02_avisos.py:26`, hoy solo `'version_por_revisar'`) para admitir `'version_por_revisar'` y `'capacidad_editorial'`; el downgrade borra los avisos `capacidad_editorial` y vuelve al CHECK anterior. Sin tablas nuevas.
+
+Usa `avisos_plataforma` de NOTIF-02, con el tipo nuevo `capacidad_editorial` y `referencia` = el `id` del cambio. Lee `cambios_de_capacidades(desde)` por el pasillo de la biblioteca (BIB-411) y `listar_operadores_activos()` por el de plataforma (OPE-01). Base `origin/main` f78f8b92.
 
 ## 2. API
 
@@ -33,6 +35,7 @@ La bandeja de NOTIF-02, sin cambios.
 | **Dado** un retiro, **entonces** el aviso dice «retiró a» y el motivo a los demás, y «te retiró» a quien la pierde. Mutación m2: no incluir el motivo da rojo. | ídem |
 | **Dado** un aviso de este tipo, **entonces** no tiene recordatorios ni contiene «undefined», «null», «None», «{», «}», «, ,» ni dos espacios seguidos. Mutación m3: programarle un recordatorio da rojo. | ídem |
 | **Dado** la sala, **entonces** solo importa otras salas por sus pasillos. | `tests/test_adpa_bulkhead.py` |
+| **Dado** la migración aplicada, **entonces** se inserta un aviso `capacidad_editorial`, un tipo desconocido sigue rechazado y la rama `notificaciones` tiene una sola cabeza, `notif04_tipo_capacidad`. Mutación m4: no ampliar el CHECK da rojo al insertar el tipo nuevo. | `tests/test_db_notif04_tipo_capacidad.py`, `tests/test_alembic_cabeza_por_sala.py` |
 
 ## 6. Trazabilidad
 
