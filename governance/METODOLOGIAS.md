@@ -159,13 +159,15 @@ Garantiza la integridad probatoria y evita inyecciones de archivos incompatibles
 
 Fundamentada en la Ley de Fitts, la Psicología de la Gestalt (Koffka, 1935) y el *Data-Ink Ratio* de Edward Tufte (1990) para mitigar la fatiga visual en auditorías prolongadas:
 1.  **Base Acromática Estricta (Achromatic Baseline):**
-    *   Los componentes estructurales estáticos (tarjetas, divisores, inputs, contenedores) se mantienen en escalas neutras de negros (`#0a0a0c`), grises oscuros (`#141417`, `#26262b`) y grises claros/blancos en tema claro, suprimiendo azules o tintes saturados que distraen la fovea.
+    *   blanco `#ffffff` de fondo y superficie, `#fafafa` de superficie secundaria, texto `#09090b`, texto suave `#52525b`, borde decorativo `#d4d4d8` y borde de control `#71717a`. Los valores oscuros (`#0a0a0c`, `#141417`, `#18181b`, `#f4f4f5`, `#a1a1aa`, `#34343b` y `#8a8a93`) describen el tema alternativo. Fuente: parte del UX/UI §7 (2026-11-27).
 2.  **Señalética Semántica Reservada:**
-    *   El color se utiliza exclusivamente para comunicar estados críticos: Verde (`#00c853`) para éxito/conformidad, Rojo (`#ff1744`) para purga/brecha crítica, y gradiente púrpura-azul (`#9a3bf1` a `#3892f3`) para el desencadenante de acción principal (CTA).
+    *   el color comunica estado con tokens de cada tema: éxito (`--ui-exito-*`), información (`--ui-info-*`), aviso (`--ui-aviso-*`), error (`--ui-error-*`) y peligro (`--ui-peligro-texto`), siempre acompañados de texto o icono. La acción principal (CTA) usa un solo color primario, azul `#2563eb` (`--ui-primario`), con texto blanco (`--ui-primario-texto`, 5,2:1). Decisión del CTO del 2026-11-27, con la autorización del propietario.
 3.  **Jerarquía Tonal Invertida:**
     *   La periferia de control (dock lateral de navegación y barra superior) posee la menor luminancia para estabilizar el horizonte visual, proyectando el mayor contraste y pureza lumínica sobre el lienzo central de trabajo.
 4.  **Dock Dinámico Plegable:**
     *   El menú lateral mantiene sus íconos en tamaño natural y prescinde de títulos estáticos comprimidos ("Salas de cumplimiento"). Permite expansión suave y botón de abatimiento para ceder el 100% del espacio al análisis documental cuando sea requerido.
+5.  **Partes de Pantalla (Claro Primero):**
+    *   todo parte de pantalla del UX/UI abre su sección de tokens con la columna del tema claro, después la del oscuro, y nombra solo tokens `--ui-*`.
 
 ---
 
