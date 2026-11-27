@@ -158,17 +158,17 @@ export default function IntegracionesView() {
       {/* Encabezado */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold tracking-tight text-[var(--foreground)]">
             Claves de Integración y API
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-[var(--ui-texto-suave)]">
             Administra las claves Bearer (evk_…) para acceder a la API versionada con alcances seguros.
           </p>
         </div>
         <button
           onClick={() => setModalCrear(true)}
           disabled={limiteAlcanzado || procesando}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-[var(--ui-primario-texto)] bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Nueva Clave de Integración
         </button>
@@ -176,26 +176,26 @@ export default function IntegracionesView() {
 
       {/* Errores */}
       {error && (
-        <div className="p-4 rounded-md bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-sm border border-red-200 dark:border-red-800">
+        <div className="p-4 rounded-md bg-[var(--ui-error-fondo)] text-[var(--ui-error-texto)] text-sm border border-[var(--ui-error-borde)]">
           {error}
         </div>
       )}
 
       {/* Alerta de clave generada / rotada en claro */}
       {claveRevelada && (
-        <div className="p-5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-400 dark:border-amber-600 space-y-3">
+        <div className="p-5 rounded-lg bg-[var(--ui-aviso-fondo)] border-2 border-[var(--ui-aviso-borde)] space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-semibold text-amber-800 dark:text-amber-200">
+            <h3 className="text-base font-semibold text-[var(--ui-aviso-titulo)]">
               ⚠️ Guarda tu nueva clave de integración
             </h3>
             <button
               onClick={() => setClaveRevelada(null)}
-              className="text-xs text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
+              className="text-xs text-[var(--ui-texto-suave)] hover:text-[var(--foreground)]"
             >
               Cerrar aviso
             </button>
           </div>
-          <p className="text-sm text-amber-700 dark:text-amber-300">
+          <p className="text-sm text-[var(--ui-aviso-texto)]">
             Esta clave solo se muestra en claro esta única vez. Cópiala y guárdala en tu gestor de secretos seguro:
           </p>
           <div className="flex items-center gap-2">
@@ -203,11 +203,11 @@ export default function IntegracionesView() {
               type="text"
               readOnly
               value={claveRevelada}
-              className="flex-1 font-mono text-sm p-2 rounded border bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 select-all"
+              className="flex-1 font-mono text-sm p-2 rounded border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] text-[var(--foreground)] select-all"
             />
             <button
               onClick={copiarClave}
-              className="px-3 py-2 bg-amber-600 text-white rounded text-sm font-medium hover:bg-amber-700"
+              className="px-3 py-2 bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] rounded text-sm font-medium hover:bg-[var(--ui-primario-hover)]"
             >
               {copiado ? "¡Copiada!" : "Copiar"}
             </button>
@@ -217,34 +217,34 @@ export default function IntegracionesView() {
 
       {/* Tarjetas de Techos de Paquete */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="p-4 rounded-lg border bg-white dark:bg-gray-800 shadow-sm">
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <div className="p-4 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-superficie)] shadow-sm">
+          <span className="text-xs font-semibold text-[var(--ui-texto-suave)] uppercase tracking-wider">
             Techo de Claves Activas
           </span>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+            <span className="text-3xl font-extrabold text-[var(--foreground)]">
               {activasClaves}
             </span>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-[var(--ui-texto-suave)]">
               de {maxClaves === null || maxClaves === undefined ? "Ilimitadas (Enterprise)" : maxClaves} permitidas
             </span>
           </div>
           {limiteAlcanzado && (
-            <p className="mt-1 text-xs text-red-600 dark:text-red-400 font-medium">
+            <p className="mt-1 text-xs text-[var(--ui-error-texto)] font-medium">
               Techo alcanzado. Para emitir una nueva, revoca una clave en desuso o amplía tu paquete.
             </p>
           )}
         </div>
 
-        <div className="p-4 rounded-lg border bg-white dark:bg-gray-800 shadow-sm">
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <div className="p-4 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-superficie)] shadow-sm">
+          <span className="text-xs font-semibold text-[var(--ui-texto-suave)] uppercase tracking-wider">
             Webhooks Activos
           </span>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+            <span className="text-3xl font-extrabold text-[var(--foreground)]">
               {techos?.webhooks.activos ?? 0}
             </span>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-[var(--ui-texto-suave)]">
               de {techos?.webhooks.maximo === null || techos?.webhooks.maximo === undefined ? "Ilimitados" : techos.webhooks.maximo} permitidos
             </span>
           </div>
@@ -252,23 +252,23 @@ export default function IntegracionesView() {
       </div>
 
       {/* Tabla de Claves */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border rounded-lg overflow-hidden">
-        <div className="px-4 py-3 border-b bg-gray-50 dark:bg-gray-700/50">
-          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+      <div className="bg-[var(--ui-superficie)] shadow-sm border border-[var(--ui-borde)] rounded-lg overflow-hidden">
+        <div className="px-4 py-3 border-b border-[var(--ui-borde)] bg-[var(--ui-superficie-2)]">
+          <h2 className="text-sm font-semibold text-[var(--foreground)]">
             Claves de Integración Registradas
           </h2>
         </div>
 
         {cargando ? (
-          <div className="p-8 text-center text-sm text-gray-500">Cargando claves...</div>
+          <div className="p-8 text-center text-sm text-[var(--ui-texto-suave)]">Cargando claves...</div>
         ) : claves.length === 0 ? (
-          <div className="p-8 text-center text-sm text-gray-500">
+          <div className="p-8 text-center text-sm text-[var(--ui-texto-suave)]">
             No hay claves de integración registradas para esta organización.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-left text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 font-medium">
+            <table className="min-w-full divide-y divide-[var(--ui-borde)] text-left text-sm">
+              <thead className="bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] font-medium">
                 <tr>
                   <th className="px-4 py-3">Nombre</th>
                   <th className="px-4 py-3">Prefijo</th>
@@ -278,18 +278,18 @@ export default function IntegracionesView() {
                   <th className="px-4 py-3 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="divide-y divide-[var(--ui-borde)]">
                 {claves.map((k) => {
                   const esRevocada = !!k.revocada_en;
                   const esRotada = !!k.rotada_en;
                   const esActiva = !esRevocada && !esRotada;
 
                   return (
-                    <tr key={k.id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
-                      <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
+                    <tr key={k.id} className="hover:bg-[var(--ui-superficie-2)]">
+                      <td className="px-4 py-3 font-medium text-[var(--foreground)]">
                         {k.nombre}
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-gray-600 dark:text-gray-300">
+                      <td className="px-4 py-3 font-mono text-xs text-[var(--ui-texto-suave)]">
                         {k.prefijo}
                       </td>
                       <td className="px-4 py-3">
@@ -297,7 +297,7 @@ export default function IntegracionesView() {
                           {k.alcances.map((alc) => (
                             <span
                               key={alc}
-                              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300"
+                              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--ui-info-fondo)] text-[var(--ui-info-texto)]"
                             >
                               {alc}
                             </span>
@@ -306,20 +306,20 @@ export default function IntegracionesView() {
                       </td>
                       <td className="px-4 py-3">
                         {esRevocada ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[var(--ui-error-fondo)] text-[var(--ui-error-texto)]">
                             Revocada
                           </span>
                         ) : esRotada ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[var(--ui-boton)] text-[var(--ui-texto-suave)]">
                             Rotada
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)]">
                             Activa
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-xs text-gray-500">
+                      <td className="px-4 py-3 text-xs text-[var(--ui-texto-suave)]">
                         {new Date(k.creada_en).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3 text-right space-x-2">
@@ -328,14 +328,14 @@ export default function IntegracionesView() {
                             <button
                               onClick={() => handleRotar(k.id, k.nombre)}
                               disabled={procesando}
-                              className="text-xs font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+                              className="text-xs font-medium text-[var(--ui-enlace)] hover:underline"
                             >
                               Rotar
                             </button>
                             <button
                               onClick={() => handleRevocar(k.id, k.nombre)}
                               disabled={procesando}
-                              className="text-xs font-medium text-red-600 hover:text-red-800 dark:text-red-400"
+                              className="text-xs font-medium text-[var(--ui-peligro-texto)] hover:underline"
                             >
                               Revocar
                             </button>
@@ -354,13 +354,13 @@ export default function IntegracionesView() {
       {/* Modal Crear */}
       {modalCrear && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          <div className="bg-[var(--ui-superficie)] rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 className="text-lg font-bold text-[var(--foreground)]">
               Generar Nueva Clave de Integración
             </h3>
             <form onSubmit={handleCrear} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-[var(--ui-texto-suave)]">
                   Nombre identificador
                 </label>
                 <input
@@ -369,12 +369,12 @@ export default function IntegracionesView() {
                   placeholder="ej. ERP Producción, Script Backup"
                   value={nuevoNombre}
                   onChange={(e) => setNuevoNombre(e.target.value)}
-                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 p-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="mt-1 block w-full rounded-md border border-[var(--ui-borde-control)] p-2 text-sm bg-[var(--ui-campo)] text-[var(--foreground)]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-[var(--ui-texto-suave)] mb-2">
                   Alcances autorizados
                 </label>
                 <div className="space-y-2">
@@ -384,13 +384,13 @@ export default function IntegracionesView() {
                         type="checkbox"
                         checked={nuevosAlcances.includes(alc.id)}
                         onChange={() => toggleAlcance(alc.id)}
-                        className="mt-1 rounded text-indigo-600 focus:ring-indigo-500"
+                        className="mt-1 rounded accent-[var(--ui-primario)] focus:ring-[var(--ui-primario)]"
                       />
                       <div>
-                        <div className="text-xs font-semibold text-gray-800 dark:text-gray-200">
+                        <div className="text-xs font-semibold text-[var(--foreground)]">
                           {alc.label} ({alc.id})
                         </div>
-                        <div className="text-xs text-gray-500">{alc.desc}</div>
+                        <div className="text-xs text-[var(--ui-texto-suave)]">{alc.desc}</div>
                       </div>
                     </label>
                   ))}
@@ -401,14 +401,14 @@ export default function IntegracionesView() {
                 <button
                   type="button"
                   onClick={() => setModalCrear(false)}
-                  className="px-4 py-2 border rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="px-4 py-2 border border-[var(--ui-borde-control)] rounded-md text-sm text-[var(--foreground)] hover:bg-[var(--ui-boton-hover)]"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={procesando || !nuevoNombre.trim()}
-                  className="px-4 py-2 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
+                  className="px-4 py-2 rounded-md text-sm font-medium text-[var(--ui-primario-texto)] bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] disabled:opacity-50"
                 >
                   {procesando ? "Emitiendo..." : "Emitir Clave"}
                 </button>

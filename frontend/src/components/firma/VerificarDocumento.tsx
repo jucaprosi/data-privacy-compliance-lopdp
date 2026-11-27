@@ -54,15 +54,15 @@ export function VerificarDocumento() {
   return (
     <section
       aria-labelledby="titulo-verificar"
-      className="rounded-xl border border-[var(--ui-border,#3f3f46)] bg-[var(--ui-surface,#18181b)] p-6"
+      className="rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-6"
     >
       <div className="flex items-center gap-2">
-        <FileSearch className="h-5 w-5 text-[var(--ui-accent,#8b5cf6)]" aria-hidden="true" />
+        <FileSearch className="h-5 w-5 text-[var(--ui-enlace)]" aria-hidden="true" />
         <h2 id="titulo-verificar" className="text-base font-semibold">
           Verificar documento
         </h2>
       </div>
-      <p className="mt-1 text-sm text-[var(--ui-muted,#a1a1aa)]">
+      <p className="mt-1 text-sm text-[var(--ui-texto-suave)]">
         Sube o arrastra un archivo para comprobar si su huella coincide con un documento aprobado o un
         acuse de esta organización.
       </p>
@@ -72,17 +72,17 @@ export function VerificarDocumento() {
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleZona}
         onClick={() => inputRef.current?.click()}
-        className="mt-4 flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-[var(--ui-border,#3f3f46)] p-8 text-center hover:border-[var(--ui-accent,#8b5cf6)] transition-colors"
+        className="mt-4 flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-[var(--ui-borde)] p-8 text-center hover:border-[var(--ui-enlace)] transition-colors"
         role="button"
         tabIndex={0}
         aria-label="Zona para arrastrar o seleccionar archivo"
         onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
       >
-        <UploadCloud className="h-8 w-8 text-[var(--ui-muted,#a1a1aa)]" aria-hidden="true" />
-        <p className="text-sm text-[var(--ui-muted,#a1a1aa)]">
-          Arrastra aquí o <span className="text-[var(--ui-accent,#8b5cf6)]">elige un archivo</span>
+        <UploadCloud className="h-8 w-8 text-[var(--ui-texto-suave)]" aria-hidden="true" />
+        <p className="text-sm text-[var(--ui-texto-suave)]">
+          Arrastra aquí o <span className="text-[var(--ui-enlace)]">elige un archivo</span>
         </p>
-        <p className="text-xs text-[var(--ui-muted,#a1a1aa)]">Máximo 10 MB</p>
+        <p className="text-xs text-[var(--ui-texto-suave)]">Máximo 10 MB</p>
       </div>
       <input
         ref={inputRef}
@@ -93,7 +93,7 @@ export function VerificarDocumento() {
       />
 
       {estado.tipo === "verificando" && (
-        <p className="mt-4 text-sm text-[var(--ui-muted,#a1a1aa)]" aria-live="polite">
+        <p className="mt-4 text-sm text-[var(--ui-texto-suave)]" aria-live="polite">
           Verificando…
         </p>
       )}
@@ -102,18 +102,18 @@ export function VerificarDocumento() {
         <div
           data-testid="resultado-verificacion"
           role="status"
-          className="mt-4 flex items-start gap-3 rounded-lg border border-[var(--ui-border,#3f3f46)] p-4"
+          className="mt-4 flex items-start gap-3 rounded-lg border border-[var(--ui-borde)] p-4"
         >
           {estado.datos.coincide ? (
-            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" aria-hidden="true" />
+            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--ui-exito-texto)]" aria-hidden="true" />
           ) : (
-            <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" aria-hidden="true" />
+            <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--ui-aviso-texto)]" aria-hidden="true" />
           )}
           <div>
             <p className="text-sm font-medium">
               {estado.datos.coincide ? "Coincide" : "No coincide"}
             </p>
-            <p className="text-xs text-[var(--ui-muted,#a1a1aa)]">{estado.nombre}</p>
+            <p className="text-xs text-[var(--ui-texto-suave)]">{estado.nombre}</p>
             {estado.datos.tipo && (
               <p className="mt-1 text-xs">
                 Tipo: {TIPO_ETIQUETA[estado.datos.tipo] ?? estado.datos.tipo}
@@ -126,7 +126,7 @@ export function VerificarDocumento() {
       {estado.tipo === "error" && (
         <p
           role="alert"
-          className="mt-4 rounded-lg border border-red-900 bg-red-950/30 px-3 py-2 text-sm text-red-200"
+          className="mt-4 rounded-lg border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] px-3 py-2 text-sm text-[var(--ui-error-texto)]"
         >
           {estado.mensaje}
         </p>
