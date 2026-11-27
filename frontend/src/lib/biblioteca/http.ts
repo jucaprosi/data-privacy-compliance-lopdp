@@ -63,8 +63,13 @@ export function falloDeRol(error: unknown): string | null {
   return error instanceof SinRolPermitido ? error.message : null;
 }
 
-/** BIB-412: la administración editorial y las capacidades editoriales van con la identidad del operador, sin organización. */
-const RUTAS_DE_PLATAFORMA = /^\/biblioteca\/(editorial|capacidades)(\/|$|\?)/;
+const RUTAS_DE_PLATAFORMA = /^\/biblioteca\/editorial(\/|$|\?)/;
+/** BIB-412: las capacidades editoriales propias (`/mias`) van con la identidad del operador solo dentro de Plataforma. */
+const RUTA_DE_CAPACIDADES = /^\/biblioteca\/capacidades(\/|$|\?)/;
+
+function enPlataforma(): boolean {
+  return typeof window !== "undefined" && /^\/plataforma(\/|$)/.test(window.location.pathname);
+}
 
 /** Roles que admite cada escritura servida por `httpBiblioteca` (método y ruta sin `/api/v1`). */
 const ROLES_POR_RUTA: ReadonlyArray<{ metodo: string; ruta: RegExp; roles: readonly string[] }> = [
@@ -78,7 +83,7 @@ const ROLES_POR_RUTA: ReadonlyArray<{ metodo: string; ruta: RegExp; roles: reado
 
 /** Identidad de una ruta de Biblioteca (sin `/api/v1`); lanza `SinRolPermitido` si no hay rol válido. */
 export function identidadPara(ruta: string, metodo = "GET"): CabecerasIdentidad {
-  if (RUTAS_DE_PLATAFORMA.test(ruta)) return cabecerasDePlataforma();
+  if (RUTAS_DE_PLATAFORMA.test(ruta) || (RUTA_DE_CAPACIDADES.test(ruta) && enPlataforma())) return cabecerasDePlataforma();
   const camino = ruta.split("?")[0];
   const regla = ROLES_POR_RUTA.find((r) => (r.metodo === "*" || r.metodo === metodo.toUpperCase()) && r.ruta.test(camino));
   return cabecerasDeMiembro(regla?.roles);

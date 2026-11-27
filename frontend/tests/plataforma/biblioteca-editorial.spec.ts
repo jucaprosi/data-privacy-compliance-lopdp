@@ -52,8 +52,8 @@ test.describe("Biblioteca editorial desde Plataforma (BIB-412)", () => {
     const llamadas = await simular(page, ["editor"]);
     await page.goto("/plataforma/biblioteca");
     await expect(page.getByRole("heading", { name: "Administración editorial", level: 1 })).toBeVisible();
+    await expect.poll(() => editoriales(llamadas).length).toBeGreaterThan(0);
     const lista = editoriales(llamadas);
-    expect(lista.length).toBeGreaterThan(0);
     for (const l of lista) {
       expect(l.headers()["x-tenant-id"], ruta(l.url())).toBeUndefined();
       expect(l.headers()["x-role"], ruta(l.url())).toBeUndefined();
