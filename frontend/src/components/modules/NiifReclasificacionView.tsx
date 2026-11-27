@@ -68,15 +68,15 @@ export default function NiifReclasificacionView() {
       <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl overflow-hidden shadow-md">
         <div className="p-5 border-b border-[var(--ui-borde)] flex items-center justify-between">
           <div>
-            <h3 className="font-bold text-white text-lg">Matriz de Reclasificación NIIF 18</h3>
+            <h3 className="font-bold text-[var(--foreground)] text-lg">Matriz de Reclasificación NIIF 18</h3>
             <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
               Las cuentas han sido mapeadas usando heurísticas y modelos matemáticos a las categorías mandatorias.
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {isUpdating && <span className="text-xs text-blue-400 animate-pulse">Recalculando P&L...</span>}
+            {isUpdating && <span className="text-xs text-[var(--ui-info-texto)] animate-pulse">Recalculando P&L...</span>}
             <div className="text-xs text-[var(--ui-texto-suave)] font-mono bg-[var(--ui-campo)] px-3 py-1.5 rounded-lg border border-[var(--ui-borde)]">
-              Confianza IA: <span className="text-[#00c853] font-bold">{niif18Data.inferencia_columnas?.confianza_porcentaje?.toFixed(1) || 100}%</span>
+              Confianza IA: <span className="text-[var(--ui-exito-texto)] font-bold">{niif18Data.inferencia_columnas?.confianza_porcentaje?.toFixed(1) || 100}%</span>
             </div>
           </div>
         </div>
@@ -96,13 +96,13 @@ export default function NiifReclasificacionView() {
               {niif18Data.cuentas.map((cta: CuentaNIIF, i: number) => (
                 <tr key={i} className="hover:bg-[var(--ui-boton)] transition-colors">
                   <td className="px-5 py-3 font-mono text-xs">{cta.cuenta}</td>
-                  <td className="px-5 py-3 text-zinc-300">{cta.descripcion}</td>
+                  <td className="px-5 py-3 text-[var(--ui-texto-suave)]">{cta.descripcion}</td>
                   <td className="px-5 py-3">
                     <select 
                       value={cta.categoria}
                       onChange={(e) => handleCategoriaChange(i, e.target.value)}
                       disabled={isUpdating}
-                      className="bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-xs text-zinc-300 rounded px-2 py-1.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 w-full max-w-[250px]"
+                      className="bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] text-xs text-[var(--ui-texto-suave)] rounded px-2 py-1.5 focus:outline-none focus:border-[var(--ui-primario)] focus:ring-1 focus:ring-[var(--ui-primario)] disabled:opacity-50 w-full max-w-[250px]"
                     >
                       {CATEGORIAS_NIIF18.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -110,7 +110,7 @@ export default function NiifReclasificacionView() {
                     </select>
                   </td>
                   <td className="px-5 py-3 text-right font-mono text-xs">{formatCurrency(cta.saldo_original)}</td>
-                  <td className={`px-5 py-3 text-right font-mono text-xs font-semibold ${cta.pl_neto < 0 ? "text-red-400" : "text-green-400"}`}>
+                  <td className={`px-5 py-3 text-right font-mono text-xs font-semibold ${cta.pl_neto < 0 ? "text-[var(--ui-error-texto)]" : "text-[var(--ui-exito-texto)]"}`}>
                     {formatCurrency(cta.pl_neto)}
                   </td>
                 </tr>
@@ -124,7 +124,7 @@ export default function NiifReclasificacionView() {
           <button
             type="button"
             onClick={() => useAuditStore.getState().setActiveView("niif_subtotales")}
-            className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded transition-colors"
+            className="flex items-center px-4 py-2 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] text-xs font-semibold rounded transition-colors"
           >
             Siguiente Paso: Árbol de Subtotales
             <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>

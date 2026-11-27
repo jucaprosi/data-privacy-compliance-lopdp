@@ -79,8 +79,8 @@ export default function NiifIngestaView() {
     <div className="space-y-6 max-w-4xl mx-auto pb-10 animate-in fade-in zoom-in-95 duration-300">
       <div className="flex items-center justify-between bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-6 shadow-md">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center">
-            <UploadCloud className="w-5 h-5 mr-2 text-[#00c853]" />
+          <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center">
+            <UploadCloud className="w-5 h-5 mr-2 text-[var(--ui-exito-texto)]" />
             Ingesta de Balance NIIF 18
           </h2>
           <p className="text-sm text-[var(--ui-texto-suave)] mt-1">
@@ -94,18 +94,18 @@ export default function NiifIngestaView() {
           {...getRootProps()}
           className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition flex flex-col items-center justify-center space-y-4 ${
             isDragActive
-              ? "border-[#00c853] bg-[#00c853]/10"
+              ? "border-[var(--ui-exito-borde)] bg-[var(--ui-exito-fondo)]"
               : errorMessage
-              ? "border-[#ff1744] bg-[#ff1744]/5"
-              : "border-[var(--ui-borde)] hover:border-[#00c853]/60 bg-[var(--ui-campo)]"
+              ? "border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)]"
+              : "border-[var(--ui-borde)] hover:border-[var(--ui-exito-borde)] bg-[var(--ui-campo)]"
           }`}
         >
           <input {...getInputProps()} />
-          <div className="w-16 h-16 rounded-full bg-[var(--ui-boton)] flex items-center justify-center text-zinc-300 shadow-md">
-            <FileSpreadsheet className="w-8 h-8 text-[#00c853]" />
+          <div className="w-16 h-16 rounded-full bg-[var(--ui-boton)] flex items-center justify-center text-[var(--ui-texto-suave)] shadow-md">
+            <FileSpreadsheet className="w-8 h-8 text-[var(--ui-exito-texto)]" />
           </div>
           <div>
-            <span className="text-sm font-semibold text-white block">
+            <span className="text-sm font-semibold text-[var(--foreground)] block">
               Haz clic para seleccionar o arrastra el Balance aquí
             </span>
             <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
@@ -115,7 +115,7 @@ export default function NiifIngestaView() {
         </div>
 
         {errorMessage && (
-          <div className="flex items-center space-x-2.5 p-3 rounded-lg bg-[#ff1744]/10 border border-[#ff1744]/40 text-[#ff1744] text-xs">
+          <div className="flex items-center space-x-2.5 p-3 rounded-lg bg-[var(--ui-error-fondo)] border border-[var(--ui-error-borde)] text-[var(--ui-error-texto)] text-xs">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>
@@ -124,16 +124,16 @@ export default function NiifIngestaView() {
         {localFiles.length > 0 && (
           <div className="px-4 py-3 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <FileSpreadsheet className="w-5 h-5 text-[#3892f3]" />
-              <span className="text-sm text-white font-medium">{localFiles[0].name}</span>
+              <FileSpreadsheet className="w-5 h-5 text-[var(--ui-enlace)]" />
+              <span className="text-sm text-[var(--foreground)] font-medium">{localFiles[0].name}</span>
             </div>
-            <CheckCircle className="w-5 h-5 text-[#00c853]" />
+            <CheckCircle className="w-5 h-5 text-[var(--ui-exito-texto)]" />
           </div>
         )}
       </div>
 
       {mensajePoda && (
-        <div className="flex items-center space-x-2.5 p-3 rounded-lg bg-[#00c853]/10 border border-[#00c853]/40 text-[#00c853] text-xs animate-pulse">
+        <div className="flex items-center space-x-2.5 p-3 rounded-lg bg-[var(--ui-exito-fondo)] border border-[var(--ui-exito-borde)] text-[var(--ui-exito-texto)] text-xs animate-pulse">
           <UploadCloud className="w-4 h-4 shrink-0 animate-bounce" />
           <span>{mensajePoda}</span>
         </div>
@@ -144,10 +144,10 @@ export default function NiifIngestaView() {
           type="button"
           onClick={handleProcesar}
           disabled={localFiles.length === 0 || isProcessing}
-          style={{ background: localFiles.length > 0 ? "linear-gradient(135deg, #00c853, #1de9b6)" : "var(--ui-boton)" }}
+          style={{ background: localFiles.length > 0 ? "var(--ui-primario)" : "var(--ui-boton)" }}
           className={`px-6 py-2.5 text-sm font-semibold rounded-lg flex items-center justify-center transition shadow-md ${
             localFiles.length > 0 && !isProcessing
-              ? "text-[var(--ui-campo)] hover:opacity-95 cursor-pointer"
+              ? "text-[var(--ui-primario-texto)] hover:opacity-95 cursor-pointer"
               : "text-[var(--ui-texto-suave)] cursor-not-allowed"
           }`}
         >
