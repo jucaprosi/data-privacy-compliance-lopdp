@@ -10,6 +10,12 @@ import { useAuditStore } from "@/store/useAuditStore";
 
 const BASE = "/api/v1/avisos";
 
+/** NOTIF-05 · El texto del enlace nombra su destino. Un aviso nuevo con otro destino añade su fila aquí (R2). */
+const TEXTO_POR_RUTA: readonly (readonly [string, string])[] = [["/plataforma/capacidades", "Ver capacidades editoriales"]];
+const TEXTO_POR_DEFECTO = "Revisar la versión";
+export const textoDelEnlace = (enlace: string): string =>
+  TEXTO_POR_RUTA.find(([prefijo]) => enlace.startsWith(prefijo))?.[1] ?? TEXTO_POR_DEFECTO;
+
 export interface Aviso {
   id: string; titulo: string; texto: string; enlace: string | null; leido: boolean; pendiente: boolean; creado_en: string;
 }
@@ -108,7 +114,7 @@ export default function BandejaAvisos() {
               {a.texto.split("\n").map((l, i) => <p key={i}>{l}</p>)}
               <time dateTime={a.creado_en} className="block text-xs">{tiempoRelativo(a.creado_en)}</time>
               <div className="mt-2 flex flex-wrap gap-2">
-                {a.enlace ? <a href={a.enlace} onClick={() => { void marcar(a.id).catch(() => undefined); }} className="underline">Revisar la versión</a> : null}
+                {a.enlace ? <a href={a.enlace} onClick={() => { void marcar(a.id).catch(() => undefined); }} className="underline">{textoDelEnlace(a.enlace)}</a> : null}
                 {!a.leido ? <button type="button" onClick={() => void leer(a.id)} className="rounded border border-[var(--ui-borde)] px-2 py-1">Marcar como leído</button> : null}
               </div>
             </li>
