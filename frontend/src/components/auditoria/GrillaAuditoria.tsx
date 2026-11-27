@@ -84,15 +84,15 @@ export const GrillaAuditoria: React.FC<Props> = ({
   return (
     <div className="space-y-4">
       {mensajeEstado && (
-        <div role="status" className="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 rounded-md text-sm">
+        <div role="status" className="p-3 bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)] border border-[var(--ui-exito-borde)] rounded-md text-sm">
           {mensajeEstado}
         </div>
       )}
 
       {/* Vista desktop: Tabla accesible */}
-      <div className="hidden md:block overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+      <div className="hidden md:block overflow-x-auto rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-superficie)] shadow-sm">
         <table className="w-full text-left text-sm" aria-label="Verificación de controles">
-          <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800">
+          <thead className="bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] border-b border-[var(--ui-borde)]">
             <tr>
               <th scope="col" className="px-4 py-3 font-semibold">Control</th>
               <th scope="col" className="px-3 py-3 font-semibold">Declarado</th>
@@ -104,7 +104,7 @@ export const GrillaAuditoria: React.FC<Props> = ({
               <th scope="col" className="px-4 py-3 font-semibold text-right">Acción</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-[var(--ui-borde)]">
             {auditoria.filas.map((fila) => {
               const estaFirmada = actasFirmadas.has(fila.area_id);
               const puedeEditar = esAuditorEquipo && auditoria.estado === "abierta" && !estaFirmada;
@@ -115,17 +115,17 @@ export const GrillaAuditoria: React.FC<Props> = ({
               const riesgoFinalInfo = riesgoFinalVal != null ? calcularEtiquetaRiesgo(riesgoFinalVal) : null;
 
               return (
-                <tr key={fila.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
-                  <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">
-                    <span className="font-mono text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                <tr key={fila.id} className="hover:bg-[var(--ui-superficie-2)]">
+                  <td className="px-4 py-3 font-medium text-[var(--foreground)]">
+                    <span className="font-mono text-xs px-2 py-0.5 rounded bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)]">
                       {fila.control_ref}
                     </span>
                   </td>
-                  <td className="px-3 py-3 text-slate-600 dark:text-slate-400">
+                  <td className="px-3 py-3 text-[var(--ui-texto-suave)]">
                     Nivel {fila.declarado}
                   </td>
                   <td className="px-3 py-3">
-                    <span className="text-xs px-2 py-0.5 rounded font-medium bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+                    <span className="text-xs px-2 py-0.5 rounded font-medium bg-[var(--ui-aviso-fondo)] text-[var(--ui-aviso-texto)]">
                       {riesgoInicialInfo.texto} ({fila.riesgo_inicial})
                     </span>
                   </td>
@@ -138,7 +138,7 @@ export const GrillaAuditoria: React.FC<Props> = ({
                           const val = Number(e.target.value);
                           setValoresVerificados((prev) => ({ ...prev, [fila.control_ref]: val }));
                         }}
-                        className="rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="rounded border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] px-2.5 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ui-primario)]"
                       >
                         <option value="">Elegir...</option>
                         <option value="1">Nivel 1</option>
@@ -148,24 +148,24 @@ export const GrillaAuditoria: React.FC<Props> = ({
                         <option value="5">Nivel 5</option>
                       </select>
                     ) : (
-                      <span className="text-slate-700 dark:text-slate-300">
+                      <span className="text-[var(--ui-texto-suave)]">
                         {fila.verificado != null ? `Nivel ${fila.verificado}` : "Sin verificar"}
                       </span>
                     )}
 
                     {porDebajo && (
-                      <div className="mt-1 flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 font-medium">
+                      <div className="mt-1 flex items-center gap-1 text-xs text-[var(--ui-aviso-texto)] font-medium">
                         <span aria-hidden="true">⚠️</span>
                         <span>Por debajo de lo declarado</span>
                       </div>
                     )}
                     {fila.hallazgo_id && (
-                      <div className="mt-0.5 text-xs text-indigo-600 dark:text-indigo-400">
+                      <div className="mt-0.5 text-xs text-[var(--ui-enlace)]">
                         Hallazgo registrado
                       </div>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400 text-xs">
+                  <td className="px-4 py-3 text-[var(--ui-texto-suave)] text-xs">
                     {puedeEditar ? (
                       <input
                         type="text"
@@ -174,7 +174,7 @@ export const GrillaAuditoria: React.FC<Props> = ({
                         onChange={(e) =>
                           setEvidencias((prev) => ({ ...prev, [fila.control_ref]: e.target.value }))
                         }
-                        className="w-32 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 text-xs"
+                        className="w-32 rounded border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] px-2 py-1 text-xs"
                       />
                     ) : (
                       <span>{fila.evidencia_sha256 ? `${fila.evidencia_sha256.slice(0, 10)}...` : "—"}</span>
@@ -182,14 +182,14 @@ export const GrillaAuditoria: React.FC<Props> = ({
                   </td>
                   <td className="px-3 py-3">
                     {riesgoFinalInfo ? (
-                      <span className="text-xs px-2 py-0.5 rounded font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      <span className="text-xs px-2 py-0.5 rounded font-medium bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)]">
                         {riesgoFinalInfo.texto} ({riesgoFinalVal})
                       </span>
                     ) : (
-                      <span className="text-slate-400 text-xs">—</span>
+                      <span className="text-[var(--ui-texto-suave)] text-xs">—</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
+                  <td className="px-4 py-3 text-xs text-[var(--ui-texto-suave)]">
                     {fila.revisado_por || "—"}
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -199,13 +199,13 @@ export const GrillaAuditoria: React.FC<Props> = ({
                         aria-label={`Guardar el control ${fila.control_ref}`}
                         disabled={guardando === fila.control_ref || valVerificado == null}
                         onClick={() => handleGuardarFila(fila)}
-                        className="rounded bg-indigo-600 px-2.5 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
+                        className="rounded bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] px-2.5 py-1 text-xs font-semibold shadow-sm hover:bg-[var(--ui-primario-hover)] disabled:opacity-50"
                       >
                         {guardando === fila.control_ref ? "Guardando..." : "Guardar"}
                       </button>
                     )}
                     {errorFila?.controlRef === fila.control_ref && (
-                      <div role="alert" className="mt-1 text-xs text-rose-600 dark:text-rose-400">
+                      <div role="alert" className="mt-1 text-xs text-[var(--ui-error-texto)]">
                         {errorFila.mensaje}
                       </div>
                     )}
@@ -228,19 +228,19 @@ export const GrillaAuditoria: React.FC<Props> = ({
           return (
             <div
               key={fila.id}
-              className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm space-y-2.5"
+              className="rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-4 shadow-sm space-y-2.5"
             >
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+                <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[var(--ui-superficie-2)] text-[var(--foreground)]">
                   {fila.control_ref}
                 </span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">
+                <span className="text-xs text-[var(--ui-texto-suave)]">
                   Declarado: Nivel {fila.declarado}
                 </span>
               </div>
 
               <div className="flex flex-col gap-1 text-sm">
-                <label className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                <label className="text-xs font-medium text-[var(--ui-texto-suave)]">
                   Nivel verificado:
                 </label>
                 {puedeEditar ? (
@@ -251,7 +251,7 @@ export const GrillaAuditoria: React.FC<Props> = ({
                       const val = Number(e.target.value);
                       setValoresVerificados((prev) => ({ ...prev, [fila.control_ref]: val }));
                     }}
-                    className="rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-sm"
+                    className="rounded border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] px-2 py-1.5 text-sm"
                   >
                     <option value="">Elegir nivel...</option>
                     <option value="1">Nivel 1</option>
@@ -261,20 +261,20 @@ export const GrillaAuditoria: React.FC<Props> = ({
                     <option value="5">Nivel 5</option>
                   </select>
                 ) : (
-                  <span className="text-slate-700 dark:text-slate-300">
+                  <span className="text-[var(--ui-texto-suave)]">
                     {fila.verificado != null ? `Nivel ${fila.verificado}` : "Sin verificar"}
                   </span>
                 )}
               </div>
 
               {porDebajo && (
-                <div className="text-xs text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1">
+                <div className="text-xs text-[var(--ui-aviso-texto)] font-medium flex items-center gap-1">
                   <span>⚠️</span> Por debajo de lo declarado
                 </div>
               )}
 
               {fila.hallazgo_id && (
-                <div className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+                <div className="text-xs text-[var(--ui-enlace)] font-medium">
                   Hallazgo registrado
                 </div>
               )}
@@ -286,7 +286,7 @@ export const GrillaAuditoria: React.FC<Props> = ({
                     aria-label={`Guardar el control ${fila.control_ref}`}
                     disabled={guardando === fila.control_ref || valVerificado == null}
                     onClick={() => handleGuardarFila(fila)}
-                    className="rounded bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
+                    className="rounded bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] px-3 py-1.5 text-xs font-semibold shadow-sm hover:bg-[var(--ui-primario-hover)] disabled:opacity-50"
                   >
                     {guardando === fila.control_ref ? "Guardando..." : "Guardar control"}
                   </button>
@@ -294,7 +294,7 @@ export const GrillaAuditoria: React.FC<Props> = ({
               )}
 
               {errorFila?.controlRef === fila.control_ref && (
-                <div role="alert" className="text-xs text-rose-600 dark:text-rose-400">
+                <div role="alert" className="text-xs text-[var(--ui-error-texto)]">
                   {errorFila.mensaje}
                 </div>
               )}

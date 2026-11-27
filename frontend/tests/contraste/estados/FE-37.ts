@@ -7,4 +7,9 @@ import type { Page } from "@playwright/test";
  * Clave: «<ruta o vista:id> · <nombre del estado>». El paso se ejecuta con la página cargada y el tema puesto; la prueba mide después.
  * La ficha FE-37 añade aquí sus pasos antes de quitar la ruta o vista de su archivo de pendientes.
  */
-export const ESTADOS: Record<string, (page: Page) => Promise<void>> = {};
+export const ESTADOS: Record<string, (page: Page) => Promise<void>> = {
+  "vista:rat · diálogo nueva actividad": async (page) => {
+    await page.getByRole("button", { name: /Nueva Actividad/ }).click();
+    await page.locator("form input[required]").first().waitFor();
+  },
+};

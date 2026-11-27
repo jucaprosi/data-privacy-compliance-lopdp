@@ -110,30 +110,30 @@ export default function EnvioCuestionario({ tercero, permisos = { gestionar: tru
 
   // Determinar texto e icono de estado
   let estadoTexto = "Sin cuestionario";
-  let estadoIcono = <Clock className="w-3.5 h-3.5 text-zinc-500" />;
-  let badgeColor = "text-zinc-400 bg-zinc-800/60 border-zinc-700";
+  let estadoIcono = <Clock className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />;
+  let badgeColor = "text-[var(--ui-texto-suave)] bg-[var(--ui-superficie-2)] border-[var(--ui-borde)]";
 
   if (ultimoCuestionario) {
     if (ultimoCuestionario.estado === "enviado") {
       estadoTexto = "Enviado";
-      estadoIcono = <Send className="w-3.5 h-3.5 text-amber-400" />;
-      badgeColor = "text-amber-400 bg-amber-950/40 border-amber-800/60";
+      estadoIcono = <Send className="w-3.5 h-3.5 text-[var(--ui-aviso-texto)]" />;
+      badgeColor = "text-[var(--ui-aviso-texto)] bg-[var(--ui-aviso-fondo)] border-[var(--ui-aviso-borde)]";
     } else if (ultimoCuestionario.estado === "respondido") {
       estadoTexto = "Respondido, por revisar";
-      estadoIcono = <FileText className="w-3.5 h-3.5 text-blue-400" />;
-      badgeColor = "text-blue-400 bg-blue-950/40 border-blue-800/60";
+      estadoIcono = <FileText className="w-3.5 h-3.5 text-[var(--ui-info-texto)]" />;
+      badgeColor = "text-[var(--ui-info-texto)] bg-[var(--ui-info-fondo)] border-[var(--ui-info-borde)]";
     } else if (ultimoCuestionario.estado === "conforme") {
       estadoTexto = "Aceptado";
-      estadoIcono = <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />;
-      badgeColor = "text-emerald-400 bg-emerald-950/40 border-emerald-800/60";
+      estadoIcono = <CheckCircle2 className="w-3.5 h-3.5 text-[var(--ui-exito-texto)]" />;
+      badgeColor = "text-[var(--ui-exito-texto)] bg-[var(--ui-exito-fondo)] border-[var(--ui-exito-borde)]";
     } else if (ultimoCuestionario.estado === "correccion") {
       estadoTexto = "Corrección pedida";
-      estadoIcono = <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />;
-      badgeColor = "text-amber-500 bg-amber-950/40 border-amber-800/60";
+      estadoIcono = <AlertTriangle className="w-3.5 h-3.5 text-[var(--ui-aviso-texto)]" />;
+      badgeColor = "text-[var(--ui-aviso-texto)] bg-[var(--ui-aviso-fondo)] border-[var(--ui-aviso-borde)]";
     } else if (ultimoCuestionario.estado === "rechazado") {
       estadoTexto = "Rechazado";
-      estadoIcono = <XCircle className="w-3.5 h-3.5 text-rose-400" />;
-      badgeColor = "text-rose-400 bg-rose-950/40 border-rose-800/60";
+      estadoIcono = <XCircle className="w-3.5 h-3.5 text-[var(--ui-error-texto)]" />;
+      badgeColor = "text-[var(--ui-error-texto)] bg-[var(--ui-error-fondo)] border-[var(--ui-error-borde)]";
     }
   }
 
@@ -163,7 +163,7 @@ export default function EnvioCuestionario({ tercero, permisos = { gestionar: tru
             type="button"
             onClick={abrirDialogo}
             aria-label={`Enviar el cuestionario a ${tercero.nombre}`}
-            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-semibold transition"
+            className="px-2.5 py-1 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] rounded text-[11px] font-semibold transition"
           >
             Enviar cuestionario
           </button>
@@ -174,7 +174,7 @@ export default function EnvioCuestionario({ tercero, permisos = { gestionar: tru
             type="button"
             onClick={() => setRevisionAbierta(true)}
             aria-label={`Revisar las respuestas de ${tercero.nombre}`}
-            className="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-[11px] font-semibold transition"
+            className="px-2.5 py-1 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] rounded text-[11px] font-semibold transition"
           >
             Revisar respuestas
           </button>
@@ -182,13 +182,13 @@ export default function EnvioCuestionario({ tercero, permisos = { gestionar: tru
       </div>
 
       {estaEnviadoYVigente && (
-        <span className="text-zinc-400 text-[11px]">
+        <span className="text-[var(--ui-texto-suave)] text-[11px]">
           Enviado el {fechaEnvio} · el enlace vence el {fechaVence}
         </span>
       )}
 
       {mensajeRevision && (
-        <p role="status" className="text-emerald-400 text-[11px] font-medium">
+        <p role="status" className="text-[var(--ui-exito-texto)] text-[11px] font-medium">
           {mensajeRevision}
         </p>
       )}
@@ -196,19 +196,19 @@ export default function EnvioCuestionario({ tercero, permisos = { gestionar: tru
       {/* Diálogo Enviar cuestionario / Copia el enlace ahora */}
       {dialogoAbierto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-5 max-w-md w-full text-zinc-100 shadow-2xl">
+          <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 max-w-md w-full text-[var(--foreground)] shadow-2xl">
             {!enlaceCreado ? (
               <div>
-                <h3 className="text-sm font-bold text-emerald-400 mb-2">
+                <h3 className="text-sm font-bold text-[var(--ui-exito-texto)] mb-2">
                   Enviar cuestionario a {tercero.nombre}
                 </h3>
-                <p className="text-zinc-400 text-xs mb-3">
+                <p className="text-[var(--ui-texto-suave)] text-xs mb-3">
                   Creamos un enlace para que el proveedor responda sin crear una cuenta. El enlace funciona una sola vez y vence en los días que elijas.
                 </p>
 
                 <form onSubmit={crearEnlace} className="space-y-3">
                   <div>
-                    <label htmlFor="vigencia-dias" className="block text-zinc-300 font-medium mb-1">
+                    <label htmlFor="vigencia-dias" className="block text-[var(--ui-texto-suave)] font-medium mb-1">
                       Vigencia del enlace (días)
                     </label>
                     <input
@@ -218,35 +218,35 @@ export default function EnvioCuestionario({ tercero, permisos = { gestionar: tru
                       max={30}
                       value={diasVigencia}
                       onChange={(e) => setDiasVigencia(parseInt(e.target.value) || 0)}
-                      className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                      className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)]"
                       required
                     />
                     {errorVigencia && (
-                      <p role="alert" className="text-rose-400 text-xs mt-1">
+                      <p role="alert" className="text-[var(--ui-error-texto)] text-xs mt-1">
                         {errorVigencia}
                       </p>
                     )}
                   </div>
 
                   {errorCreacion && (
-                    <p role="alert" className="text-rose-400 text-xs">
+                    <p role="alert" className="text-[var(--ui-error-texto)] text-xs">
                       {errorCreacion}
                     </p>
                   )}
 
-                  <div className="flex justify-end space-x-2 pt-2 border-t border-zinc-800">
+                  <div className="flex justify-end space-x-2 pt-2 border-t border-[var(--ui-borde)]">
                     <button
                       ref={cancelarBtnRef}
                       type="button"
                       onClick={() => setDialogoAbierto(false)}
-                      className="px-3.5 py-1.5 bg-zinc-800 text-zinc-400 rounded hover:bg-zinc-700 font-medium"
+                      className="px-3.5 py-1.5 bg-[var(--ui-boton)] text-[var(--foreground)] rounded hover:bg-[var(--ui-boton-hover)] font-medium"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={creando}
-                      className="px-4 py-1.5 bg-emerald-600 text-white rounded font-semibold hover:bg-emerald-500 disabled:opacity-50"
+                      className="px-4 py-1.5 bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] rounded font-semibold hover:bg-[var(--ui-primario-hover)] disabled:opacity-50"
                     >
                       {creando ? "Creando enlace..." : "Crear enlace"}
                     </button>
@@ -256,13 +256,13 @@ export default function EnvioCuestionario({ tercero, permisos = { gestionar: tru
             ) : (
               /* Paso: Copia el enlace ahora */
               <div className="space-y-3">
-                <h3 className="text-sm font-bold text-emerald-400">Copia el enlace ahora</h3>
-                <p className="text-zinc-300 text-xs">
+                <h3 className="text-sm font-bold text-[var(--ui-exito-texto)]">Copia el enlace ahora</h3>
+                <p className="text-[var(--ui-texto-suave)] text-xs">
                   Este enlace solo se muestra ahora. Envíalo al proveedor por el canal que usas habitualmente; la plataforma no lo envía.
                 </p>
 
                 <div>
-                  <label htmlFor="enlace-cuestionario-readonly" className="block text-zinc-400 text-[11px] mb-1">
+                  <label htmlFor="enlace-cuestionario-readonly" className="block text-[var(--ui-texto-suave)] text-[11px] mb-1">
                     Enlace del cuestionario
                   </label>
                   <input
@@ -271,7 +271,7 @@ export default function EnvioCuestionario({ tercero, permisos = { gestionar: tru
                     aria-label="Enlace del cuestionario"
                     readOnly
                     value={enlaceCreado}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200 font-mono text-xs select-all"
+                    className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)] font-mono text-xs select-all"
                   />
                 </div>
 
@@ -279,23 +279,23 @@ export default function EnvioCuestionario({ tercero, permisos = { gestionar: tru
                   <button
                     type="button"
                     onClick={copiarEnlace}
-                    className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded font-medium flex items-center space-x-1.5"
+                    className="px-3 py-1.5 bg-[var(--ui-boton)] hover:bg-[var(--ui-boton-hover)] text-[var(--foreground)] rounded font-medium flex items-center space-x-1.5"
                   >
-                    {copiado ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiado ? <Check className="w-3.5 h-3.5 text-[var(--ui-exito-texto)]" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copiado ? "Enlace copiado." : "Copiar el enlace"}</span>
                   </button>
                   {copiado && (
-                    <span role="status" className="text-emerald-400 text-xs">
+                    <span role="status" className="text-[var(--ui-exito-texto)] text-xs">
                       Enlace copiado.
                     </span>
                   )}
                 </div>
 
-                <div className="flex justify-end pt-3 border-t border-zinc-800">
+                <div className="flex justify-end pt-3 border-t border-[var(--ui-borde)]">
                   <button
                     type="button"
                     onClick={cerrarPasoEnlace}
-                    className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-semibold"
+                    className="px-4 py-1.5 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] rounded font-semibold"
                   >
                     Ya lo copié
                   </button>
