@@ -12,6 +12,11 @@ import type {
 
 const BASE = "/api/v1/plataforma";
 
+// FE-31 R4: texto fijo para OPERADOR_NO_AUTORIZADO; el mensaje en español del servidor se conserva (las pantallas de
+// invitación lo interpretan); sin JSON, el genérico. Nunca el estado HTTP.
+const TEXTO_NO_AUTORIZADO = "No tienes permiso para administrar organizaciones.";
+const TEXTO_GENERICO = "No se pudo completar la operación. Inténtalo de nuevo.";
+
 export class ErrorPlataforma extends Error {
   constructor(
     readonly status: number,
@@ -39,7 +44,7 @@ async function solicitar<T>(ruta: string, init: RequestInit = {}): Promise<T> {
     }
     throw new ErrorPlataforma(
       respuesta.status,
-      error.detail || `La operación no pudo completarse (${respuesta.status}).`,
+      error.code === "OPERADOR_NO_AUTORIZADO" ? TEXTO_NO_AUTORIZADO : error.detail || TEXTO_GENERICO,
       error.code,
     );
   }
@@ -88,7 +93,7 @@ export async function esOperadorDeLaPlataforma(token: string): Promise<boolean> 
   const respuesta = await fetch(`${BASE}/organizaciones`, { headers: { Authorization: `Bearer ${token}` } });
   if (respuesta.ok) return true;
   if (respuesta.status === 403) return false;
-  throw new ErrorPlataforma(respuesta.status, `La plataforma respondió ${respuesta.status}.`);
+  throw new ErrorPlataforma(respuesta.status, TEXTO_GENERICO);
 }
 // === fin ORG-21 ===
 
