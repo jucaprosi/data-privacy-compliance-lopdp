@@ -96,6 +96,12 @@ test.describe("Biblioteca editorial desde Plataforma (BIB-412)", () => {
       // por navegación del cliente (si se añadiera antes de hidratar, React lo descartaría).
       await page.goto("/plataforma");
       await expect(page.getByRole("navigation", { name: "Plataforma" })).toBeVisible();
+      // QA-14: la navegación visible es HTML del servidor; `window.next.router` existe desde que carga el bundle, antes de
+      // hidratar. Se espera a que React haya hidratado la página (adjunta sus fibras a los nodos) antes de navegar.
+      await page.waitForFunction(() => {
+        const principal = document.querySelector("main");
+        return !!principal && Object.keys(principal).some((k) => k.startsWith("__reactFiber$"));
+      });
       await page.evaluate(() => {
         const aviso = document.createElement("div");
         aviso.setAttribute("data-testid", "aviso-entorno");
