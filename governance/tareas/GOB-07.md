@@ -20,7 +20,7 @@ rastros = ["¤frontend-ide", "¤arbitro"]
 
 ## Entrega
 - PRD §6 y criterio 23 con el claro como predeterminado y referencia.
-- `METODOLOGIAS.md` §12 reescrita partiendo del claro.
+- `METODOLOGIAS.md` §12 reescrita partiendo del claro, con §12.2 en tokens de estado y un solo primario azul.
 
 ## Límites
 - En `governance/artefactos/PRD.md`, solo el párrafo de §6 sobre los temas y el criterio 23.
