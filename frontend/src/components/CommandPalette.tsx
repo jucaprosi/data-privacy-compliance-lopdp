@@ -210,7 +210,7 @@ export default function CommandPalette({
         <Command
           label="Paleta de Comandos Universal EVYDENTIA LOPDP 360"
           aria-label="Paleta de Comandos Universal EVYDENTIA LOPDP 360"
-          className="w-full text-zinc-100 flex flex-col"
+          className="w-full text-[var(--foreground)] flex flex-col"
           filter={filtrarSinAcentos}
         >
           {/* Input de Búsqueda Estilo Render (#0a0a0c, bordes limpios) */}
@@ -219,12 +219,12 @@ export default function CommandPalette({
             <Command.Input
               autoFocus
               placeholder="Escribe un comando o busca un artículo de la LOPDP..."
-              className="w-full bg-transparent border-none outline-none text-zinc-100 placeholder-zinc-500 text-xs font-medium"
+              className="w-full bg-transparent border-none outline-none text-[var(--foreground)] placeholder:text-[var(--ui-texto-suave)] text-xs font-medium"
             />
             <button
               type="button"
               onClick={handleClose}
-              className="p-1 text-[var(--ui-texto-suave)] hover:text-zinc-200 rounded hover:bg-[var(--ui-boton)] transition cursor-pointer shrink-0 ml-2"
+              className="p-1 text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] rounded hover:bg-[var(--ui-boton)] transition cursor-pointer shrink-0 ml-2"
               title="Cerrar (Esc)"
             >
               <X className="w-4 h-4" />
@@ -233,7 +233,7 @@ export default function CommandPalette({
 
           {/* Notificación de Acción Temporal */}
           {mensajeAccion && (
-            <div className="px-4 py-2 bg-[#00c853]/15 border-b border-[#00c853]/30 text-[#00c853] text-xs font-medium flex items-center justify-between animate-in fade-in">
+            <div className="px-4 py-2 bg-[var(--ui-exito-fondo)] border-b border-[color:var(--ui-exito-borde)] text-[var(--ui-exito-texto)] text-xs font-medium flex items-center justify-between animate-in fade-in">
               <span>{mensajeAccion}</span>
               <span className="text-[10px] font-mono opacity-80">Procesado</span>
             </div>
@@ -243,9 +243,9 @@ export default function CommandPalette({
           <Command.List className="max-h-84 overflow-y-auto p-2 space-y-1 text-xs">
             <Command.Empty className="py-10 text-center text-[var(--ui-texto-suave)] text-xs">
               <div className="flex flex-col items-center justify-center space-y-1.5">
-                <CommandIcon className="w-6 h-6 text-zinc-600 mb-1" />
+                <CommandIcon className="w-6 h-6 text-[var(--ui-texto-suave)] mb-1" />
                 <span>No se encontraron comandos o artículos coincidentes.</span>
-                <span className="text-[11px] text-zinc-600">
+                <span className="text-[11px] text-[var(--ui-texto-suave)]">
                   Prueba buscando por &quot;LOPDP&quot;, &quot;ISO&quot;, &quot;NIIF&quot;, &quot;ARCO&quot; o &quot;Normativa&quot;
                 </span>
               </div>
@@ -257,7 +257,7 @@ export default function CommandPalette({
             {(isDpoContext || isDiagnosticoContext) && (
               <Command.Group
                 heading="Acciones Contextuales (O(1))"
-                className="text-[10px] uppercase font-bold text-[#9a3bf1] px-2.5 py-1 tracking-wider font-mono mb-2 bg-[#9a3bf1]/5 rounded-t"
+                className="text-[10px] uppercase font-bold text-[var(--ui-enlace)] px-2.5 py-1 tracking-wider font-mono mb-2 bg-[var(--ui-info-fondo)] rounded-t"
               >
                 {isDpoContext && (
                   <>
@@ -270,18 +270,18 @@ export default function CommandPalette({
                           handleClose();
                         }, 1200);
                       }}
-                      className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                      className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
                     >
                       <div className="flex items-center space-x-2.5">
-                        <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[#ff1744]/40 text-[#ff1744]">
+                        <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[color:var(--ui-error-borde)] text-[var(--ui-error-texto)]">
                           <Clock className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <span className="font-medium text-xs text-white">Revisar SLAs Vencidos</span>
+                          <span className="font-medium text-xs text-[var(--foreground)]">Revisar SLAs Vencidos</span>
                           <p className="text-[10px] text-[var(--ui-texto-suave)]">Atender derechos ARCO+ con plazo expirado</p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#ff1744]/15 border border-[#ff1744]/30 text-[#ff1744]">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-error-fondo)] border border-[color:var(--ui-error-borde)] text-[var(--ui-error-texto)]">
                         DPO
                       </span>
                     </Command.Item>
@@ -294,18 +294,18 @@ export default function CommandPalette({
                           handleClose();
                         }, 1200);
                       }}
-                      className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                      className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
                     >
                       <div className="flex items-center space-x-2.5">
-                        <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[#00c853]/40 text-[#00c853]">
+                        <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[color:var(--ui-exito-borde)] text-[var(--ui-exito-texto)]">
                           <ShieldCheck className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <span className="font-medium text-xs text-white">Aprobar Dictamen Técnico</span>
+                          <span className="font-medium text-xs text-[var(--foreground)]">Aprobar Dictamen Técnico</span>
                           <p className="text-[10px] text-[var(--ui-texto-suave)]">Sellar la evaluación de impacto (EIPD) actual</p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#00c853]/15 border border-[#00c853]/30 text-[#00c853]">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-exito-fondo)] border border-[color:var(--ui-exito-borde)] text-[var(--ui-exito-texto)]">
                         DPO
                       </span>
                     </Command.Item>
@@ -315,18 +315,18 @@ export default function CommandPalette({
                   <Command.Item
                     keywords={["exportar", "informe", "pdf", "diagnostico", "descargar"]}
                     onSelect={ejecutarExportarPdf}
-                    className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                    className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
                   >
                     <div className="flex items-center space-x-2.5">
-                      <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[#3892f3]/40 text-[#3892f3]">
+                      <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[color:var(--ui-info-borde)] text-[var(--ui-info-texto)]">
                         <Download className="w-3.5 h-3.5" />
                       </div>
                       <div>
-                        <span className="font-medium text-xs text-white">Exportar Informe PDF</span>
+                        <span className="font-medium text-xs text-[var(--foreground)]">Exportar Informe PDF</span>
                         <p className="text-[10px] text-[var(--ui-texto-suave)]">Descargar dictamen de brechas del diagnóstico activo</p>
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#3892f3]/15 border border-[#3892f3]/30 text-[#3892f3]">
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-info-fondo)] border border-[color:var(--ui-info-borde)] text-[var(--ui-info-texto)]">
                       Export
                     </span>
                   </Command.Item>
@@ -375,14 +375,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["dashboard", "scoring", "metricas", "central", "resumen", "modulo 1", "madurez", "evidencias"]}
                 onSelect={() => ejecutarAccionNavegacion("dashboard", "dashboard")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <LayoutDashboard className="w-3.5 h-3.5 text-[#9a3bf1]" />
+                    <LayoutDashboard className="w-3.5 h-3.5 text-[var(--ui-enlace)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Ir a Dashboard Central (Módulo 1)
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -398,14 +398,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["configuracion", "ficha", "organizacion", "empresa", "datos", "proyecto"]}
                 onSelect={() => ejecutarAccionNavegacion("configuracion", "configuracion")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <SlidersHorizontal className="w-3.5 h-3.5 text-[#9a3bf1]" />
+                    <SlidersHorizontal className="w-3.5 h-3.5 text-[var(--ui-enlace)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Ir a Configuración de Ficha Organizacional
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -421,14 +421,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["normativa", "diagnostico", "evaluacion", "evidencias", "preguntas"]}
                 onSelect={() => ejecutarAccionNavegacion("diagnostico", "diagnostico")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <Clock className="w-3.5 h-3.5 text-[#3892f3]" />
+                    <Clock className="w-3.5 h-3.5 text-[var(--ui-info-texto)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Ir a Normativa
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -444,14 +444,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["ia", "chat", "copiloto", "legal", "agente", "rag", "spdp", "preguntas"]}
                 onSelect={() => ejecutarAccionNavegacion("ia_chat", "regulacion_rag")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <Bot className="w-3.5 h-3.5 text-[#9a3bf1]" />
+                    <Bot className="w-3.5 h-3.5 text-[var(--ui-enlace)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Ver Chat del Agente de IA Legal
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -467,14 +467,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["historial", "auditoria", "snapshots", "congelados", "modulo 3", "bitacora", "sha256", "timeline"]}
                 onSelect={() => ejecutarAccionNavegacion("auditoria", "auditoria")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <GitCommit className="w-3.5 h-3.5 text-[#00c853]" />
+                    <GitCommit className="w-3.5 h-3.5 text-[var(--ui-exito-texto)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Ir a Historial de Auditorías y Snapshots Congelados
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -490,14 +490,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["incidentes", "playbook", "vulneracion", "ciberseguridad", "brechas", "seguridad"]}
                 onSelect={() => ejecutarAccionNavegacion("incidentes", "incidentes")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <ShieldAlert className="w-3.5 h-3.5 text-[#ff1744]" />
+                    <ShieldAlert className="w-3.5 h-3.5 text-[var(--ui-error-texto)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Ir al Playbook de Incidentes
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -513,14 +513,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["arco", "derechos", "acceso", "rectificacion", "cancelacion", "oposicion", "portabilidad", "eliminacion", "titular", "solicitud", "art 13", "art 14", "art 15", "art 16", "art 62", "plazo"]}
                 onSelect={() => ejecutarAccionNavegacion("arco", "arco")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#9a3bf1]" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-[var(--ui-enlace)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Ir a Gestión de Derechos ARCO+
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -536,14 +536,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["mtge", "relacional", "gran escala", "eipd", "evaluacion", "volumne", "10000", "titulares", "rat maestro", "criterio a", "criterio b", "sensibles", "retencion"]}
                 onSelect={() => ejecutarAccionNavegacion("mtge_relacional", "mtge_relacional")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <Scale className="w-3.5 h-3.5 text-amber-400" />
+                    <Scale className="w-3.5 h-3.5 text-[var(--ui-aviso-texto)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Ir a Motor MTGE Relacional · Gran Escala
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -567,14 +567,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["corpus", "lopdp", "ley", "decretos", "reglamentos", "ecuador", "asamblea"]}
                 onSelect={() => ejecutarAccionNavegacion("ia_chat", "regulacion_rag")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <BookOpen className="w-3.5 h-3.5 text-[#3892f3]" />
+                    <BookOpen className="w-3.5 h-3.5 text-[var(--ui-info-texto)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Buscar en Corpus LOPDP (Leyes/Decretos)
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -590,14 +590,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["arco", "derechos", "acceso", "rectificacion", "cancelacion", "oposicion", "portabilidad", "art 21", "lopdp"]}
                 onSelect={() => ejecutarAccionNavegacion("dpo", "dpo_cockpit")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#00c853]" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-[var(--ui-exito-texto)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Ver Artículos Críticos de Derechos ARCO+
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -613,14 +613,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["resoluciones", "spdp", "2024", "2025", "2026", "mtge", "superintendencia", "2026-0005-r", "lopdp"]}
                 onSelect={() => ejecutarAccionNavegacion("riesgos", "riesgos_mtge")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <Scale className="w-3.5 h-3.5 text-amber-400" />
+                    <Scale className="w-3.5 h-3.5 text-[var(--ui-aviso-texto)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Consultar Resoluciones SPDP 2024-2026
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -636,14 +636,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["niif", "nic 38", "erp", "estados financieros", "intangibles", "normativa"]}
                 onSelect={() => ejecutarCambioNormativa("NIIF")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-[var(--ui-exito-texto)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Filtrar por Normativa NIIF / NIC 38 (ERP)
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -667,14 +667,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["generar", "banco", "podado", "podar", "ajustar", "preguntas", "perfil", "calibrar", "criterios"]}
                 onSelect={ejecutarGenerarBancoPodado}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <Sparkles className="w-3.5 h-3.5 text-[#9a3bf1]" />
+                    <Sparkles className="w-3.5 h-3.5 text-[var(--ui-enlace)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Ajustar las preguntas a tu organización
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -687,14 +687,14 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["exportar", "informe", "reporte", "tecnico", "brechas", "pdf", "descargar"]}
                 onSelect={ejecutarExportarPdf}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                    <Download className="w-3.5 h-3.5 text-[#3892f3]" />
+                    <Download className="w-3.5 h-3.5 text-[var(--ui-info-texto)]" />
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Exportar Informe Técnico de Brechas (PDF)
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -710,18 +710,18 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["tema", "theme", "claro", "oscuro", "dark", "light", "modo", "color", "acromatico"]}
                 onSelect={ejecutarAlternarTema}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[var(--ui-enlace)] data-[selected=true]:border data-[selected=true]:border-[color:var(--ui-info-borde)]"
               >
                 <div className="flex items-center space-x-2.5">
                   <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     {theme === "dark" ? (
-                      <Sun className="w-3.5 h-3.5 text-amber-400" />
+                      <Sun className="w-3.5 h-3.5 text-[var(--ui-aviso-texto)]" />
                     ) : (
-                      <Moon className="w-3.5 h-3.5 text-zinc-300" />
+                      <Moon className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
                     )}
                   </div>
                   <div>
-                    <span className="font-medium text-xs text-white">
+                    <span className="font-medium text-xs text-[var(--foreground)]">
                       Alternar Tema ({theme === "dark" ? "Cambiar a Claro" : "Cambiar a Oscuro"})
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
@@ -739,7 +739,7 @@ export default function CommandPalette({
           {/* Footer de la Paleta de Comandos Estilo Render (#0a0a0c, bordes #26262b) */}
           <div className="flex items-center justify-between px-4 py-2.5 bg-[var(--ui-campo)] border-t border-[var(--ui-borde)] text-[10px] text-[var(--ui-texto-suave)] shrink-0">
             <div className="flex items-center space-x-2">
-              <CommandIcon className="w-3.5 h-3.5 text-[#9a3bf1]" />
+              <CommandIcon className="w-3.5 h-3.5 text-[var(--ui-enlace)]" />
               <span className="font-medium text-[var(--ui-texto-suave)]">
                 cmdk · EVYDENTIA LOPDP 360
               </span>
