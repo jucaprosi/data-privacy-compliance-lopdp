@@ -66,3 +66,23 @@ test("a 375 px no hay desplazamiento horizontal", async ({ page }) => {
   const desborda = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(desborda).toBe(false);
 });
+
+const AVISO_CAPACIDAD = {
+  id: "a2", titulo: "Capacidad editorial concedida", texto: "Ana te concedió la capacidad Editor.",
+  enlace: "/plataforma/capacidades", leido: false, pendiente: true, creado_en: new Date().toISOString(),
+};
+
+test("el enlace de un aviso de capacidades dice «Ver capacidades editoriales» (NOTIF-05, m1)", async ({ page }) => {
+  await simular(page, [AVISO_CAPACIDAD], 1);
+  await abrirBandeja(page);
+  const enlace = page.getByRole("link", { name: "Ver capacidades editoriales" });
+  await expect(enlace).toHaveAttribute("href", "/plataforma/capacidades");
+  await expect(page.getByRole("link", { name: "Revisar la versión" })).toHaveCount(0);
+});
+
+test("el enlace de un aviso de versión por revisar sigue diciendo «Revisar la versión» (NOTIF-05, m2)", async ({ page }) => {
+  await simular(page, [AVISO], 1);
+  await abrirBandeja(page);
+  await expect(page.getByRole("link", { name: "Revisar la versión" })).toHaveAttribute("href", "/biblioteca?version=v1");
+  await expect(page.getByRole("link", { name: "Ver capacidades editoriales" })).toHaveCount(0);
+});
