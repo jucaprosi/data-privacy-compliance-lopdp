@@ -2,7 +2,7 @@
 id = "NOTIF-04"
 titulo = "Aviso a los operadores de cada concesión y retiro de capacidades editoriales"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 115
 sala = "notificaciones"
 depende_de = ["NOTIF-02", "BIB-411", "OPE-01"]
