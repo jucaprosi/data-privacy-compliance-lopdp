@@ -89,7 +89,7 @@ async function simularApi(page: Page, escenario: Escenario = {}): Promise<Reques
     }
     if (destino.match(/^\/organizaciones\/[^/]+\/invitaciones$/) && metodo === "POST") {
       if (escenario.reemitirEstado) {
-        return responder(escenario.reemitirEstado, { detail: escenario.reemitirDetalle });
+        return responder(escenario.reemitirEstado, { code: "ERROR_DE_PRUEBA", detail: escenario.reemitirDetalle });
       }
       const tenantId = destino.split("/")[2];
       const organizacion = organizaciones.find((item) => item.id === tenantId);
@@ -114,7 +114,7 @@ async function simularApi(page: Page, escenario: Escenario = {}): Promise<Reques
       return responder(200, { ok: true, estado: "revocada" });
     }
     if (destino === "/invitaciones/aceptar" && metodo === "POST") {
-      if (escenario.aceptarEstado) return responder(escenario.aceptarEstado, { detail: escenario.aceptarDetalle });
+      if (escenario.aceptarEstado) return responder(escenario.aceptarEstado, { code: "ERROR_DE_PRUEBA", detail: escenario.aceptarDetalle });
       return responder(200, { tenant_id: "tenant-001", user_id: "user-001", email: "admin@acme.ec", rol_asignado: "admin_organizacion", mensaje: "Ya formas parte de Acme Ecuador." });
     }
     return responder(404, { detail: "No simulado" });
@@ -159,7 +159,7 @@ test("mantiene la fila vigente y muestra el error si la revocación falla", asyn
   const vigente = page.getByTestId("organizacion-tenant-001");
   page.once("dialog", (dialog) => dialog.accept());
   await vigente.getByRole("button", { name: "Revocar" }).click();
-  await expect(page.locator('p[role="alert"]')).toContainText("No se pudo revocar");
+  await expect(page.locator('p[role="alert"]')).toContainText("No se pudo completar la operación. Inténtalo de nuevo.");
   await expect(vigente).toContainText("Pendiente");
   await expect(vigente.getByRole("button", { name: "Revocar" })).toBeVisible();
 });
