@@ -146,9 +146,11 @@ export default function NiifIngestaView() {
           disabled={localFiles.length === 0 || isProcessing}
           style={{ background: localFiles.length > 0 ? "var(--ui-primario)" : "var(--ui-boton)" }}
           className={`px-6 py-2.5 text-sm font-semibold rounded-lg flex items-center justify-center transition shadow-md ${
-            localFiles.length > 0 && !isProcessing
-              ? "text-[var(--ui-primario-texto)] hover:opacity-95 cursor-pointer"
-              : "text-[var(--ui-texto-suave)] cursor-not-allowed"
+            localFiles.length === 0
+              ? "text-[var(--ui-texto-suave)] cursor-not-allowed"
+              : isProcessing
+              ? "text-[var(--ui-primario-texto)] cursor-not-allowed"
+              : "text-[var(--ui-primario-texto)] hover:opacity-95 cursor-pointer"
           }`}
         >
           <span>{isProcessing ? "Procesando..." : "Clasificar Balance"}</span>

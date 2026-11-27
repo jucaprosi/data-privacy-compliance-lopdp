@@ -23,6 +23,7 @@ export const ESTADOS: Record<string, (page: Page) => Promise<void>> = {
     await subirBalance(page, "balance.csv");
     await page.route("**/api/v1/niif18/procesar-balance", () => undefined); // la petición queda abierta
     await page.getByRole("button", { name: /Clasificar Balance/ }).click();
+    await sinTransiciones(page);
   },
   "vista:niif_mpm · con una medida registrada": async (page) => {
     await page.route("**/api/v1/niif18/mpm", (r) => r.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(MPM) }));
@@ -54,11 +55,24 @@ async function abrirSala(page: Page, sala: string) {
     const confirmacion = page.getByRole("alertdialog");
     if (await confirmacion.count()) await confirmacion.getByRole("button", { name: "Cambiar normativa" }).click();
   }
-  await page.getByRole("button", { name: new RegExp(sala) }).click();
+  await pulsarSala(page, sala);
+}
+
+/** Pulsa el botón del lateral; por debajo de md el menú va en un cajón que se abre con «Menú». */
+async function pulsarSala(page: Page, sala: string) {
+  const boton = page.getByRole("button", { name: new RegExp(sala) });
+  if (!(await boton.isVisible())) await page.getByRole("button", { name: "Menú", exact: true }).click();
+  await boton.click();
+}
+
+/** Espera a que terminen las transiciones CSS de color (las animaciones infinitas, como el pulso de «procesando», no cuentan) (el medidor lee el color calculado, no el final). */
+async function sinTransiciones(page: Page) {
+  await page.waitForFunction(() => document.getAnimations().every((a) => !(a instanceof CSSTransition)));
 }
 
 async function subirBalance(page: Page, nombre: string) {
   await page.locator('input[type="file"]').setInputFiles({ name: nombre, mimeType: "text/csv", buffer: Buffer.from("cuenta,descripcion,saldo\n4101,Ventas,250000\n") });
+  await sinTransiciones(page);
 }
 
 /** Procesa el balance simulado (deja `niif18Data` en el almacén) y abre la sala pedida. */
@@ -68,5 +82,5 @@ async function conDatos(page: Page, sala: string) {
   await subirBalance(page, "balance.csv");
   await page.getByRole("button", { name: /Clasificar Balance/ }).click();
   await page.getByText("Matriz de Reclasificación NIIF 18").waitFor();
-  if (!/Reclasificación/.test(sala)) await page.getByRole("button", { name: new RegExp(sala) }).click();
+  if (!/Reclasificación/.test(sala)) await pulsarSala(page, sala);
 }
