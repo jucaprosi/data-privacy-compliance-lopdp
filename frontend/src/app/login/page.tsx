@@ -56,6 +56,26 @@ async function entrarComoOperador(credential: string): Promise<"entro" | "no" | 
 }
 // === fin ORG-21 ===
 
+// === BIB-412 ===
+/**
+ * Entrada del equipo editorial (demo): prueba la credencial como operador (igual que ORG-21) y, si lo es, abre su
+ * sesión de operador y lleva a la biblioteca editorial de la plataforma. Devuelve lo mismo que `entrarComoOperador`.
+ */
+async function entrarComoEquipoEditorial(credential: string): Promise<"entro" | "no" | TipoErrorDeAcceso> {
+  let operador = false;
+  try {
+    operador = await esOperadorDeLaPlataforma(credential);
+  } catch (err: unknown) {
+    if (!(err instanceof ErrorPlataforma)) return "red";
+    return err.status === 401 ? "sesion" : "servidor";
+  }
+  if (!operador) return "no";
+  if (!guardarSesionDeOperador(credential)) return "sesion";
+  window.location.assign("/plataforma/biblioteca");
+  return "entro";
+}
+// === fin BIB-412 ===
+
 // === FE-29 ===
 /**
  * R4: una sesión guardada lleva al panel. Si el panel la rechaza y vuelve aquí sin sesión, esta marca
@@ -114,6 +134,12 @@ export default function LoginPage() {
   }, []);
   // === fin DEMO-04 ===
   // === BIB-412 ===
+  // Entrada del equipo editorial (solo en la demo): su propio botón de Google y su propio destino.
+  const botonEditorialRef = React.useRef<HTMLDivElement>(null);
+  const [editorial, setEditorial] = React.useState(false);
+  React.useEffect(() => {
+    setEditorial(document.querySelector('[data-testid="aviso-entorno"][data-entorno="demo"]') !== null);
+  }, []);
   // === fin BIB-412 ===
 
   // El modo depende del navegador (en desarrollo lo fijan las pruebas): se resuelve ya montado.
@@ -153,7 +179,20 @@ export default function LoginPage() {
     if (!google || !botonRef.current) return;
     botonRef.current.replaceChildren();
     google.renderButton(botonRef.current, { type: "standard", theme: "outline", size: "large", text: "signin_with", locale: "es", width: 280 });
+    // === BIB-412 ===
+    if (botonEditorialRef.current) {
+      botonEditorialRef.current.replaceChildren();
+      google.renderButton(botonEditorialRef.current, { type: "standard", theme: "outline", size: "large", text: "signin_with", locale: "es", width: 280 });
+    }
+    // === fin BIB-412 ===
   }, []);
+
+  // === BIB-412 ===
+  // Al aparecer la entrada editorial hay que pintar su botón (el de Google ya puede estar cargado).
+  React.useEffect(() => {
+    if (editorial && googleRef.current) pintarBotonGoogle();
+  }, [editorial, pintarBotonGoogle]);
+  // === fin BIB-412 ===
 
   /**
    * Con la credencial de Google se consultan las organizaciones de la persona ANTES de abrir la
@@ -201,11 +240,19 @@ export default function LoginPage() {
       return;
     }
     credencialActual.current = credential;
+    // === BIB-412 ===
+    // La credencial viene de la entrada editorial si el foco quedó en su botón (el de Google es un iframe).
+    if (editorial && botonEditorialRef.current?.contains(document.activeElement)) {
+      const resultado = await entrarComoEquipoEditorial(credential);
+      if (resultado !== "entro") setEstado({ tipo: resultado === "no" ? "no_registrado" : resultado, correo: credencial.email });
+      return;
+    }
+    // === fin BIB-412 ===
     // === DEMO-04 ===
     if (receptorDemo.current && (await receptorDemo.current(credential))) return;
     // === fin DEMO-04 ===
     await consultar(credential, credencial.email);
-  }, [consultar]);
+  }, [consultar, editorial]);
 
   // FE-29 · «Reintentar»: la misma consulta con la misma credencial; si caducó entretanto, `sesion`.
   const reintentar = React.useCallback(async () => {
@@ -282,7 +329,7 @@ export default function LoginPage() {
           </p>
         )}
 
-        {modo === "oidc" && !configuracionIncompleta && (
+        {modo === "oidc" && !configuracionIncompleta && !editorial && (
           <div
             ref={botonRef}
             tabIndex={-1}
@@ -294,6 +341,24 @@ export default function LoginPage() {
         {/* === DEMO-04 === */}
         <EntradaDemo registrar={registrarDemo} />
         {/* === fin DEMO-04 === */}
+
+        {/* === BIB-412 === */}
+        {editorial && modo === "oidc" && !configuracionIncompleta && (
+          <>
+            <div ref={botonRef} tabIndex={-1} data-testid="login-boton-google" className="flex min-h-10 justify-center outline-none" />
+            <div role="group" aria-label="Entrar como equipo editorial" aria-describedby="ayuda-entrada-editorial"
+              data-testid="entrada-editorial" className="flex w-full flex-col items-center gap-3">
+              <div className="text-center">
+                <h2 className="text-base font-semibold">Soy del equipo editorial</h2>
+                <p id="ayuda-entrada-editorial" className="mt-1 text-sm text-zinc-500">
+                  Para quienes mantienen el catálogo de plantillas de la plataforma. Entras con tu cuenta de Google de operador.
+                </p>
+              </div>
+              <div ref={botonEditorialRef} tabIndex={-1} data-testid="login-boton-google-editorial" className="flex min-h-10 justify-center outline-none" />
+            </div>
+          </>
+        )}
+        {/* === fin BIB-412 === */}
 
         {/* === FE-29 === */}
         {estado && (
