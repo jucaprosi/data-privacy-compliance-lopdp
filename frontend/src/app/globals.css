@@ -393,6 +393,14 @@ html, body {
   --ui-primario: #2563eb;
   --ui-primario-hover: #1d4ed8;
   --ui-primario-texto: #ffffff;
+  --ui-aviso-fondo: #fffbeb;
+  --ui-aviso-borde: #b45309;
+  --ui-aviso-titulo: #92400e;
+  --ui-aviso-texto: #78350f;
+  --ui-error-fondo: #fef2f2;
+  --ui-error-borde: #b91c1c;
+  --ui-error-texto: #991b1b;
+  --ui-peligro-texto: #b91c1c;
 }
 .theme-dark {
   --background: #0a0a0c;
@@ -408,4 +416,12 @@ html, body {
   --ui-primario: #2563eb;
   --ui-primario-hover: #1d4ed8;
   --ui-primario-texto: #ffffff;
+  --ui-aviso-fondo: #1c1405;
+  --ui-aviso-borde: #b45309;
+  --ui-aviso-titulo: #fde68a;
+  --ui-aviso-texto: #fef3c7;
+  --ui-error-fondo: #2a0f12;
+  --ui-error-borde: #ef4444;
+  --ui-error-texto: #fecaca;
+  --ui-peligro-texto: #fca5a5;
 }

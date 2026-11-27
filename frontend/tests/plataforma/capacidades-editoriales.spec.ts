@@ -13,6 +13,7 @@
  *  - m5: dejar el botón «Registrar revisión jurídica» en la Administración editorial -> «la Administración editorial no ofrece…».
  */
 import { expect, test, type Page, type Request } from "@playwright/test";
+import { medirContraste } from "../contraste";
 import { fijarAjustes, ruta, TENANT_PRUEBA } from "../auth/utilesAuth";
 
 const PROPIA = { usuario_id: "operador-plataforma-dev", nombre: "Operadora Propia", email: "operador@plataforma.test",
@@ -161,4 +162,25 @@ test.describe("Capacidades editoriales (BIB-414)", () => {
     await expect(page.getByText(/jurídic/i)).toHaveCount(0);
     await expect(page.getByText("Guardar cambios exige una nueva revisión técnica.")).toBeVisible();
   });
+
+  for (const tema of ["theme-light", "theme-dark"]) {
+    test(`contraste AA y «Retirar» con --ui-peligro-texto en ${tema}`, async ({ page }) => {
+      await abrir(page, { error: { estado: 403, code: "BIB_AUTOCONCESION", detail: "x" } });
+      await page.evaluate((t) => { document.documentElement.classList.remove("theme-light", "theme-dark"); document.documentElement.classList.add(t); }, tema);
+      const retirar = fila(page, "u-otro").getByRole("button", { name: /^Retirar revisor/ });
+      const esperado = await page.evaluate(() => {
+        const e = document.createElement("span"); e.style.color = "var(--ui-peligro-texto)"; document.body.append(e);
+        const c = getComputedStyle(e).color; e.remove(); return c;
+      });
+      expect(await retirar.evaluate((el) => getComputedStyle(el).color)).toBe(esperado);
+      expect(await medirContraste(page, "main")).toEqual([]);
+      await fila(page, "u-otro").getByRole("button", { name: "Conceder capacidad" }).click();
+      const dialogo = page.getByRole("dialog");
+      await dialogo.getByLabel("Editor", { exact: false }).first().check();
+      await dialogo.getByLabel("Motivo").fill("Motivo suficiente");
+      await dialogo.getByRole("button", { name: "Conceder", exact: true }).click();
+      await expect(dialogo.getByRole("alert")).toBeVisible();
+      expect(await medirContraste(page, "[role='dialog']")).toEqual([]);
+    });
+  }
 });
