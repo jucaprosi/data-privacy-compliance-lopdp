@@ -10,7 +10,6 @@ import { httpBiblioteca } from "@/lib/biblioteca/http";
 export const ETIQUETAS_CAPACIDAD = {
   editor: "Editor",
   revisor_tecnico: "Revisor técnico",
-  revisor_juridico: "Revisor jurídico",
   publicador: "Publicador",
 } as const;
 export type CapacidadEditorial = keyof typeof ETIQUETAS_CAPACIDAD;

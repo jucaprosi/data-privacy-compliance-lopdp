@@ -25,6 +25,10 @@ export default function PlataformaLayout({ children }: { children: ReactNode }) 
             </li>
           ))}
           {/* === BIB-414 === */}
+          <li>
+            <Link href="/plataforma/capacidades" aria-current={ruta.startsWith("/plataforma/capacidades") ? "page" : undefined}
+              className={ruta.startsWith("/plataforma/capacidades") ? "font-semibold underline" : "hover:underline"}>Capacidades editoriales</Link>
+          </li>
           {/* === fin BIB-414 === */}
         </ul>
       </nav>
