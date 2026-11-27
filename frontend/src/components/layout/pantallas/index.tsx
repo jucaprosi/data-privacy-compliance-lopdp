@@ -158,4 +158,6 @@ registrar(PANTALLAS_BOV_04);
 // --- FIN BOV-04 ---
 
 // === NOTIF-02 ===
+import { PANTALLAS_NOTIF_02 } from "./NOTIF-02";
+registrar(PANTALLAS_NOTIF_02);
 // === fin NOTIF-02 ===
