@@ -216,7 +216,7 @@ export default function OrganizacionesPage() {
                   <button
                     type="button"
                     onClick={() => elegir(org)}
-                    className="flex w-full items-center gap-3 rounded-lg border border-[var(--ui-borde)] px-4 py-3 text-left hover:bg-[var(--ui-superficie-2)] cursor-pointer"
+                    className="flex w-full items-center gap-3 rounded-lg border border-[var(--ui-borde-control)] px-4 py-3 text-left hover:bg-[var(--ui-superficie-2)] cursor-pointer"
                   >
                     <Building2 className="h-5 w-5 shrink-0 text-[var(--ui-enlace)]" aria-hidden="true" />
                     <span className="flex-1">
