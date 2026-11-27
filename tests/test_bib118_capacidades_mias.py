@@ -66,11 +66,13 @@ async def mundo():
                 await conexion.execute(text("INSERT INTO users(id,email,nombre) VALUES (:id,:e,'Sintético')"),
                                        {"id": usuario, "e": usuario + "@correo.invalid"})
             for usuario, capacidad in ((ids["doble"], "editor"), (ids["doble"], "revisor_tecnico"),
-                                       (ids["otra"], "publicador"), (ids["otra"], "revisor_juridico")):
+                                       (ids["otra"], "publicador")):
                 await conexion.execute(text(
                     "WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
                     "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
                     "SELECT :u,:c,o.id,'Fixture sintética rollback' FROM o"), {"u": usuario, "c": capacidad})
+                # Siembra de operadores (R1 de BIB-411): solo un operador activo tiene capacidades editoriales.
+                await conexion.execute(text("INSERT INTO operadores_plataforma (id, email, nombre, usuario_id) SELECT 'op-'||u.id, u.email, u.nombre, u.id FROM users u WHERE u.id=:u ON CONFLICT DO NOTHING"), {"u": usuario})
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
             async with AsyncSession(bind=conexion, expire_on_commit=False,
                                     join_transaction_mode="create_savepoint") as sesion:

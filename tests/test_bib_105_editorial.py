@@ -327,15 +327,16 @@ async def db_bib():
             existe = (await conexion.execute(text("SELECT to_regclass('public.biblioteca_versiones')"))).scalar()
             if not existe:
                 pytest.fail("Aplicar migración BIB-105 en la base de pruebas antes de este árbitro", pytrace=False)
-            ids = {rol: "bib-test-" + uuid4().hex for rol in ("editor", "tecnico", "juridico", "publicador", "sin_permiso")}
+            ids = {rol: "bib-test-" + uuid4().hex for rol in ("editor", "tecnico", "publicador", "sin_permiso")}
             for rol, usuario in ids.items():
                 await conexion.execute(text("INSERT INTO users(id,email,nombre) VALUES (:id,:email,:nombre)"),
                     {"id": usuario, "email": usuario + "@example.test", "nombre": rol})
-            for rol, capacidad in [("editor","editor"),("tecnico","revisor_tecnico"),
-                                   ("juridico","revisor_juridico"),("publicador","publicador")]:
+            for rol, capacidad in [("editor","editor"),("tecnico","revisor_tecnico"),("publicador","publicador")]:
                 await conexion.execute(text("WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
                     "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
                     "SELECT :id,:cap,o.id,'Fixture sintética rollback' FROM o"), {"id": ids[rol], "cap": capacidad})
+                # Siembra de operadores (R1 de BIB-411): solo un operador activo tiene capacidades editoriales.
+                await conexion.execute(text("INSERT INTO operadores_plataforma (id, email, nombre, usuario_id) SELECT 'op-'||u.id, u.email, u.nombre, u.id FROM users u WHERE u.id=:u ON CONFLICT DO NOTHING"), {"u": ids[rol]})
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
             async with AsyncSession(bind=conexion, expire_on_commit=False, join_transaction_mode="create_savepoint") as sesion:
                 yield sesion, ids

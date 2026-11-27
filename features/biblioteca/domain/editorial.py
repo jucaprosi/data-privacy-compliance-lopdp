@@ -24,7 +24,6 @@ MAX_BYTES = 10 * 1024 * 1024
 class Capacidad(str, Enum):
     EDITOR = "editor"
     TECNICO = "revisor_tecnico"
-    JURIDICO = "revisor_juridico"
     PUBLICADOR = "publicador"
 
 
@@ -63,7 +62,6 @@ class ArchivoMaestro(Contrato):
 
 # ¤adpa
 class Dictamen(Contrato):
-    # Nadie escribe una revisión «juridica» (BIB-403 R4): el tipo sigue en la tabla solo por la historia.
     tipo: Literal["tecnica"]
     aprobado: bool
     comentario: str = Field(min_length=1, max_length=4000)
@@ -97,7 +95,7 @@ class VersionMaestra(Contrato):
 class RevisionEditorial(Contrato):
     version_id: str
     generacion: int
-    tipo: Literal["tecnica", "juridica"]
+    tipo: Literal["tecnica"]
     aprobado: bool
     revisor_id: str
     comentario: str
