@@ -168,6 +168,7 @@ ROUTERS_MAP = [
     ("api.routers.avisos", "avisos"),
     # === fin NOTIF-02 ===
     # === NOTIF-04 ===
+    ("api.routers.avisos_capacidades", "avisos_capacidades"),
     # === fin NOTIF-04 ===
 ]
 
