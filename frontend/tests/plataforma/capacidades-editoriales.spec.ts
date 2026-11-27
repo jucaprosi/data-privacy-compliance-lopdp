@@ -165,14 +165,19 @@ test.describe("Capacidades editoriales (BIB-414)", () => {
 
   for (const tema of ["theme-light", "theme-dark"]) {
     test(`contraste AA y «Retirar» con --ui-peligro-texto en ${tema}`, async ({ page }) => {
+      // QA-15: el tema lo aplica la app (`ThemeRootSync` desde el store guardado), no la prueba: se fija en el estado
+      // guardado de `jubys-audit-storage` (versión 6 del store) antes de cargar.
+      await page.addInitScript((t) => {
+        localStorage.setItem("jubys-audit-storage", JSON.stringify({ state: { theme: t === "theme-dark" ? "dark" : "light" }, version: 6 }));
+      }, tema);
       await abrir(page, { error: { estado: 403, code: "BIB_AUTOCONCESION", detail: "x" } });
-      await page.evaluate((t) => { document.documentElement.classList.remove("theme-light", "theme-dark"); document.documentElement.classList.add(t); }, tema);
+      await expect(page.locator("html")).toHaveClass(new RegExp(tema));
       const retirar = fila(page, "u-otro").getByRole("button", { name: /^Retirar revisor/ });
       const esperado = await page.evaluate(() => {
         const e = document.createElement("span"); e.style.color = "var(--ui-peligro-texto)"; document.body.append(e);
         const c = getComputedStyle(e).color; e.remove(); return c;
       });
-      expect(await retirar.evaluate((el) => getComputedStyle(el).color)).toBe(esperado);
+      await expect(retirar).toHaveCSS("color", esperado);
       expect(await medirContraste(page, "main")).toEqual([]);
       await fila(page, "u-otro").getByRole("button", { name: "Conceder capacidad" }).click();
       const dialogo = page.getByRole("dialog");
