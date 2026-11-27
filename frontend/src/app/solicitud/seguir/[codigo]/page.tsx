@@ -66,15 +66,15 @@ export default function SeguimientoCodigoPage({
   const badgeEstado = (estado: string) => {
     switch (estado.toUpperCase()) {
       case "RECIBIDA":
-        return "bg-blue-50 text-blue-700 border-blue-200";
+        return "bg-[var(--ui-info-fondo)] text-[var(--ui-info-texto)] border-[var(--ui-info-borde)]";
       case "EN_ANALISIS":
-        return "bg-amber-50 text-amber-700 border-amber-200";
+        return "bg-[var(--ui-aviso-fondo)] text-[var(--ui-aviso-texto)] border-[var(--ui-aviso-borde)]";
       case "EN_REQUERIMIENTO":
         return "bg-orange-50 text-orange-700 border-orange-200";
       case "CONTESTADA":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+        return "bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)] border-[var(--ui-exito-borde)]";
       case "VENCIDA":
-        return "bg-red-50 text-red-700 border-red-200";
+        return "bg-[var(--ui-error-fondo)] text-[var(--ui-error-texto)] border-[var(--ui-error-borde)]";
       default:
         return "bg-gray-50 text-gray-700 border-gray-200";
     }
@@ -84,7 +84,7 @@ export default function SeguimientoCodigoPage({
     <main className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)] flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] rounded-xl p-6 sm:p-8 shadow-sm">
         <header className="text-center mb-6">
-          <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 font-semibold">
+          <div className="w-10 h-10 bg-[var(--ui-info-fondo)] text-[var(--ui-enlace)] rounded-full flex items-center justify-center mx-auto mb-3 font-semibold">
             🔍
           </div>
           <h1 className="text-xl font-bold">Estado de su Solicitud</h1>
@@ -95,13 +95,13 @@ export default function SeguimientoCodigoPage({
 
         {cargando && (
           <div className="py-8 text-center">
-            <div className="w-6 h-6 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            <div className="w-6 h-6 border-3 border-[var(--ui-primario)] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
             <p className="text-xs text-[var(--color-text-secondary)]">Consultando registro oficial...</p>
           </div>
         )}
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm text-center mb-6">
+          <div className="p-4 bg-[var(--ui-error-fondo)] border border-[var(--ui-error-borde)] text-[var(--ui-error-texto)] rounded-lg text-sm text-center mb-6">
             {error}
           </div>
         )}
@@ -125,7 +125,7 @@ export default function SeguimientoCodigoPage({
               <span className="text-xs font-medium">{formatearFecha(datos.respondida_en)}</span>
             </div>
 
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 leading-relaxed">
+            <div className="p-3 bg-[var(--ui-aviso-fondo)] border border-[var(--ui-aviso-borde)] rounded-lg text-xs text-[var(--ui-aviso-texto)] leading-relaxed">
               Por confidencialidad y protección de datos, la resolución detallada se notifica directamente al correo electrónico consignado al registrar el trámite.
             </div>
           </div>
@@ -134,7 +134,7 @@ export default function SeguimientoCodigoPage({
         <div className="text-center pt-4 border-t border-[var(--color-border-subtle)]">
           <Link
             href="/solicitud/seguir"
-            className="text-xs text-indigo-600 hover:text-indigo-700 font-medium hover:underline"
+            className="text-xs text-[var(--ui-enlace)] hover:text-[var(--ui-enlace)] font-medium hover:underline"
           >
             Consultar otro código
           </Link>

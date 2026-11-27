@@ -21,7 +21,7 @@ export default function BuscarSeguimientoPage() {
     <main className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)] flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] rounded-xl p-6 sm:p-8 shadow-sm">
         <header className="text-center mb-6">
-          <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 font-semibold">
+          <div className="w-10 h-10 bg-[var(--ui-info-fondo)] text-[var(--ui-enlace)] rounded-full flex items-center justify-center mx-auto mb-3 font-semibold">
             🔍
           </div>
           <h1 className="text-xl font-bold">Seguimiento de Solicitud</h1>
@@ -42,13 +42,13 @@ export default function BuscarSeguimientoPage() {
               value={codigo}
               onChange={(e) => setCodigo(e.target.value)}
               placeholder="Ej. sol_1a2b3c4d5e6f..."
-              className="w-full px-3.5 py-2.5 bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] rounded-lg text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              className="w-full px-3.5 py-2.5 bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] rounded-lg text-sm font-mono focus:ring-2 focus:ring-[var(--ui-primario)] focus:outline-none"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition-colors shadow-sm"
+            className="w-full py-2.5 px-4 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] font-medium rounded-lg text-sm transition-colors shadow-sm"
           >
             Consultar Trámite
           </button>

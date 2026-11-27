@@ -306,7 +306,7 @@ export default function LoginPage() {
   }, [modo, listo, sesion, configuracionIncompleta, alRecibirCredencial, pintarBotonGoogle]);
 
   return (
-    <main className="flex min-h-screen w-full items-center justify-center bg-white px-4 text-zinc-800">
+    <main className="flex min-h-screen w-full items-center justify-center bg-[var(--background)] px-4 text-[var(--foreground)]">
       <section
         aria-labelledby="titulo-login"
         className="flex w-full max-w-sm flex-col items-center gap-5 rounded-xl border border-[#e8dcf5] p-8 shadow-sm"
@@ -314,17 +314,17 @@ export default function LoginPage() {
         <Layers className="h-8 w-8 text-[#9a3bf1]" aria-hidden="true" />
         <div className="text-center">
           <h1 id="titulo-login" className="text-lg font-semibold">Plataforma LOPDP 360</h1>
-          <p className="mt-1 text-sm text-zinc-500">Inicia sesión con tu cuenta de Google para entrar al panel.</p>
+          <p className="mt-1 text-sm text-[var(--ui-texto-suave)]">Inicia sesión con tu cuenta de Google para entrar al panel.</p>
         </div>
 
         {aviso && (
-          <p role="status" data-testid="login-aviso" className="w-full rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          <p role="status" data-testid="login-aviso" className="w-full rounded-md bg-[var(--ui-aviso-fondo)] px-3 py-2 text-sm text-[var(--ui-aviso-texto)]">
             {aviso}
           </p>
         )}
 
         {modo === "oidc" && configuracionIncompleta && (
-          <p role="alert" data-testid="login-configuracion" className="w-full rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p role="alert" data-testid="login-configuracion" className="w-full rounded-md bg-[var(--ui-error-fondo)] px-3 py-2 text-sm text-[var(--ui-error-texto)]">
             Falta configurar {configuracionIncompleta} en el servidor. Avisa a quien administra la plataforma.
           </p>
         )}
@@ -350,7 +350,7 @@ export default function LoginPage() {
               data-testid="entrada-editorial" className="flex w-full flex-col items-center gap-3">
               <div className="text-center">
                 <h2 className="text-base font-semibold">Soy del equipo editorial</h2>
-                <p id="ayuda-entrada-editorial" className="mt-1 text-sm text-zinc-500">
+                <p id="ayuda-entrada-editorial" className="mt-1 text-sm text-[var(--ui-texto-suave)]">
                   Para quienes mantienen el catálogo de plantillas de la plataforma. Entras con tu cuenta de Google de operador.
                 </p>
               </div>
@@ -373,7 +373,7 @@ export default function LoginPage() {
         )}
         {/* === fin FE-29 === */}
 
-        <p className="flex items-center gap-1.5 text-xs text-zinc-400">
+        <p className="flex items-center gap-1.5 text-xs text-[var(--ui-texto-suave)]">
           <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
           Solo se usa tu correo verificado de Google para identificarte.
         </p>

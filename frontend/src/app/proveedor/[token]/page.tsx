@@ -58,8 +58,8 @@ export default function ProveedorPortalPage({ params }: Props) {
 
   if (cargando) {
     return (
-      <main className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center p-4">
-        <p className="text-zinc-400 text-sm">Cargando el cuestionario…</p>
+      <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center p-4">
+        <p className="text-[var(--ui-texto-suave)] text-sm">Cargando el cuestionario…</p>
       </main>
     );
   }
@@ -67,11 +67,11 @@ export default function ProveedorPortalPage({ params }: Props) {
   // Enlace no válido (404 o 410)
   if (errorCarga === "ENLACE_NO_VALIDO") {
     return (
-      <main className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center space-y-3">
-          <AlertCircle className="w-8 h-8 text-amber-400 mx-auto" />
-          <h1 className="text-lg font-bold text-zinc-200">Este enlace ya no está disponible</h1>
-          <p className="text-zinc-400 text-xs">
+      <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-6 text-center space-y-3">
+          <AlertCircle className="w-8 h-8 text-[var(--ui-aviso-texto)] mx-auto" />
+          <h1 className="text-lg font-bold text-[var(--foreground)]">Este enlace ya no está disponible</h1>
+          <p className="text-[var(--ui-texto-suave)] text-xs">
             Puede que haya vencido o que ya se hayan enviado las respuestas. Si necesitas responder, pide un enlace nuevo a la organización que te lo envió.
           </p>
         </div>
@@ -81,10 +81,10 @@ export default function ProveedorPortalPage({ params }: Props) {
 
   if (errorCarga === "DEMASIADOS_INTENTOS") {
     return (
-      <main className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center space-y-3">
-          <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
-          <p className="text-zinc-300 text-xs">Hubo demasiados intentos. Espera unos minutos e inténtalo de nuevo.</p>
+      <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-6 text-center space-y-3">
+          <AlertCircle className="w-8 h-8 text-[var(--ui-error-texto)] mx-auto" />
+          <p className="text-[var(--ui-texto-suave)] text-xs">Hubo demasiados intentos. Espera unos minutos e inténtalo de nuevo.</p>
         </div>
       </main>
     );
@@ -92,13 +92,13 @@ export default function ProveedorPortalPage({ params }: Props) {
 
   if (errorCarga === "ERROR_GENERICO" || !info) {
     return (
-      <main className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center space-y-4">
-          <p className="text-zinc-300 text-xs">No pudimos cargar el cuestionario. Vuelve a intentarlo en unos minutos.</p>
+      <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-6 text-center space-y-4">
+          <p className="text-[var(--ui-texto-suave)] text-xs">No pudimos cargar el cuestionario. Vuelve a intentarlo en unos minutos.</p>
           <button
             type="button"
             onClick={cargar}
-            className="px-4 py-1.5 bg-emerald-600 text-white rounded font-medium text-xs hover:bg-emerald-500"
+            className="px-4 py-1.5 bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] rounded font-medium text-xs hover:bg-[var(--ui-primario-hover)]"
           >
             Volver a cargar
           </button>
@@ -110,11 +110,11 @@ export default function ProveedorPortalPage({ params }: Props) {
   // Éxito al enviar
   if (enviadoExito) {
     return (
-      <main className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-zinc-900 border border-emerald-800/60 rounded-xl p-6 text-center space-y-3">
-          <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
-          <h1 role="status" className="text-lg font-bold text-zinc-100">Respuestas enviadas</h1>
-          <p className="text-zinc-300 text-xs">
+      <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-[var(--ui-superficie)] border border-[var(--ui-exito-borde)] rounded-xl p-6 text-center space-y-3">
+          <CheckCircle2 className="w-10 h-10 text-[var(--ui-exito-texto)] mx-auto" />
+          <h1 role="status" className="text-lg font-bold text-[var(--foreground)]">Respuestas enviadas</h1>
+          <p className="text-[var(--ui-texto-suave)] text-xs">
             Recibimos tus respuestas. {info.organizacion} las revisará. Ya puedes cerrar esta página.
           </p>
         </div>
@@ -229,47 +229,47 @@ export default function ProveedorPortalPage({ params }: Props) {
   return (
     <main
       aria-label={`Cuestionario de garantías para ${info.organizacion}`}
-      className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center p-4 sm:p-6"
+      className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col items-center p-4 sm:p-6"
     >
       <div className="max-w-2xl w-full space-y-6">
         {/* Cabecera */}
-        <div className="border-b border-zinc-800 pb-4">
-          <div className="flex items-center space-x-2 text-emerald-400 mb-1">
+        <div className="border-b border-[var(--ui-borde)] pb-4">
+          <div className="flex items-center space-x-2 text-[var(--ui-exito-texto)] mb-1">
             <Shield className="w-5 h-5" />
             <span className="text-xs font-semibold uppercase tracking-wider">Portal de Proveedores</span>
           </div>
-          <h1 className="text-xl font-bold text-zinc-100">
+          <h1 className="text-xl font-bold text-[var(--foreground)]">
             Cuestionario de garantías para {info.organizacion}
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
             {info.organizacion} te pide responder este cuestionario sobre cómo tratas los datos personales que te confía. Puedes adjuntar documentos de respaldo.
           </p>
-          <p role="note" className="text-[11px] text-amber-400/90 mt-2 bg-amber-950/20 border border-amber-800/40 rounded p-2">
+          <p role="note" className="text-[11px] text-[var(--ui-aviso-texto)]/90 mt-2 bg-[var(--ui-aviso-fondo)] border border-[var(--ui-aviso-borde)] rounded p-2">
             Tus respuestas no se guardan hasta que las envíes. Solo puedes enviarlas una vez.
           </p>
         </div>
 
         {/* Barra de progreso */}
         <div className="space-y-1">
-          <div className="flex justify-between text-xs text-zinc-400 font-medium">
+          <div className="flex justify-between text-xs text-[var(--ui-texto-suave)] font-medium">
             <span>Paso {pasoActual + 1} de {totalPasos}</span>
             <span>{esPasoFinal ? "Revisar y enviar" : `Pregunta ${pasoActual + 1} de ${preguntas.length}`}</span>
           </div>
-          <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+          <div className="w-full bg-[var(--ui-superficie-2)] h-1.5 rounded-full overflow-hidden">
             <div
-              className="bg-emerald-500 h-full transition-all duration-300"
+              className="bg-[var(--ui-primario)] h-full transition-all duration-300"
               style={{ width: `${((pasoActual + 1) / totalPasos) * 100}%` }}
             />
           </div>
         </div>
 
         {/* Pasos */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-4">
+        <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-4">
           {!esPasoFinal && preguntaActual ? (
             <div className="space-y-4">
               <div>
-                <span className="text-[11px] font-mono text-zinc-500">Referencia: {preguntaActual.cita}</span>
-                <h2 className="text-sm font-semibold text-zinc-200 mt-1">{preguntaActual.enunciado}</h2>
+                <span className="text-[11px] font-mono text-[var(--ui-texto-suave)]">Referencia: {preguntaActual.cita}</span>
+                <h2 className="text-sm font-semibold text-[var(--foreground)] mt-1">{preguntaActual.enunciado}</h2>
               </div>
 
               {/* Campos según tipo */}
@@ -284,7 +284,7 @@ export default function ProveedorPortalPage({ params }: Props) {
                         setRespuestas({ ...respuestas, [preguntaActual.id]: true });
                         setErrorPaso(null);
                       }}
-                      className="text-emerald-500 focus:ring-0"
+                      className="text-[var(--ui-exito-texto)] focus:ring-0"
                     />
                     <span>Sí</span>
                   </label>
@@ -297,7 +297,7 @@ export default function ProveedorPortalPage({ params }: Props) {
                         setRespuestas({ ...respuestas, [preguntaActual.id]: false });
                         setErrorPaso(null);
                       }}
-                      className="text-emerald-500 focus:ring-0"
+                      className="text-[var(--ui-exito-texto)] focus:ring-0"
                     />
                     <span>No</span>
                   </label>
@@ -313,14 +313,14 @@ export default function ProveedorPortalPage({ params }: Props) {
                       setErrorPaso(null);
                     }}
                     placeholder="Escribe tu respuesta aquí..."
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded p-2.5 text-xs text-zinc-200 h-24 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-[var(--ui-superficie-2)] border border-[var(--ui-borde-control)] rounded p-2.5 text-xs text-[var(--foreground)] h-24 focus:outline-none focus:border-[var(--ui-exito-borde)]"
                   />
                 </div>
               )}
 
               {preguntaActual.tipo === "fecha" && (
                 <div>
-                  <label htmlFor="campo-fecha" className="block text-xs text-zinc-400 mb-1">
+                  <label htmlFor="campo-fecha" className="block text-xs text-[var(--ui-texto-suave)] mb-1">
                     {preguntaActual.enunciado}
                   </label>
                   <input
@@ -331,7 +331,7 @@ export default function ProveedorPortalPage({ params }: Props) {
                       setRespuestas({ ...respuestas, [preguntaActual.id]: e.target.value });
                       setErrorPaso(null);
                     }}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-xs text-zinc-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-[var(--ui-superficie-2)] border border-[var(--ui-borde-control)] rounded p-2 text-xs text-[var(--foreground)] focus:outline-none focus:border-[var(--ui-exito-borde)]"
                   />
                 </div>
               )}
@@ -339,24 +339,24 @@ export default function ProveedorPortalPage({ params }: Props) {
               {/* Adjuntos */}
               {(preguntaActual.tipo === "si_no_evidencia" && (respuestas[preguntaActual.id] === true || respuestas[preguntaActual.id] === "si") ||
                 preguntaActual.tipo === "texto_evidencia") && (
-                <div className="border-t border-zinc-800 pt-3 space-y-2">
-                  <span className="block text-xs font-medium text-zinc-300">Documento de respaldo</span>
+                <div className="border-t border-[var(--ui-borde)] pt-3 space-y-2">
+                  <span className="block text-xs font-medium text-[var(--ui-texto-suave)]">Documento de respaldo</span>
                   {!archivoActual ? (
                     <div>
-                      <label className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded text-xs cursor-pointer border border-zinc-700">
+                      <label className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[var(--ui-superficie-2)] hover:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] rounded text-xs cursor-pointer border border-[var(--ui-borde-control)]">
                         <Upload className="w-3.5 h-3.5" />
                         <span>Adjuntar documento</span>
                         <input type="file" onChange={handleArchivoChange} className="hidden" />
                       </label>
-                      <span className="block text-[11px] text-zinc-500 mt-1">Hasta 10 MB por archivo.</span>
+                      <span className="block text-[11px] text-[var(--ui-texto-suave)] mt-1">Hasta 10 MB por archivo.</span>
                     </div>
                   ) : (
-                    <div className="flex items-center space-x-2 text-xs bg-zinc-800/80 border border-zinc-700 px-3 py-1.5 rounded w-fit">
-                      <span className="text-zinc-200">{archivoActual.file.name}</span>
+                    <div className="flex items-center space-x-2 text-xs bg-[var(--ui-superficie-2)] border border-[var(--ui-borde-control)] px-3 py-1.5 rounded w-fit">
+                      <span className="text-[var(--foreground)]">{archivoActual.file.name}</span>
                       <button
                         type="button"
                         onClick={quitarArchivo}
-                        className="text-rose-400 hover:text-rose-300 underline text-[11px]"
+                        className="text-[var(--ui-error-texto)] hover:text-[var(--ui-error-texto)] underline text-[11px]"
                       >
                         Quitar {archivoActual.file.name}
                       </button>
@@ -368,8 +368,8 @@ export default function ProveedorPortalPage({ params }: Props) {
           ) : (
             /* Paso final: Revisar y enviar */
             <div className="space-y-4">
-              <h2 className="text-sm font-semibold text-zinc-100">Revisar y enviar</h2>
-              <p className="text-xs text-zinc-400">
+              <h2 className="text-sm font-semibold text-[var(--foreground)]">Revisar y enviar</h2>
+              <p className="text-xs text-[var(--ui-texto-suave)]">
                 Verifica tus respuestas antes de enviarlas. Una vez enviadas no podrás modificarlas.
               </p>
 
@@ -379,15 +379,15 @@ export default function ProveedorPortalPage({ params }: Props) {
                   const arch = archivos.find((a) => a.pregunta_id === p.id);
                   return (
                     <li key={p.id} className="py-2.5">
-                      <div className="font-medium text-zinc-300">{p.enunciado}</div>
-                      <div className="text-zinc-400 mt-0.5">
+                      <div className="font-medium text-[var(--ui-texto-suave)]">{p.enunciado}</div>
+                      <div className="text-[var(--ui-texto-suave)] mt-0.5">
                         Respuesta:{" "}
-                        <span className="text-zinc-200 font-semibold">
+                        <span className="text-[var(--foreground)] font-semibold">
                           {val === true ? "Sí" : val === false ? "No" : String(val || "Sin responder")}
                         </span>
                       </div>
                       {arch && (
-                        <div className="text-[11px] text-emerald-400 mt-0.5">
+                        <div className="text-[11px] text-[var(--ui-exito-texto)] mt-0.5">
                           Adjunto: {arch.file.name}
                         </div>
                       )}
@@ -397,7 +397,7 @@ export default function ProveedorPortalPage({ params }: Props) {
               </ul>
 
               {errorEnvio && (
-                <p role="alert" className="text-rose-400 text-xs">
+                <p role="alert" className="text-[var(--ui-error-texto)] text-xs">
                   {errorEnvio}
                 </p>
               )}
@@ -405,18 +405,18 @@ export default function ProveedorPortalPage({ params }: Props) {
           )}
 
           {errorPaso && (
-            <p role="alert" className="text-rose-400 text-xs mt-2">
+            <p role="alert" className="text-[var(--ui-error-texto)] text-xs mt-2">
               {errorPaso}
             </p>
           )}
 
           {/* Botones de navegación */}
-          <div className="flex justify-between items-center pt-3 border-t border-zinc-800">
+          <div className="flex justify-between items-center pt-3 border-t border-[var(--ui-borde)]">
             <button
               type="button"
               onClick={retroceder}
               disabled={pasoActual === 0}
-              className="px-3 py-1.5 bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded text-xs font-medium flex items-center space-x-1 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] rounded text-xs font-medium flex items-center space-x-1 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
               <span>Anterior</span>
@@ -426,7 +426,7 @@ export default function ProveedorPortalPage({ params }: Props) {
               <button
                 type="button"
                 onClick={avanzar}
-                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold flex items-center space-x-1"
+                className="px-4 py-1.5 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] rounded text-xs font-semibold flex items-center space-x-1"
               >
                 <span>Siguiente</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -435,7 +435,7 @@ export default function ProveedorPortalPage({ params }: Props) {
               <button
                 type="button"
                 onClick={() => setMostrarConfirmacion(true)}
-                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold"
+                className="px-4 py-1.5 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] rounded text-xs font-semibold"
               >
                 Enviar respuestas
               </button>
@@ -447,16 +447,16 @@ export default function ProveedorPortalPage({ params }: Props) {
       {/* Modal de confirmación */}
       {mostrarConfirmacion && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-5 max-w-sm w-full text-zinc-100 shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold text-zinc-100">¿Enviar tus respuestas?</h3>
-            <p className="text-xs text-zinc-400">Después no podrás cambiarlas.</p>
+          <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde-control)] rounded-xl p-5 max-w-sm w-full text-[var(--foreground)] shadow-2xl space-y-4">
+            <h3 className="text-sm font-bold text-[var(--foreground)]">¿Enviar tus respuestas?</h3>
+            <p className="text-xs text-[var(--ui-texto-suave)]">Después no podrás cambiarlas.</p>
 
-            <div className="flex justify-end space-x-2 pt-2 border-t border-zinc-800">
+            <div className="flex justify-end space-x-2 pt-2 border-t border-[var(--ui-borde)]">
               <button
                 type="button"
                 autoFocus
                 onClick={() => setMostrarConfirmacion(false)}
-                className="px-3.5 py-1.5 bg-zinc-800 text-zinc-400 rounded hover:bg-zinc-700 font-medium text-xs"
+                className="px-3.5 py-1.5 bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] rounded hover:bg-[var(--ui-boton)] font-medium text-xs"
               >
                 Cancelar
               </button>
@@ -465,7 +465,7 @@ export default function ProveedorPortalPage({ params }: Props) {
                 disabled={enviando}
                 aria-busy={enviando}
                 onClick={confirmarEnvio}
-                className="px-4 py-1.5 bg-emerald-600 text-white rounded font-semibold text-xs hover:bg-emerald-500 disabled:opacity-50"
+                className="px-4 py-1.5 bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] rounded font-semibold text-xs hover:bg-[var(--ui-primario-hover)] disabled:opacity-50"
               >
                 {enviando ? "Enviando tus respuestas…" : "Enviar respuestas"}
               </button>

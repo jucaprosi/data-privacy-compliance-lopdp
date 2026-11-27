@@ -142,7 +142,7 @@ export default function AceptarPage({
 
         {estado.tipo === "aceptado" && (
           <div data-testid="acuse-ok" className="mt-4 space-y-4">
-            <CheckCircle2 className="h-9 w-9 text-emerald-400" />
+            <CheckCircle2 className="h-9 w-9 text-[var(--ui-exito-texto)]" />
             <h1 id="titulo-aceptacion" className="text-2xl font-semibold">
               Aceptación registrada
             </h1>
@@ -173,13 +173,13 @@ export default function AceptarPage({
                   {descargando ? TEXTO_DESCARGA.preparando : TEXTO_DESCARGA.etiqueta}
                 </button>
                 {errorDescarga && (
-                  <p role="alert" data-testid="error-descarga" className="text-xs text-red-400">
+                  <p role="alert" data-testid="error-descarga" className="text-xs text-[var(--ui-error-texto)]">
                     {TEXTO_DESCARGA.errorFallo}
                   </p>
                 )}
               </>
             ) : (
-              <p role="alert" data-testid="sin-comprobante" className="text-xs text-amber-400">
+              <p role="alert" data-testid="sin-comprobante" className="text-xs text-[var(--ui-aviso-texto)]">
                 {TEXTO_DESCARGA.errorSinPdf}
               </p>
             )}
@@ -191,7 +191,7 @@ export default function AceptarPage({
 
         {estado.tipo === "caducado" && (
           <div role="alert" data-testid="enlace-caducado" className="mt-4 space-y-3">
-            <XCircle className="h-9 w-9 text-amber-400" />
+            <XCircle className="h-9 w-9 text-[var(--ui-aviso-texto)]" />
             <h1 id="titulo-aceptacion" className="text-xl font-semibold">Enlace no disponible</h1>
             <p className="text-sm text-[var(--ui-muted,#a1a1aa)]">
               Este enlace ya fue utilizado o ha caducado. Contacta a quien lo envió para recibir uno
@@ -202,7 +202,7 @@ export default function AceptarPage({
 
         {estado.tipo === "error" && (
           <div role="alert" className="mt-4 space-y-3">
-            <XCircle className="h-9 w-9 text-red-400" />
+            <XCircle className="h-9 w-9 text-[var(--ui-error-texto)]" />
             <h1 id="titulo-aceptacion" className="text-xl font-semibold">Error</h1>
             <p className="text-sm text-[var(--ui-muted,#a1a1aa)]">{estado.mensaje}</p>
           </div>
