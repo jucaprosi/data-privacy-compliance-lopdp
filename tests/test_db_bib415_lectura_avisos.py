@@ -8,6 +8,7 @@ dentro de una transacción que se deshace. Las filas se siembran con los dispara
 persona sin capacidades. Cada mutación m1 a m3 de la especificación §5 reescribe la función dentro de la
 transacción y comprueba que la guardia da rojo.
 """
+import hashlib
 import importlib.util
 import uuid
 from pathlib import Path
@@ -27,6 +28,7 @@ _spec.loader.exec_module(MIG)
 
 CAMPOS = {"id", "codigo", "titulo", "redactada_por", "origen_ia", "id_resolucion", "creada_en"}
 PROHIBIDOS = {"cuerpo_md", "cuerpo", "texto", "motivo", "concedida_por", "motivo_revocacion", "revocada_por"}
+_CUERPO = "# Cuerpo ficticio"  # bib_version_contenido: un MD con cuerpo lleva su sha256
 _TODO = "SELECT * FROM biblioteca_versiones_en_revision()"
 
 
@@ -45,8 +47,8 @@ async def _version(s: AsyncSession, codigo: str, version: str, estado: str, auto
     vid = str(uuid.uuid4())
     await s.execute(text(
         "INSERT INTO biblioteca_versiones (id, codigo, version, formato, cuerpo_md, responsable_id, autores, "
-        "estado, motivo) VALUES (:i, :c, :v, 'MD', '# Cuerpo ficticio', :u, CAST(:a AS jsonb), :e, 'Motivo ficticio')"),
-        {"i": vid, "c": codigo, "v": version, "u": autor, "a": f'["{autor}"]', "e": estado})
+        "estado, motivo, sha256) VALUES (:i, :c, :v, 'MD', :m, :u, CAST(:a AS jsonb), :e, 'Motivo ficticio', :h)"),
+        {"m": _CUERPO, "h": hashlib.sha256(_CUERPO.encode()).hexdigest(), "i": vid, "c": codigo, "v": version, "u": autor, "a": f'["{autor}"]', "e": estado})
     return vid
 
 
