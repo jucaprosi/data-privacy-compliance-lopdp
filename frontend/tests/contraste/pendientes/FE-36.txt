@@ -1,0 +1,9 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-32 (reparto por propiedad de archivos, #1110): una ruta (/…) o vista (vista:<id>) por línea, con «# archivo» que la justifica.
+# La ficha dueña borra sus líneas al terminar.
+/dashboard  # frontend/src/components/DiagnosticCanvas.tsx
+vista:auditoria  # frontend/src/components/DiagnosticCanvas.tsx
+vista:diagnostico  # frontend/src/components/DiagnosticCanvas.tsx
+vista:dpo  # frontend/src/components/modules/roadmap/admin/ui.tsx
+vista:mitigacion_ia  # frontend/src/components/MitigationTracker.tsx
+vista:roadmap  # frontend/src/components/modules/roadmap/admin/AdminPanel.tsx

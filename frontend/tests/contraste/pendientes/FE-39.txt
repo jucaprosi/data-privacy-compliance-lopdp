@@ -1,0 +1,6 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-32 (reparto por propiedad de archivos, #1110): una ruta (/…) o vista (vista:<id>) por línea, con «# archivo» que la justifica.
+# La ficha dueña borra sus líneas al terminar.
+/dashboard  # frontend/src/components/biblioteca/editor/BotonUsarPlantilla.tsx
+/plataforma/biblioteca  # frontend/src/components/biblioteca/editorial/ComparacionVersion.tsx
+vista:biblioteca  # frontend/src/components/biblioteca/editor/BotonUsarPlantilla.tsx

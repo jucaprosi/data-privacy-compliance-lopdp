@@ -1,0 +1,9 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-32 (reparto por propiedad de archivos, #1110): una ruta (/…) o vista (vista:<id>) por línea, con «# archivo» que la justifica.
+# La ficha dueña borra sus líneas al terminar.
+/cartera  # frontend/src/app/cartera/CarteraTablero.tsx
+/dashboard  # frontend/src/app/cartera/CarteraTablero.tsx
+/organizaciones  # frontend/src/app/organizaciones/page.tsx
+vista:auditoria  # frontend/src/components/organizacion/DatosDocumentales.tsx
+vista:cartera  # frontend/src/app/cartera/CarteraTablero.tsx
+vista:configuracion  # frontend/src/components/organizacion/DatosDocumentales.tsx

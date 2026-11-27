@@ -1,0 +1,13 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-32 (reparto por propiedad de archivos, #1110): una ruta (/…) o vista (vista:<id>) por línea, con «# archivo» que la justifica.
+# La ficha dueña borra sus líneas al terminar.
+/dashboard  # frontend/src/components/PerfilOperacionForm.tsx
+vista:arco  # frontend/src/components/modules/ArcoModule.tsx
+vista:auditoria  # frontend/src/components/PerfilOperacionForm.tsx
+vista:configuracion  # frontend/src/components/PerfilOperacionForm.tsx
+vista:diagnostico  # frontend/src/components/PerfilOperacionForm.tsx
+vista:firmas  # frontend/src/components/firma/EnviosAceptacion.tsx
+vista:integraciones  # frontend/src/components/integraciones/IntegracionesView.tsx
+vista:rat  # frontend/src/components/modules/RatModule.tsx
+vista:terceros  # frontend/src/components/modules/TercerosModule.tsx
+vista:verificar_documento  # frontend/src/components/firma/VerificarDocumento.tsx
