@@ -1,0 +1,27 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-32 R3: una ruta (/…) o vista (vista:<id>) por línea. La ficha dueña borra sus líneas al migrar.
+vista:rat
+vista:inventario_activos
+vista:sedes_organizacion
+vista:clientes_encargo
+vista:conservacion_datos
+vista:descubrimiento_datos
+vista:terceros
+vista:arco
+vista:incidentes
+vista:asistente_vulneraciones
+vista:formacion
+vista:mi_formacion
+vista:auditoria
+vista:firmas
+vista:configuracion
+vista:alta_organizacion
+vista:bov01_suscripcion
+vista:exportar_datos
+vista:papelera
+vista:verificar_documento
+vista:integraciones
+vista:dpo
+vista:consultas_dpo_atendidas
+vista:consultas_dpo_mias
+vista:diagnostico_revision

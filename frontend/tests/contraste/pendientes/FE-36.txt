@@ -1,0 +1,12 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-32 R3: una ruta (/…) o vista (vista:<id>) por línea. La ficha dueña borra sus líneas al migrar.
+vista:roadmap
+vista:diagnostico
+vista:diagnostico_comparativo
+vista:diagnostico_estados
+vista:asignacion_dominios
+vista:reportes
+vista:mitigacion_ia
+vista:riesgos
+vista:mtge_relacional
+vista:controles_periodicos

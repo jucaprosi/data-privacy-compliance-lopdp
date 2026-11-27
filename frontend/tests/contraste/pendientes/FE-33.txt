@@ -1,0 +1,10 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-32 R3: una ruta (/…) o vista (vista:<id>) por línea. La ficha dueña borra sus líneas al migrar.
+/
+/login
+/invitacion
+/aceptar/[token]
+/solicitud/[slug]
+/solicitud/seguir
+/solicitud/seguir/[codigo]
+/proveedor/[token]

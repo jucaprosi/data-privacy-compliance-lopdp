@@ -1,0 +1,9 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-32 R3: una ruta (/…) o vista (vista:<id>) por línea. La ficha dueña borra sus líneas al migrar.
+vista:niif_ingesta
+vista:niif_reclasificacion
+vista:niif_subtotales
+vista:niif_mpm
+vista:niif_diagnostico
+vista:niif_exportacion
+vista:niif_doctrina
