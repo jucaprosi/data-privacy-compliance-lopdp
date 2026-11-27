@@ -32,7 +32,7 @@ const aEntrada = (p: Parametro): ParametroEntrada => ({
   verificado: p.verificado,
 });
 
-const campo = "mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm disabled:opacity-60";
+const campo = "mt-1 w-full rounded-lg border border-[color:var(--ui-borde-control)] bg-[var(--ui-campo)] px-3 py-2 text-sm disabled:opacity-60";
 
 function EditorParametro({
   parametro,
@@ -63,16 +63,16 @@ function EditorParametro({
     <form
       onSubmit={guardar}
       aria-labelledby={`${id}-titulo`}
-      className="space-y-3 rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5"
+      className="space-y-3 rounded-2xl border border-[color:var(--ui-borde)] bg-[var(--ui-superficie)] p-5"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 id={`${id}-titulo`} className="text-base font-semibold">{nombreParametro(parametro.clave)}</h3>
         {parametro.verificado ? (
-          <p className="text-xs text-emerald-300">
+          <p className="text-xs text-[var(--ui-texto-suave)]">
             Verificado por {parametro.verificado_por_nombre ?? "un operador"} el {formatearFecha(parametro.verificado_en)}
           </p>
         ) : (
-          <p className="text-xs font-semibold text-amber-300">Pendiente de verificar</p>
+          <p className="text-xs font-semibold text-[var(--ui-aviso-titulo)]">Pendiente de verificar</p>
         )}
       </div>
       <fieldset disabled={!editable || guardando} className="grid gap-3 md:grid-cols-2">
@@ -141,7 +141,7 @@ function EditorParametro({
         </label>
         {editable && (
           <div className="md:col-span-2">
-            <button type="submit" className="rounded-lg bg-violet-500 px-3 py-2 text-sm font-semibold text-zinc-950">
+            <button type="submit" className="rounded-lg bg-[var(--ui-primario)] px-3 py-2 text-sm font-semibold text-[var(--ui-primario-texto)]">
               Guardar
             </button>
           </div>
@@ -192,11 +192,11 @@ export default function PaqueteDetallePage() {
 
   if (denegado) {
     return (
-      <main className="min-h-screen bg-zinc-950 px-6 py-16 text-zinc-100">
-        <section className="mx-auto max-w-xl rounded-2xl border border-red-900/60 bg-zinc-900 p-8 text-center">
-          <ShieldAlert className="mx-auto h-10 w-10 text-red-400" aria-hidden="true" />
+      <main className="min-h-screen bg-[var(--background)] px-6 py-16 text-[var(--foreground)]">
+        <section className="mx-auto max-w-xl rounded-2xl border border-[color:var(--ui-error-borde)] bg-[var(--ui-superficie)] p-8 text-center">
+          <ShieldAlert className="mx-auto h-10 w-10 text-[var(--ui-error-texto)]" aria-hidden="true" />
           <h1 className="mt-4 text-2xl font-semibold">Acceso denegado</h1>
-          <p className="mt-2 text-sm text-zinc-400">Esta sección está reservada para operadores de la plataforma.</p>
+          <p className="mt-2 text-sm text-[var(--ui-texto-suave)]">Esta sección está reservada para operadores de la plataforma.</p>
         </section>
       </main>
     );
@@ -243,18 +243,18 @@ export default function PaqueteDetallePage() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-5 py-8 text-zinc-100">
+    <main className="min-h-screen bg-[var(--background)] px-5 py-8 text-[var(--foreground)]">
       <div className="mx-auto max-w-4xl space-y-6">
-        <Link href="/plataforma/paquetes" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-100">
+        <Link href="/plataforma/paquetes" className="inline-flex items-center gap-2 text-sm text-[var(--ui-texto-suave)] hover:text-[var(--foreground)]">
           <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Paquetes normativos
         </Link>
 
         {paquete && (
           <header className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-400">Paquete normativo</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--ui-texto-suave)]">Paquete normativo</p>
               <h1 className="mt-2 text-3xl font-semibold">{paquete.nombre}</h1>
-              <p className="mt-2 text-sm text-zinc-400">
+              <p className="mt-2 text-sm text-[var(--ui-texto-suave)]">
                 Versión {paquete.version} · {ETIQUETA_ESTADO[paquete.estado]}
               </p>
             </div>
@@ -265,7 +265,7 @@ export default function PaqueteDetallePage() {
                   aria-disabled={!puedePublicar}
                   aria-describedby={sinVerificar.length ? "faltan-verificar" : undefined}
                   onClick={() => puedePublicar && setConfirmando(true)}
-                  className="rounded-lg bg-emerald-400 px-4 py-2 text-sm font-semibold text-zinc-950 aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+                  className="rounded-lg bg-[var(--ui-primario)] px-4 py-2 text-sm font-semibold text-[var(--ui-primario-texto)] aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
                 >
                   Publicar
                 </button>
@@ -275,18 +275,18 @@ export default function PaqueteDetallePage() {
         )}
 
         {borrador && sinVerificar.length > 0 && (
-          <p id="faltan-verificar" className="rounded-lg border border-amber-800 bg-amber-950/30 px-4 py-3 text-sm text-amber-100">
+          <p id="faltan-verificar" className="rounded-lg border border-[color:var(--ui-aviso-borde)] bg-[var(--ui-aviso-fondo)] px-4 py-3 text-sm text-[var(--ui-aviso-texto)]">
             Faltan por verificar: {sinVerificar.map((p) => nombreParametro(p.clave)).join(", ")}
           </p>
         )}
 
         {error && (
-          <p role="alert" className="rounded-lg border border-red-900 bg-red-950/40 px-4 py-3 text-sm text-red-200">
+          <p role="alert" className="rounded-lg border border-[color:var(--ui-error-borde)] bg-[var(--ui-error-fondo)] px-4 py-3 text-sm text-[var(--ui-error-texto)]">
             {error}
           </p>
         )}
         {aviso && (
-          <p role="status" className="rounded-lg border border-emerald-900 bg-emerald-950/30 px-4 py-3 text-sm text-emerald-100">
+          <p role="status" className="rounded-lg border border-[color:var(--ui-borde-control)] bg-[var(--ui-superficie-2)] px-4 py-3 text-sm text-[var(--foreground)]">
             {aviso}
           </p>
         )}
@@ -297,25 +297,25 @@ export default function PaqueteDetallePage() {
             aria-modal="true"
             aria-labelledby="dialogo-titulo"
             aria-describedby="dialogo-texto"
-            className="rounded-2xl border border-zinc-700 bg-zinc-900 p-5"
+            className="rounded-2xl border border-[color:var(--ui-borde-control)] bg-[var(--ui-superficie)] p-5"
           >
             <h2 id="dialogo-titulo" className="text-lg font-semibold">
               ¿Publicar la versión {paquete.version} del paquete {paquete.nombre}?
             </h2>
-            <p id="dialogo-texto" className="mt-2 text-sm text-zinc-300">{textoImpacto(null)}</p>
+            <p id="dialogo-texto" className="mt-2 text-sm text-[var(--foreground)]">{textoImpacto(null)}</p>
             <div className="mt-4 flex gap-3">
               <button
                 ref={cancelarRef}
                 type="button"
                 onClick={() => setConfirmando(false)}
-                className="rounded-lg border border-zinc-700 px-3 py-2 text-sm"
+                className="rounded-lg border border-[color:var(--ui-borde-control)] px-3 py-2 text-sm"
               >
                 Cancelar
               </button>
               <button
                 type="button"
                 onClick={() => void publicar()}
-                className="rounded-lg bg-emerald-400 px-3 py-2 text-sm font-semibold text-zinc-950"
+                className="rounded-lg bg-[var(--ui-primario)] px-3 py-2 text-sm font-semibold text-[var(--ui-primario-texto)]"
               >
                 Publicar
               </button>
@@ -324,12 +324,12 @@ export default function PaqueteDetallePage() {
         )}
 
         {paquete && !borrador && (
-          <form onSubmit={crearVersion} className="flex flex-wrap items-end gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5">
+          <form onSubmit={crearVersion} className="flex flex-wrap items-end gap-3 rounded-2xl border border-[color:var(--ui-borde)] bg-[var(--ui-superficie)] p-5">
             <label className="text-sm">
               Nueva versión
               <input className={campo} value={nuevaVersion} required maxLength={16} onChange={(e) => setNuevaVersion(e.target.value)} />
             </label>
-            <button type="submit" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm">
+            <button type="submit" className="rounded-lg border border-[color:var(--ui-borde-control)] px-3 py-2 text-sm">
               Crear versión en borrador
             </button>
           </form>
