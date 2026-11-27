@@ -2,7 +2,7 @@
 id = "NOTIF-02"
 titulo = "Avisos en la plataforma y recordatorios para quienes revisan versiones de plantillas"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 tanda = 112
 sala = "notificaciones"
 depende_de = ["BIB-406", "NORM-07", "BIB-415"]

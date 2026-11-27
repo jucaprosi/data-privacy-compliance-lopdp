@@ -2,7 +2,7 @@
 id = "NOTIF-05"
 titulo = "La bandeja nombra cada enlace por su destino"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 tanda = 116
 sala = "notificaciones"
 depende_de = ["NOTIF-02", "NOTIF-04"]
