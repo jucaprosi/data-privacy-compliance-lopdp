@@ -165,6 +165,7 @@ ROUTERS_MAP = [
     ("features.conservacion.conservacion_service", "conservacion"),
     # === fin CON-01 ===
     # === NOTIF-02 ===
+    ("api.routers.avisos", "avisos"),
     # === fin NOTIF-02 ===
     # === NOTIF-04 ===
     # === fin NOTIF-04 ===
