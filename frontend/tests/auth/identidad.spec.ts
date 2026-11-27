@@ -219,7 +219,10 @@ test.describe("Identidad en las llamadas a la API (FE-07)", () => {
       }
       // === fin DEMO-00 ===
       expect(cabecera(peticion, "Authorization"), `${donde}: Authorization`).toBe(`Bearer ${token}`);
-      expect(cabecera(peticion, "X-Tenant-ID"), `${donde}: X-Tenant-ID`).toBe(TENANT_PRUEBA);
+      // BIB-412: las capacidades editoriales propias son de operador: token, sin organización ni rol.
+      const deOperador = ruta(peticion.url()) === "/biblioteca/capacidades/mias";
+      expect(cabecera(peticion, "X-Tenant-ID"), `${donde}: X-Tenant-ID`).toBe(deOperador ? undefined : TENANT_PRUEBA);
+      if (deOperador) expect(cabecera(peticion, "X-Role"), `${donde}: X-Role`).toBeUndefined();
       expect(cabecera(peticion, "X-User-ID"), `${donde}: X-User-ID`).toBeUndefined();
       expect(cabecera(peticion, "Authorization"), `${donde}: token simulado`).not.toContain("jwt_mock");
     }

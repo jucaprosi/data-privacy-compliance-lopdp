@@ -50,6 +50,13 @@ test.describe("Biblioteca: identidad completa en cada petición (BIB-115, API si
     for (const pedida of pedidas) {
       const cabeceras = pedida.headers();
       const ruta = new URL(pedida.url()).pathname;
+      if (ruta === "/api/v1/biblioteca/capacidades/mias") {
+        // BIB-412: las capacidades editoriales propias son de operador, sin organización ni rol.
+        expect(cabeceras["x-role"], ruta).toBeUndefined();
+        expect(cabeceras["x-tenant-id"], ruta).toBeUndefined();
+        expect(cabeceras["x-user-id"], ruta).toBeTruthy();
+        continue;
+      }
       expect(cabeceras["x-role"], ruta).toBeTruthy();
       expect(cabeceras["x-user-id"], ruta).toBeTruthy();
       expect(cabeceras["x-tenant-id"], ruta).toBeTruthy();

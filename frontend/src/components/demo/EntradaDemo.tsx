@@ -127,7 +127,8 @@ export default function EntradaDemo({ registrar }: Props) {
   if (!demo && !terminada) return null;
 
   return (
-    <div className="flex w-full flex-col items-center gap-3" data-testid="demo-entrada">
+    <div className="flex w-full flex-col items-center gap-3" data-testid="demo-entrada"
+      {...(demo ? { role: "group", "aria-label": "Entrar como equipo comercial", "aria-describedby": "ayuda-entrada-comercial" } : {})}>
       {terminada && (
         <p role="status" data-testid="demo-terminada" className="w-full rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
           {TEXTOS_DEMO.terminada}
@@ -135,9 +136,9 @@ export default function EntradaDemo({ registrar }: Props) {
       )}
       {demo && fase.tipo === "inactiva" && (
         <div className="text-center">
-          <h2 className="text-base font-semibold">Demostración de EVYDENTIA</h2>
-          <p className="mt-1 text-sm text-zinc-500">
-            Recorre la plataforma con una cooperativa ficticia. Nada de lo que hagas afecta datos reales.
+          <h2 className="text-base font-semibold">Soy del equipo comercial</h2>
+          <p id="ayuda-entrada-comercial" className="mt-1 text-sm text-zinc-500">
+            Para quienes presentan la demo a una organización. Entras con tu cuenta de Google.
           </p>
         </div>
       )}
