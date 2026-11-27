@@ -135,6 +135,11 @@ async def mundo():
                 await conexion.execute(text(
                     "INSERT INTO users(id,email,nombre,activo) VALUES (:id,:e,'Sintético',:a)"),
                     {"id": usuario, "e": usuario + "@correo.invalid", "a": nombre != "inactiva"})
+                # Siembra de operadores (R1 de BIB-411): «inactiva» es un operador dado de baja.
+                await conexion.execute(text(
+                    "INSERT INTO operadores_plataforma (id, email, nombre, activo, usuario_id) "
+                    "VALUES (:o, :e, 'Sintético', :a, :id)"),
+                    {"o": "op-" + usuario, "id": usuario, "e": usuario + "@correo.invalid", "a": nombre != "inactiva"})
             await conexion.execute(text("SELECT set_config('role', :rol, true)"), {"rol": rol})
             async with AsyncSession(bind=conexion, expire_on_commit=False,
                                     join_transaction_mode="create_savepoint") as sesion:
@@ -160,7 +165,7 @@ async def test_conceder_revocar_y_reactivar_quedan_auditados(mundo):
     conexion, sesion, ids, rol = mundo
     ana, beto = ids["ana"], ids["beto"]
     assert await bib.conceder_capacidad(sesion, ana, "editor", beto, "Alta de prueba") == "alta"
-    assert await bib.conceder_capacidad(sesion, ana, "editor", beto, "Otra vez") == "vigente"
+    assert await bib.conceder_capacidad(sesion, ana, "editor", beto, "Otra vez lo mismo") == "vigente"
     vigentes = [c for c in await bib.listar_capacidades(sesion) if c.usuario_id == ana]
     assert [(c.capacidad, c.revocada_en) for c in vigentes] == [("editor", None)]
 
@@ -218,8 +223,8 @@ async def test_persona_inactiva_no_otorga_ni_recibe(mundo):
     _, sesion, ids, _ = mundo
     for usuario, otorgante in ((ids["inactiva"], ids["beto"]), (ids["ana"], ids["inactiva"])):
         with pytest.raises(ErrorNegocio) as error:
-            await bib.conceder_capacidad(sesion, usuario, "editor", otorgante, "m")
-        assert "BIB_USUARIO_INACTIVO" in _codigo(error)
+            await bib.conceder_capacidad(sesion, usuario, "editor", otorgante, "Motivo de prueba")
+        assert ("BIB_DESTINO_NO_OPERADOR" if otorgante == ids["beto"] else "BIB_SOLO_OPERADORES") in _codigo(error)
 
 
 @pytest.mark.asyncio

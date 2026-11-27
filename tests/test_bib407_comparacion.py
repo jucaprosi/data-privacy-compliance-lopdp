@@ -168,7 +168,7 @@ async def test_r4_la_lectura_compara_la_version_de_la_ia_sin_escribir(servicio):
 @pytest.mark.asyncio
 async def test_sin_capacidad_no_compara(monkeypatch, servicio):
     async def sin(session, actor, requerida=None):
-        return ["revisor_juridico"]
+        return []
     monkeypatch.setattr(servicio, "autorizar", sin)
     with pytest.raises(ErrorNegocio) as exc:
         await servicio.comparar_version(SesionDeLectura({}, []), "p", "v")

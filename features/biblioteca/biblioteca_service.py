@@ -430,3 +430,10 @@ from features.biblioteca.domain.comparacion import Comparacion
 from features.biblioteca.services.comparacion_versiones import comparar_version
 __all__ += ["Comparacion", "comparar_version"]
 # === fin BIB-407 ===
+
+# === BIB-411 ===
+from features.biblioteca.services.capacidades_admin import (
+    cambios as cambios_de_capacidades, equipo as equipo_editorial, historial as historial_capacidades,
+)
+__all__ += ["cambios_de_capacidades", "equipo_editorial", "historial_capacidades"]
+# === fin BIB-411 ===

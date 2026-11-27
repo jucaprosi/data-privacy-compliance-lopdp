@@ -227,9 +227,16 @@ registrar(
 
 # === BIB-117 ===
 registrar(
-    CodigoErrorNegocio("BIB_AUTOCONCESION", 422, "Nadie puede concederse ni revocarse una capacidad a sí mismo."),
-    CodigoErrorNegocio("BIB_MOTIVO_OBLIGATORIO", 422, "Indica el motivo de la concesión o la revocación."),
-    CodigoErrorNegocio("BIB_CAPACIDAD_INVALIDA", 422, "La capacidad no existe; usa editor, revisor_tecnico, revisor_juridico o publicador."),
+    CodigoErrorNegocio("BIB_AUTOCONCESION", 403, "No puedes concederte ni retirarte capacidades a ti mismo."),
+    CodigoErrorNegocio("BIB_MOTIVO_OBLIGATORIO", 422, "Escribe el motivo (al menos 10 caracteres)."),
+    CodigoErrorNegocio("BIB_CAPACIDAD_INVALIDA", 422, "Elige una de las capacidades de la lista."),
     CodigoErrorNegocio("BIB_USUARIO_INACTIVO", 422, "La persona no existe o no está activa."),
 )
 # === fin BIB-117 ===
+
+# === BIB-411 ===
+registrar(
+    CodigoErrorNegocio("BIB_SOLO_OPERADORES", 403, "Solo el equipo de la plataforma puede conceder capacidades editoriales."),
+    CodigoErrorNegocio("BIB_DESTINO_NO_OPERADOR", 422, "Esta persona ya no es operador de la plataforma. Actualiza la lista."),
+)
+# === fin BIB-411 ===

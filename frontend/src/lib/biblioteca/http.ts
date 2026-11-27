@@ -63,7 +63,8 @@ export function falloDeRol(error: unknown): string | null {
   return error instanceof SinRolPermitido ? error.message : null;
 }
 
-const RUTAS_DE_PLATAFORMA = /^\/biblioteca\/editorial(\/|$|\?)/;
+/** BIB-412 (decisión del Arquitecto, BIB-411 R8): la administración editorial y las capacidades editoriales son solo de operador. */
+const RUTAS_DE_PLATAFORMA = /^\/biblioteca\/(editorial|capacidades)(\/|$|\?)/;
 
 /** Roles que admite cada escritura servida por `httpBiblioteca` (método y ruta sin `/api/v1`). */
 const ROLES_POR_RUTA: ReadonlyArray<{ metodo: string; ruta: RegExp; roles: readonly string[] }> = [

@@ -16,7 +16,18 @@ async def capacidades(session: AsyncSession, actor: str) -> list[str]:
         "SELECT capacidad FROM biblioteca_capacidades c JOIN users u ON u.id=c.usuario_id "
         "WHERE c.usuario_id=:actor AND c.revocada_en IS NULL AND u.activo AND u.deleted_at IS NULL"
     ), {"actor": actor})
-    return list(filas.scalars())
+    permisos = list(filas.scalars())
+    # R1 (BIB-411): una capacidad solo cuenta si su titular es operador activo; la baja no toca filas (R4).
+    if permisos and not await _operador_activo(session, actor):
+        return []
+    return permisos
+
+
+# ¤adpa
+async def _operador_activo(session: AsyncSession, usuario_id: str) -> bool:
+    from app_core.pasillo import plataforma as pasillo_plataforma
+
+    return bool(await pasillo_plataforma.operador_activo(session, usuario_id))
 
 
 # ¤adpa

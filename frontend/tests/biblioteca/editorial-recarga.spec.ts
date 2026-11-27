@@ -42,7 +42,9 @@ async function preparar(page: Page, responder: (n: number, tenant: string, perso
   await page.route("**/api/v1/biblioteca/editorial", (ruta) =>
     ruta.fulfill({ json: { actor_id: "editor", capacidades: ["editor"], versiones: [], revisiones: [] } }));
   await page.route("**/api/v1/biblioteca/capacidades/mias", async (ruta) => {
-    const tenant = ruta.request().headers()["x-tenant-id"] ?? "";
+    // BIB-412: /mias es de operador, sin X-Tenant-ID; la organización activa se lee de la página.
+    expect(ruta.request().headers()["x-tenant-id"]).toBeUndefined();
+    const tenant = await page.evaluate(() => window.__LOPDP_AUTH_PRUEBAS__?.tenant ?? "").catch(() => "");
     const persona = await page.evaluate((c) => sessionStorage.getItem(c) ?? "", PERSONA).catch(() => "");
     llamadas.push(`${tenant}|${persona}`);
     const r = responder(llamadas.length, tenant, persona);

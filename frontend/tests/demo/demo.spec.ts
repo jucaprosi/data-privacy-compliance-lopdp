@@ -273,7 +273,7 @@ test("terminar: diálogo sin «inmediat» y aviso literal en la entrada", async 
 test("5 · 503 DEMO_NO_DISPONIBLE: texto literal y «Intentar de nuevo» repite la entrada", async ({ page }) => {
   const vistas = await simular(page, { entrar: [503, 503, 503, 201] });
   await page.goto(url("demo"));
-  await page.getByTestId("google-falso").click();
+  await page.getByTestId("login-boton-google").getByTestId("google-falso").click();
   const mensaje = page.getByTestId("demo-mensaje");
   await expect(mensaje).toHaveAttribute("data-codigo", "DEMO_NO_DISPONIBLE");
   await expect(mensaje).toContainText("No pudimos preparar la demo; intenta de nuevo");
@@ -290,7 +290,7 @@ test("entrada: cinco pasos y, pasados 60 s sin respuesta, el 503", async ({ page
   await page.clock.install();
   await simular(page, { entrar: ["colgar"] });
   await page.goto(url("demo"));
-  await page.getByTestId("google-falso").click();
+  await page.getByTestId("login-boton-google").getByTestId("google-falso").click();
   const progreso = page.getByTestId("demo-progreso");
   await expect(progreso.locator("li")).toHaveCount(5);
   await expect(progreso).toContainText("Creando la Cooperativa Demo y sus dos unidades");
@@ -324,7 +324,7 @@ test("7 · dos pestañas: al entrar en la segunda, la primera ve DEMO_VENCIDA", 
   const segunda = await context.newPage();
   const vistas = await simular(segunda);
   await segunda.goto(url("demo"));
-  await segunda.getByTestId("google-falso").click();
+  await segunda.getByTestId("login-boton-google").getByTestId("google-falso").click();
   await expect.poll(() => vistas.some((r) => r.url().endsWith("/api/v1/demo/entrar"))).toBe(true);
   reemplazada = true;
 

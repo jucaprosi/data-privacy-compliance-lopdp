@@ -10,10 +10,10 @@ politica_cloud_armor:
   name: evydentia-waf
   reglas:
     - prioridad: 1000
-      expresion: "evaluatePreconfiguredWaf('sqli-v33-stable', {'sensitivity': 4, 'opt_out_rule_ids': ['owasp-crs-v030301-id942421-sqli']})"
+      expresion: "evaluatePreconfiguredWaf('sqli-v33-stable', {'sensitivity': 1})"
       accion: deny(403)
     - prioridad: 1001
-      expresion: evaluatePreconfiguredWaf('xss-v33-stable')
+      expresion: "evaluatePreconfiguredWaf('xss-v33-stable', {'sensitivity': 1})"
       accion: deny(403)
     - prioridad: 2000
       descripcion: límite de peticiones por IP

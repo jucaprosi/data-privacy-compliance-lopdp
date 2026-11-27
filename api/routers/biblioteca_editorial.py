@@ -5,14 +5,14 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.rbac import get_usuario_autenticado
+from api.routers.biblioteca_capacidades import Operador
 from app_core.db.session import get_session
 from features.biblioteca import biblioteca_service as biblioteca
 
 AUTO_REGISTRO = True
 router = APIRouter(prefix="/biblioteca/editorial", tags=["Biblioteca editorial"])
 Sesion = Annotated[AsyncSession, Depends(get_session)]
-Actor = Annotated[str, Depends(get_usuario_autenticado)]
+Actor = Operador  # R8 (BIB-411): el operador del token verificado, en todos los entornos
 
 
 # ¤adpa

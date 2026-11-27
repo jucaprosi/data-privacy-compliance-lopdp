@@ -94,11 +94,19 @@ async def versiones_en_revision(session) -> list[dict]:
 
 
 async def revisores_tecnicos(session) -> list[str]:
-    """Los `usuario_id` con `revisor_tecnico` vigente (sin revocar)."""
+    """Los `usuario_id` con `revisor_tecnico` vigente (sin revocar) que son operadores activos (BIB-411 R7)."""
     from sqlalchemy import text
 
-    return [f[0] for f in (await session.execute(text(_REVISORES_TECNICOS))).all()]
+    from app_core.pasillo import plataforma as pasillo_plataforma
+
+    revisores = [f[0] for f in (await session.execute(text(_REVISORES_TECNICOS))).all()]
+    return [u for u in revisores if await pasillo_plataforma.operador_activo(session, u)]
 # === fin BIB-415 ===
 
 # === BIB-411 ===
+async def cambios_de_capacidades(session, desde) -> list[dict]:
+    """Para NOTIF-04: `id`, `usuario_id`, `capacidad`, `accion` (`concedida` o `retirada`), `por`, `motivo` y `en`."""
+    from features.biblioteca import biblioteca_service
+
+    return await biblioteca_service.cambios_de_capacidades(session, desde)
 # === fin BIB-411 ===

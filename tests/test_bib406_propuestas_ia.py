@@ -504,6 +504,8 @@ async def db_bib():
                     "'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
                     "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
                     "SELECT :id,:cap,o.id,'Fixture sintética rollback' FROM o"), {"id": ids[rol], "cap": capacidad})
+                # Siembra de operadores (R1 de BIB-411): solo un operador activo tiene capacidades editoriales.
+                await conexion.execute(text("INSERT INTO operadores_plataforma (id, email, nombre, usuario_id) SELECT 'op-'||u.id, u.email, u.nombre, u.id FROM users u WHERE u.id=:u ON CONFLICT DO NOTHING"), {"u": ids[rol]})
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
             async with AsyncSession(bind=conexion, expire_on_commit=False,
                                     join_transaction_mode="create_savepoint") as sesion:
