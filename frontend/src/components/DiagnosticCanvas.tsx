@@ -981,7 +981,7 @@ export default function DiagnosticCanvas({
                         : puedeResponder
                           ? "bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border-[var(--ui-borde-control)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)]"
                           : // Sin permiso: la opacidad va solo al fondo y al borde; el texto conserva su contraste.
-                            "bg-[color-mix(in_srgb,var(--ui-campo)_60%,transparent)] text-[var(--ui-texto-suave)] border-[color-mix(in_srgb,var(--ui-borde)_60%,transparent)]"
+                            "bg-[color-mix(in_srgb,var(--ui-campo)_60%,transparent)] text-[var(--ui-texto-suave)] border-[var(--ui-borde-control)]"
                     } ${
                       enRango ? "outline outline-1 outline-dashed outline-offset-2 outline-[var(--ui-primario)]" : ""
                     }`}
@@ -1106,7 +1106,7 @@ export default function DiagnosticCanvas({
                         : puedeResponder
                           ? "bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border-[var(--ui-borde-control)] hover:bg-[var(--ui-superficie-2)] hover:text-[var(--foreground)]"
                           : // Sin permiso: la opacidad va solo al fondo y al borde; el texto conserva su contraste.
-                            "bg-[color-mix(in_srgb,var(--ui-campo)_60%,transparent)] text-[var(--ui-texto-suave)] border-[color-mix(in_srgb,var(--ui-borde)_60%,transparent)]"
+                            "bg-[color-mix(in_srgb,var(--ui-campo)_60%,transparent)] text-[var(--ui-texto-suave)] border-[var(--ui-borde-control)]"
                     }`}
                   >
                     <span

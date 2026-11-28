@@ -7,4 +7,11 @@ import type { Page } from "@playwright/test";
  * Clave: «<ruta o vista:id> · <nombre del estado>». El paso se ejecuta con la página cargada y el tema puesto; la prueba mide después.
  * La ficha FE-39 añade aquí sus pasos antes de quitar la ruta o vista de su archivo de pendientes.
  */
+/** La Administración editorial solo aparece con una capacidad editorial: se simula la del operador. */
+export const PREPARACIONES: Record<string, (page: Page) => Promise<void>> = {
+  "vista:biblioteca_editorial": async (page) => {
+    await page.route("**/api/v1/biblioteca/capacidades/mias", (r) => r.fulfill({ json: { capacidades: ["editor"] } }));
+  },
+};
+
 export const ESTADOS: Record<string, (page: Page) => Promise<void>> = {};
