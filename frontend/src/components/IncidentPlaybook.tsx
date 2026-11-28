@@ -51,7 +51,7 @@ const CLASE_SEVERIDAD: Record<SeveridadIncidente, string> = {
 };
 
 const CAMPO =
-  "w-full px-3 py-2 text-xs bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-lg focus:outline-none focus:border-[var(--ui-primario)]";
+  "w-full px-3 py-2 text-xs bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded-lg focus:outline-none focus:border-[var(--ui-primario)]";
 
 function ahoraLocal(): string {
   const d = new Date();
@@ -241,7 +241,7 @@ export default function IncidentPlaybook() {
             onClick={() => rolConsulta && void cargar(rolConsulta)}
             disabled={cargando || !rolConsulta}
             aria-label="Actualizar la bitácora"
-            className="p-2 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-boton-hover)] border border-[var(--ui-borde)] cursor-pointer disabled:opacity-50"
+            className="p-2 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-boton-hover)] border border-[var(--ui-borde-control)] cursor-pointer disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${cargando ? "animate-spin" : ""}`} />
           </button>
@@ -489,7 +489,7 @@ export default function IncidentPlaybook() {
                       </div>
                     </div>
                     {ins === "cerrado_pendiente" && (
-                      <p className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
+                      <p className="text-[11px] text-[var(--ui-aviso-texto)] font-medium">
                         {LINEA_PENDIENTE}
                       </p>
                     )}
@@ -521,7 +521,7 @@ export default function IncidentPlaybook() {
                         type="button"
                         aria-label={`Cerrar el incidente ${i.titulo}`}
                         onClick={() => abrirDialogoEstado(inc, "cerrar")}
-                        className="px-2.5 py-1 text-xs font-medium rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-boton)] hover:bg-[var(--ui-campo)] transition-colors cursor-pointer"
+                        className="px-2.5 py-1 text-xs font-medium rounded-lg border border-[var(--ui-borde-control)] bg-[var(--ui-boton)] hover:bg-[var(--ui-campo)] transition-colors cursor-pointer"
                       >
                         Cerrar
                       </button>
@@ -530,7 +530,7 @@ export default function IncidentPlaybook() {
                         type="button"
                         aria-label={`Reabrir el incidente ${i.titulo}`}
                         onClick={() => abrirDialogoEstado(inc, "reabrir")}
-                        className="px-2.5 py-1 text-xs font-medium rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-boton)] hover:bg-[var(--ui-campo)] transition-colors cursor-pointer"
+                        className="px-2.5 py-1 text-xs font-medium rounded-lg border border-[var(--ui-borde-control)] bg-[var(--ui-boton)] hover:bg-[var(--ui-campo)] transition-colors cursor-pointer"
                       >
                         Reabrir
                       </button>
@@ -598,7 +598,7 @@ export default function IncidentPlaybook() {
                   type="button"
                   onClick={cerrarDialogoEstado}
                   disabled={cambiandoEstado}
-                  className="px-3 py-1.5 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-boton)] hover:bg-[var(--ui-campo)] text-xs font-medium cursor-pointer disabled:opacity-50"
+                  className="px-3 py-1.5 rounded-lg border border-[var(--ui-borde-control)] bg-[var(--ui-boton)] hover:bg-[var(--ui-campo)] text-xs font-medium cursor-pointer disabled:opacity-50"
                 >
                   Cancelar
                 </button>

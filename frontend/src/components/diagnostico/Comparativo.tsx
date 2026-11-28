@@ -75,7 +75,7 @@ export default function Comparativo() {
         <button
           type="button"
           onClick={cargar}
-          className="rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton)] px-3 py-1.5 hover:bg-[var(--ui-boton-hover)]"
+          className="rounded-md border border-[var(--ui-borde-control)] bg-[var(--ui-boton)] px-3 py-1.5 hover:bg-[var(--ui-boton-hover)]"
         >
           Reintentar
         </button>

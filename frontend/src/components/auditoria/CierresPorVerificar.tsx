@@ -64,7 +64,7 @@ export const CierresPorVerificar: React.FC = () => {
 
   if (cargando) {
     return (
-      <div role="status" className="p-4 text-sm text-slate-500">
+      <div role="status" className="p-4 text-sm text-[var(--ui-texto-suave)]">
         Cargando cierres por verificar...
       </div>
     );
@@ -72,7 +72,7 @@ export const CierresPorVerificar: React.FC = () => {
 
   if (errorCarga) {
     return (
-      <div role="alert" className="p-4 bg-rose-50 text-rose-800 rounded-md text-sm border border-rose-200">
+      <div role="alert" className="p-4 bg-[var(--ui-error-fondo)] text-[var(--ui-error-texto)] rounded-md text-sm border border-[var(--ui-error-borde)]">
         {errorCarga}
       </div>
     );
@@ -81,35 +81,35 @@ export const CierresPorVerificar: React.FC = () => {
   return (
     <div className="space-y-4">
       {mensajeStatus && (
-        <div role="status" className="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 rounded-md text-sm">
+        <div role="status" className="p-3 bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)] border border-[var(--ui-exito-borde)] rounded-md text-sm">
           {mensajeStatus}
         </div>
       )}
 
       {cierres.length === 0 ? (
-        <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 text-center text-sm text-slate-500">
+        <div className="rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-8 text-center text-sm text-[var(--ui-texto-suave)]">
           No hay cierres pendientes de verificar.
         </div>
       ) : (
-        <div className="divide-y divide-slate-100 dark:divide-slate-800 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+        <div className="divide-y divide-[var(--ui-borde)] rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-superficie)] shadow-sm">
           {cierres.map((c) => (
             <div key={c.id} className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                  <span className="font-mono text-xs px-2 py-0.5 rounded bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)]">
                     {c.control_ref || "Auditoría"}
                   </span>
-                  <span className="font-medium text-slate-900 dark:text-slate-100 text-sm">
+                  <span className="font-medium text-[var(--foreground)] text-sm">
                     {c.titulo}
                   </span>
                 </div>
-                <div className="text-xs text-slate-500">
+                <div className="text-xs text-[var(--ui-texto-suave)]">
                   {c.task_owner || "Responsable"} · {c.completed_at ? new Date(c.completed_at).toLocaleDateString() : "Fecha pendiente"}
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="text-xs px-2.5 py-1 rounded-full font-medium bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+                <span className="text-xs px-2.5 py-1 rounded-full font-medium bg-[var(--ui-aviso-fondo)] text-[var(--ui-aviso-texto)]">
                   {c.estado === "cerrado" ? "Verificado" : "Por verificar"}
                 </span>
                 {c.estado !== "cerrado" && (
@@ -121,7 +121,7 @@ export const CierresPorVerificar: React.FC = () => {
                       setMotivo("");
                       setErrorGuardar(null);
                     }}
-                    className="rounded bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500"
+                    className="rounded bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] px-3 py-1.5 text-xs font-semibold shadow-sm hover:bg-[var(--ui-primario-hover)]"
                   >
                     Verificar cierre
                   </button>
@@ -139,51 +139,51 @@ export const CierresPorVerificar: React.FC = () => {
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4"
         >
-          <div className="w-full max-w-lg rounded-lg bg-white dark:bg-slate-900 p-6 shadow-xl border border-slate-200 dark:border-slate-800 space-y-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+          <div className="w-full max-w-lg rounded-lg bg-[var(--ui-superficie)] p-6 shadow-xl border border-[var(--ui-borde)] space-y-4">
+            <h3 className="text-lg font-bold text-[var(--foreground)]">
               Verificar el cierre
             </h3>
-            <div className="bg-slate-50 dark:bg-slate-800/40 p-3 rounded text-xs space-y-1">
-              <div className="font-semibold text-slate-800 dark:text-slate-200">
+            <div className="bg-[var(--ui-superficie-2)] p-3 rounded text-xs space-y-1">
+              <div className="font-semibold text-[var(--foreground)]">
                 {cierreSeleccionado.titulo}
               </div>
-              <div className="text-slate-500">
+              <div className="text-[var(--ui-texto-suave)]">
                 Control: {cierreSeleccionado.control_ref} | Tarea: {cierreSeleccionado.task_title || "Acción del plan"}
               </div>
             </div>
 
             {/* Selector de resultado sin palabras conforme / no conforme */}
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+              <label className="text-sm font-semibold text-[var(--foreground)]">
                 Resultado de la verificación
               </label>
               <div role="radiogroup" aria-label="Resultado de la verificación" className="space-y-2">
-                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-sm text-[var(--ui-texto-suave)] cursor-pointer">
                   <input
                     type="radio"
                     name="resultado"
                     value="conforme"
                     checked={resultado === "conforme"}
                     onChange={() => setResultado("conforme")}
-                    className="text-indigo-600 focus:ring-indigo-500"
+                    className="text-[var(--ui-enlace)] focus:ring-[var(--ui-primario)]"
                   />
                   <span>Cierre verificado</span>
                 </label>
-                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-sm text-[var(--ui-texto-suave)] cursor-pointer">
                   <input
                     type="radio"
                     name="resultado"
                     value="no_conforme"
                     checked={resultado === "no_conforme"}
                     onChange={() => setResultado("no_conforme")}
-                    className="text-indigo-600 focus:ring-indigo-500"
+                    className="text-[var(--ui-enlace)] focus:ring-[var(--ui-primario)]"
                   />
                   <span>Cierre no verificado</span>
                 </label>
               </div>
             </div>
 
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[var(--ui-texto-suave)]">
               {resultado === "conforme"
                 ? "El hallazgo se marca como cerrado solo si el cierre queda verificado."
                 : "El hallazgo sigue abierto hasta que se vuelva a cerrar y verificar."}
@@ -191,10 +191,10 @@ export const CierresPorVerificar: React.FC = () => {
 
             <div className="space-y-1">
               <div className="flex justify-between items-center">
-                <label htmlFor="motivo-verificacion" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label htmlFor="motivo-verificacion" className="text-xs font-semibold text-[var(--ui-texto-suave)]">
                   Motivo (obligatorio)
                 </label>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-[var(--ui-texto-suave)]">
                   {motivo.length} de 10 caracteres como mínimo
                 </span>
               </div>
@@ -204,12 +204,12 @@ export const CierresPorVerificar: React.FC = () => {
                 value={motivo}
                 onChange={(e) => setMotivo(e.target.value)}
                 placeholder="Explica la verificación técnica realizada..."
-                className="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ui-primario)]"
               />
             </div>
 
             {errorGuardar && (
-              <div role="alert" className="text-xs text-rose-600 dark:text-rose-400 font-medium">
+              <div role="alert" className="text-xs text-[var(--ui-error-texto)] font-medium">
                 {errorGuardar}
               </div>
             )}
@@ -219,7 +219,7 @@ export const CierresPorVerificar: React.FC = () => {
                 type="button"
                 autoFocus
                 onClick={() => setCierreSeleccionado(null)}
-                className="rounded border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                className="rounded border border-[var(--ui-borde-control)] px-3 py-1.5 text-sm font-medium text-[var(--ui-texto-suave)] hover:bg-[var(--ui-superficie-2)]"
               >
                 Cancelar
               </button>
@@ -227,7 +227,7 @@ export const CierresPorVerificar: React.FC = () => {
                 type="button"
                 disabled={guardando || motivo.trim().length < 10}
                 onClick={handleGuardarVerificacion}
-                className="rounded bg-indigo-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
+                className="rounded bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] px-3.5 py-1.5 text-sm font-semibold shadow-sm hover:bg-[var(--ui-primario-hover)] disabled:opacity-50"
               >
                 {guardando ? "Guardando..." : "Guardar verificación"}
               </button>

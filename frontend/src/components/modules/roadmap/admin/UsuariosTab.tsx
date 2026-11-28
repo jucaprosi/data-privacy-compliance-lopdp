@@ -65,7 +65,7 @@ export function UsuariosTab({ usuarios, alCambiar }: UsuariosTabProps) {
             aria-describedby={errores.correo ? `${id}-correo-error` : undefined}
           />
           {errores.correo && (
-            <p id={`${id}-correo-error`} role="alert" className="text-[11px] text-[#ff6b86] mt-1">
+            <p id={`${id}-correo-error`} role="alert" className="text-[11px] text-[var(--ui-error-texto)] mt-1">
               {errores.correo}
             </p>
           )}
@@ -83,7 +83,7 @@ export function UsuariosTab({ usuarios, alCambiar }: UsuariosTabProps) {
             aria-describedby={errores.nombre ? `${id}-nombre-error` : undefined}
           />
           {errores.nombre && (
-            <p id={`${id}-nombre-error`} role="alert" className="text-[11px] text-[#ff6b86] mt-1">
+            <p id={`${id}-nombre-error`} role="alert" className="text-[11px] text-[var(--ui-error-texto)] mt-1">
               {errores.nombre}
             </p>
           )}
@@ -97,13 +97,13 @@ export function UsuariosTab({ usuarios, alCambiar }: UsuariosTabProps) {
 
       {error && <BloqueError error={error} testId="error-usuarios" />}
       {creado && (
-        <p role="status" data-testid="usuario-creado" className="text-xs text-[#5fe39a]">
+        <p role="status" data-testid="usuario-creado" className="text-xs text-[var(--ui-exito-texto)]">
           Se creó el usuario {creado}. Ahora puedes asignarle un rol en la pestaña de roles.
         </p>
       )}
 
       {usuarios.length === 0 ? (
-        <p role="status" className="text-xs text-zinc-400">
+        <p role="status" className="text-xs text-[var(--ui-texto-suave)]">
           Todavía no hay usuarios en esta organización.
         </p>
       ) : (
@@ -122,8 +122,8 @@ export function UsuariosTab({ usuarios, alCambiar }: UsuariosTabProps) {
           <tbody>
             {usuarios.map((u) => (
               <tr key={u.id} data-testid={`usuario-${u.id}`} className="border-b border-[var(--ui-borde)]">
-                <td className="py-2 pr-3 text-zinc-100">{u.nombre}</td>
-                <td className="py-2 text-zinc-300">{u.email}</td>
+                <td className="py-2 pr-3 text-[var(--foreground)]">{u.nombre}</td>
+                <td className="py-2 text-[var(--ui-texto-suave)]">{u.email}</td>
               </tr>
             ))}
           </tbody>

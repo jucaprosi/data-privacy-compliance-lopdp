@@ -1,0 +1,18 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-41 (archivos sin dueño de la ola): una ruta o vista por línea, con «# archivo» que la justifica.
+# La ficha dueña borra sus líneas al terminar.
+/  # frontend/src/components/layout/SelectorOrganizacion.tsx
+/login  # frontend/src/components/layout/SelectorOrganizacion.tsx
+/organizaciones  # frontend/src/components/layout/SelectorOrganizacion.tsx
+/aceptar/[token]  # (preparación del token de FE-41)
+/proveedor/[token]  # (preparación del token de FE-41)
+vista:asistente_vulneraciones  # frontend/src/components/incidentes/AsistenteVulneraciones.tsx
+vista:avisos  # frontend/src/components/avisos/BandejaAvisos.tsx
+vista:bov04_orquestador  # frontend/src/components/layout/pantallas/BOV-04.tsx
+vista:consultas_dpo_atendidas  # frontend/src/components/dpo/Consultas.tsx
+vista:consultas_dpo_mias  # frontend/src/components/dpo/Consultas.tsx
+vista:controles_periodicos  # frontend/src/components/controles/ControlesPeriodicos.tsx
+vista:dashboard  # frontend/src/components/dashboard/DashboardTabs.module.css
+vista:diagnostico_comparativo  # frontend/src/components/diagnostico/Comparativo.tsx
+vista:diagnostico_estados  # frontend/src/components/diagnostico/Estados.tsx
+vista:incidentes  # frontend/src/components/IncidentPlaybook.tsx

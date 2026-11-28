@@ -45,7 +45,7 @@ function mensaje(err: unknown, porDefecto: string): string {
 }
 
 const CAMPO =
-  "w-full rounded-lg border border-[var(--ui-border,#3f3f46)] bg-transparent px-3 py-2 text-sm";
+  "w-full rounded-lg border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] px-3 py-2 text-sm text-[var(--foreground)]";
 
 export function EnviosAceptacion() {
   const [items, setItems] = React.useState<ItemAceptacion[] | null>(null);
@@ -110,14 +110,14 @@ export function EnviosAceptacion() {
   return (
     <section
       aria-labelledby="titulo-envios"
-      className="rounded-xl border border-[var(--ui-border,#3f3f46)] bg-[var(--ui-surface,#18181b)] p-6"
+      className="rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-6"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 id="titulo-envios" className="text-base font-semibold">
             Firmas
           </h2>
-          <p className="mt-1 text-sm text-[var(--ui-muted,#a1a1aa)]">
+          <p className="mt-1 text-sm text-[var(--ui-texto-suave)]">
             Envíos de documentos aprobados a aceptación, con su estado.
           </p>
         </div>
@@ -126,7 +126,7 @@ export function EnviosAceptacion() {
             type="button"
             data-testid="btn-enviar-aceptacion"
             onClick={() => setAbierto((a) => !a)}
-            className="inline-flex items-center gap-2 rounded-lg bg-[var(--ui-accent,#8b5cf6)] px-3 py-2 text-sm font-medium text-white"
+            className="inline-flex items-center gap-2 rounded-lg bg-[var(--ui-primario)] px-3 py-2 text-sm font-medium text-[var(--ui-primario-texto)]"
           >
             <Send className="h-4 w-4" aria-hidden="true" />
             Enviar a aceptación
@@ -166,14 +166,14 @@ export function EnviosAceptacion() {
             />
           </label>
           {errorEnvio && (
-            <p role="alert" className="rounded-lg border border-red-900 bg-red-950/30 px-3 py-2 text-sm text-red-200">
+            <p role="alert" className="rounded-lg border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] px-3 py-2 text-sm text-[var(--ui-error-texto)]">
               {errorEnvio}
             </p>
           )}
           <button
             type="submit"
             disabled={enviando}
-            className="inline-flex items-center gap-2 rounded-lg border border-[var(--ui-border,#3f3f46)] px-3 py-2 text-sm disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg border border-[var(--ui-borde-control)] px-3 py-2 text-sm disabled:opacity-60"
           >
             {enviando && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             Generar enlaces
@@ -182,9 +182,9 @@ export function EnviosAceptacion() {
       )}
 
       {enlaces.length > 0 && (
-        <div data-testid="enlaces-generados" className="mt-4 space-y-2 rounded-lg border border-[var(--ui-border,#3f3f46)] p-4">
+        <div data-testid="enlaces-generados" className="mt-4 space-y-2 rounded-lg border border-[var(--ui-borde)] p-4">
           <p className="text-sm font-medium">Enlaces generados</p>
-          <p className="text-xs text-[var(--ui-muted,#a1a1aa)]">
+          <p className="text-xs text-[var(--ui-texto-suave)]">
             Cópialos y entrégalos a cada persona: no se envían por correo y no se vuelven a mostrar.
           </p>
           <ul className="space-y-2">
@@ -195,7 +195,7 @@ export function EnviosAceptacion() {
                 <button
                   type="button"
                   onClick={() => void copiar(e.url)}
-                  className="inline-flex items-center gap-1 rounded border border-[var(--ui-border,#3f3f46)] px-2 py-1 text-xs"
+                  className="inline-flex items-center gap-1 rounded border border-[var(--ui-borde-control)] px-2 py-1 text-xs"
                 >
                   <Copy className="h-3 w-3" aria-hidden="true" />
                   {copiado === e.url ? "Copiado" : "Copiar"}
@@ -220,27 +220,27 @@ export function EnviosAceptacion() {
           placeholder="Filtrar por documento"
           aria-label="Filtrar por documento"
         />
-        <button type="submit" className="rounded-lg border border-[var(--ui-border,#3f3f46)] px-3 py-2 text-sm">
+        <button type="submit" className="rounded-lg border border-[var(--ui-borde-control)] px-3 py-2 text-sm">
           Filtrar
         </button>
       </form>
 
       {error && (
-        <p role="alert" className="mt-4 rounded-lg border border-red-900 bg-red-950/30 px-3 py-2 text-sm text-red-200">
+        <p role="alert" className="mt-4 rounded-lg border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] px-3 py-2 text-sm text-[var(--ui-error-texto)]">
           {error}
         </p>
       )}
 
       {items === null ? (
-        <p className="mt-4 text-sm text-[var(--ui-muted,#a1a1aa)]" aria-live="polite">
+        <p className="mt-4 text-sm text-[var(--ui-texto-suave)]" aria-live="polite">
           Cargando…
         </p>
       ) : items.length === 0 ? (
-        <p className="mt-4 text-sm text-[var(--ui-muted,#a1a1aa)]">Todavía no hay envíos.</p>
+        <p className="mt-4 text-sm text-[var(--ui-texto-suave)]">Todavía no hay envíos.</p>
       ) : (
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-left text-sm" data-testid="tabla-envios">
-            <thead className="text-xs text-[var(--ui-muted,#a1a1aa)]">
+            <thead className="text-xs text-[var(--ui-texto-suave)]">
               <tr>
                 <th className="py-2 pr-4 font-medium">Persona</th>
                 <th className="py-2 pr-4 font-medium">Documento</th>
@@ -253,10 +253,10 @@ export function EnviosAceptacion() {
               {items.map((item) => {
                 const estado = estadoDelEnvio(item);
                 return (
-                  <tr key={item.id} className="border-t border-[var(--ui-border,#3f3f46)]">
+                  <tr key={item.id} className="border-t border-[var(--ui-borde)]">
                     <td className="py-2 pr-4">
                       {item.nombre || item.persona_id}
-                      {item.email && <span className="block text-xs text-[var(--ui-muted,#a1a1aa)]">{item.email}</span>}
+                      {item.email && <span className="block text-xs text-[var(--ui-texto-suave)]">{item.email}</span>}
                     </td>
                     <td className="py-2 pr-4">
                       <code className="text-xs">{item.documento_id}</code>

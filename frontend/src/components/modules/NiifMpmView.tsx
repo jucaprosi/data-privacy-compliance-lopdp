@@ -64,7 +64,7 @@ export default function NiifMpmView() {
   return (
     <div className="p-6 bg-[var(--ui-campo)] min-h-screen">
       <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-        <PieChart className="w-6 h-6 text-blue-500" />
+        <PieChart className="w-6 h-6 text-[var(--ui-enlace)]" />
         Gestión de Medidas de Rendimiento de la Gerencia (MPM)
       </h1>
 
@@ -77,7 +77,7 @@ export default function NiifMpmView() {
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="w-full bg-[var(--ui-campo)] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500"
+                className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)] focus:outline-none focus:border-[var(--ui-primario)]"
                 placeholder="Ej. EBITDA Ajustado"
               />
             </div>
@@ -86,7 +86,7 @@ export default function NiifMpmView() {
               <select 
                 value={subtotalBase}
                 onChange={(e) => setSubtotalBase(e.target.value)}
-                className="w-full bg-[var(--ui-campo)] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500"
+                className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)] focus:outline-none focus:border-[var(--ui-primario)]"
               >
                 <option value="1. Resultado Operativo">Resultado Operativo ({formatCurrency(subtotales["1_resultado_operativo"])})</option>
                 <option value="2. Antes de Fin. e Imp.">Resultado antes de Fin. e Imp. ({formatCurrency(subtotales["2_resultado_antes_fin_imp"])})</option>
@@ -101,7 +101,7 @@ export default function NiifMpmView() {
                 type="number"
                 value={ajuste}
                 onChange={(e) => setAjuste(e.target.value)}
-                className="w-full bg-[var(--ui-campo)] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono"
+                className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)] focus:outline-none focus:border-[var(--ui-primario)] font-mono"
                 placeholder="Ej. 1200000"
               />
             </div>
@@ -115,7 +115,7 @@ export default function NiifMpmView() {
             <textarea
               value={justificacion}
               onChange={(e) => setJustificacion(e.target.value)}
-              className="w-full flex-grow bg-[var(--ui-campo)] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500"
+              className="w-full flex-grow bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)] focus:outline-none focus:border-[var(--ui-primario)]"
               placeholder="Explique cómo este MPM proporciona información útil a los inversores..."
             />
             <div className="mt-4 flex justify-end">
@@ -133,28 +133,28 @@ export default function NiifMpmView() {
       </div>
 
       <div className="bg-[var(--ui-superficie)] p-6 rounded-lg shadow-lg border border-[var(--ui-borde)]">
-        <h2 className="text-xl font-semibold mb-4 border-b border-zinc-800 pb-2">Registro de Medidas (Conciliación)</h2>
+        <h2 className="text-xl font-semibold mb-4 border-b border-[var(--ui-borde)] pb-2">Registro de Medidas (Conciliación)</h2>
         {mpmRecords.length === 0 ? (
           <p className="text-[var(--ui-texto-suave)] text-sm">No se han registrado medidas MPM.</p>
         ) : (
           <div className="space-y-4">
             {mpmRecords.map((rec: MpmRecord, i: number) => (
-              <div key={i} className="bg-[var(--ui-campo)] border border-zinc-800 rounded-lg p-4 grid grid-cols-5 gap-4 items-center">
+              <div key={i} className="bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-lg p-4 grid grid-cols-5 gap-4 items-center">
                 <div className="col-span-2">
-                  <h4 className="font-bold text-white">{rec.nombre}</h4>
+                  <h4 className="font-bold text-[var(--foreground)]">{rec.nombre}</h4>
                   <p className="text-xs text-[var(--ui-texto-suave)] truncate">{rec.justificacion}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] uppercase text-[var(--ui-texto-suave)]">Valor Base</p>
-                  <p className="font-mono text-sm text-zinc-300">{formatCurrency(rec.valor_base)}</p>
+                  <p className="font-mono text-sm text-[var(--ui-texto-suave)]">{formatCurrency(rec.valor_base)}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] uppercase text-[var(--ui-texto-suave)]">Ajuste (Neto -25%)</p>
-                  <p className="font-mono text-sm text-yellow-500">+{formatCurrency(rec.ajuste - rec.efecto_fiscal)}</p>
+                  <p className="font-mono text-sm text-[var(--ui-aviso-texto)]">+{formatCurrency(rec.ajuste - rec.efecto_fiscal)}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] uppercase text-[var(--ui-texto-suave)]">Total MPM</p>
-                  <p className="font-mono text-base font-bold text-blue-400">{formatCurrency(rec.total_mpm)}</p>
+                  <p className="font-mono text-base font-bold text-[var(--ui-info-texto)]">{formatCurrency(rec.total_mpm)}</p>
                 </div>
               </div>
             ))}

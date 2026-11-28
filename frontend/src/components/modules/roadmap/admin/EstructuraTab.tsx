@@ -262,8 +262,8 @@ export function EstructuraTab({
       {/* Encabezado y resumen */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-white">Estructura Orgánica</h3>
-          <p className="text-[11px] text-zinc-400 mt-0.5">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">Estructura Orgánica</h3>
+          <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">
             Árbol de unidades, líneas de reporte, jefaturas y estado de titulares o vacantes.
           </p>
         </div>
@@ -278,7 +278,7 @@ export function EstructuraTab({
             Nueva unidad
           </button>
         ) : (
-          <div data-testid="aviso-solo-lectura" className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#ffb300]/10 border border-[#ffb300]/30 text-[11px] text-[#ffd166]">
+          <div data-testid="aviso-solo-lectura" className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--ui-aviso-fondo)] border border-[var(--ui-aviso-borde)] text-[11px] text-[var(--ui-aviso-texto)]">
             <Lock className="w-3.5 h-3.5" aria-hidden="true" />
             Modo solo lectura (auditoría)
           </div>
@@ -294,13 +294,13 @@ export function EstructuraTab({
             <div
               role="region"
               aria-label="Responsables por designar"
-              className="p-3.5 rounded-lg bg-[#3892f3]/10 border border-[#3892f3]/40 text-xs space-y-2"
+              className="p-3.5 rounded-lg bg-[var(--ui-info-fondo)] border border-[var(--ui-info-borde)] text-xs space-y-2"
             >
-              <div className="flex items-center gap-2 text-white font-semibold">
-                <UserCheck className="w-4 h-4 text-[#3892f3]" aria-hidden="true" />
+              <div className="flex items-center gap-2 text-[var(--foreground)] font-semibold">
+                <UserCheck className="w-4 h-4 text-[var(--ui-enlace)]" aria-hidden="true" />
                 <h4>Responsables por designar ({cobertura.responsables_por_designar.length})</h4>
               </div>
-              <p className="text-zinc-300 text-[11px]">
+              <p className="text-[var(--ui-texto-suave)] text-[11px]">
                 Titulares de jefatura identificados que aún no cuentan con nombramiento de rol formal en su área:
               </p>
               <ul aria-label="Lista de responsables por designar" className="space-y-1.5 pt-1">
@@ -311,8 +311,8 @@ export function EstructuraTab({
                     className="flex flex-wrap items-center justify-between gap-2 p-2 rounded bg-[var(--ui-superficie)] border border-[var(--ui-borde)]"
                   >
                     <div>
-                      <span className="font-medium text-white">{item.candidato_nombre ?? item.candidato_email}</span>
-                      <span className="text-zinc-400 text-[11px]"> · Cargo: {item.nombre_cargo}</span>
+                      <span className="font-medium text-[var(--foreground)]">{item.candidato_nombre ?? item.candidato_email}</span>
+                      <span className="text-[var(--ui-texto-suave)] text-[11px]"> · Cargo: {item.nombre_cargo}</span>
                       <span className="text-[var(--ui-texto-suave)] text-[11px]"> ({item.nombre_area})</span>
                     </div>
                     {alIrASolicitudRM10 ? (
@@ -324,7 +324,7 @@ export function EstructuraTab({
                         Iniciar solicitud de alta
                       </button>
                     ) : (
-                      <span className="text-[11px] text-zinc-400 italic">
+                      <span className="text-[11px] text-[var(--ui-texto-suave)] italic">
                         Acción de alta disponible con el módulo de solicitudes
                       </span>
                     )}
@@ -339,17 +339,17 @@ export function EstructuraTab({
             <div
               role="region"
               aria-label="Alertas de cobertura orgánica"
-              className="p-3.5 rounded-lg bg-[#ffb300]/10 border border-[#ffb300]/40 text-xs space-y-2"
+              className="p-3.5 rounded-lg bg-[var(--ui-aviso-fondo)] border border-[var(--ui-aviso-borde)] text-xs space-y-2"
             >
-              <div className="flex items-center gap-2 text-[#ffd166] font-semibold">
-                <AlertTriangle className="w-4 h-4 text-[#ffd166]" aria-hidden="true" />
+              <div className="flex items-center gap-2 text-[var(--ui-aviso-texto)] font-semibold">
+                <AlertTriangle className="w-4 h-4 text-[var(--ui-aviso-texto)]" aria-hidden="true" />
                 <h4>Alertas de cobertura ({cobertura.jefaturas_vacantes.length + cobertura.unidades_sin_jefatura.length})</h4>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
                 {cobertura.jefaturas_vacantes.length > 0 && (
                   <div>
-                    <span className="font-semibold text-zinc-300">Jefaturas vacantes:</span>
-                    <ul aria-label="Lista de jefaturas vacantes" className="list-disc list-inside mt-0.5 text-zinc-400">
+                    <span className="font-semibold text-[var(--ui-texto-suave)]">Jefaturas vacantes:</span>
+                    <ul aria-label="Lista de jefaturas vacantes" className="list-disc list-inside mt-0.5 text-[var(--ui-texto-suave)]">
                       {cobertura.jefaturas_vacantes.map((v) => (
                         <li key={v.cargo_id} data-testid={`jefatura-vacante-${v.cargo_id}`}>
                           {v.nombre_cargo} en {v.nombre_area}
@@ -360,8 +360,8 @@ export function EstructuraTab({
                 )}
                 {cobertura.unidades_sin_jefatura.length > 0 && (
                   <div>
-                    <span className="font-semibold text-zinc-300">Unidades sin jefatura definida:</span>
-                    <ul aria-label="Lista de unidades sin jefatura" className="list-disc list-inside mt-0.5 text-zinc-400">
+                    <span className="font-semibold text-[var(--ui-texto-suave)]">Unidades sin jefatura definida:</span>
+                    <ul aria-label="Lista de unidades sin jefatura" className="list-disc list-inside mt-0.5 text-[var(--ui-texto-suave)]">
                       {cobertura.unidades_sin_jefatura.map((u) => (
                         <li key={u.area_id} data-testid={`unidad-sin-jefatura-${u.area_id}`}>
                           {u.nombre_area} ({ETIQUETAS_NIVEL[u.nivel]})
@@ -379,7 +379,7 @@ export function EstructuraTab({
       {/* Árbol Orgánico */}
       <section aria-label="Árbol orgánico" className="space-y-3">
         {arbol.length === 0 ? (
-          <p role="status" className="text-xs text-zinc-400">
+          <p role="status" className="text-xs text-[var(--ui-texto-suave)]">
             No hay unidades orgánicas registradas todavía. Crea la unidad raíz de «Alta Dirección» para comenzar.
           </p>
         ) : (
@@ -409,7 +409,7 @@ export function EstructuraTab({
           onSubmit={guardarCrearArea}
           className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-3"
         >
-          <h4 className="text-xs font-bold text-white uppercase tracking-wider">Nueva Unidad Orgánica</h4>
+          <h4 className="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Nueva Unidad Orgánica</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="area-crear-nombre" className={ETIQUETA}>
@@ -497,7 +497,7 @@ export function EstructuraTab({
           onSubmit={guardarEditarArea}
           className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-3"
         >
-          <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+          <h4 className="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">
             Editar Unidad: {areaParaEditar.nombre}
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -587,7 +587,7 @@ export function EstructuraTab({
           onSubmit={guardarCrearCargo}
           className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-3"
         >
-          <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+          <h4 className="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">
             Nuevo Cargo en {areaParaNuevoCargo.nombre}
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -663,9 +663,9 @@ export function EstructuraTab({
                 id="cargo-crear-jefatura"
                 checked={esJefaturaCargo}
                 onChange={(e) => setEsJefaturaCargo(e.target.checked)}
-                className="rounded border-[var(--ui-borde)] bg-[var(--ui-superficie)] text-[#3892f3] focus:ring-[#3892f3]"
+                className="rounded border-[var(--ui-borde-control)] bg-[var(--ui-superficie)] text-[var(--ui-enlace)] focus:ring-[var(--ui-enlace)]"
               />
-              <label htmlFor="cargo-crear-jefatura" className="text-xs text-zinc-300 font-medium">
+              <label htmlFor="cargo-crear-jefatura" className="text-xs text-[var(--ui-texto-suave)] font-medium">
                 Es la jefatura de esta unidad orgánica
               </label>
             </div>
@@ -693,7 +693,7 @@ export function EstructuraTab({
           onSubmit={guardarEditarCargo}
           className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-3"
         >
-          <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+          <h4 className="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">
             Editar Cargo: {cargoParaEditar.nombre}
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -770,9 +770,9 @@ export function EstructuraTab({
                 id="cargo-editar-jefatura"
                 checked={esJefaturaCargo}
                 onChange={(e) => setEsJefaturaCargo(e.target.checked)}
-                className="rounded border-[var(--ui-borde)] bg-[var(--ui-superficie)] text-[#3892f3] focus:ring-[#3892f3]"
+                className="rounded border-[var(--ui-borde-control)] bg-[var(--ui-superficie)] text-[var(--ui-enlace)] focus:ring-[var(--ui-enlace)]"
               />
-              <label htmlFor="cargo-editar-jefatura" className="text-xs text-zinc-300 font-medium">
+              <label htmlFor="cargo-editar-jefatura" className="text-xs text-[var(--ui-texto-suave)] font-medium">
                 Es la jefatura de esta unidad orgánica
               </label>
             </div>
@@ -800,7 +800,7 @@ export function EstructuraTab({
           onSubmit={guardarAsignarTitular}
           className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-3"
         >
-          <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+          <h4 className="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">
             Titular para {cargoParaTitular.nombre}
           </h4>
           <div>
@@ -871,7 +871,7 @@ function NodoAreaItem({
     >
       {/* Cabecera del Nodo Unidad */}
       <div
-        className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[#18181d] border-b border-[var(--ui-borde)]"
+        className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[var(--ui-superficie-2)] border-b border-[var(--ui-borde)]"
         style={{ paddingLeft: `${Math.max(0.75, nivelProfundidad * 1.5)}rem` }}
       >
         <div className="flex items-center gap-2 min-w-0">
@@ -880,7 +880,7 @@ function NodoAreaItem({
               type="button"
               aria-label={colapsado ? `Expandir ${nodo.nombre}` : `Colapsar ${nodo.nombre}`}
               onClick={() => setColapsado(!colapsado)}
-              className="text-zinc-400 hover:text-white p-0.5"
+              className="text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] p-0.5"
             >
               {colapsado ? (
                 <ChevronRight className="w-4 h-4" aria-hidden="true" />
@@ -889,11 +889,11 @@ function NodoAreaItem({
               )}
             </button>
           )}
-          <Building2 className="w-4 h-4 text-[#3892f3] shrink-0" aria-hidden="true" />
+          <Building2 className="w-4 h-4 text-[var(--ui-enlace)] shrink-0" aria-hidden="true" />
           <div className="min-w-0">
-            <span className="text-xs font-bold text-white tracking-wide">{nodo.nombre}</span>
-            {nodo.codigo && <span className="ml-1.5 text-[11px] text-zinc-400">({nodo.codigo})</span>}
-            <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[var(--ui-boton)] text-zinc-300">
+            <span className="text-xs font-bold text-[var(--foreground)] tracking-wide">{nodo.nombre}</span>
+            {nodo.codigo && <span className="ml-1.5 text-[11px] text-[var(--ui-texto-suave)]">({nodo.codigo})</span>}
+            <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[var(--ui-boton)] text-[var(--ui-texto-suave)]">
               {ETIQUETAS_NIVEL[nodo.nivel]}
             </span>
           </div>
@@ -930,7 +930,7 @@ function NodoAreaItem({
             <p className="text-[11px] text-[var(--ui-texto-suave)] italic">Sin cargos orgánicos registrados en esta unidad.</p>
           ) : (
             <div className="space-y-1.5">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400">Cargos Orgánicos:</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[var(--ui-texto-suave)]">Cargos Orgánicos:</span>
               <ul aria-label={`Cargos de ${nodo.nombre}`} className="space-y-1.5">
                 {nodo.cargos.map((cargo) => (
                   <li
@@ -941,28 +941,28 @@ function NodoAreaItem({
                     <div className="flex items-center gap-2 min-w-0">
                       {cargo.es_jefatura && (
                         <span title="Jefatura de unidad" className="inline-flex">
-                          <Crown className="w-3.5 h-3.5 text-[#ffd166] shrink-0" aria-hidden="true" />
+                          <Crown className="w-3.5 h-3.5 text-[var(--ui-aviso-texto)] shrink-0" aria-hidden="true" />
                         </span>
                       )}
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-zinc-200">{cargo.nombre}</span>
-                          <span className="text-[10px] text-zinc-400 font-mono">
+                          <span className="font-semibold text-[var(--foreground)]">{cargo.nombre}</span>
+                          <span className="text-[10px] text-[var(--ui-texto-suave)] font-mono">
                             [{ETIQUETAS_TIPO_CARGO[cargo.tipo_cargo]}]
                           </span>
                         </div>
-                        <div className="text-[11px] text-zinc-400 mt-0.5">
+                        <div className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">
                           {cargo.titular_user_id ? (
-                            <span className="text-zinc-300">
+                            <span className="text-[var(--ui-texto-suave)]">
                               Titular:{" "}
-                              <strong className="text-white">
+                              <strong className="text-[var(--foreground)]">
                                 {cargo.titular_nombre ?? cargo.titular_email ?? cargo.titular_user_id}
                               </strong>
                             </span>
                           ) : (
                             <span
                               data-testid={`vacante-${cargo.id}`}
-                              className="inline-flex items-center gap-1 font-semibold text-[#ffd166]"
+                              className="inline-flex items-center gap-1 font-semibold text-[var(--ui-aviso-texto)]"
                             >
                               <AlertTriangle className="w-3 h-3" aria-hidden="true" />
                               Vacante

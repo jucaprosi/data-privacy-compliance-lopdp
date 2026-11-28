@@ -61,8 +61,8 @@ export function ConfiguracionTab() {
 
   if (cargando) {
     return (
-      <p role="status" className="flex items-center gap-2 text-xs text-zinc-300">
-        <Loader2 className="w-4 h-4 animate-spin text-[#3892f3]" aria-hidden="true" />
+      <p role="status" className="flex items-center gap-2 text-xs text-[var(--ui-texto-suave)]">
+        <Loader2 className="w-4 h-4 animate-spin text-[var(--ui-enlace)]" aria-hidden="true" />
         Cargando la configuración…
       </p>
     );
@@ -82,7 +82,7 @@ export function ConfiguracionTab() {
   return (
     <form onSubmit={guardar} noValidate aria-label="Configuración de la organización" className="space-y-4 max-w-xl">
       {tamano === "" && (
-        <p role="note" data-testid="aviso-tamano" className="p-3 rounded-lg bg-[#ffb300]/10 border border-[#ffb300]/40 text-xs">
+        <p role="note" data-testid="aviso-tamano" className="p-3 rounded-lg bg-[var(--ui-aviso-fondo)] border border-[var(--ui-aviso-borde)] text-xs">
           El tamaño de la organización aún no está configurado. Sin él no se puede comprobar si una misma persona puede ser
           coordinador y responsable de área.
         </p>
@@ -107,13 +107,13 @@ export function ConfiguracionTab() {
         <input id={`${id}-sector`} className={CAMPO} value={sector} onChange={(e) => setSector(e.target.value)} />
       </div>
       {aviso && (
-        <p role="alert" className="text-[11px] text-[#ff6b86]">
+        <p role="alert" className="text-[11px] text-[var(--ui-error-texto)]">
           {aviso}
         </p>
       )}
       {errorGuardado && <BloqueError error={errorGuardado} testId="error-guardado" />}
       {guardado && (
-        <p role="status" data-testid="configuracion-guardada" className="text-xs text-[#5fe39a]">
+        <p role="status" data-testid="configuracion-guardada" className="text-xs text-[var(--ui-exito-texto)]">
           La configuración se guardó correctamente.
         </p>
       )}
