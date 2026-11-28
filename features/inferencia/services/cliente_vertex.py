@@ -7,9 +7,6 @@ import os
 
 from features.inferencia.domain.errores import InferenciaNoDisponible
 
-TIMEOUT_MS = 60_000
-
-
 VARIABLE_GENERACION = "VERTEX_LOCATION"
 VARIABLE_EMBEDDING = "VERTEX_LOCATION_EMBEDDING"
 
@@ -32,7 +29,7 @@ def configuracion_embedding() -> tuple[str, str]:
     return _leer(VARIABLE_EMBEDDING)
 
 
-def crear_cliente(vectores: bool = False):
+def crear_cliente(vectores: bool = False, plazo_ms: int | None = None):
     """Crea `genai.Client(vertexai=True, ...)` en la ubicación de generación o de vectores. Nunca recibe `api_key`.
 
     El SDK resuelve el host de una multirregión (`us`) por sí solo; aquí no se escribe ningún host.
@@ -45,11 +42,37 @@ def crear_cliente(vectores: bool = False):
         vertexai=True,
         project=proyecto,
         location=region,
-        http_options=types.HttpOptions(timeout=TIMEOUT_MS),
+        # IA-18 R5: la generación y la transcripción llevan su plazo en cada petición; los vectores, el del cliente.
+        http_options=types.HttpOptions(timeout=plazo_ms) if plazo_ms is not None else None,
     )
 
 
-async def generar_json(cliente, modelo: str, sistema: str, usuario: str, esquema) -> object:
+CODIGOS_TRANSITORIOS = frozenset({429, 503, 504})  # IA-18 R2
+
+
+def es_transitorio(exc: Exception) -> bool:
+    """IA-18 R2: `APIError` con código 429, 503 o 504. Solo este archivo importa `google.genai` (IA-08)."""
+    from google.genai import errors
+
+    return isinstance(exc, errors.APIError) and getattr(exc, "code", None) in CODIGOS_TRANSITORIOS
+
+
+def describir_error(exc: Exception) -> str:
+    """Tipo, código y estado de la excepción. Nunca su mensaje: puede traer el prompt o datos personales."""
+    from google.genai import errors
+
+    partes = [type(exc).__name__]
+    if isinstance(exc, errors.APIError):
+        partes += ["code=%s" % getattr(exc, "code", None), "status=%s" % getattr(exc, "status", None)]
+    return " ".join(partes)
+
+
+def _plazo(types, plazo_ms: int | None):
+    """Plazo de ESTA petición (IA-18 R5): sale del presupuesto que queda, no de una constante del cliente."""
+    return None if plazo_ms is None else types.HttpOptions(timeout=plazo_ms)
+
+
+async def generar_json(cliente, modelo: str, sistema: str, usuario: str, esquema, *, plazo_ms: int | None = None) -> object:
     """Una llamada estructurada; devuelve la respuesta cruda del SDK."""
     from google.genai import types
 
@@ -61,11 +84,14 @@ async def generar_json(cliente, modelo: str, sistema: str, usuario: str, esquema
             response_mime_type="application/json",
             response_schema=esquema,
             temperature=0,
+            http_options=_plazo(types, plazo_ms),
         ),
     )
 
 
-async def transcribir(cliente, modelo: str, sistema: str, instruccion: str, pdf: bytes) -> object:
+async def transcribir(
+    cliente, modelo: str, sistema: str, instruccion: str, pdf: bytes, *, plazo_ms: int | None = None
+) -> object:
     """Transcripción de un PDF (NORM-06): el PDF va como parte `application/pdf`; salida de texto plano."""
     from google.genai import types
 
@@ -74,6 +100,7 @@ async def transcribir(cliente, modelo: str, sistema: str, instruccion: str, pdf:
         contents=[types.Part.from_bytes(data=pdf, mime_type="application/pdf"), instruccion],
         config=types.GenerateContentConfig(
             system_instruction=sistema, response_mime_type="text/plain", temperature=0,
+            http_options=_plazo(types, plazo_ms),
         ),
     )
 

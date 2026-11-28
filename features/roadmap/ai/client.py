@@ -18,7 +18,8 @@ from features.roadmap.domain.models import RoadmapDocument
 logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_TOKENS = 8192
-DEFAULT_TIMEOUT_SECONDS = 60.0
+# IA-18 R8: un solo presupuesto. Igual a `PLAZO_TOTAL_S` de la compuerta (140 s): el corte lo da R5 por petición.
+DEFAULT_TIMEOUT_SECONDS = 140.0
 MODELO_POR_DEFECTO = pasillo_inferencia.MODELO_GENERACION
 
 

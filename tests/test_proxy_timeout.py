@@ -28,6 +28,6 @@ def _proxy_timeout_ms() -> int:
 
 
 def test_el_proxy_cubre_el_peor_caso_de_la_generacion():
-    intentos = inspect.signature(generate_roadmap_document).parameters["max_retries"].default
-    peor_caso_ms = int(intentos * DEFAULT_TIMEOUT_SECONDS * 1000)
+    # IA-18 R8b: los intentos comparten un solo plazo, así que el peor caso es `DEFAULT_TIMEOUT_SECONDS`
+    peor_caso_ms = int(DEFAULT_TIMEOUT_SECONDS * 1000)
     assert _proxy_timeout_ms() >= peor_caso_ms + MARGEN_MS

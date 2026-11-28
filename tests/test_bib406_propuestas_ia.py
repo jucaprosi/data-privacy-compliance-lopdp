@@ -310,7 +310,7 @@ async def guardia_sin_tope(redactar, monkeypatch) -> list[str]:
     async def consumir(org_id):
         consumos.append(org_id)
 
-    async def generar_json(cliente, modelo, sistema, usuario, esquema):
+    async def generar_json(cliente, modelo, sistema, usuario, esquema, **kw):
         return SimpleNamespace(text='{"cambios": []}', model_version="gemini-prueba-001")
 
     monkeypatch.setattr(inferencia_service.cliente_vertex, "generar_json", generar_json)

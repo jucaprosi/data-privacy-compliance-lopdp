@@ -15,6 +15,7 @@ from __future__ import annotations
 from datetime import date
 import json
 import logging
+import time
 from typing import Callable, Optional
 
 from pydantic import ValidationError
@@ -23,6 +24,7 @@ from app_core.pasillo import inferencia as pasillo_inferencia
 from features.roadmap.ai.client import (
     DEFAULT_MAX_TOKENS,
     DEFAULT_TIMEOUT_SECONDS,
+    LLMTimeoutError,
     TruncatedOutputError,
     call_roadmap_llm,
 )
@@ -80,6 +82,9 @@ def ensamblar_plan_cifrado_con_texto(
     return doc
 
 
+_reloj = time.monotonic  # las pruebas lo sustituyen: nunca se duerme de verdad
+
+
 def generate_roadmap_document(
     assessment: dict,
     variables: dict,
@@ -113,7 +118,12 @@ def generate_roadmap_document(
     current_user_prompt = initial_user_prompt
     last_error: Optional[Exception] = None
 
+    inicio = _reloj()
     for intento in range(max_retries):
+        # IA-18 R8b: un solo plazo para todos los intentos; el segundo recibe lo que queda y no se lanza sin tiempo
+        restante = DEFAULT_TIMEOUT_SECONDS - (_reloj() - inicio)
+        if intento > 0 and restante <= 0:
+            break
         try:
             if llm_caller is not None:
                 raw_response = llm_caller(SYSTEM_PROMPT, current_user_prompt)
@@ -122,7 +132,7 @@ def generate_roadmap_document(
                     system_prompt=SYSTEM_PROMPT,
                     user_prompt=current_user_prompt,
                     max_tokens=DEFAULT_MAX_TOKENS,
-                    timeout=DEFAULT_TIMEOUT_SECONDS,
+                    timeout=restante,
                     org_id=tenant_id,
                 )
 
@@ -139,6 +149,10 @@ def generate_roadmap_document(
 
         except InferenciaNoDisponible:
             # Falla cerrado: si la compuerta no está disponible, no se reintenta ni se devuelve plan simulado
+            raise
+
+        except LLMTimeoutError:
+            # IA-18 R8: el único reintento ante un fallo de Vertex es el de la compuerta (R2 y R3)
             raise
 
         except TruncatedOutputError as exc:

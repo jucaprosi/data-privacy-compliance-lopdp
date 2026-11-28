@@ -75,7 +75,9 @@ def test_respuesta_invalida_falla_cerrada():
 
 
 def test_excepcion_del_cliente_falla_cerrada_con_un_reintento():
-    c = ClienteFalso(error=RuntimeError("403 PERMISSION_DENIED GOOGLE_CLOUD_PROJECT"))
+    from google.genai import errors
+
+    c = ClienteFalso(error=errors.APIError(503, {"error": {"status": "UNAVAILABLE", "message": "403 PERMISSION_DENIED GOOGLE_CLOUD_PROJECT"}}))
     with pytest.raises(InferenciaNoDisponible) as e:
         _gen(c)
     assert len(c.modelos.llamadas) == 2

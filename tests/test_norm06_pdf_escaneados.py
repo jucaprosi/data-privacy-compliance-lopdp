@@ -170,7 +170,14 @@ def test_transcribir_pdf_exige_model_version(vertex, version):
 
 
 def test_transcribir_pdf_reintenta_una_vez_y_falla_cerrada(vertex):
-    modelos = Modelos(texto="")
+    from google.genai import errors
+
+    class ModelosCaidos(Modelos):
+        async def generate_content(self, **kw):
+            self.llamadas.append(kw)
+            raise errors.APIError(503, {"error": {"status": "UNAVAILABLE", "message": "x"}})
+
+    modelos = ModelosCaidos()
     svc_inferencia.inyectar_cliente_de_prueba(_cliente(modelos))
     with pytest.raises(InferenciaNoDisponible):
         asyncio.run(svc_inferencia.transcribir_pdf(escaneado(), dominio.PROMPT, modelo=MODELO))
