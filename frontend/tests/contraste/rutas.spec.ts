@@ -218,6 +218,7 @@ async function medirVista(page: Page, vista: string, tema: string, ancho: number
   await fijarAjustes(page, { modo: "headers", tenant: TENANT_PRUEBA });
   await simular(page, "datos");
   await ponerTema(page, tema);
+  await PREPARACIONES[`vista:${vista}`]?.(page);
   await page.goto("/");
   await configurarProyecto(page, "Entidad FE-32");
   const submenu = SUBMENUS.find((s) => s.vista === vista);
