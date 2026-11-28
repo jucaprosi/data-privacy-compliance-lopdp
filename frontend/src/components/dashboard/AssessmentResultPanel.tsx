@@ -32,25 +32,25 @@ interface TonoSemantico {
 }
 
 const TONO_CRITICO: TonoSemantico = {
-  texto: "text-[#ff1744]",
-  fondo: "bg-[#ff1744]/15",
-  borde: "border-[#ff1744]/30",
+  texto: "text-[var(--ui-error-texto)]",
+  fondo: "bg-[var(--ui-error-fondo)]",
+  borde: "border-[var(--ui-error-borde)]",
 };
 
 const TONO_ADVERTENCIA: TonoSemantico = {
-  texto: "text-[#ffab00]",
-  fondo: "bg-[#ffab00]/15",
-  borde: "border-[#ffab00]/30",
+  texto: "text-[var(--ui-aviso-texto)]",
+  fondo: "bg-[var(--ui-aviso-fondo)]",
+  borde: "border-[var(--ui-aviso-borde)]",
 };
 
 const TONO_EXITO: TonoSemantico = {
-  texto: "text-[#00c853]",
-  fondo: "bg-[#00c853]/15",
-  borde: "border-[#00c853]/30",
+  texto: "text-[var(--ui-exito-texto)]",
+  fondo: "bg-[var(--ui-exito-fondo)]",
+  borde: "border-[var(--ui-exito-borde)]",
 };
 
 const TONO_NEUTRO: TonoSemantico = {
-  texto: "text-white",
+  texto: "text-[var(--foreground)]",
   fondo: "bg-[var(--ui-boton)]",
   borde: "border-[var(--ui-borde)]",
 };

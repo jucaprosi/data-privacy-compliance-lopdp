@@ -203,7 +203,7 @@ export function OrquestadorDiezDimensiones() {
             type="button"
             onClick={() => void reintentar()}
             className="rounded-lg px-3 py-1.5 text-xs font-semibold cursor-pointer"
-            style={{ background: "var(--ui-boton)", border: "1px solid var(--ui-borde)" }}
+            style={{ background: "var(--ui-boton)", border: "1px solid var(--ui-borde-control)" }}
           >
             Actualizar
           </button>
@@ -244,7 +244,7 @@ export function OrquestadorDiezDimensiones() {
             type="button"
             onClick={() => void reintentar()}
             className="rounded-lg px-3 py-1.5 text-xs font-semibold cursor-pointer"
-            style={{ background: "var(--ui-boton)", border: "1px solid var(--ui-borde)" }}
+            style={{ background: "var(--ui-boton)", border: "1px solid var(--ui-borde-control)" }}
           >
             Volver a cargar
           </button>

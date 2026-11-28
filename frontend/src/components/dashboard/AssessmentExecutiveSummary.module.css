@@ -176,7 +176,7 @@
 .levelDialog::backdrop { background: rgba(9, 12, 29, .68); backdrop-filter: blur(4px); }
 .dialogHeading { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
 .dialogHeading h3 { margin: 5px 0 0; font-size: 20px; }
-.dialogClose { width: 29px; height: 29px; border: 1px solid #5b5778; border-radius: 7px; background: transparent; color: inherit; font-size: 20px; cursor: pointer; }
+.dialogClose { width: 29px; height: 29px; border: 1px solid var(--ui-borde-control); border-radius: 7px; background: transparent; color: inherit; font-size: 20px; cursor: pointer; }
 .dialogClose:focus-visible { outline: 2px solid #a7dfd2; outline-offset: 2px; }
 .dialogIntro, .dialogFootnote { color: #c9c9db; font-size: 11px; line-height: 1.55; }
 .dialogIntro { margin: 12px 0 16px; }
@@ -190,7 +190,7 @@
 .levelList p { margin: 3px 0 0; color: #c9c9db; font-size: 11px; line-height: 1.45; }
 .dialogFootnote { margin: 14px 0 0; }
 :global(.theme-light) .levelDialog { background: #fff; color: #1b2540; border-color: #d9d1e8; }
-:global(.theme-light) .dialogClose { border-color: #c4b8da; }
+:global(.theme-light) .dialogClose { border-color: var(--ui-borde-control); }
 :global(.theme-light) .dialogIntro, :global(.theme-light) .dialogFootnote, :global(.theme-light) .levelList p { color: #526077; }
 :global(.theme-light) .levelList li { border-color: #ddd3ea; }
 :global(.theme-light) .levelList li.currentLevel { border-color: #167a72; background: #edf8f5; }

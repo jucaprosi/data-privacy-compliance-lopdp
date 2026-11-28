@@ -55,7 +55,7 @@ export function CampanaAvisos() {
   return (
     <button type="button" data-testid="campana-avisos" onClick={() => setActiveView("avisos" as never)}
       aria-label={n > 0 ? `Avisos, ${n} sin leer` : "Avisos"}
-      className="relative flex items-center gap-1 rounded border border-[var(--ui-borde)] px-2 py-1">
+      className="relative flex items-center gap-1 rounded border border-[var(--ui-borde-control)] px-2 py-1">
       <Bell size={14} aria-hidden="true" />
       {n > 0 ? <span aria-hidden="true" className="rounded-full border border-current px-1 text-[10px] font-semibold">{n}</span> : null}
     </button>
@@ -102,7 +102,7 @@ export default function BandejaAvisos() {
       {estado === "error" ? (
         <div role="alert" className="text-sm">
           <p>No pudimos cargar tus avisos. Inténtalo de nuevo.</p>
-          <button type="button" onClick={() => void cargar()} className="mt-2 rounded border border-[var(--ui-borde)] px-2 py-1">Reintentar</button>
+          <button type="button" onClick={() => void cargar()} className="mt-2 rounded border border-[var(--ui-borde-control)] px-2 py-1">Reintentar</button>
         </div>
       ) : estado === "listo" && avisos.length === 0 ? (
         <p role="status" className="text-sm">{filtro === "sin_leer" ? "No tienes avisos sin leer." : "No tienes avisos."}</p>
@@ -115,13 +115,13 @@ export default function BandejaAvisos() {
               <time dateTime={a.creado_en} className="block text-xs">{tiempoRelativo(a.creado_en)}</time>
               <div className="mt-2 flex flex-wrap gap-2">
                 {a.enlace ? <a href={a.enlace} onClick={() => { void marcar(a.id).catch(() => undefined); }} className="underline">{textoDelEnlace(a.enlace)}</a> : null}
-                {!a.leido ? <button type="button" onClick={() => void leer(a.id)} className="rounded border border-[var(--ui-borde)] px-2 py-1">Marcar como leído</button> : null}
+                {!a.leido ? <button type="button" onClick={() => void leer(a.id)} className="rounded border border-[var(--ui-borde-control)] px-2 py-1">Marcar como leído</button> : null}
               </div>
             </li>
           ))}
         </ul>
       )}
-      {hayMas && estado === "listo" ? <button type="button" onClick={() => void verMas()} className="self-start rounded border border-[var(--ui-borde)] px-2 py-1 text-sm">Ver más</button> : null}
+      {hayMas && estado === "listo" ? <button type="button" onClick={() => void verMas()} className="self-start rounded border border-[var(--ui-borde-control)] px-2 py-1 text-sm">Ver más</button> : null}
     </section>
   );
 }
