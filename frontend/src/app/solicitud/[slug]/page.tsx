@@ -103,7 +103,7 @@ export default function SolicitudPublicaPage({
     return (
       <main className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)] flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="w-8 h-8 border-4 border-[var(--ui-primario)] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-sm text-[var(--color-text-secondary)]">Cargando portal de solicitudes...</p>
         </div>
       </main>
@@ -114,14 +114,14 @@ export default function SolicitudPublicaPage({
     return (
       <main className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)] flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] rounded-xl p-8 shadow-sm text-center">
-          <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">
+          <div className="w-12 h-12 bg-[var(--ui-error-fondo)] text-[var(--ui-error-texto)] rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">
             ✕
           </div>
           <h1 className="text-xl font-semibold mb-2">Portal no disponible</h1>
           <p className="text-sm text-[var(--color-text-secondary)] mb-6">{errorPortal}</p>
           <Link
             href="/solicitud/seguir"
-            className="inline-block text-sm text-indigo-600 hover:text-indigo-700 font-medium underline"
+            className="inline-block text-sm text-[var(--ui-enlace)] hover:text-[var(--ui-enlace)] font-medium underline"
           >
             Consultar estado de una solicitud existente
           </Link>
@@ -134,7 +134,7 @@ export default function SolicitudPublicaPage({
     return (
       <main className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)] flex items-center justify-center p-4">
         <div className="max-w-lg w-full bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] rounded-xl p-8 shadow-sm text-center">
-          <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">
+          <div className="w-12 h-12 bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)] rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">
             ✓
           </div>
           <h1 className="text-2xl font-bold mb-2">Solicitud Registrada</h1>
@@ -142,14 +142,14 @@ export default function SolicitudPublicaPage({
             Su solicitud ha sido recibida formalmente por <strong>{portal.organizacion}</strong>. Guarde el siguiente código para verificar el estado de su trámite.
           </p>
 
-          <div className="bg-[var(--color-bg-subtle)] border border-[var(--color-border-strong)] rounded-lg p-4 mb-6 font-mono text-base font-semibold text-indigo-600 select-all tracking-wider break-all">
+          <div className="bg-[var(--color-bg-subtle)] border border-[var(--color-border-strong)] rounded-lg p-4 mb-6 font-mono text-base font-semibold text-[var(--ui-enlace)] select-all tracking-wider break-all">
             {codigoGenerado}
           </div>
 
           <div className="flex flex-col gap-3">
             <Link
               href={`/solicitud/seguir/${encodeURIComponent(codigoGenerado)}`}
-              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition-colors text-center"
+              className="w-full py-2.5 px-4 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] font-medium rounded-lg text-sm transition-colors text-center"
             >
               Consultar Seguimiento Ahora
             </Link>
@@ -174,7 +174,7 @@ export default function SolicitudPublicaPage({
     <main className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
         <header className="text-center mb-8">
-          <div className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-semibold tracking-wide uppercase mb-3">
+          <div className="inline-block px-3 py-1 bg-[var(--ui-info-fondo)] text-[var(--ui-enlace)] rounded-full text-xs font-semibold tracking-wide uppercase mb-3">
             Portal de Derechos ARCO+ (LOPDP)
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
@@ -193,7 +193,7 @@ export default function SolicitudPublicaPage({
 
         <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] rounded-xl shadow-sm p-6 sm:p-8">
           {errorEnvio && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            <div className="mb-6 p-4 bg-[var(--ui-error-fondo)] border border-[var(--ui-error-borde)] text-[var(--ui-error-texto)] rounded-lg text-sm">
               {errorEnvio}
             </div>
           )}
@@ -201,13 +201,13 @@ export default function SolicitudPublicaPage({
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="derecho" className="block text-sm font-medium mb-1.5">
-                Derecho a Ejercer <span className="text-red-500">*</span>
+                Derecho a Ejercer <span className="text-[var(--ui-error-texto)]">*</span>
               </label>
               <select
                 id="derecho"
                 value={derecho}
                 onChange={(e) => setDerecho(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full px-3.5 py-2.5 bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--ui-primario)] focus:outline-none"
               >
                 {portal.derechos.map((d) => (
                   <option key={d} value={d}>
@@ -219,7 +219,7 @@ export default function SolicitudPublicaPage({
 
             <div>
               <label htmlFor="nombre" className="block text-sm font-medium mb-1.5">
-                Nombre y Apellidos del Titular <span className="text-red-500">*</span>
+                Nombre y Apellidos del Titular <span className="text-[var(--ui-error-texto)]">*</span>
               </label>
               <input
                 id="nombre"
@@ -229,13 +229,13 @@ export default function SolicitudPublicaPage({
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
                 placeholder="Ej. María Pérez López"
-                className="w-full px-3.5 py-2.5 bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full px-3.5 py-2.5 bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--ui-primario)] focus:outline-none"
               />
             </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-1.5">
-                Correo Electrónico de Notificación <span className="text-red-500">*</span>
+                Correo Electrónico de Notificación <span className="text-[var(--ui-error-texto)]">*</span>
               </label>
               <input
                 id="email"
@@ -244,7 +244,7 @@ export default function SolicitudPublicaPage({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="ejemplo@correo.com"
-                className="w-full px-3.5 py-2.5 bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full px-3.5 py-2.5 bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--ui-primario)] focus:outline-none"
               />
               <p className="mt-1 text-xs text-[var(--color-text-secondary)]">
                 Utilizaremos este correo únicamente para notificarle la respuesta formal o solicitarle aclaraciones.
@@ -262,7 +262,7 @@ export default function SolicitudPublicaPage({
                 value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}
                 placeholder="Detalle de forma clara qué datos o tratamiento requiere consultar, rectificar o eliminar..."
-                className="w-full px-3.5 py-2.5 bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full px-3.5 py-2.5 bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--ui-primario)] focus:outline-none"
               />
               <div className="flex justify-end mt-1 text-xs text-[var(--color-text-secondary)]">
                 {descripcion.length} / 4000
@@ -272,7 +272,7 @@ export default function SolicitudPublicaPage({
             <button
               type="submit"
               disabled={enviando}
-              className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold rounded-lg text-sm shadow transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] disabled:opacity-50 text-[var(--ui-primario-texto)] font-semibold rounded-lg text-sm shadow transition-colors flex items-center justify-center gap-2"
             >
               {enviando ? "Enviando Solicitud..." : "Enviar Solicitud"}
             </button>
@@ -281,7 +281,7 @@ export default function SolicitudPublicaPage({
           <footer className="mt-8 pt-6 border-t border-[var(--color-border-subtle)] text-center text-xs text-[var(--color-text-secondary)]">
             <Link
               href="/solicitud/seguir"
-              className="text-indigo-600 hover:underline font-medium"
+              className="text-[var(--ui-enlace)] hover:underline font-medium"
             >
               ¿Ya tiene un código de trámite? Consulte aquí el seguimiento
             </Link>

@@ -23,7 +23,7 @@ const PESTANAS: { id: PestanaId; nombre: string }[] = [
   { id: "catalogo", nombre: "Catálogo" },
   { id: "bitacora", nombre: "Bitácora" },
 ];
-const CAMPO = "rounded border border-[var(--ui-borde)] bg-[var(--ui-superficie)] px-2 py-1 text-sm";
+const CAMPO = "rounded border border-[var(--ui-borde-control)] bg-[var(--ui-superficie)] px-2 py-1 text-sm";
 
 export function Etiqueta({ estado }: { estado: Resolucion["estado"] }) {
   const e = ESTADO_RESOLUCION[estado];
