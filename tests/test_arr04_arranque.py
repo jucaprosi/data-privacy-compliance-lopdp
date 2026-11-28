@@ -10,11 +10,13 @@ import sys
 import time
 from pathlib import Path
 
+import pytest
+
 RAIZ = Path(__file__).resolve().parent.parent
 PROHIBIDAS = ("pandas", "openpyxl", "fpdf")
 
-# R2: umbral en segundos. 4,0 s de partida; si la mediana medida en el CI por 1,5 queda por debajo, se usa ese valor.
-# Mediana medida en el CI: 3,000 s (run 46090975869, PR 1140); por 1,5 son 4,5 s, no queda por debajo de 4,0 s: el umbral sigue en 4,0 s.
+# R2: umbral de CPU en segundos = mediana de CPU medida en el CI x 1,5, a la décima, con máximo de 4,0 s.
+# Mediana de CPU medida en el CI: PENDIENTE (fecha y run al medir).
 UMBRAL_S = 4.0
 IMPORTACIONES = 3
 
@@ -48,10 +50,23 @@ def test_r1_main_arranca_sin_pandas_openpyxl_ni_fpdf():
     assert _cargadas(salida) == [], f"import main carga {_cargadas(salida)}: impórtalas dentro de la función"
 
 
-def test_r2_mediana_de_tres_importaciones_bajo_el_umbral():
+def _cpu_de_importar(entorno: dict, modulo_previo: str = "") -> float:
+    """CPU (usuario + sistema) que consume el subproceso, por RUSAGE_CHILDREN antes y después (R2)."""
+    import resource
+    antes = resource.getrusage(resource.RUSAGE_CHILDREN)
+    codigo = f"import {modulo_previo + ', ' if modulo_previo else ''}main"
+    r = subprocess.run([sys.executable, "-c", codigo], cwd=RAIZ, env=entorno, capture_output=True, text=True, timeout=120)
+    despues = resource.getrusage(resource.RUSAGE_CHILDREN)
+    assert r.returncode == 0, f"import main falló: {r.stderr[-2000:]}"
+    return (despues.ru_utime - antes.ru_utime) + (despues.ru_stime - antes.ru_stime)
+
+
+@pytest.mark.skipif(sys.platform != "linux", reason="R2 mide CPU con resource.getrusage, solo disponible en Linux; la R1 sigue")
+def test_r2_mediana_de_cpu_de_tres_importaciones_bajo_el_umbral():
     _importar_main()  # .pyc ya generados
-    mediana = statistics.median(_importar_main()[0] for _ in range(IMPORTACIONES))
-    assert mediana < UMBRAL_S, f"mediana {mediana:.2f} s >= umbral {UMBRAL_S} s"
+    mediana = statistics.median(_cpu_de_importar(_entorno()) for _ in range(IMPORTACIONES))
+    import warnings; warnings.warn(f"ARR04-CPU {mediana:.3f}")  # medición temporal
+    assert mediana < UMBRAL_S, f"mediana de CPU {mediana:.2f} s >= umbral {UMBRAL_S} s"
 
 
 def _con_mutacion(tmp_path, nombre: str, codigo: str) -> subprocess.CompletedProcess:
@@ -69,9 +84,11 @@ def test_m1_un_import_pandas_al_arrancar_da_rojo(tmp_path):
     assert "pandas" in _cargadas(r.stdout), "m1: el detector de R1 debe ver pandas cargado"
 
 
-def test_m2_un_sleep_de_5_s_al_arrancar_supera_el_umbral(tmp_path):
+@pytest.mark.skipif(sys.platform != "linux", reason="R2 mide CPU con resource.getrusage, solo disponible en Linux")
+def test_m2_un_bucle_de_5_s_de_cpu_al_arrancar_supera_el_umbral(tmp_path):
     _importar_main()
-    inicio = time.perf_counter()
-    r = _con_mutacion(tmp_path, "mutacion_m2", "import time\ntime.sleep(5)\n")
-    assert r.returncode == 0, r.stderr[-1000:]
-    assert time.perf_counter() - inicio >= UMBRAL_S, "m2: 5 s de más deben superar el umbral de R2"
+    bucle = ["import time", "t = time.process_time()", "while time.process_time() - t < 5:", "    pass", ""]
+    (tmp_path / "mutacion_m2.py").write_text("\n".join(bucle), encoding="utf-8")
+    entorno = _entorno()
+    entorno["PYTHONPATH"] = os.pathsep.join([str(tmp_path), str(RAIZ), entorno.get("PYTHONPATH", "")])
+    assert _cpu_de_importar(entorno, "mutacion_m2") >= UMBRAL_S, "m2: 5 s de CPU de más deben superar el umbral de R2"
