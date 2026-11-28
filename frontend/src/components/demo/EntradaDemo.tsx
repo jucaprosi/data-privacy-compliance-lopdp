@@ -130,14 +130,14 @@ export default function EntradaDemo({ registrar }: Props) {
     <div className="flex w-full flex-col items-center gap-3" data-testid="demo-entrada"
       {...(demo ? { role: "group", "aria-label": "Entrar como equipo comercial", "aria-describedby": "ayuda-entrada-comercial" } : {})}>
       {terminada && (
-        <p role="status" data-testid="demo-terminada" className="w-full rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+        <p role="status" data-testid="demo-terminada" className="w-full rounded-md bg-[var(--ui-aviso-fondo)] px-3 py-2 text-sm text-[var(--ui-aviso-texto)]">
           {TEXTOS_DEMO.terminada}
         </p>
       )}
       {demo && fase.tipo === "inactiva" && (
         <div className="text-center">
           <h2 className="text-base font-semibold">Soy del equipo comercial</h2>
-          <p id="ayuda-entrada-comercial" className="mt-1 text-sm text-zinc-500">
+          <p id="ayuda-entrada-comercial" className="mt-1 text-sm text-[var(--ui-texto-suave)]">
             Para quienes presentan la demo a una organización. Entras con tu cuenta de Google.
           </p>
         </div>
@@ -146,9 +146,9 @@ export default function EntradaDemo({ registrar }: Props) {
         <div role="status" aria-live="polite" data-testid="demo-progreso" className="w-full">
           <ol className="flex flex-col gap-1.5 text-sm">
             {PASOS_DE_ENTRADA.map((texto, i) => (
-              <li key={texto} className={`flex items-center gap-2 ${i > fase.paso ? "text-zinc-400" : ""}`}>
+              <li key={texto} className={`flex items-center gap-2 ${i > fase.paso ? "text-[var(--ui-texto-suave)]" : ""}`}>
                 {i < fase.paso ? (
-                  <Check aria-hidden="true" className="h-4 w-4 text-emerald-600" />
+                  <Check aria-hidden="true" className="h-4 w-4 text-[var(--ui-exito-texto)]" />
                 ) : i === fase.paso ? (
                   <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
                 ) : (
@@ -158,7 +158,7 @@ export default function EntradaDemo({ registrar }: Props) {
               </li>
             ))}
           </ol>
-          {fase.tardando && <p className="mt-2 text-xs text-zinc-500">{TEXTOS_DEMO.tardando}</p>}
+          {fase.tardando && <p className="mt-2 text-xs text-[var(--ui-texto-suave)]">{TEXTOS_DEMO.tardando}</p>}
         </div>
       )}
       {fase.tipo === "error" && (
@@ -174,7 +174,7 @@ export default function EntradaDemo({ registrar }: Props) {
                   token.current = null;
                   setFase({ tipo: "inactiva" });
                 }}
-                className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm"
+                className="rounded-md border border-[var(--ui-borde-control)] px-3 py-1.5 text-sm"
               >
                 Usar otra cuenta
               </button>
@@ -184,7 +184,7 @@ export default function EntradaDemo({ registrar }: Props) {
                 data-testid="demo-reintentar"
                 disabled={fase.codigo === "DEMO_OCUPADA" && espera409}
                 onClick={() => void intentar()}
-                className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white disabled:opacity-50"
+                className="rounded-md bg-[var(--ui-superficie)] px-3 py-1.5 text-sm text-[var(--foreground)] disabled:opacity-50"
               >
                 {fase.codigo === "DEMO_OCUPADA" ? "Reintentar" : "Intentar de nuevo"}
               </button>
