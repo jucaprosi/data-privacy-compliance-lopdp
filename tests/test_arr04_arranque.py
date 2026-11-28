@@ -47,7 +47,6 @@ def _cargadas(salida: str) -> list[str]:
 def test_r1_main_arranca_sin_pandas_openpyxl_ni_fpdf():
     _importar_main()  # calienta los .pyc
     _, salida = _importar_main(("-X", "importtime"))
-    import warnings; warnings.warn("ARR04-MODULOS %d" % len(json.loads(salida.strip().splitlines()[-1])))  # TEMPORAL
     assert _cargadas(salida) == [], f"import main carga {_cargadas(salida)}: impórtalas dentro de la función"
 
 
@@ -67,6 +66,15 @@ def test_r2_mediana_de_cpu_de_tres_importaciones_bajo_el_umbral():
     _importar_main()  # .pyc ya generados
     mediana = statistics.median(_cpu_de_importar(_entorno()) for _ in range(IMPORTACIONES))
     assert mediana < UMBRAL_S, f"mediana de CPU {mediana:.2f} s >= umbral {UMBRAL_S} s"
+
+
+def test_base_temporal_arr04():  # TEMPORAL: línea base de módulos con -I
+    import warnings
+    codigo = "import json, sys; sys.path.insert(0, %r); import main; print(json.dumps(sorted(sys.modules)))" % str(RAIZ)
+    r = subprocess.run([sys.executable, "-I", "-c", codigo], cwd=RAIZ, env=_entorno(), capture_output=True, text=True, timeout=120)
+    assert r.returncode == 0, r.stderr[-2000:]
+    modulos = json.loads(r.stdout.strip().splitlines()[-1])
+    warnings.warn("ARR04-BASE %d" % len(modulos))
 
 
 def _con_mutacion(tmp_path, nombre: str, codigo: str) -> subprocess.CompletedProcess:
