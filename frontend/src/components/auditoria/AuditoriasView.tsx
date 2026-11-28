@@ -134,8 +134,8 @@ export const AuditoriasView: React.FC<Props> = ({ rolActual = "auditor", usuario
             onClick={() => setTabActiva("auditorias")}
             className={`pb-3 text-sm font-semibold border-b-2 transition-colors ${
               tabActiva === "auditorias"
-                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
-                : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                ? "border-[var(--ui-enlace)] text-[var(--ui-enlace)]"
+                : "border-transparent text-[var(--ui-texto-suave)] hover:text-[var(--ui-texto)]"
             }`}
           >
             Auditorías
@@ -150,8 +150,8 @@ export const AuditoriasView: React.FC<Props> = ({ rolActual = "auditor", usuario
               }}
               className={`pb-3 text-sm font-semibold border-b-2 transition-colors ${
                 tabActiva === "cierres"
-                  ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
-                  : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                  ? "border-[var(--ui-enlace)] text-[var(--ui-enlace)]"
+                  : "border-transparent text-[var(--ui-texto-suave)] hover:text-[var(--ui-texto)]"
               }`}
             >
               Cierres por verificar
