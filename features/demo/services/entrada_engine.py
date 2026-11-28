@@ -20,10 +20,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
 from app_core.db.session import fijar_contexto_rls
+from app_core.errors import CodigoErrorNegocio
 from app_core.pasillo import organizacion as pasillo_organizacion
 from features.demo.domain import vendedores
 from features.demo.domain.contrato import EstadoDemo, ordenar
-from features.demo.domain.errores import DEMO_NO_AUTORIZADO, DEMO_NO_DISPONIBLE, DEMO_OCUPADA, ErrorDemo
+from features.demo.domain.errores import DEMO_NO_AUTORIZADO, DEMO_NO_DISPONIBLE, DEMO_OCUPADA, ErrorDemo, registrar
 from features.demo.domain.eventos import EventoDemo
 from features.demo.domain.personas import ETIQUETAS, ROL_INICIAL, PersonaDemo
 from features.demo.domain.plantilla import ORDEN_DE_SALAS, PLANTILLA_TENANT_ID, MapaIds
@@ -34,6 +35,21 @@ from features.demo.services import cierre_engine
 _log = logging.getLogger(__name__)
 
 Clonador = Callable[[AsyncSession, str, str, MapaIds], Awaitable[MapaIds]]
+
+#: DEMO-13 R1: a alguna sala de `ORDEN_DE_SALAS` le falta `clonar_desde_plantilla`; la demo no arranca.
+DEMO_INCOMPLETA = CodigoErrorNegocio("DEMO_INCOMPLETA", 503, "La demo está incompleta: faltan salas por preparar")
+registrar(DEMO_INCOMPLETA)
+
+
+class DemoIncompleta(ErrorDemo):
+    """`DEMO_INCOMPLETA` (503) con las salas sin clon, en el orden de `ORDEN_DE_SALAS`."""
+
+    def __init__(self, salas: list[str]) -> None:
+        super().__init__(DEMO_INCOMPLETA)
+        self.salas = tuple(salas)
+
+    def cuerpo(self) -> dict[str, object]:  # type: ignore[override]
+        return {**super().cuerpo(), "salas": list(self.salas)}
 
 
 def _clonador(sala: str) -> Clonador | None:
@@ -48,20 +64,21 @@ def _clonador(sala: str) -> Clonador | None:
     return getattr(modulo, "clonar_desde_plantilla", None)
 
 
-async def copiar_plantilla(session: AsyncSession, destino: str) -> tuple[MapaIds, list[str]]:
+async def copiar_plantilla(session: AsyncSession, destino: str) -> MapaIds:
     """Orquestador: llama a cada sala en `ORDEN_DE_SALAS` con el mapa que acumulan las anteriores.
 
-    Devuelve el mapa final y las salas omitidas por no tener clon registrado. Cualquier fallo se propaga.
+    Todas o ninguna (DEMO-13 R1): antes de copiar comprueba que cada sala registra su clon; si falta
+    alguna, lanza `DEMO_INCOMPLETA` con sus nombres sin llamar a ningún clon. Cualquier fallo se propaga.
     """
+    clonadores = [(sala, _clonador(sala)) for sala in ORDEN_DE_SALAS]
+    faltan = [sala for sala, clonar in clonadores if clonar is None]
+    if faltan:
+        _log.error("DEMO-13: salas sin clonar_desde_plantilla registrado: %s", ", ".join(faltan))
+        raise DemoIncompleta(faltan)
     mapa: MapaIds = {}
-    omitidas: list[str] = []
-    for sala in ORDEN_DE_SALAS:
-        clonar = _clonador(sala)
-        if clonar is None:
-            omitidas.append(sala)
-            continue
+    for _sala, clonar in clonadores:
         mapa = await clonar(session, PLANTILLA_TENANT_ID, destino, mapa)
-    return mapa, omitidas
+    return mapa
 
 
 async def _personas(session: AsyncSession, tenant_id: str) -> list[PersonaDemo]:
@@ -105,7 +122,7 @@ async def _abrir(session: AsyncSession, sub: str, email: str, ahora: datetime) -
         raise ErrorDemo(DEMO_OCUPADA)
 
     destino = f"demo-{uuid.uuid4().hex}"
-    _mapa, omitidas = await copiar_plantilla(session, destino)
+    await copiar_plantilla(session, destino)
     personas = await _personas(session, destino)
     admin = next((p for p in personas if p.rol == ROL_INICIAL), None)
     if admin is None:
@@ -114,7 +131,7 @@ async def _abrir(session: AsyncSession, sub: str, email: str, ahora: datetime) -
     await fijar_contexto_rls(session, destino, admin.usuario_id)
     await registrar_evento(
         session, destino, cierre_engine.ENTIDAD, sesion.id, EventoDemo.DEMO_INICIADA.value, admin.usuario_id,
-        {"vendedor_email": email, "salas_omitidas": [f"{s}: sin clonar_desde_plantilla registrado" for s in omitidas]},
+        {"vendedor_email": email},
     )
     organizacion = await pasillo_organizacion.configuracion_de_organizacion(session, destino)
     return EstadoDemo(destino, organizacion["nombre_comercial"], admin, tuple(personas), _vence_en(ahora))
