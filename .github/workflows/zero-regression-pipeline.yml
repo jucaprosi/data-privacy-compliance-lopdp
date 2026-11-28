@@ -300,9 +300,14 @@ jobs:
     # Las pruebas simulan la API (page.route), asi que no necesitan backend ni secretos. Decide por si mismo, con
     # seleccionar_pruebas.py, si hay especificaciones: sin ellas, o en un push cubierto por R1, termina en verde
     # antes de instalar Node.
+    # CI-39: cuatro shards en paralelo con las mismas pruebas; el estado final lo resume playwright-resultado.
     name: Playwright Frontend
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     permissions:
       contents: read
       actions: read
@@ -366,14 +371,30 @@ jobs:
         env:
           CI: "true"
           SPECS: ${{ steps.seleccion.outputs.playwright_specs }}
-        run: npx playwright test $SPECS
+        run: npx playwright test $SPECS --shard=${{ matrix.shard }}/4
 
       - name: Upload Playwright Report
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}
           path: |
             frontend/playwright-report/
             frontend/test-results/
           retention-days: 7
+
+  # CI-39: un solo estado para la proteccion de rama. Verde si todos los shards pasaron o saltaron (sin
+  # especificaciones, o cubierto por el PR); rojo si alguno fallo o se cancelo.
+  playwright-resultado:
+    name: playwright-resultado
+    needs: playwright
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Resumir los shards de Playwright
+        env:
+          RESULTADO: ${{ needs.playwright.result }}
+        run: |
+          echo "Shards de Playwright: $RESULTADO"
+          test "$RESULTADO" = "success" || { echo "Algun shard de Playwright fallo o fue cancelado."; exit 1; }
