@@ -81,7 +81,38 @@ export default defineConfig({
     screenshot: "only-on-failure",
     video: "off",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  // QA-17 R2 y R3: escritorio y móvil, en claro y en oscuro. El tema se guarda donde lo guarda la app
+  // (jubys-audit-storage, FE-41) antes de cargar la página: tema-inicial.js lo pone en <html> al pintar.
+  projects: [
+    {
+      name: "escritorio-claro",
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: { cookies: [], origins: [{ origin: BASE_URL, localStorage: [{ name: "jubys-audit-storage", value: '{"state":{"theme":"light"},"version":6}' }] }] },
+      },
+    },
+    {
+      name: "escritorio-oscuro",
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: { cookies: [], origins: [{ origin: BASE_URL, localStorage: [{ name: "jubys-audit-storage", value: '{"state":{"theme":"dark"},"version":6}' }] }] },
+      },
+    },
+    {
+      name: "movil-claro",
+      use: {
+        ...devices["Pixel 7"],
+        storageState: { cookies: [], origins: [{ origin: BASE_URL, localStorage: [{ name: "jubys-audit-storage", value: '{"state":{"theme":"light"},"version":6}' }] }] },
+      },
+    },
+    {
+      name: "movil-oscuro",
+      use: {
+        ...devices["Pixel 7"],
+        storageState: { cookies: [], origins: [{ origin: BASE_URL, localStorage: [{ name: "jubys-audit-storage", value: '{"state":{"theme":"dark"},"version":6}' }] }] },
+      },
+    },
+  ],
   webServer: [
     {
       command: "python tests/humo/servidor_humo.py",
