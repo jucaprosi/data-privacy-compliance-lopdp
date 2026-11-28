@@ -2,7 +2,7 @@
 id = "SEC-26"
 titulo = "Matriz del operador de la plataforma: ninguna ruta de organización le responde con datos"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 129
 sala = "organizacion"
 depende_de = []
