@@ -193,7 +193,7 @@ export default function FileMenu() {
   /* ----------------------------------------------------------------------- */
 
   const claseItem =
-    "w-full flex items-center justify-between gap-6 px-2.5 py-1.5 rounded text-[11px] text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white focus:bg-[var(--ui-boton)] focus:text-white focus:outline-none cursor-pointer transition";
+    "w-full flex items-center justify-between gap-6 px-2.5 py-1.5 rounded text-[11px] text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] focus:bg-[var(--ui-boton)] focus:text-[var(--foreground)] focus:outline-none cursor-pointer transition";
 
   return (
     <div ref={contenedorRef} className="relative flex items-center space-x-2">
@@ -204,8 +204,8 @@ export default function FileMenu() {
         aria-expanded={abierto}
         className={`flex items-center space-x-1 px-2 py-1 rounded text-[11px] font-medium transition cursor-pointer ${
           abierto
-            ? "bg-[var(--ui-boton)] text-white"
-            : "text-[var(--ui-texto-suave)] hover:text-white hover:bg-[var(--ui-boton)]"
+            ? "bg-[var(--ui-boton)] text-[var(--foreground)]"
+            : "text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] hover:bg-[var(--ui-boton)]"
         }`}
       >
         <span>Archivo</span>
@@ -242,7 +242,7 @@ export default function FileMenu() {
               role="menuitem"
               aria-haspopup="menu"
               aria-expanded={submenuRecientes}
-              className={`${claseItem} ${submenuRecientes ? "bg-[var(--ui-boton)] text-white" : ""}`}
+              className={`${claseItem} ${submenuRecientes ? "bg-[var(--ui-boton)] text-[var(--foreground)]" : ""}`}
               onClick={() => setSubmenuRecientes((v) => !v)}
               onKeyDown={(e) => {
                 if (e.key === "ArrowRight") setSubmenuRecientes(true);
@@ -272,7 +272,7 @@ export default function FileMenu() {
                         key={r.id}
                         type="button"
                         role="menuitem"
-                        className="w-full flex flex-col items-start px-2.5 py-1.5 rounded text-[11px] text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white focus:bg-[var(--ui-boton)] focus:text-white focus:outline-none cursor-pointer transition"
+                        className="w-full flex flex-col items-start px-2.5 py-1.5 rounded text-[11px] text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] hover:text-[var(--foreground)] focus:bg-[var(--ui-boton)] focus:text-[var(--foreground)] focus:outline-none cursor-pointer transition"
                         onClick={() => conConfirmacion({ tipo: "abrir", id: r.id })}
                       >
                         <span className="w-full truncate text-left">{r.nombre}</span>
@@ -377,9 +377,9 @@ function DialogoProyecto({
   }, [onCerrar]);
 
   const botonSecundario =
-    "px-3.5 py-1.5 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-zinc-300 hover:text-white text-xs font-medium transition cursor-pointer";
+    "px-3.5 py-1.5 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] text-xs font-medium transition cursor-pointer";
   const botonPrimario =
-    "px-3.5 py-1.5 rounded-lg bg-[#9a3bf1] hover:bg-[#8529e0] text-white text-xs font-semibold transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
+    "px-3.5 py-1.5 rounded-lg bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] text-xs font-semibold transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
 
   return (
     <div
@@ -395,11 +395,11 @@ function DialogoProyecto({
         className="w-full max-w-md rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-2xl"
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--ui-borde)]">
-          <h2 className="text-xs font-bold text-white uppercase tracking-wider">{titulo}</h2>
+          <h2 className="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">{titulo}</h2>
           <button
             type="button"
             onClick={onCerrar}
-            className="text-[var(--ui-texto-suave)] hover:text-white transition cursor-pointer"
+            className="text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] transition cursor-pointer"
             aria-label="Cerrar"
           >
             <X className="w-4 h-4" />
@@ -421,9 +421,9 @@ function DialogoProyecto({
                   className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-[var(--ui-boton)] border border-transparent hover:border-[var(--ui-borde)] transition cursor-pointer"
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs font-semibold text-white truncate">{p.nombre}</span>
+                    <span className="text-xs font-semibold text-[var(--foreground)] truncate">{p.nombre}</span>
                     {p.id === proyectoActivoId && (
-                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#9a3bf1]/15 text-[#9a3bf1] border border-[#9a3bf1]/30 shrink-0">
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-info-fondo)] text-[var(--ui-enlace)] border border-[color:var(--ui-info-borde)] shrink-0">
                         Activo
                       </span>
                     )}
@@ -461,7 +461,7 @@ function DialogoProyecto({
                   }
                 }}
                 maxLength={120}
-                className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-lg px-3 py-2 text-zinc-100 text-xs focus:outline-none focus:border-[#9a3bf1] transition select-text"
+                className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded-lg px-3 py-2 text-[var(--foreground)] text-xs focus:outline-none focus:border-[color:var(--ui-primario)] transition select-text"
               />
             </label>
             <p className="text-[10px] text-[var(--ui-texto-suave)] leading-relaxed">
@@ -482,8 +482,8 @@ function DialogoProyecto({
         {dialogo.tipo === "confirmar" && (
           <div className="p-4 space-y-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-4 h-4 text-[#ffab00] shrink-0 mt-0.5" />
-              <p className="text-[11px] text-zinc-300 leading-relaxed">
+              <AlertTriangle className="w-4 h-4 text-[var(--ui-aviso-texto)] shrink-0 mt-0.5" />
+              <p className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed">
                 El proyecto actual tiene cambios sin guardar. Si continúas sin guardarlos, se
                 perderán.
                 {!puedeGuardarDirecto && (
@@ -500,7 +500,7 @@ function DialogoProyecto({
               <button
                 type="button"
                 onClick={() => onDescartar(dialogo.accion)}
-                className="px-3.5 py-1.5 rounded-lg bg-[#ff1744]/15 hover:bg-[#ff1744]/25 border border-[#ff1744]/30 text-[#ff1744] text-xs font-semibold transition cursor-pointer"
+                className="px-3.5 py-1.5 rounded-lg bg-[var(--ui-error-fondo)] hover:bg-[var(--ui-error-fondo)] border border-[color:var(--ui-error-borde)] text-[var(--ui-error-texto)] text-xs font-semibold transition cursor-pointer"
               >
                 Descartar cambios
               </button>
