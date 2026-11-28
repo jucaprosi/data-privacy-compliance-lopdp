@@ -152,6 +152,7 @@ def test_r9_el_intento_correcto_registra_tokens_intento_y_duracion(nombre, bucle
                      "intento=1", "42.0"):
         assert esperado in avisos[0]
     assert SECRETO_PROMPT not in caplog.text and ok not in avisos[0]
+    assert "Fallo" not in avisos[0]  # el CTO cuenta fallos buscando esa cadena
 
 
 def test_r9_sin_usage_metadata_no_registra_ni_falla(reloj, caplog):

@@ -165,7 +165,7 @@ def _registrar_uso(etiqueta: str, respuesta, intento: int, duracion: float) -> N
     logger.info("%s: uso %s intento=%d duracion=%.1fs", etiqueta, " ".join(cifras), intento, duracion)
 
 
-async def _con_plazo(etiqueta: str, llamar):
+async def _con_plazo(etiqueta: str, fallo: str, llamar):
     """IA-18 R1-R3 y R5: `llamar(plazo_ms)` con un reintento solo ante 429/503/504 y solo si cabe en el plazo total."""
     inicio = _reloj()
     intento = 1
@@ -178,12 +178,12 @@ async def _con_plazo(etiqueta: str, llamar):
             return salida
         except Exception as exc:  # noqa: BLE001
             duracion = _reloj() - desde
-            logger.warning("%s: %s intento=%d duracion=%.1fs", etiqueta, _describir(exc), intento, duracion)
+            logger.warning("%s: %s intento=%d duracion=%.1fs", fallo, _describir(exc), intento, duracion)
             if intento == 1 and _transitorio(exc):
                 if PLAZO_TOTAL_S - (_reloj() - inicio) >= duracion:
                     intento = 2
                     continue
-                logger.warning("%s: reintento omitido por plazo", etiqueta)
+                logger.warning("%s: reintento omitido por plazo", fallo)
             raise
 
 
@@ -221,7 +221,7 @@ async def _generar(
                 raise ValueError("respuesta vacía")
             return esquema.model_validate_json(texto), respuesta
 
-        return await _con_plazo("Fallo de inferencia Vertex", llamar)
+        return await _con_plazo("Inferencia Vertex", "Fallo de inferencia Vertex", llamar)
     except InferenciaNoDisponible:
         raise
     except Exception as exc:  # noqa: BLE001
@@ -313,7 +313,7 @@ async def transcribir_pdf(pdf: bytes, prompt: PromptVersionado, *, modelo: str) 
                 raise ValueError("respuesta vacía")
             return texto, respuesta
 
-        texto, respuesta = await _con_plazo("Fallo de transcripción Vertex", llamar)
+        texto, respuesta = await _con_plazo("Transcripción Vertex", "Fallo de transcripción Vertex", llamar)
     except InferenciaNoDisponible:
         raise
     except Exception as exc:  # noqa: BLE001
@@ -347,7 +347,7 @@ async def generar_trazado_sin_tope(
                 raise ValueError("respuesta vacía")
             return esquema.model_validate_json(texto), respuesta
 
-        resultado, respuesta = await _con_plazo("Fallo de inferencia Vertex", llamar)
+        resultado, respuesta = await _con_plazo("Trazado Vertex", "Fallo de inferencia Vertex", llamar)
     except InferenciaNoDisponible:
         raise
     except Exception as exc:  # noqa: BLE001
