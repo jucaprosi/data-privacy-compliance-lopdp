@@ -69,6 +69,27 @@ def test_r2_mediana_de_cpu_de_tres_importaciones_bajo_el_umbral():
     assert mediana < UMBRAL_S, f"mediana de CPU {mediana:.2f} s >= umbral {UMBRAL_S} s"
 
 
+def test_diag_temporal_arr04():  # TEMPORAL: se quita tras la medición
+    import glob
+    import resource
+    import warnings
+    sonda = ("import sys,os;print('FLAGS',sys.flags.dont_write_bytecode,repr(os.environ.get('PYTHONDONTWRITEBYTECODE')),"
+             "sys.pycache_prefix);import main")
+    env = _entorno()
+    lineas = [f"env_pytest PYTHONDONTWRITEBYTECODE={os.environ.get('PYTHONDONTWRITEBYTECODE')!r} cpus={os.cpu_count()}"]
+    lineas.append("pyc_main=%d pyc_features=%d" % (len(glob.glob(str(RAIZ / "__pycache__" / "main*.pyc"))),
+                                                  len(glob.glob(str(RAIZ / "features" / "**" / "__pycache__" / "*.pyc"), recursive=True))))
+    for i in range(4):
+        t0 = time.perf_counter()
+        p = subprocess.Popen([sys.executable, "-c", sonda], cwd=RAIZ, env=env, stdout=subprocess.PIPE, text=True)
+        salida = p.stdout.read()
+        _, estado, ru = os.wait4(p.pid, 0)
+        p.returncode = 0
+        reloj = time.perf_counter() - t0
+        lineas.append(f"m{i}: wait4 utime={ru.ru_utime:.2f} stime={ru.ru_stime:.2f} reloj={reloj:.2f} {salida.splitlines()[0] if salida else ''}")
+    warnings.warn("ARR04-DIAG " + " | ".join(lineas))
+
+
 def _con_mutacion(tmp_path, nombre: str, codigo: str) -> subprocess.CompletedProcess:
     """Copia de la raíz sin tocar el árbol: un módulo mutado va delante en sys.path y se importa antes que `main`."""
     (tmp_path / f"{nombre}.py").write_text(codigo, encoding="utf-8")
