@@ -2,7 +2,7 @@
 id = "ARR-02"
 titulo = "La sala NIIF 18 importa pandas al usarlo"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 121
 sala = "niif18"
 depende_de = []

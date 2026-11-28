@@ -3,12 +3,17 @@
 Reportes NIIF 18: paquete Excel de cierre e informe de diagnóstico.
 [¤niif18-reportes]
 """
-import io
+from __future__ import annotations
 
-import pandas as pd
+import io
+from typing import TYPE_CHECKING
+
 from fpdf import FPDF
 
 from features.niif18.engines.financials_engine import estructurar_estado_resultados
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 _ETIQUETA_MPM = {
     "nombre": "Métrica", "subtotal_base": "Anclaje NIIF 18", "valor_base": "Base NIIF 18",
@@ -18,6 +23,8 @@ _ETIQUETA_MPM = {
 
 
 def _hojas_analiticas(diagnostico: dict | None, recomendaciones: dict | None) -> dict[str, pd.DataFrame]:
+    import pandas as pd
+
     hojas: dict[str, pd.DataFrame] = {}
     if diagnostico:
         hojas["Diagnostico"] = pd.DataFrame([
@@ -41,6 +48,8 @@ def generar_excel_estado_resultados(df: pd.DataFrame, mpm_registros: list[dict] 
                                     diagnostico: dict | None = None,
                                     recomendaciones: dict | None = None) -> bytes:
     """Paquete Excel en memoria: estado de resultados, trazabilidad, MPM, diagnóstico y hoja de ruta."""
+    import pandas as pd
+
     salida = io.BytesIO()
     estado = pd.DataFrame(estructurar_estado_resultados(df)).rename(
         columns={"concepto": "Concepto", "monto": "Monto", "tipo": "Tipo"})
