@@ -56,7 +56,7 @@ function FilaOrganizacion({ fila, activa, onEntrar }: { fila: FilaCartera; activ
           <button
             type="button"
             onClick={() => onEntrar(fila)}
-            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--ui-borde)] cursor-pointer"
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--ui-borde-control)] cursor-pointer"
           >
             Entrar en {fila.nombre}
           </button>
@@ -144,7 +144,7 @@ export default function CarteraTablero() {
       {estado.fase === "error" && (
         <div role="alert" className="badge-render-danger p-3 rounded-xl text-xs flex items-center justify-between gap-3">
           <span>No pudimos cargar tu cartera. Inténtalo de nuevo.</span>
-          <button type="button" onClick={() => setIntento((n) => n + 1)} className="px-3 py-1 rounded-lg border border-[var(--ui-borde)] font-semibold cursor-pointer">Reintentar</button>
+          <button type="button" onClick={() => setIntento((n) => n + 1)} className="px-3 py-1 rounded-lg border border-[var(--ui-borde-control)] font-semibold cursor-pointer">Reintentar</button>
         </div>
       )}
       {error && <p role="alert" className="badge-render-danger p-3 rounded-xl text-xs">{error}</p>}
@@ -173,8 +173,8 @@ export default function CarteraTablero() {
               Son de {activa?.nombre_comercial ?? "la organización actual"} y no pasarán a {pendiente.nombre}. ¿Qué hacemos con ellos antes de cambiar?
             </p>
             <div className="flex flex-col gap-2">
-              <button type="button" onClick={() => resolver("guardar")} className="rounded-md border border-[var(--ui-borde)] px-3 py-2 text-sm font-semibold cursor-pointer">Guardar y cambiar</button>
-              <button type="button" onClick={() => resolver("descartar")} className="rounded-md border border-[var(--ui-borde)] px-3 py-2 text-sm cursor-pointer">Descartar y cambiar</button>
+              <button type="button" onClick={() => resolver("guardar")} className="rounded-md border border-[var(--ui-borde-control)] px-3 py-2 text-sm font-semibold cursor-pointer">Guardar y cambiar</button>
+              <button type="button" onClick={() => resolver("descartar")} className="rounded-md border border-[var(--ui-borde-control)] px-3 py-2 text-sm cursor-pointer">Descartar y cambiar</button>
               <button type="button" onClick={() => setPendiente(null)} className="px-3 py-2 text-sm text-[var(--ui-texto-suave)] cursor-pointer">Cancelar</button>
             </div>
           </div>
