@@ -2,7 +2,7 @@
 id = "ARR-03"
 titulo = "Las exportaciones de RAT y de la biblioteca importan sus librerías al usarlas"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 tanda = 121
 sala = "rat, biblioteca"
 depende_de = []
