@@ -164,8 +164,18 @@ async function razonesDeBorde(page: Page, selector: string): Promise<number[]> {
       for (let n = el; n; n = n.parentElement) { const c = rgb(getComputedStyle(n).backgroundColor); if (c[3] > 0.5) return c; }
       return document.documentElement.classList.contains("theme-dark") ? [10, 10, 12, 1] : [255, 255, 255, 1];
     };
-    return Array.from(document.querySelectorAll(sel)).filter((el) => parseFloat(getComputedStyle(el).borderTopWidth) > 0)
-      .map((el) => { const a = lum(rgb(getComputedStyle(el).borderTopColor)), b = lum(fondo(el.parentElement)); return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); });
+    // Un borde con estilo none/hidden, ancho 0 o alfa 0 no se ve: no es un indicador visual (WCAG 1.4.11).
+    const visible = (el: Element) => {
+      const e = getComputedStyle(el);
+      return e.borderTopStyle !== "none" && e.borderTopStyle !== "hidden" && parseFloat(e.borderTopWidth) > 0 && rgb(e.borderTopColor)[3] > 0;
+    };
+    return Array.from(document.querySelectorAll(sel)).filter(visible)
+      .map((el) => {
+        const f = fondo(el.parentElement), [r, g, b, alfa] = rgb(getComputedStyle(el).borderTopColor);
+        const sobre = [r, g, b].map((v, i) => v * alfa + f[i] * (1 - alfa)); // el color semitransparente se compone sobre el fondo efectivo
+        const a = lum(sobre), c = lum(f);
+        return (Math.max(a, c) + 0.05) / (Math.min(a, c) + 0.05);
+      });
   }, selector);
 }
 
