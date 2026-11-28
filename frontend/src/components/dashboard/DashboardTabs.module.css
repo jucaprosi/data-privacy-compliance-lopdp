@@ -1,6 +1,6 @@
 /* © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita. */
 .tabs { display: flex; gap: 8px; border-bottom: 1px solid #444063; }
-.tabs button { border: 1px solid transparent; border-bottom: 0; border-radius: 9px 9px 0 0; padding: 10px 16px; background: transparent; color: #bfc3d7; font-size: 12px; font-weight: 700; cursor: pointer; }
+.tabs button { border: 1px solid var(--ui-borde-control); border-bottom: 0; border-radius: 9px 9px 0 0; padding: 10px 16px; background: transparent; color: #bfc3d7; font-size: 12px; font-weight: 700; cursor: pointer; }
 .tabs button:hover { color: #fff; background: #211e37; }
 .tabs button:focus-visible { outline: 2px solid #9be5d4; outline-offset: 2px; }
 .tabs button.active { color: #fff; background: var(--ui-superficie-2); border-color: var(--ui-primario); }
