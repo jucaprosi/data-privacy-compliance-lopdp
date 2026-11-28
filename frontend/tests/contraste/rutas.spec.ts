@@ -266,3 +266,32 @@ test("los archivos de pendientes solo nombran rutas y vistas que existen", () =>
   const huerfanas = [...PENDIENTES.keys()].filter((l) => (l.startsWith("vista:") ? !vistas.has(l.slice(6)) : !rutas.has(l)));
   expect(huerfanas, "líneas de pendientes sin ruta ni vista (¿se borró o se renombró?)").toEqual([]);
 });
+
+// ---------------------------------------------------------------- prueba de control del medidor (FE-43 R4)
+test("el medidor de bordes distingue un borde bajo, uno suficiente y uno transparente", async ({ page }) => {
+  const ruta = rutasDeProducto().find((r) => !PENDIENTES.has(r));
+  if (!ruta) throw new Error("No hay una ruta ya medida donde abrir el control.");
+  for (const tema of TEMAS) {
+    await page.goto("about:blank"); // ponerTema solo espera la clase con una página ya cargada
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await fijarAjustes(page, { modo: "headers", tenant: TENANT_PRUEBA });
+    await simular(page, "datos");
+    await ponerTema(page, tema);
+    await page.goto(concreta(ruta));
+    await ponerTema(page, tema);
+    await page.evaluate(() => {
+      const caja = document.createElement("div");
+      caja.id = "control-fe43";
+      caja.style.background = "var(--background)";
+      caja.innerHTML =
+        '<input id="c-bajo" style="border:1px solid var(--ui-borde)">' +
+        '<input id="c-ok" style="border:1px solid var(--ui-borde-control)">' +
+        '<button id="c-transparente" class="border border-transparent">x</button>';
+      document.body.appendChild(caja);
+    });
+    expect((await razonesDeBorde(page, "#c-bajo")).every((r) => r < 3), `borde bajo · ${tema}`).toBe(true);
+    expect((await razonesDeBorde(page, "#c-bajo")).length, `borde bajo medido · ${tema}`).toBe(1);
+    expect((await razonesDeBorde(page, "#c-ok")).filter((r) => r >= 3).length, `borde suficiente · ${tema}`).toBe(1);
+    expect(await razonesDeBorde(page, "#c-transparente"), `borde transparente · ${tema}`).toEqual([]);
+  }
+});
