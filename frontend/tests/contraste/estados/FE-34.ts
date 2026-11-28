@@ -29,3 +29,24 @@ export const ESTADOS: Record<string, (page: Page) => Promise<void>> = {
     await page.evaluate((t) => { document.documentElement.classList.remove("theme-light", "theme-dark"); document.documentElement.classList.add(t); }, tema);
   },
 };
+
+/**
+ * Preparaciones que corren antes de `page.goto` (FE-42 R3a). `vista:configuracion` solo está en el dock en modo `alta`
+ * (`vistasPermitidas`, dashboardNavigation.ts): se siembra el store local sin configurar para que el tablero arranque ahí.
+ */
+export const PREPARACIONES: Record<string, (page: Page) => Promise<void>> = {
+  "vista:configuracion": async (page) => {
+    await page.addInitScript(() => {
+      try {
+        // La misma clave guarda el tema que fija la prueba: se fusiona, no se pisa.
+        const previo = JSON.parse(window.localStorage.getItem("jubys-audit-storage") ?? "{}");
+        window.localStorage.setItem(
+          "jubys-audit-storage",
+          JSON.stringify({ version: 6, ...previo, state: { ...previo.state, isConfigured: false, normativaSeleccionada: null, activeView: "configuracion" } }),
+        );
+      } catch {
+        // Almacenamiento bloqueado: el tablero arranca sin configurar de todos modos.
+      }
+    });
+  },
+};
