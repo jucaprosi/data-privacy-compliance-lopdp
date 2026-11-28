@@ -24,6 +24,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { medirContraste } from "../contraste";
 import { fijarAjustes, TENANT_PRUEBA } from "../auth/utilesAuth";
 import { barraDeMenus, configurarProyecto } from "../utiles";
+import { ajenasDe, leerFichas, pendientesPropias, type Ajena } from "./ajenas";
 import { MENUS, SUBMENUS, type Submenu } from "@/components/layout/menus";
 import { modulosNavegacionNIIF } from "@/components/layout/dashboardNavigation";
 import * as M33 from "./estados/FE-33";
@@ -39,12 +40,14 @@ const TEMAS = ["theme-light", "theme-dark"] as const; // claro primero (R1)
 const ANCHOS = [375, 1280] as const;
 const ESTADOS = ["carga", "vacio", "error", "datos", "foco"] as const;
 type Estado = (typeof ESTADOS)[number];
-const FICHAS: { ESTADOS: Record<string, (page: Page) => Promise<void>>; APERTURAS?: Record<string, (page: Page) => Promise<void>>; PREPARACIONES?: Record<string, (page: Page) => Promise<void>> }[] = [M33, M34, M35, M36, M37, M38, M39];
+const FICHAS: { ESTADOS: Record<string, (page: Page) => Promise<void>>; APERTURAS?: Record<string, (page: Page) => Promise<void>>; PREPARACIONES?: Record<string, (page: Page) => Promise<void>>; SIN_CONFIGURAR?: Set<string> }[] = [M33, M34, M35, M36, M37, M38, M39];
 const MODULOS = FICHAS.map((m) => m.ESTADOS);
 /** Aperturas de vistas que no son submenús (p. ej. las NIIF), declaradas por los módulos de estados (clave `vista:<id>`). */
 const APERTURAS = Object.assign({}, ...FICHAS.map((m) => m.APERTURAS ?? {})) as Record<string, (page: Page) => Promise<void>>;
 /** Preparaciones de las rutas (clave: la ruta), que se ejecutan antes de `page.goto` (R5): p. ej. simular la respuesta de un token. */
 const PREPARACIONES = Object.assign({}, ...FICHAS.map((m) => m.PREPARACIONES ?? {})) as Record<string, (page: Page) => Promise<void>>;
+/** R5 (FE-44): vistas (`vista:<id>`) que se miden sin `configurarProyecto`: marca explícita de cada `estados/FE-NN.ts`, no se deduce de una preparación. */
+const SIN_CONFIGURAR = new Set<string>(FICHAS.flatMap((m) => [...(m.SIN_CONFIGURAR ?? [])]));
 /** Estados que declaran los módulos de cada ficha para una ruta o vista (clave «<unidad> · <estado>»). */
 export function estadosDeclarados(unidad: string): [string, (page: Page) => Promise<void>][] {
   return MODULOS.flatMap((m) => Object.entries(m)).filter(([k]) => k.startsWith(`${unidad} · `)).map(([k, f]) => [k.slice(unidad.length + 3), f]);
@@ -73,20 +76,28 @@ export function vistasDelTablero(): string[] {
   return [...new Set([...SUBMENUS.map((s) => s.vista as string), ...modulosNavegacionNIIF.map((m) => m.id as string)])].sort();
 }
 
-/** Líneas de `pendientes/FE-NN.txt`: una ruta (`/…`) o vista (`vista:<id>`) por línea; `#` abre un comentario. */
+/** Fichas de `governance/tareas` (R4): `estado` y `propiedad` leídos como texto. */
+const FICHAS_TAREAS = () => leerFichas(join(RAIZ, "..", "governance", "tareas"));
+
+/** R2 (FE-44): líneas de `pendientes/FE-NN.txt`, una ruta (`/…`) o vista (`vista:<id>`) por línea. Solo admite archivos de la propiedad de su ficha. */
 export function pendientes(): Map<string, string> {
-  const dir = join(__dirname, "pendientes");
-  const mapa = new Map<string, string>();
-  for (const f of readdirSync(dir).filter((n) => /^FE-\d+\.txt$/.test(n)).sort()) {
-    for (const linea of readFileSync(join(dir, f), "utf8").split(/\r?\n/)) {
-      const t = linea.split("#")[0].trim(); // «<ruta o vista>  # <archivo que la justifica>»
-      if (t && !mapa.has(t)) mapa.set(t, f.replace(".txt", "")); // en varias listas: se mide cuando salga de la última
-    }
-  }
-  return mapa;
+  return pendientesPropias(join(__dirname, "pendientes"), FICHAS_TAREAS());
+}
+
+/** R3 (FE-44): líneas de `ajenas/FE-NN.txt`; quedan pendientes (`test.fixme`) mientras la ficha dueña del archivo no esté hecha. */
+export function ajenas(): Map<string, Ajena> {
+  return ajenasDe(join(__dirname, "ajenas"), FICHAS_TAREAS());
 }
 
 const PENDIENTES = pendientes();
+const AJENAS = ajenas();
+/** Razón de pendiente de una unidad: su propia lista (R2) o una ajena con la dueña sin hacer (R3); `undefined` si se mide. */
+const razonDePendiente = (unidad: string) => {
+  const propia = PENDIENTES.get(unidad);
+  if (propia) return `pendiente de ${propia}`;
+  const ajena = AJENAS.get(unidad);
+  return ajena?.pendiente ? `${ajena.etiqueta}, anotada por ${ajena.ficha}` : undefined;
+};
 const concreta = (ruta: string) => ruta.replace(/\[[^\]]+\]/g, "ejemplo");
 
 // ---------------------------------------------------------------- simulación de la API
@@ -205,12 +216,12 @@ async function medirEstado(page: Page, ruta: string, estado: Estado, tema: strin
 
 // ---------------------------------------------------------------- rutas
 for (const ruta of rutasDeProducto()) {
-  const dueña = PENDIENTES.get(ruta);
+  const razon = razonDePendiente(ruta);
   for (const tema of TEMAS) {
     for (const ancho of ANCHOS) {
       const nombre = `${ruta} · ${tema} · ${ancho} px`;
-      if (dueña) {
-        test.fixme(`${nombre} (pendiente de ${dueña})`, async () => {});
+      if (razon) {
+        test.fixme(`${nombre} (${razon})`, async () => {});
         continue;
       }
       test(nombre, async ({ page }) => {
@@ -230,7 +241,7 @@ async function medirVista(page: Page, vista: string, tema: string, ancho: number
   await ponerTema(page, tema);
   await PREPARACIONES[`vista:${vista}`]?.(page);
   await page.goto("/");
-  await configurarProyecto(page, "Entidad FE-32");
+  if (!SIN_CONFIGURAR.has(`vista:${vista}`)) await configurarProyecto(page, "Entidad FE-32");
   const submenu = SUBMENUS.find((s) => s.vista === vista);
   const apertura = APERTURAS[`vista:${vista}`];
   if (submenu) await abrirSubmenu(page, submenu);
@@ -246,12 +257,12 @@ async function medirVista(page: Page, vista: string, tema: string, ancho: number
 
 test.describe("cada vista del tablero se mide por separado", () => {
   for (const vista of vistasDelTablero()) {
-    const dueña = PENDIENTES.get(`vista:${vista}`);
+    const razon = razonDePendiente(`vista:${vista}`);
     for (const tema of TEMAS) {
       for (const ancho of ANCHOS) {
         const nombre = `vista ${vista} · ${tema} · ${ancho} px`;
-        if (dueña) {
-          test.fixme(`${nombre} (pendiente de ${dueña})`, async () => {});
+        if (razon) {
+          test.fixme(`${nombre} (${razon})`, async () => {});
           continue;
         }
         test(nombre, async ({ page }) => medirVista(page, vista, tema, ancho));
@@ -264,7 +275,7 @@ test.describe("cada vista del tablero se mide por separado", () => {
 test("los archivos de pendientes solo nombran rutas y vistas que existen", () => {
   const rutas = new Set(rutasDeProducto());
   const vistas = new Set(vistasDelTablero());
-  const huerfanas = [...PENDIENTES.keys()].filter((l) => (l.startsWith("vista:") ? !vistas.has(l.slice(6)) : !rutas.has(l)));
+  const huerfanas = [...PENDIENTES.keys(), ...AJENAS.keys()].filter((l) => (l.startsWith("vista:") ? !vistas.has(l.slice(6)) : !rutas.has(l)));
   expect(huerfanas, "líneas de pendientes sin ruta ni vista (¿se borró o se renombró?)").toEqual([]);
 });
 
