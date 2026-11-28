@@ -2,7 +2,7 @@
 id = "ARR-04"
 titulo = "Prueba de presupuesto de arranque del backend (librerías y módulos)"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 tanda = 122
 sala = "pruebas"
 depende_de = ["ARR-02", "ARR-03"]
