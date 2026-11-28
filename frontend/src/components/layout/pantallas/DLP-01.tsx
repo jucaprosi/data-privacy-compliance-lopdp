@@ -86,7 +86,7 @@ function TablaTipos({ tipos }: { tipos: [string, number][] }) {
             </tr>
           )).flatMap((fila, i) =>
             tipos[i][0] === "SALUD"
-              ? [fila, <tr key="SALUD-nota"><td colSpan={2} className="pb-2 text-xs text-gray-600">{NOTA_SALUD}</td></tr>]
+              ? [fila, <tr key="SALUD-nota"><td colSpan={2} className="pb-2 text-xs text-[var(--ui-texto-suave)]">{NOTA_SALUD}</td></tr>]
               : [fila]
           )}
         </tbody>
@@ -96,7 +96,7 @@ function TablaTipos({ tipos }: { tipos: [string, number][] }) {
           <li key={codigo} className="flex flex-wrap justify-between rounded border p-3 text-sm">
             <span>{nombreTipo(codigo)}</span>
             <span className="tabular-nums">{cantidad}</span>
-            {codigo === "SALUD" && <span className="basis-full text-xs text-gray-600">{NOTA_SALUD}</span>}
+            {codigo === "SALUD" && <span className="basis-full text-xs text-[var(--ui-texto-suave)]">{NOTA_SALUD}</span>}
           </li>
         ))}
       </ul>
@@ -208,16 +208,16 @@ export default function DescubrimientoDatos() {
     <div className="mx-auto max-w-4xl space-y-6 px-4 py-6">
       <header>
         <h1 className="text-2xl font-semibold">Descubrimiento de datos</h1>
-        <p className="text-sm text-gray-600">Detecta tipos de datos personales en una muestra</p>
+        <p className="text-sm text-[var(--ui-texto-suave)]">Detecta tipos de datos personales en una muestra</p>
       </header>
 
-      <p role="note" className="rounded border border-blue-200 bg-blue-50 p-3 text-sm">
+      <p role="note" className="rounded border border-[var(--ui-info-borde)] bg-[var(--ui-info-fondo)] p-3 text-sm text-[var(--ui-info-texto)]">
         Revisamos la muestra solo para contar los tipos de datos personales que contiene. No guardamos la muestra
         ni los valores encontrados; solo los conteos.
       </p>
 
       {error && (
-        <p role="alert" className="rounded border border-red-200 bg-red-50 p-3 text-sm">
+        <p role="alert" className="rounded border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] p-3 text-sm text-[var(--ui-error-texto)]">
           {error}
         </p>
       )}
@@ -236,7 +236,7 @@ export default function DescubrimientoDatos() {
               aria-describedby={`${ids.fuente}-ayuda`}
               className="mt-1 w-full rounded border p-2"
             />
-            <p id={`${ids.fuente}-ayuda`} className="text-xs text-gray-600">
+            <p id={`${ids.fuente}-ayuda`} className="text-xs text-[var(--ui-texto-suave)]">
               Por ejemplo, la base de socios o una hoja de cálculo.
             </p>
           </div>
@@ -251,7 +251,7 @@ export default function DescubrimientoDatos() {
               aria-describedby={`${ids.muestra}-ayuda`}
               className="mt-1 w-full rounded border p-2 font-mono text-sm"
             />
-            <div id={`${ids.muestra}-ayuda`} className="flex flex-wrap justify-between gap-2 text-xs text-gray-600">
+            <div id={`${ids.muestra}-ayuda`} className="flex flex-wrap justify-between gap-2 text-xs text-[var(--ui-texto-suave)]">
               <span>Máximo {MAXIMO_FILAS} filas por muestra. Usa solo las filas necesarias.</span>
               <span>{filas.length} de {MAXIMO_FILAS} filas</span>
             </div>
@@ -283,7 +283,7 @@ export default function DescubrimientoDatos() {
             )}
           </div>
           {tipos.length > 0 && (
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-[var(--ui-texto-suave)]">
               Es una ayuda para revisar tu inventario. Confirma cada categoría antes de vincularla.
             </p>
           )}
@@ -337,7 +337,7 @@ export default function DescubrimientoDatos() {
       <section className="space-y-2" aria-labelledby="dlp01-historial">
         <h2 id="dlp01-historial" className="text-lg font-medium">Escaneos anteriores</h2>
         {historial.length === 0 ? (
-          <p className="text-sm text-gray-600">Aún no hay escaneos.</p>
+          <p className="text-sm text-[var(--ui-texto-suave)]">Aún no hay escaneos.</p>
         ) : (
           <ul className="divide-y rounded border">
             {historial.map((h) => (
