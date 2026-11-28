@@ -200,6 +200,20 @@ async def _estado_tarea(m: Mundo, e: Empresa) -> str:
                                    {"k": e.traza["accion"]})).scalar()
 
 
+async def _sembrar_doble_validacion(m: Mundo, e: Empresa, accion: str) -> None:
+    """RM-28 (R4): evidencia de la acción aprobada por el coordinador y el DPO en E1, que el cierre exige."""
+    u = e.usuarios
+    await m.sesion.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": e.id})
+    await m.sesion.execute(text(
+        "INSERT INTO task_evidence (id, task_id, tenant_id, clave_objeto, mime_type, file_size, uploaded_by, "
+        "validation_status, validated_by, validated_at, validado_rol, nivel_acreditado, "
+        "primera_validacion_por, primera_validacion_en, primera_validacion_rol) "
+        "VALUES (:id, :tk, :t, :k, 'application/pdf', 100, :u, 'approved', :dpo, now(), 'dpo', 1, "
+        ":coord, now(), 'coordinador')"
+    ), {"id": str(uuid4()), "tk": accion, "t": e.id, "k": f"{e.id}/{accion}/rm28.pdf", "u": u["redactor"],
+        "dpo": u["aprobador"], "coord": u["asignador"]})
+
+
 async def _recorrido(m: Mundo, e: Empresa) -> Empresa:
     """Empresa → tratamiento → requisito → brecha → acción → documento → revisión → evidencia → cierre."""
     s, u, datos = m.sesion, e.usuarios, PERFILES[e.perfil]
@@ -237,6 +251,8 @@ async def _recorrido(m: Mundo, e: Empresa) -> Empresa:
         accion_id=accion, revision=doc.revision), roadmap.obtener_accion_para_enlace)
     assert enlace.accion_id == accion and enlace.requisito == datos["control"] and enlace.hallazgo_id == brecha
 
+    # RM-28: la evidencia con doble validación ya está; lo que se prueba aquí es el verificador de Biblioteca.
+    await _sembrar_doble_validacion(m, e, accion)
     # Un documento aprobado no cierra la acción por sí solo.
     with pytest.raises(ErrorNegocio) as error:
         await roadmap.update_task_status(s, e.id, u["revisor"], accion, roadmap.TaskStatus.completada)

@@ -188,7 +188,8 @@ async def mundo():
         try:
             if not (await conexion.execute(text("SELECT to_regclass('public.biblioteca_verificaciones')"))).scalar():
                 pytest.fail("Aplicar la migración de BIB-303 en la base de pruebas", pytrace=False)
-            ids = {rol: "bib303-" + uuid4().hex for rol in ("autor_a", "revisor_a", "autor_b")}
+            # RM-28 (R4): coordinador y DPO de la evidencia con doble validación que el cierre exige.
+            ids = {rol: "bib303-" + uuid4().hex for rol in ("autor_a", "revisor_a", "autor_b", "rm28_coord", "rm28_dpo")}
             ta, tb = "bib303-org-" + uuid4().hex, "bib303-org-" + uuid4().hex
             for rol, usuario in ids.items():
                 await conexion.execute(text("INSERT INTO users(id,email,nombre) VALUES (:id,:e,:n)"),
@@ -233,6 +234,19 @@ async def _registrar(m: Mundo, tenant: str, actor: str, **extra) -> bib.Evidenci
                                          bib.RegistrarEvidencia(**_evidencia(**extra)), roadmap.obtener_accion_para_enlace)
 
 
+async def _sembrar_doble_validacion(m: Mundo, tenant: str, sube: str) -> None:
+    """RM-28 (R4): evidencia de la tarea aprobada por coordinador y DPO en E1."""
+    await m.sesion.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": tenant})
+    await m.sesion.execute(text(
+        "INSERT INTO task_evidence (id, task_id, tenant_id, clave_objeto, mime_type, file_size, uploaded_by, "
+        "validation_status, validated_by, validated_at, validado_rol, nivel_acreditado, "
+        "primera_validacion_por, primera_validacion_en, primera_validacion_rol) "
+        "VALUES (:id, :tk, :t, :k, 'application/pdf', 100, :u, 'approved', :dpo, now(), 'dpo', 1, "
+        ":coord, now(), 'coordinador')"
+    ), {"id": str(uuid4()), "tk": m.tareas[tenant], "t": tenant, "k": f"{tenant}/rm28.pdf", "u": sube,
+        "dpo": m.ids["rm28_dpo"], "coord": m.ids["rm28_coord"]})
+
+
 async def _estado(m: Mundo, tenant: str) -> str:
     await m.sesion.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": tenant})
     return (await m.sesion.execute(text("SELECT status FROM roadmap_tasks WHERE id=:k"), {"k": m.tareas[tenant]})).scalar()
@@ -251,6 +265,7 @@ async def test_db_evidencia_guarda_version_hash_clasificacion_permisos_fecha_y_a
 @pytest.mark.asyncio
 async def test_db_cierre_bloqueado_hasta_verificacion_conforme_y_no_conforme_reabre(mundo):
     ta, tarea, autor, revisor = mundo.ta, mundo.tareas[mundo.ta], mundo.ids["autor_a"], mundo.ids["revisor_a"]
+    await _sembrar_doble_validacion(mundo, ta, autor)  # RM-28: R1 cumplida; lo que se prueba es el verificador
     ev = await _registrar(mundo, ta, autor)
     with pytest.raises(ErrorNegocio) as error:  # tener evidencia con hash no basta para cerrar
         await roadmap.update_task_status(mundo.sesion, ta, revisor, tarea, TaskStatus.completada)
@@ -275,6 +290,10 @@ async def test_db_cierre_bloqueado_hasta_verificacion_conforme_y_no_conforme_rea
 @pytest.mark.asyncio
 async def test_db_sin_requisito_documental_el_cierre_sigue_como_siempre(mundo):
     tb = mundo.tb
+    with pytest.raises(ErrorNegocio) as error:  # RM-28 (R4): sin evidencia con doble validación, 409
+        await roadmap.update_task_status(mundo.sesion, tb, mundo.ids["autor_b"], mundo.tareas[tb], TaskStatus.completada)
+    assert (error.value.code, error.value.status_code) == ("RM_CIERRE_SIN_DOBLE_VALIDACION", 409)
+    await _sembrar_doble_validacion(mundo, tb, mundo.ids["autor_b"])
     fila = await roadmap.update_task_status(mundo.sesion, tb, mundo.ids["autor_b"], mundo.tareas[tb], TaskStatus.completada)
     assert fila["status"] == "completada"
 
