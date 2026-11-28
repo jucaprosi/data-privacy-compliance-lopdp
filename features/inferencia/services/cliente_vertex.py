@@ -47,6 +47,26 @@ def crear_cliente(vectores: bool = False, plazo_ms: int | None = None):
     )
 
 
+CODIGOS_TRANSITORIOS = frozenset({429, 503, 504})  # IA-18 R2
+
+
+def es_transitorio(exc: Exception) -> bool:
+    """IA-18 R2: `APIError` con código 429, 503 o 504. Solo este archivo importa `google.genai` (IA-08)."""
+    from google.genai import errors
+
+    return isinstance(exc, errors.APIError) and getattr(exc, "code", None) in CODIGOS_TRANSITORIOS
+
+
+def describir_error(exc: Exception) -> str:
+    """Tipo, código y estado de la excepción. Nunca su mensaje: puede traer el prompt o datos personales."""
+    from google.genai import errors
+
+    partes = [type(exc).__name__]
+    if isinstance(exc, errors.APIError):
+        partes += ["code=%s" % getattr(exc, "code", None), "status=%s" % getattr(exc, "status", None)]
+    return " ".join(partes)
+
+
 def _plazo(types, plazo_ms: int | None):
     """Plazo de ESTA petición (IA-18 R5): sale del presupuesto que queda, no de una constante del cliente."""
     return None if plazo_ms is None else types.HttpOptions(timeout=plazo_ms)

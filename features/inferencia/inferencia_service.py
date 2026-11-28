@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 
 PLAZO_TOTAL_S = 140  # IA-18 R3: por debajo de los 150 s del proxy de la web y del `--timeout` de Cloud Run
 MARGEN_S = 5  # IA-18 R5: lo que se resta al plazo de cada petición
-CODIGOS_TRANSITORIOS = frozenset({429, 503, 504})  # IA-18 R2
 _reloj = time.monotonic  # las pruebas lo sustituyen: nunca se duerme de verdad
 
 __all__ = [
@@ -136,22 +135,6 @@ def _obtener_cliente_vectores():
     return _cliente_vectores
 
 
-def _transitorio(exc: Exception) -> bool:
-    from google.genai import errors
-
-    return isinstance(exc, errors.APIError) and getattr(exc, "code", None) in CODIGOS_TRANSITORIOS
-
-
-def _describir(exc: Exception) -> str:
-    """Tipo, código y estado de la excepción. Nunca su mensaje: puede traer el prompt o datos personales."""
-    from google.genai import errors
-
-    partes = [type(exc).__name__]
-    if isinstance(exc, errors.APIError):
-        partes += ["code=%s" % getattr(exc, "code", None), "status=%s" % getattr(exc, "status", None)]
-    return " ".join(partes)
-
-
 def _registrar_uso(etiqueta: str, respuesta, intento: int, duracion: float) -> None:
     """IA-18 R9: tokens de `usage_metadata` de un intento correcto. Solo cifras: nunca el prompt ni la respuesta."""
     uso = getattr(respuesta, "usage_metadata", None)
@@ -178,8 +161,8 @@ async def _con_plazo(etiqueta: str, fallo: str, llamar):
             return salida
         except Exception as exc:  # noqa: BLE001
             duracion = _reloj() - desde
-            logger.warning("%s: %s intento=%d duracion=%.1fs", fallo, _describir(exc), intento, duracion)
-            if intento == 1 and _transitorio(exc):
+            logger.warning("%s: %s intento=%d duracion=%.1fs", fallo, cliente_vertex.describir_error(exc), intento, duracion)
+            if intento == 1 and cliente_vertex.es_transitorio(exc):
                 if PLAZO_TOTAL_S - (_reloj() - inicio) >= duracion:
                     intento = 2
                     continue
