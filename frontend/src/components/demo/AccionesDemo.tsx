@@ -38,7 +38,7 @@ function Toast({ texto, alCerrar }: { texto: string; alCerrar: () => void }) {
     <div
       role="status"
       data-testid="demo-toast"
-      className="fixed bottom-4 left-1/2 z-[90] w-[min(92vw,420px)] -translate-x-1/2 rounded-lg bg-zinc-900 px-4 py-3 text-sm text-white shadow-lg"
+      className="fixed bottom-4 left-1/2 z-[90] w-[min(92vw,420px)] -translate-x-1/2 rounded-lg bg-[var(--ui-superficie)] px-4 py-3 text-sm text-[var(--foreground)] shadow-lg"
     >
       {texto}
     </div>
@@ -66,13 +66,13 @@ function DialogoTerminar({ alCancelar }: { alCancelar: () => void }) {
         aria-labelledby="demo-terminar-titulo"
         aria-describedby="demo-terminar-cuerpo"
         data-testid="demo-terminar-dialogo"
-        className="w-full max-w-[420px] rounded-xl bg-white p-6 text-zinc-800 shadow-xl"
+        className="w-full max-w-[420px] rounded-xl bg-[var(--background)] p-6 text-[var(--foreground)] shadow-xl"
         onKeyDown={(e) => e.key === "Escape" && !terminando && alCancelar()}
       >
         <h2 id="demo-terminar-titulo" className="text-base font-semibold">
           {TEXTOS_DEMO.confirmarTitulo}
         </h2>
-        <p id="demo-terminar-cuerpo" className="mt-2 text-sm text-zinc-600">
+        <p id="demo-terminar-cuerpo" className="mt-2 text-sm text-[var(--ui-texto-suave)]">
           {TEXTOS_DEMO.confirmarCuerpo}
         </p>
         <div className="mt-5 flex justify-end gap-2">
@@ -81,7 +81,7 @@ function DialogoTerminar({ alCancelar }: { alCancelar: () => void }) {
             type="button"
             disabled={terminando}
             onClick={alCancelar}
-            className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm"
+            className="rounded-md border border-[var(--ui-borde-control)] px-3 py-1.5 text-sm"
           >
             Cancelar
           </button>
@@ -90,7 +90,7 @@ function DialogoTerminar({ alCancelar }: { alCancelar: () => void }) {
             disabled={terminando}
             onClick={confirmar}
             data-testid="demo-terminar-confirmar"
-            className="inline-flex items-center gap-1.5 rounded-md bg-red-700 px-3 py-1.5 text-sm text-white"
+            className="inline-flex items-center gap-1.5 rounded-md bg-[var(--background)] border border-[var(--ui-peligro-texto)] text-[var(--ui-peligro-texto)] px-3 py-1.5 text-sm"
           >
             {terminando && <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />}
             {terminando ? "Terminando…" : "Terminar demo"}
@@ -105,7 +105,7 @@ function Avatar({ persona }: { persona: PersonaDemo }) {
   return (
     <span
       aria-hidden="true"
-      className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#7A5A00] text-[10px] font-semibold text-white"
+      className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#7A5A00] text-[10px] font-semibold text-[var(--foreground)]"
     >
       {iniciales(persona.nombre)}
     </span>
@@ -153,7 +153,7 @@ export default function AccionesDemo() {
               cerrarSesion();
               window.location.assign(RUTA_ENTRADA);
             }}
-            className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white"
+            className="rounded-md bg-[var(--ui-superficie)] px-3 py-1.5 text-sm"
           >
             Empezar una nueva
           </button>
@@ -222,9 +222,9 @@ export default function AccionesDemo() {
       {abierto && (
         <div
           data-testid="demo-panel"
-          className="fixed inset-x-0 bottom-0 z-[70] rounded-t-xl border border-zinc-200 bg-white p-3 text-zinc-800 shadow-xl sm:absolute sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-7 sm:w-[360px] sm:rounded-xl"
+          className="fixed inset-x-0 bottom-0 z-[70] rounded-t-xl border border-[var(--ui-borde)] bg-[var(--background)] p-3 text-[var(--foreground)] shadow-xl sm:absolute sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-7 sm:w-[360px] sm:rounded-xl"
         >
-          <p className="px-2 pb-2 text-xs font-semibold text-zinc-500">Ver la plataforma como…</p>
+          <p className="px-2 pb-2 text-xs font-semibold text-[var(--ui-texto-suave)]">Ver la plataforma como…</p>
           <ul role="listbox" aria-label="Personas de la demostración" className="flex flex-col">
             {personas.map((p) => {
               const seleccionada = p.usuario_id === activa.usuario_id;
@@ -236,17 +236,17 @@ export default function AccionesDemo() {
                     data-rol={p.rol}
                     disabled={cambiando !== null && cambiando !== p.usuario_id}
                     onClick={() => void elegir(p)}
-                    className="flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left hover:bg-zinc-50 disabled:opacity-50"
+                    className="flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left hover:bg-[var(--ui-superficie-2)] disabled:opacity-50"
                   >
                     <Avatar persona={p} />
                     <span className="min-w-0 flex-1">
                       <span className="flex justify-between gap-2 text-sm">
                         <span className="font-medium">{p.nombre}</span>
-                        <span className="text-zinc-500" data-testid="demo-persona-rol">
+                        <span className="text-[var(--ui-texto-suave)]" data-testid="demo-persona-rol">
                           {etiquetaDePersona(p)}
                         </span>
                       </span>
-                      <span className="block text-xs text-zinc-500">{LINEA_DE_ROL[p.rol]}</span>
+                      <span className="block text-xs text-[var(--ui-texto-suave)]">{LINEA_DE_ROL[p.rol]}</span>
                     </span>
                     {cambiando === p.usuario_id ? (
                       <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
@@ -259,7 +259,7 @@ export default function AccionesDemo() {
             })}
           </ul>
           {error && (
-            <div role="alert" className="mt-2 flex items-center gap-2 px-2 text-xs text-red-700" data-testid="demo-panel-error">
+            <div role="alert" className="mt-2 flex items-center gap-2 px-2 text-xs text-[var(--ui-error-texto)]" data-testid="demo-panel-error">
               <AlertCircle aria-hidden="true" className="h-4 w-4 shrink-0" />
               <span>{error === "ajena" ? `${TEXTO_DE_ERROR.DEMO_PERSONA_AJENA}.` : TEXTOS_DEMO.errorCambio}</span>
               {error === "ajena" && (
@@ -273,7 +273,7 @@ export default function AccionesDemo() {
             type="button"
             data-testid="demo-recorrido"
             onClick={recorrido}
-            className="mt-2 w-full border-t border-zinc-100 px-2 pt-2 text-left text-xs text-[#7A5A00] underline-offset-2 hover:underline"
+            className="mt-2 w-full border-t border-[var(--ui-borde)] px-2 pt-2 text-left text-xs text-[#7A5A00] underline-offset-2 hover:underline"
           >
             Recorrido sugerido: Responsable de área → Coordinador → DPO → Auditor
           </button>
@@ -281,7 +281,7 @@ export default function AccionesDemo() {
             type="button"
             data-testid="demo-terminar-panel"
             onClick={() => setConfirmar(true)}
-            className="mt-2 w-full rounded-md border border-zinc-200 px-2 py-1.5 text-sm sm:hidden"
+            className="mt-2 w-full rounded-md border border-[var(--ui-borde)] px-2 py-1.5 text-sm sm:hidden"
           >
             Terminar demo
           </button>
