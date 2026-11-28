@@ -6,9 +6,9 @@ estado = "pendiente"
 tanda = 129
 sala = "organizacion"
 depende_de = []
-propiedad = ["tests/matriz/roles/operador_plataforma.py", "tests/test_matriz_permisos.py#SEC-26"]
+propiedad = ["tests/matriz/roles/operador_plataforma.py", "tests/test_matriz_permisos.py"]
 crea = ["tests/matriz/roles/operador_plataforma.py"]
-arbitro = "pytest tests/test_matriz_permisos.py contra PostgreSQL 16; mutaciones m1 y m2."
+arbitro = "pytest tests/test_matriz_permisos.py contra PostgreSQL 16; mutaciones m1 a m3."
 rastros = ["¤rbac-tenant", "¤arbitro"]
 +++
 
@@ -23,5 +23,5 @@ rastros = ["¤rbac-tenant", "¤arbitro"]
 - En `tests/test_matriz_permisos.py`, la identidad del operador para recorrer la matriz (R2).
 
 ## Límites
-- En `tests/test_matriz_permisos.py`, solo su sección `SEC-26`.
+- En `tests/test_matriz_permisos.py` (sus otras fichas están hechas), solo la carga de roles (l. 458-480), el recorrido por roles (l. 573) y la sección `SEC-26`.
 - Sin cambios de código de producción. Si una ruta responde con datos, el PR lo para y el Arquitecto abre la ficha que la arregla.
