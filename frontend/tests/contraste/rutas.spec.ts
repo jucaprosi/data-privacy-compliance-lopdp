@@ -40,12 +40,14 @@ const TEMAS = ["theme-light", "theme-dark"] as const; // claro primero (R1)
 const ANCHOS = [375, 1280] as const;
 const ESTADOS = ["carga", "vacio", "error", "datos", "foco"] as const;
 type Estado = (typeof ESTADOS)[number];
-const FICHAS: { ESTADOS: Record<string, (page: Page) => Promise<void>>; APERTURAS?: Record<string, (page: Page) => Promise<void>>; PREPARACIONES?: Record<string, (page: Page) => Promise<void>> }[] = [M33, M34, M35, M36, M37, M38, M39];
+const FICHAS: { ESTADOS: Record<string, (page: Page) => Promise<void>>; APERTURAS?: Record<string, (page: Page) => Promise<void>>; PREPARACIONES?: Record<string, (page: Page) => Promise<void>>; SIN_CONFIGURAR?: Set<string> }[] = [M33, M34, M35, M36, M37, M38, M39];
 const MODULOS = FICHAS.map((m) => m.ESTADOS);
 /** Aperturas de vistas que no son submenús (p. ej. las NIIF), declaradas por los módulos de estados (clave `vista:<id>`). */
 const APERTURAS = Object.assign({}, ...FICHAS.map((m) => m.APERTURAS ?? {})) as Record<string, (page: Page) => Promise<void>>;
 /** Preparaciones de las rutas (clave: la ruta), que se ejecutan antes de `page.goto` (R5): p. ej. simular la respuesta de un token. */
 const PREPARACIONES = Object.assign({}, ...FICHAS.map((m) => m.PREPARACIONES ?? {})) as Record<string, (page: Page) => Promise<void>>;
+/** R5 (FE-44): vistas (`vista:<id>`) que se miden sin `configurarProyecto`: marca explícita de cada `estados/FE-NN.ts`, no se deduce de una preparación. */
+const SIN_CONFIGURAR = new Set<string>(FICHAS.flatMap((m) => [...(m.SIN_CONFIGURAR ?? [])]));
 /** Estados que declaran los módulos de cada ficha para una ruta o vista (clave «<unidad> · <estado>»). */
 export function estadosDeclarados(unidad: string): [string, (page: Page) => Promise<void>][] {
   return MODULOS.flatMap((m) => Object.entries(m)).filter(([k]) => k.startsWith(`${unidad} · `)).map(([k, f]) => [k.slice(unidad.length + 3), f]);
@@ -229,7 +231,7 @@ async function medirVista(page: Page, vista: string, tema: string, ancho: number
   await ponerTema(page, tema);
   await PREPARACIONES[`vista:${vista}`]?.(page);
   await page.goto("/");
-  await configurarProyecto(page, "Entidad FE-32");
+  if (!SIN_CONFIGURAR.has(`vista:${vista}`)) await configurarProyecto(page, "Entidad FE-32");
   const submenu = SUBMENUS.find((s) => s.vista === vista);
   const apertura = APERTURAS[`vista:${vista}`];
   if (submenu) await abrirSubmenu(page, submenu);
