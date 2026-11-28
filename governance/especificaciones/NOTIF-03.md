@@ -6,6 +6,7 @@
 Sin tablas ni migraciones. Hechos medidos en `origin/main` ed575cd2:
 - `notificador_configurado()` devuelve `NotificadorEntornoPermitido(NotificadorNoConfigurado())` (`notificaciones_service.py:132-134`), y el adaptador responde `PENDIENTE` con «proveedor de correo no configurado» (`services/adaptadores.py:62`). Hoy no sale ningún correo.
 - NOTIF-02 crea y actualiza los avisos (`avisos_plataforma`), con sus recordatorios.
+- `notificador_configurado()` es el puerto común de la compuerta. También lo usan RM-23 y NORM-02 para sus avisos, que hoy quedan en `PENDIENTE`. Al montar el secreto, esos avisos también salen por SMTP: es lo que se busca, porque el canal es uno solo (R5a).
 
 ## 2. API
 
@@ -27,6 +28,8 @@ Sin API nueva.
   - Sin «conforme», «cumple», «garantiza», «certificado» ni «legal», y sin nombres de proveedores.
 - **R4 · Fallo.** Si el envío falla, el aviso en la plataforma queda igual y el fallo se registra con el tipo de error y el id del aviso, sin destinatario, asunto ni cuerpo. No se reintenta en la misma corrida.
 - **R6 · Pruebas sin red.** `tests/test_notif03_correo.py` levanta un servidor SMTP falso local con `aiosmtpd`, con un certificado de `trustme` en `127.0.0.1`, y no abre ninguna conexión a otra máquina. `aiosmtpd` y `trustme` entran en `requirements.txt`.
+- **R5a · Un solo canal.** Con el secreto montado, todo correo de la compuerta sale por `NotificadorSmtp`: los de esta ficha y los de RM-23 y NORM-02. A todos se aplican R1a, R1d, R1e, R4 y R5. Sus textos siguen siendo los de sus fichas; R3 solo rige los de esta.
+- **R1f · Enlace.** El enlace de R3 se arma con `APP_BASE_URL`. Si falta, no se envía y se registra como fallo de configuración (R4). El aviso de la campana no cambia.
 - **R5 · Entornos.** `NotificadorEntornoPermitido` sigue filtrando por entorno, como hoy (`destinatarios_entorno.py`).
 
 ## 4. Interfaz

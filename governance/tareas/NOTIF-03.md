@@ -2,7 +2,7 @@
 id = "NOTIF-03"
 titulo = "Correo de las versiones por revisar y de sus recordatorios, por SMTP con TLS"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 113
 sala = "notificaciones"
 depende_de = ["NOTIF-02"]
