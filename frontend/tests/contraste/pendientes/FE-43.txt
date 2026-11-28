@@ -1,0 +1,8 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-43: una ruta o vista por línea, con «# archivo» que la justifica. FE-43 borra este archivo al terminar.
+vista:ayuda_conocimiento  # frontend/src/components/conocimiento/AyudaView.tsx
+vista:normativa_ecuador  # frontend/src/components/conocimiento/NormativaEcuadorView.tsx
+vista:riesgos  # frontend/src/components/modules/MtgeModule.tsx
+vista:descubrimiento_datos  # frontend/src/components/layout/pantallas/DLP-01.tsx
+vista:biblioteca  # frontend/tests/contraste/rutas.spec.ts (razonesDeBorde lee border-transparent como negro)
+vista:integraciones  # frontend/tests/contraste/rutas.spec.ts (razonesDeBorde lee border-transparent como negro)
