@@ -8,8 +8,6 @@ from __future__ import annotations
 import io
 from typing import TYPE_CHECKING
 
-from fpdf import FPDF
-
 from features.niif18.engines.financials_engine import estructurar_estado_resultados
 
 if TYPE_CHECKING:
@@ -125,6 +123,8 @@ def generar_informe_pdf(estado: list[dict], diagnostico: dict, recomendaciones: 
                         indicadores: dict, mpm_registros: list[dict] | None = None,
                         empresa: str = "") -> bytes:
     """Informe de diagnóstico y plan de implementación NIIF 18 en PDF."""
+    from fpdf import FPDF
+
     pdf = FPDF(format="A4")
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
