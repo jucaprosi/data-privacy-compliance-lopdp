@@ -56,7 +56,8 @@ class ModelosFalsos:
         self.reloj.t += duracion
         if isinstance(salida, Exception):
             raise salida
-        return SimpleNamespace(text=salida, model_version="gemini-prueba-001")
+        uso = SimpleNamespace(prompt_token_count=7000, candidates_token_count=6500, thoughts_token_count=1200)
+        return SimpleNamespace(text=salida, model_version="gemini-prueba-001", usage_metadata=uso)
 
 
 @pytest.fixture
@@ -136,6 +137,36 @@ def test_r1_cada_intento_fallido_registra_el_suyo(nombre, bucle, ok, reloj, capl
     texto = "\n".join(r.getMessage() for r in caplog.records if r.levelno == logging.WARNING)
     assert "503" in texto and "504" in texto and "20.0" in texto and "30.5" in texto
     assert SECRETO_PROMPT not in caplog.text and SECRETO_MENSAJE not in caplog.text
+
+
+# ---------------------------------------------------------------- R9 tokens de cada intento correcto
+@pytest.mark.parametrize("nombre,bucle,ok", BUCLES, ids=IDS)
+def test_r9_el_intento_correcto_registra_tokens_intento_y_duracion(nombre, bucle, ok, reloj, caplog):
+    """Mutación m8: quitar el registro, o meter el prompt o la respuesta en él, da rojo."""
+    caplog.set_level(logging.DEBUG)
+    _cliente(reloj, [(42.0, ok)])
+    _correr(bucle)
+    avisos = [r.getMessage() for r in caplog.records if r.levelno == logging.INFO and "uso" in r.getMessage()]
+    assert len(avisos) == 1
+    for esperado in ("prompt_token_count=7000", "candidates_token_count=6500", "thoughts_token_count=1200",
+                     "intento=1", "42.0"):
+        assert esperado in avisos[0]
+    assert SECRETO_PROMPT not in caplog.text and ok not in avisos[0]
+
+
+def test_r9_sin_usage_metadata_no_registra_ni_falla(reloj, caplog):
+    caplog.set_level(logging.DEBUG)
+    modelos = _cliente(reloj, [(1.0, '{"estado": "ok"}')])
+    _gen = modelos.generate_content
+
+    async def sin_uso(**kw):
+        r = await _gen(**kw)
+        del r.usage_metadata
+        return r
+
+    modelos.generate_content = sin_uso
+    _correr(_estructurado)
+    assert not [r for r in caplog.records if "uso" in r.getMessage()]
 
 
 # ---------------------------------------------------------------- R2 reintento transitorio

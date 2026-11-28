@@ -152,6 +152,19 @@ def _describir(exc: Exception) -> str:
     return " ".join(partes)
 
 
+def _registrar_uso(etiqueta: str, respuesta, intento: int, duracion: float) -> None:
+    """IA-18 R9: tokens de `usage_metadata` de un intento correcto. Solo cifras: nunca el prompt ni la respuesta."""
+    uso = getattr(respuesta, "usage_metadata", None)
+    if uso is None:
+        return
+    cifras = []
+    for campo in ("prompt_token_count", "candidates_token_count", "thoughts_token_count"):
+        valor = getattr(uso, campo, None)
+        if isinstance(valor, int) and not isinstance(valor, bool):
+            cifras.append("%s=%d" % (campo, valor))
+    logger.info("%s: uso %s intento=%d duracion=%.1fs", etiqueta, " ".join(cifras), intento, duracion)
+
+
 async def _con_plazo(etiqueta: str, llamar):
     """IA-18 R1-R3 y R5: `llamar(plazo_ms)` con un reintento solo ante 429/503/504 y solo si cabe en el plazo total."""
     inicio = _reloj()
@@ -160,7 +173,9 @@ async def _con_plazo(etiqueta: str, llamar):
         desde = _reloj()
         plazo_ms = max(int((PLAZO_TOTAL_S - (desde - inicio) - MARGEN_S) * 1000), 0)
         try:
-            return await llamar(plazo_ms)
+            salida = await llamar(plazo_ms)
+            _registrar_uso(etiqueta, salida[1], intento, _reloj() - desde)
+            return salida
         except Exception as exc:  # noqa: BLE001
             duracion = _reloj() - desde
             logger.warning("%s: %s intento=%d duracion=%.1fs", etiqueta, _describir(exc), intento, duracion)
