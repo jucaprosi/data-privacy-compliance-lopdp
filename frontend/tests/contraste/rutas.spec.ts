@@ -175,8 +175,18 @@ async function razonesDeBorde(page: Page, selector: string): Promise<number[]> {
       for (let n = el; n; n = n.parentElement) { const c = rgb(getComputedStyle(n).backgroundColor); if (c[3] > 0.5) return c; }
       return document.documentElement.classList.contains("theme-dark") ? [10, 10, 12, 1] : [255, 255, 255, 1];
     };
-    return Array.from(document.querySelectorAll(sel)).filter((el) => parseFloat(getComputedStyle(el).borderTopWidth) > 0)
-      .map((el) => { const a = lum(rgb(getComputedStyle(el).borderTopColor)), b = lum(fondo(el.parentElement)); return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); });
+    // Un borde con estilo none/hidden, ancho 0 o alfa 0 no se ve: no es un indicador visual (WCAG 1.4.11).
+    const visible = (el: Element) => {
+      const e = getComputedStyle(el);
+      return e.borderTopStyle !== "none" && e.borderTopStyle !== "hidden" && parseFloat(e.borderTopWidth) > 0 && rgb(e.borderTopColor)[3] > 0;
+    };
+    return Array.from(document.querySelectorAll(sel)).filter(visible)
+      .map((el) => {
+        const f = fondo(el.parentElement), [r, g, b, alfa] = rgb(getComputedStyle(el).borderTopColor);
+        const sobre = [r, g, b].map((v, i) => v * alfa + f[i] * (1 - alfa)); // el color semitransparente se compone sobre el fondo efectivo
+        const a = lum(sobre), c = lum(f);
+        return (Math.max(a, c) + 0.05) / (Math.min(a, c) + 0.05);
+      });
   }, selector);
 }
 
@@ -267,4 +277,33 @@ test("los archivos de pendientes solo nombran rutas y vistas que existen", () =>
   const vistas = new Set(vistasDelTablero());
   const huerfanas = [...PENDIENTES.keys(), ...AJENAS.keys()].filter((l) => (l.startsWith("vista:") ? !vistas.has(l.slice(6)) : !rutas.has(l)));
   expect(huerfanas, "líneas de pendientes sin ruta ni vista (¿se borró o se renombró?)").toEqual([]);
+});
+
+// ---------------------------------------------------------------- prueba de control del medidor (FE-43 R4)
+test("el medidor de bordes distingue un borde bajo, uno suficiente y uno transparente", async ({ page }) => {
+  const ruta = rutasDeProducto().find((r) => !PENDIENTES.has(r));
+  if (!ruta) throw new Error("No hay una ruta ya medida donde abrir el control.");
+  for (const tema of TEMAS) {
+    await page.goto("about:blank"); // ponerTema solo espera la clase con una página ya cargada
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await fijarAjustes(page, { modo: "headers", tenant: TENANT_PRUEBA });
+    await simular(page, "datos");
+    await ponerTema(page, tema);
+    await page.goto(concreta(ruta));
+    await ponerTema(page, tema);
+    await page.evaluate(() => {
+      const caja = document.createElement("div");
+      caja.id = "control-fe43";
+      caja.style.background = "var(--background)";
+      caja.innerHTML =
+        '<input id="c-bajo" style="border:1px solid var(--ui-borde)">' +
+        '<input id="c-ok" style="border:1px solid var(--ui-borde-control)">' +
+        '<button id="c-transparente" class="border border-transparent">x</button>';
+      document.body.appendChild(caja);
+    });
+    expect((await razonesDeBorde(page, "#c-bajo")).every((r) => r < 3), `borde bajo · ${tema}`).toBe(true);
+    expect((await razonesDeBorde(page, "#c-bajo")).length, `borde bajo medido · ${tema}`).toBe(1);
+    expect((await razonesDeBorde(page, "#c-ok")).filter((r) => r >= 3).length, `borde suficiente · ${tema}`).toBe(1);
+    expect(await razonesDeBorde(page, "#c-transparente"), `borde transparente · ${tema}`).toEqual([]);
+  }
 });
