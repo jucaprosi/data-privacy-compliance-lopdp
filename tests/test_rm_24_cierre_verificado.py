@@ -4,6 +4,7 @@
 
 Casos: sin verificador (idéntico al comportamiento previo), False (409 y la tarea no cambia),
 True y None (se completa). Sesión simulada: no toca la base. Solo importa la compuerta de la sala.
+RM-28 (R4): la sesión simula la evidencia con doble validación E1 que R1 exige antes del verificador.
 """
 from __future__ import annotations
 
@@ -29,15 +30,24 @@ class _Resultado:
     def first(self):
         return self._fila
 
+    def scalar(self):
+        return self._fila
+
 
 class _Sesion:
-    """Guarda las sentencias; el UPDATE devuelve la fila con el estado pedido."""
+    """Guarda las sentencias; el UPDATE devuelve la fila con el estado pedido.
 
-    def __init__(self):
+    `evidencia_valida` simula la consulta de RM-28 R1 sobre `task_evidence`.
+    """
+
+    def __init__(self, evidencia_valida: bool = True):
         self.sentencias: list[tuple[str, dict]] = []
+        self.evidencia_valida = evidencia_valida
 
     async def execute(self, sql, params):
         self.sentencias.append((str(sql), params))
+        if "FROM task_evidence" in str(sql):
+            return _Resultado(self.evidencia_valida)
         if "UPDATE roadmap_tasks" in str(sql):
             return _Resultado({"id": params["id"], "status": params["status"]})
         return _Resultado(None)
@@ -79,6 +89,11 @@ async def test_sin_verificador_completa_como_siempre():
 async def test_verificador_false_rechaza_409_y_no_cambia():
     v = _Fijo(False)
     registrar_verificador_cierre(v)
+    sin_evidencia = _Sesion(evidencia_valida=False)
+    with pytest.raises(ErrorNegocio) as e:
+        await update_task_status(sin_evidencia, TENANT, USER, TAREA, TaskStatus.completada)
+    assert e.value.code == "RM_CIERRE_SIN_DOBLE_VALIDACION"  # RM-28 R2: R1 va primero
+    assert sin_evidencia.updates() == [] and v.consultas == []
     s = _Sesion()
     with pytest.raises(ErrorNegocio) as e:
         await update_task_status(s, TENANT, USER, TAREA, TaskStatus.completada)

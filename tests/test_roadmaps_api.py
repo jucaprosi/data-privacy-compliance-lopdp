@@ -135,6 +135,28 @@ async def api_seed():
     await engine.dispose()
 
 
+async def _sembrar_evidencia_doble_validacion(session, tenant: str, tarea: str, sube: str) -> list[str]:
+    """RM-28 (R4): evidencia aprobada por coordinador y DPO en E1, que el cierre exige. Devuelve los usuarios creados."""
+    coord, dpo = f"rm28-c-{uuid.uuid4().hex[:8]}", f"rm28-d-{uuid.uuid4().hex[:8]}"
+    for uid in (coord, dpo):
+        await session.execute(text("INSERT INTO users (id, email, nombre) VALUES (:id, :e, :n)"),
+                              {"id": uid, "e": f"{uid}@test.local", "n": uid})
+    await session.execute(text(
+        "INSERT INTO task_evidence (id, task_id, tenant_id, clave_objeto, mime_type, file_size, uploaded_by, "
+        "validation_status, validated_by, validated_at, validado_rol, nivel_acreditado, "
+        "primera_validacion_por, primera_validacion_en, primera_validacion_rol) "
+        "VALUES (:id, :tk, :t, :k, 'application/pdf', 100, :u, 'approved', :dpo, now(), 'dpo', 1, "
+        ":coord, now(), 'coordinador')"
+    ), {"id": f"ev-{uuid.uuid4().hex[:8]}", "tk": tarea, "t": tenant, "k": f"{tenant}/{tarea}/rm28.pdf",
+        "u": sube, "dpo": dpo, "coord": coord})
+    return [coord, dpo]
+
+
+async def _borrar_evidencia_sembrada(session, tarea: str, usuarios: list[str]) -> None:
+    await session.execute(text("DELETE FROM task_evidence WHERE task_id = :tk"), {"tk": tarea})
+    await session.execute(text("DELETE FROM users WHERE id = ANY(:ids)"), {"ids": usuarios})
+
+
 def _h(user: str, tenant: str, role: str) -> dict:
     return {"X-User-ID": user, "X-Tenant-ID": tenant, "X-Role": role}
 
@@ -238,16 +260,25 @@ async def test_patch_task_implementador_ok(api_client, api_seed):
             "title, priority, status) "
             "VALUES (:id, :w, :t, 'P10', 'D02', 'Task', 'critica', 'pendiente')"
         ), {"id": tk_id, "w": wv_id, "t": api_seed["tenant"]})
+        sube = f"rm28-s-{uuid.uuid4().hex[:8]}"
+        await s.execute(text("INSERT INTO users (id, email, nombre) VALUES (:id, :e, :n)"),
+                        {"id": sube, "e": f"{sube}@test.local", "n": sube})
+        sembrados = [sube] + await _sembrar_evidencia_doble_validacion(s, api_seed["tenant"], tk_id, sube)
         await s.commit()
-    await engine.dispose()
 
-    r = await api_client.patch(
-        f"/api/v1/roadmaps/tasks/{tk_id}",
-        json={"status": "completada"},
-        headers=_h(api_seed["user"], api_seed["tenant"], "implementador"),
-    )
-    assert r.status_code == 200, r.text
-    assert r.json()["status"] == "completada"
+    try:
+        r = await api_client.patch(
+            f"/api/v1/roadmaps/tasks/{tk_id}",
+            json={"status": "completada"},
+            headers=_h(api_seed["user"], api_seed["tenant"], "implementador"),
+        )
+        assert r.status_code == 200, r.text
+        assert r.json()["status"] == "completada"
+    finally:
+        async with factory() as s:
+            await _borrar_evidencia_sembrada(s, tk_id, sembrados)
+            await s.commit()
+        await engine.dispose()
 
 
 # ==================== POST /roadmaps/tasks/{id}/evidence/upload-url ====================

@@ -11,6 +11,28 @@ from features.roadmap import roadmap_service
 from features.roadmap.roadmap_service import TaskStatus
 
 
+async def _sembrar_evidencia_doble_validacion(session, tenant: str, tarea: str, sube: str) -> list[str]:
+    """RM-28 (R4): evidencia aprobada por coordinador y DPO en E1, que el cierre exige. Devuelve los usuarios creados."""
+    coord, dpo = f"rm28-c-{uuid.uuid4().hex[:8]}", f"rm28-d-{uuid.uuid4().hex[:8]}"
+    for uid in (coord, dpo):
+        await session.execute(text("INSERT INTO users (id, email, nombre) VALUES (:id, :e, :n)"),
+                              {"id": uid, "e": f"{uid}@test.local", "n": uid})
+    await session.execute(text(
+        "INSERT INTO task_evidence (id, task_id, tenant_id, clave_objeto, mime_type, file_size, uploaded_by, "
+        "validation_status, validated_by, validated_at, validado_rol, nivel_acreditado, "
+        "primera_validacion_por, primera_validacion_en, primera_validacion_rol) "
+        "VALUES (:id, :tk, :t, :k, 'application/pdf', 100, :u, 'approved', :dpo, now(), 'dpo', 1, "
+        ":coord, now(), 'coordinador')"
+    ), {"id": f"ev-{uuid.uuid4().hex[:8]}", "tk": tarea, "t": tenant, "k": f"{tenant}/{tarea}/rm28.pdf",
+        "u": sube, "dpo": dpo, "coord": coord})
+    return [coord, dpo]
+
+
+async def _borrar_evidencia_sembrada(session, tarea: str, usuarios: list[str]) -> None:
+    await session.execute(text("DELETE FROM task_evidence WHERE task_id = :tk"), {"tk": tarea})
+    await session.execute(text("DELETE FROM users WHERE id = ANY(:ids)"), {"ids": usuarios})
+
+
 @pytest.mark.asyncio
 async def test_get_roadmap_devuelve_none_si_no_existe(db_session, seed_tenants):
     """get_roadmap devuelve None para ID inexistente."""
@@ -64,20 +86,26 @@ async def test_update_task_status_y_audit_log(db_session, seed_tenants):
              "VALUES (:id, :w, :t, 'P10', 'D02', 'Task', 'critica', 'pendiente')"),
         {"id": tk_id, "w": wv_id, "t": tenant},
     )
+    sembrados = await _sembrar_evidencia_doble_validacion(db_session, tenant, tk_id, seed_tenants["user_b"])
     await db_session.commit()
 
-    result = await roadmap_service.update_task_status(
-        db_session, tenant, user, tk_id, TaskStatus.completada
-    )
-    await db_session.commit()
-    assert result is not None
-    assert result["status"] == "completada"
+    try:
+        result = await roadmap_service.update_task_status(
+            db_session, tenant, user, tk_id, TaskStatus.completada
+        )
+        await db_session.commit()
+        assert result is not None
+        assert result["status"] == "completada"
 
-    audit = (await db_session.execute(
-        text("SELECT COUNT(*) FROM task_audit_log WHERE task_id = :id"),
-        {"id": tk_id},
-    )).fetchone()
-    assert audit[0] >= 1
+        audit = (await db_session.execute(
+            text("SELECT COUNT(*) FROM task_audit_log WHERE task_id = :id"),
+            {"id": tk_id},
+        )).fetchone()
+        assert audit[0] >= 1
+    finally:
+        await db_session.rollback()
+        await _borrar_evidencia_sembrada(db_session, tk_id, sembrados)
+        await db_session.commit()
 
 
 @pytest.mark.asyncio
