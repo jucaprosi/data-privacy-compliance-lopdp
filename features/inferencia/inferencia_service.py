@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from dataclasses import dataclass
 from typing import Callable
 
@@ -24,6 +25,11 @@ from features.inferencia.domain.traza import Traza
 from features.inferencia.services import cliente_vertex
 
 logger = logging.getLogger(__name__)
+
+PLAZO_TOTAL_S = 140  # IA-18 R3: por debajo de los 150 s del proxy de la web y del `--timeout` de Cloud Run
+MARGEN_S = 5  # IA-18 R5: lo que se resta al plazo de cada petición
+CODIGOS_TRANSITORIOS = frozenset({429, 503, 504})  # IA-18 R2
+_reloj = time.monotonic  # las pruebas lo sustituyen: nunca se duerme de verdad
 
 __all__ = [
     "EstadoProveedor",
@@ -126,8 +132,44 @@ def _obtener_cliente_vectores():
     if _cliente_de_prueba is not None:
         return _cliente_de_prueba
     if _cliente_vectores is None:
-        _cliente_vectores = cliente_vertex.crear_cliente(vectores=True)
+        _cliente_vectores = cliente_vertex.crear_cliente(vectores=True, plazo_ms=(PLAZO_TOTAL_S - MARGEN_S) * 1000)
     return _cliente_vectores
+
+
+def _transitorio(exc: Exception) -> bool:
+    from google.genai import errors
+
+    return isinstance(exc, errors.APIError) and getattr(exc, "code", None) in CODIGOS_TRANSITORIOS
+
+
+def _describir(exc: Exception) -> str:
+    """Tipo, código y estado de la excepción. Nunca su mensaje: puede traer el prompt o datos personales."""
+    from google.genai import errors
+
+    partes = [type(exc).__name__]
+    if isinstance(exc, errors.APIError):
+        partes += ["code=%s" % getattr(exc, "code", None), "status=%s" % getattr(exc, "status", None)]
+    return " ".join(partes)
+
+
+async def _con_plazo(etiqueta: str, llamar):
+    """IA-18 R1-R3 y R5: `llamar(plazo_ms)` con un reintento solo ante 429/503/504 y solo si cabe en el plazo total."""
+    inicio = _reloj()
+    intento = 1
+    while True:
+        desde = _reloj()
+        plazo_ms = max(int((PLAZO_TOTAL_S - (desde - inicio) - MARGEN_S) * 1000), 0)
+        try:
+            return await llamar(plazo_ms)
+        except Exception as exc:  # noqa: BLE001
+            duracion = _reloj() - desde
+            logger.warning("%s: %s intento=%d duracion=%.1fs", etiqueta, _describir(exc), intento, duracion)
+            if intento == 1 and _transitorio(exc):
+                if PLAZO_TOTAL_S - (_reloj() - inicio) >= duracion:
+                    intento = 2
+                    continue
+                logger.warning("%s: reintento omitido por plazo", etiqueta)
+            raise
 
 
 async def _consumir_tope(org_id: str) -> None:
@@ -154,23 +196,20 @@ async def _generar(
     usuario_seguro = sanitizar_texto_pii(usuario)
     try:
         cliente = _obtener_cliente()
-        ultimo: Exception | None = None
-        for _ in range(2):  # un reintento como máximo
-            try:
-                respuesta = await cliente_vertex.generar_json(
-                    cliente, modelo, sistema_seguro, usuario_seguro, esquema
-                )
-                texto = getattr(respuesta, "text", None)
-                if not texto:
-                    raise ValueError("respuesta vacía")
-                return esquema.model_validate_json(texto), respuesta
-            except Exception as exc:  # noqa: BLE001
-                ultimo = exc
-        raise ultimo  # type: ignore[misc]
+
+        async def llamar(plazo_ms: int):
+            respuesta = await cliente_vertex.generar_json(
+                cliente, modelo, sistema_seguro, usuario_seguro, esquema, plazo_ms=plazo_ms
+            )
+            texto = getattr(respuesta, "text", None)
+            if not texto:
+                raise ValueError("respuesta vacía")
+            return esquema.model_validate_json(texto), respuesta
+
+        return await _con_plazo("Fallo de inferencia Vertex", llamar)
     except InferenciaNoDisponible:
         raise
     except Exception as exc:  # noqa: BLE001
-        logger.warning("Fallo de inferencia Vertex: %s", type(exc).__name__)
         raise InferenciaNoDisponible() from exc
 
 
@@ -249,22 +288,20 @@ async def transcribir_pdf(pdf: bytes, prompt: PromptVersionado, *, modelo: str) 
         raise InferenciaNoDisponible()
     try:
         cliente = _obtener_cliente()  # comprueba la región de generación (IA-17)
-        ultimo: Exception | None = None
-        for _ in range(2):  # un reintento como máximo
-            try:
-                respuesta = await cliente_vertex.transcribir(cliente, modelo, prompt.sistema, prompt.renderizar({}), pdf)
-                texto = getattr(respuesta, "text", None)
-                if not isinstance(texto, str) or not texto.strip():
-                    raise ValueError("respuesta vacía")
-                break
-            except Exception as exc:  # noqa: BLE001
-                ultimo = exc
-        else:
-            raise ultimo  # type: ignore[misc]
+
+        async def llamar(plazo_ms: int):
+            respuesta = await cliente_vertex.transcribir(
+                cliente, modelo, prompt.sistema, prompt.renderizar({}), pdf, plazo_ms=plazo_ms
+            )
+            texto = getattr(respuesta, "text", None)
+            if not isinstance(texto, str) or not texto.strip():
+                raise ValueError("respuesta vacía")
+            return texto, respuesta
+
+        texto, respuesta = await _con_plazo("Fallo de transcripción Vertex", llamar)
     except InferenciaNoDisponible:
         raise
     except Exception as exc:  # noqa: BLE001
-        logger.warning("Fallo de transcripción Vertex: %s", type(exc).__name__)
         raise InferenciaNoDisponible() from exc
     version = getattr(respuesta, "model_version", None)
     if not isinstance(version, str) or not version.strip():
@@ -285,25 +322,20 @@ async def generar_trazado_sin_tope(
     usuario_seguro = sanitizar_texto_pii(prompt.renderizar(valores))
     try:
         cliente = _obtener_cliente()
-        ultimo: Exception | None = None
-        for _ in range(2):  # un reintento como máximo
-            try:
-                respuesta = await cliente_vertex.generar_json(
-                    cliente, modelo, sistema_seguro, usuario_seguro, esquema
-                )
-                texto = getattr(respuesta, "text", None)
-                if not texto:
-                    raise ValueError("respuesta vacía")
-                resultado = esquema.model_validate_json(texto)
-                break
-            except Exception as exc:  # noqa: BLE001
-                ultimo = exc
-        else:
-            raise ultimo  # type: ignore[misc]
+
+        async def llamar(plazo_ms: int):
+            respuesta = await cliente_vertex.generar_json(
+                cliente, modelo, sistema_seguro, usuario_seguro, esquema, plazo_ms=plazo_ms
+            )
+            texto = getattr(respuesta, "text", None)
+            if not texto:
+                raise ValueError("respuesta vacía")
+            return esquema.model_validate_json(texto), respuesta
+
+        resultado, respuesta = await _con_plazo("Fallo de inferencia Vertex", llamar)
     except InferenciaNoDisponible:
         raise
     except Exception as exc:  # noqa: BLE001
-        logger.warning("Fallo de inferencia Vertex: %s", type(exc).__name__)
         raise InferenciaNoDisponible() from exc
     version = getattr(respuesta, "model_version", None)
     if not isinstance(version, str) or not version.strip():
