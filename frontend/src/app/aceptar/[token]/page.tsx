@@ -95,15 +95,15 @@ export default function AceptarPage({
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[var(--ui-bg,#09090b)] px-4 py-10 text-[var(--ui-fg,#fafafa)]">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--background)] px-4 py-10 text-[var(--foreground)]">
       <section
         aria-labelledby="titulo-aceptacion"
-        className="w-full max-w-lg rounded-2xl border border-[var(--ui-border,#3f3f46)] bg-[var(--ui-surface,#18181b)] p-7 shadow-2xl"
+        className="w-full max-w-lg rounded-2xl border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-7 shadow-2xl"
       >
-        <FileText className="h-9 w-9 text-[var(--ui-accent,#8b5cf6)]" aria-hidden="true" />
+        <FileText className="h-9 w-9 text-[var(--ui-primario)]" aria-hidden="true" />
 
         {estado.tipo === "cargando" && (
-          <p className="mt-6 text-sm text-[var(--ui-muted,#a1a1aa)]" aria-live="polite">
+          <p className="mt-6 text-sm text-[var(--ui-texto-suave)]" aria-live="polite">
             Cargando información del documento…
           </p>
         )}
@@ -113,18 +113,18 @@ export default function AceptarPage({
             <h1 id="titulo-aceptacion" className="mt-4 text-2xl font-semibold">
               Aceptar documento
             </h1>
-            <p className="mt-1 text-sm text-[var(--ui-muted,#a1a1aa)]">
+            <p className="mt-1 text-sm text-[var(--ui-texto-suave)]">
               {estado.info.organizacion} solicita tu aceptación.
             </p>
 
-            <div className="mt-6 rounded-xl border border-[var(--ui-border,#3f3f46)] bg-[var(--ui-bg,#09090b)] p-4 space-y-2">
+            <div className="mt-6 rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-superficie-2)] p-4 space-y-2">
               <p className="text-sm font-medium">{estado.info.nombre_documento}</p>
-              <p className="font-mono text-xs text-[var(--ui-muted,#a1a1aa)] break-all">
+              <p className="font-mono text-xs text-[var(--ui-texto-suave)] break-all">
                 SHA-256: {estado.info.sha256}
               </p>
             </div>
 
-            <p className="mt-4 text-sm text-[var(--ui-muted,#a1a1aa)]">
+            <p className="mt-4 text-sm text-[var(--ui-texto-suave)]">
               Al pulsar «Acepto» se registrarán tu nombre, correo, fecha, hora e IP como constancia de
               aceptación. El acuse quedará custodiado en la plataforma.
             </p>
@@ -133,7 +133,7 @@ export default function AceptarPage({
               data-testid="btn-acepto"
               onClick={handleAceptar}
               disabled={aceptando}
-              className="mt-6 w-full rounded-lg bg-[var(--ui-accent,#8b5cf6)] px-4 py-2.5 text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+              className="mt-6 w-full rounded-lg bg-[var(--ui-primario)] px-4 py-2.5 text-sm font-semibold text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] disabled:opacity-50"
             >
               {aceptando ? "Registrando…" : "Acepto"}
             </button>
@@ -146,7 +146,7 @@ export default function AceptarPage({
             <h1 id="titulo-aceptacion" className="text-2xl font-semibold">
               Aceptación registrada
             </h1>
-            <p role="status" className="text-sm text-[var(--ui-muted,#a1a1aa)]">
+            <p role="status" className="text-sm text-[var(--ui-texto-suave)]">
               {TEXTO_DESCARGA.linea}
             </p>
             {estado.acuse.acuse_pdf ? (
@@ -168,7 +168,7 @@ export default function AceptarPage({
                       setDescargando(false);
                     }
                   }}
-                  className="w-full rounded-lg border border-[var(--ui-border,#3f3f46)] px-4 py-2.5 text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+                  className="w-full rounded-lg border border-[var(--ui-borde-control)] px-4 py-2.5 text-sm font-semibold hover:opacity-90 disabled:opacity-50"
                 >
                   {descargando ? TEXTO_DESCARGA.preparando : TEXTO_DESCARGA.etiqueta}
                 </button>
@@ -183,7 +183,7 @@ export default function AceptarPage({
                 {TEXTO_DESCARGA.errorSinPdf}
               </p>
             )}
-            <p data-testid="acuse-sha256" className="font-mono text-xs text-[var(--ui-muted,#a1a1aa)]">
+            <p data-testid="acuse-sha256" className="font-mono text-xs text-[var(--ui-texto-suave)]">
               {TEXTO_DESCARGA.huella(estado.acuse.acuse_sha256)}
             </p>
           </div>
@@ -193,7 +193,7 @@ export default function AceptarPage({
           <div role="alert" data-testid="enlace-caducado" className="mt-4 space-y-3">
             <XCircle className="h-9 w-9 text-[var(--ui-aviso-texto)]" />
             <h1 id="titulo-aceptacion" className="text-xl font-semibold">Enlace no disponible</h1>
-            <p className="text-sm text-[var(--ui-muted,#a1a1aa)]">
+            <p className="text-sm text-[var(--ui-texto-suave)]">
               Este enlace ya fue utilizado o ha caducado. Contacta a quien lo envió para recibir uno
               nuevo.
             </p>
@@ -204,7 +204,7 @@ export default function AceptarPage({
           <div role="alert" className="mt-4 space-y-3">
             <XCircle className="h-9 w-9 text-[var(--ui-error-texto)]" />
             <h1 id="titulo-aceptacion" className="text-xl font-semibold">Error</h1>
-            <p className="text-sm text-[var(--ui-muted,#a1a1aa)]">{estado.mensaje}</p>
+            <p className="text-sm text-[var(--ui-texto-suave)]">{estado.mensaje}</p>
           </div>
         )}
       </section>

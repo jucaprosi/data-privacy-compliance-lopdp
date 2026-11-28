@@ -56,7 +56,7 @@ const NOMBRE_VARIABLE: Record<string, string> = {
 };
 
 const CAMPO =
-  "w-full rounded-md border border-[var(--ui-borde)] bg-[var(--ui-campo)] px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--ui-primario)]";
+  "w-full rounded-md border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--ui-primario)]";
 const ETIQUETA = "block text-[11px] font-semibold text-[var(--ui-texto-suave)] mb-1";
 
 export default function MtgeModule() {

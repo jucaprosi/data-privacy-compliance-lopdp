@@ -134,8 +134,8 @@ export const AuditoriasView: React.FC<Props> = ({ rolActual = "auditor", usuario
             onClick={() => setTabActiva("auditorias")}
             className={`pb-3 text-sm font-semibold border-b-2 transition-colors ${
               tabActiva === "auditorias"
-                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
-                : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                ? "border-[var(--ui-enlace)] text-[var(--ui-enlace)]"
+                : "border-transparent text-[var(--ui-texto-suave)] hover:text-[var(--ui-texto)]"
             }`}
           >
             Auditorías
@@ -150,8 +150,8 @@ export const AuditoriasView: React.FC<Props> = ({ rolActual = "auditor", usuario
               }}
               className={`pb-3 text-sm font-semibold border-b-2 transition-colors ${
                 tabActiva === "cierres"
-                  ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
-                  : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                  ? "border-[var(--ui-enlace)] text-[var(--ui-enlace)]"
+                  : "border-transparent text-[var(--ui-texto-suave)] hover:text-[var(--ui-texto)]"
               }`}
             >
               Cierres por verificar
@@ -264,7 +264,7 @@ export const AuditoriasView: React.FC<Props> = ({ rolActual = "auditor", usuario
               <button
                 type="button"
                 onClick={cargarLista}
-                className="rounded border border-rose-300 bg-rose-100 px-3 py-1.5 text-xs font-semibold text-rose-950 hover:bg-rose-200"
+                className="rounded border border-[var(--ui-borde-control)] bg-rose-100 px-3 py-1.5 text-xs font-semibold text-rose-950 hover:bg-rose-200"
               >
                 Volver a cargar
               </button>
