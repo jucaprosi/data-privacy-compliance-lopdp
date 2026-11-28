@@ -161,21 +161,21 @@ export default function OrganizacionesPage() {
   };
 
   return (
-    <main className="flex min-h-screen w-full items-center justify-center bg-white px-4 text-zinc-800">
+    <main className="flex min-h-screen w-full items-center justify-center bg-[var(--background)] px-4 text-[var(--foreground)]">
       <section
         aria-labelledby="titulo-organizaciones"
-        className="flex w-full max-w-md flex-col gap-5 rounded-xl border border-[#e8dcf5] p-8 shadow-sm"
+        className="flex w-full max-w-md flex-col gap-5 rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-8 shadow-sm"
       >
         <div className="flex flex-col items-center text-center">
-          <Layers className="h-8 w-8 text-[#9a3bf1]" aria-hidden="true" />
+          <Layers className="h-8 w-8 text-[var(--ui-enlace)]" aria-hidden="true" />
           <h1 id="titulo-organizaciones" className="mt-2 text-lg font-semibold">
             Elige con qué organización trabajar
           </h1>
-          {acceso && <p className="mt-1 text-sm text-zinc-500">{acceso.email}</p>}
+          {acceso && <p className="mt-1 text-sm text-[var(--ui-texto-suave)]">{acceso.email}</p>}
         </div>
 
         {error && (
-          <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p role="alert" className="rounded-md bg-[var(--ui-error-fondo)] px-3 py-2 text-sm text-[var(--ui-error-texto)]">
             {error}
           </p>
         )}
@@ -203,7 +203,7 @@ export default function OrganizacionesPage() {
         )}
 
         {(fallo === "servidor" || fallo === "red") && organizaciones && organizaciones.length > 0 && (
-          <p className="text-xs text-zinc-700">{NOTA_LISTA_GUARDADA}</p>
+          <p className="text-xs text-[var(--ui-texto-suave)]">{NOTA_LISTA_GUARDADA}</p>
         )}
         {/* === fin FE-29 === */}
 
@@ -216,16 +216,16 @@ export default function OrganizacionesPage() {
                   <button
                     type="button"
                     onClick={() => elegir(org)}
-                    className="flex w-full items-center gap-3 rounded-lg border border-[#e8dcf5] px-4 py-3 text-left hover:bg-[#f7f1fd] cursor-pointer"
+                    className="flex w-full items-center gap-3 rounded-lg border border-[var(--ui-borde-control)] px-4 py-3 text-left hover:bg-[var(--ui-superficie-2)] cursor-pointer"
                   >
-                    <Building2 className="h-5 w-5 shrink-0 text-[#9a3bf1]" aria-hidden="true" />
+                    <Building2 className="h-5 w-5 shrink-0 text-[var(--ui-enlace)]" aria-hidden="true" />
                     <span className="flex-1">
                       <span className="block text-sm font-semibold">{org.nombre_comercial}</span>
-                      <span className="block text-xs text-zinc-500">
+                      <span className="block text-xs text-[var(--ui-texto-suave)]">
                         {org.roles.map((r) => ETIQUETA_ROL[r] ?? r).join(", ")}
                       </span>
                     </span>
-                    {esActiva && <span className="text-xs font-semibold text-[#7a2bc4]">Organización activa</span>}
+                    {esActiva && <span className="text-xs font-semibold text-[var(--ui-enlace)]">Organización activa</span>}
                   </button>
                 </li>
               );
@@ -240,7 +240,7 @@ export default function OrganizacionesPage() {
             cerrarSesion();
             router.replace(RUTA_LOGIN);
           }}
-          className="self-center text-xs text-zinc-500 underline cursor-pointer"
+          className="self-center text-xs text-[var(--ui-texto-suave)] underline cursor-pointer"
         >
           Salir y usar otra cuenta
         </button>
@@ -253,11 +253,11 @@ export default function OrganizacionesPage() {
           aria-labelledby="titulo-cambios"
           className="fixed inset-0 flex items-center justify-center bg-zinc-900/40 px-4"
         >
-          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
+          <div className="w-full max-w-sm rounded-xl bg-[var(--ui-superficie)] p-6 shadow-lg">
             <h2 id="titulo-cambios" className="text-base font-semibold">
               Tienes cambios sin guardar
             </h2>
-            <p className="mt-2 text-sm text-zinc-600">
+            <p className="mt-2 text-sm text-[var(--ui-texto-suave)]">
               Son de {activa?.nombre_comercial ?? "la organización actual"} y no pasarán a {pendienteDeCambio.nombre_comercial}.
               ¿Qué hacemos con ellos antes de cambiar?
             </p>
@@ -265,21 +265,21 @@ export default function OrganizacionesPage() {
               <button
                 type="button"
                 onClick={() => resolverYCambiar("guardar")}
-                className="rounded-md bg-[#9a3bf1] px-3 py-2 text-sm font-semibold text-white cursor-pointer"
+                className="rounded-md bg-[var(--ui-primario)] px-3 py-2 text-sm font-semibold text-[var(--ui-primario-texto)] cursor-pointer"
               >
                 Guardar y cambiar
               </button>
               <button
                 type="button"
                 onClick={() => resolverYCambiar("descartar")}
-                className="rounded-md border border-[#e8dcf5] px-3 py-2 text-sm cursor-pointer"
+                className="rounded-md border border-[var(--ui-borde-control)] px-3 py-2 text-sm cursor-pointer"
               >
                 Descartar y cambiar
               </button>
               <button
                 type="button"
                 onClick={() => setPendienteDeCambio(null)}
-                className="px-3 py-2 text-sm text-zinc-500 cursor-pointer"
+                className="px-3 py-2 text-sm text-[var(--ui-texto-suave)] cursor-pointer"
               >
                 Cancelar
               </button>
