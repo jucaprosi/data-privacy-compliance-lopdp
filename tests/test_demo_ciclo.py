@@ -13,7 +13,7 @@ Mutaciones documentadas (cada una hace fallar la prueba indicada):
   - no vencer a la demo previa del vendedor: test_segunda_entrada_del_vendedor_vence_la_primera_por_reemplazo
     (el índice único parcial lo convertiría en un 503);
   - quitar el SAVEPOINT de `entrar`: test_falla_en_una_sala_da_503_sin_filas_a_medias;
-  - no omitir la sala sin clon (lanzar en vez de omitir): test_una_sala_sin_clon_se_omite_y_el_evento_la_nombra;
+  - volver a omitir la sala sin clon (DEMO-13 R3): test_una_sala_sin_clon_da_503_demo_incompleta_sin_filas;
   - que `terminar` borre filas: test_terminar_marca_vencida_y_no_borra_nada;
   - vencer a los 61 minutos en vez de a los 60: test_vencer_inactivas_59_no_60_si.
 """
@@ -323,15 +323,19 @@ async def test_falla_en_una_sala_da_503_sin_filas_a_medias(corrida, monkeypatch)
 
 
 @pytest.mark.asyncio
-async def test_una_sala_sin_clon_se_omite_y_el_evento_la_nombra(corrida, monkeypatch):
+async def test_una_sala_sin_clon_da_503_demo_incompleta_sin_filas(corrida, monkeypatch):
     monkeypatch.setattr("features.demo.services.entrada_engine.ORDEN_DE_SALAS", (*ORDEN_DE_SALAS, "sala_futura_sin_clon"))
-    estado = await corrida.entrar()
-    omitidas = [s for s in (*ORDEN_DE_SALAS, "sala_futura_sin_clon") if entrada_engine._clonador(s) is None]
-    assert omitidas
-    ((payload,),) = await corrida.uno(
-        "SELECT payload::text FROM audit_events WHERE tenant_id = :t AND action = 'DEMO_INICIADA'", t=estado.tenant_id)
-    assert all(sala in payload for sala in omitidas)
-    assert (await corrida.sesiones())[0][2] == "activa"
+    cuentas = ("SELECT count(*) FROM tenants", "SELECT count(*) FROM users", "SELECT count(*) FROM user_tenant_roles",
+               "SELECT count(*) FROM audit_events", "SELECT count(*) FROM demo_sesiones")
+    antes = [await corrida.contar(c) for c in cuentas]
+    async with corrida.fabrica() as session:  # como el router: devuelve el error y `get_session` confirma
+        with pytest.raises(ErrorDemo) as e:
+            await entrada_engine.entrar(session, corrida.sub(), corrida.correo(), AHORA)
+        await session.commit()
+    assert e.value.status_code == 503 and e.value.cuerpo()["codigo"] == "DEMO_INCOMPLETA"
+    assert e.value.cuerpo()["salas"] == ["sala_futura_sin_clon"]
+    assert [await corrida.contar(c) for c in cuentas] == antes
+    assert await corrida.sesiones() == []
 
 
 @pytest.mark.asyncio
