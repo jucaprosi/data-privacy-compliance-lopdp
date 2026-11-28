@@ -98,8 +98,8 @@ const ESTADO_VALIDACION: Record<EvidenceValidationStatus, { texto: string; clase
 };
 
 const BOTON =
-  "inline-flex items-center gap-1.5 rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton)] px-2.5 py-1.5 text-xs " +
-  "font-semibold text-zinc-100 hover:bg-[var(--ui-boton-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] " +
+  "inline-flex items-center gap-1.5 rounded-md border border-[var(--ui-borde-control)] bg-[var(--ui-boton)] px-2.5 py-1.5 text-xs " +
+  "font-semibold text-[var(--foreground)] hover:bg-[var(--ui-boton-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-enlace)] " +
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
 function aErrorVisible(err: unknown): ErrorVisible {
@@ -121,12 +121,12 @@ function mensajeDeRechazo(rechazo: FileRejection): string {
 
 function BloqueError({ error, testId }: { error: ErrorVisible; testId?: string }) {
   return (
-    <div role="alert" data-testid={testId} className="flex items-start gap-2 p-2.5 rounded-md bg-[#ff1744]/10 border border-[#ff1744]/40 text-xs">
-      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#ff1744]" aria-hidden="true" />
+    <div role="alert" data-testid={testId} className="flex items-start gap-2 p-2.5 rounded-md bg-[var(--ui-error-fondo)] border border-[var(--ui-error-borde)] text-xs">
+      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-error-texto)]" aria-hidden="true" />
       <div className="space-y-0.5">
         <p>{error.mensaje}</p>
-        {error.codigo && <p className="text-zinc-400">Código: {error.codigo}</p>}
-        {error.accion && <p className="text-zinc-400">Acción requerida: {error.accion}</p>}
+        {error.codigo && <p className="text-[var(--ui-texto-suave)]">Código: {error.codigo}</p>}
+        {error.accion && <p className="text-[var(--ui-texto-suave)]">Acción requerida: {error.accion}</p>}
       </div>
     </div>
   );
@@ -246,9 +246,9 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
   const visibles = evidencias.filter((e) => evidenciaVisible(rol, usuarioId, e));
 
   return (
-    <section aria-label="Evidencia de la tarea" className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-4 text-zinc-200">
+    <section aria-label="Evidencia de la tarea" className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-4 text-[var(--foreground)]">
       <header>
-        <h2 className="text-sm font-bold uppercase tracking-wider text-white">Evidencia</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--foreground)]">Evidencia</h2>
         {titulo && <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">{titulo}</p>}
       </header>
 
@@ -256,19 +256,19 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
         <div
           {...getRootProps()}
           className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition flex flex-col items-center gap-2 ${
-            isDragActive ? "border-[#3892f3] bg-[#3892f3]/10" : "border-[var(--ui-borde)] hover:border-[var(--ui-primario)]"
+            isDragActive ? "border-[var(--ui-info-borde)] bg-[var(--ui-info-fondo)]" : "border-[var(--ui-borde)] hover:border-[var(--ui-primario)]"
           } ${subiendo ? "opacity-60 cursor-not-allowed" : ""}`}
         >
           <input {...getInputProps({ "aria-label": "Archivo de evidencia" })} />
-          <UploadCloud className="w-5 h-5 text-[#3892f3]" aria-hidden="true" />
-          <p className="text-xs font-semibold text-white">Suelta aquí el archivo o haz clic para elegirlo</p>
-          <p className="text-[11px] text-zinc-400">
+          <UploadCloud className="w-5 h-5 text-[var(--ui-enlace)]" aria-hidden="true" />
+          <p className="text-xs font-semibold text-[var(--foreground)]">Suelta aquí el archivo o haz clic para elegirlo</p>
+          <p className="text-[11px] text-[var(--ui-texto-suave)]">
             Se admiten {EXTENSIONES_PERMITIDAS.join(", ")} de hasta {formatearTamano(TAMANO_MAXIMO_BYTES)}.
           </p>
         </div>
       ) : (
-        <div role="note" className="flex items-start gap-2.5 p-3 rounded-lg bg-[#ffb300]/10 border border-[#ffb300]/40 text-xs">
-          <Lock className="w-4 h-4 shrink-0 mt-0.5 text-[#ffb300]" aria-hidden="true" />
+        <div role="note" className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ui-aviso-fondo)] border border-[var(--ui-aviso-borde)] text-xs">
+          <Lock className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-aviso-texto)]" aria-hidden="true" />
           <p>
             Tu rol actual es <strong>{rol}</strong> y no sube evidencia. Solo la suben el responsable de área y el
             coordinador.
@@ -277,7 +277,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
       )}
 
       {rechazos.length > 0 && (
-        <ul role="alert" data-testid="rechazos" className="space-y-1 text-xs text-[#ff7b92]">
+        <ul role="alert" data-testid="rechazos" className="space-y-1 text-xs text-[var(--ui-error-texto)]">
           {rechazos.map((mensaje) => (
             <li key={mensaje}>{mensaje}</li>
           ))}
@@ -285,8 +285,8 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
       )}
 
       {subiendo && paso && (
-        <div role="status" aria-live="polite" className="flex items-center gap-2.5 p-3 rounded-lg bg-[#3892f3]/10 border border-[#3892f3]/40 text-xs">
-          <Loader2 className="w-4 h-4 animate-spin text-[#3892f3]" aria-hidden="true" />
+        <div role="status" aria-live="polite" className="flex items-center gap-2.5 p-3 rounded-lg bg-[var(--ui-info-fondo)] border border-[var(--ui-info-borde)] text-xs">
+          <Loader2 className="w-4 h-4 animate-spin text-[var(--ui-enlace)]" aria-hidden="true" />
           <p data-testid="subida-progreso">{MENSAJE_PASO[paso]}</p>
         </div>
       )}
@@ -303,12 +303,12 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
       )}
 
       {rol === "responsable_area" && (
-        <p className="text-[11px] text-zinc-500">Como responsable de área, aquí solo ves la evidencia que subiste tú.</p>
+        <p className="text-[11px] text-[var(--ui-texto-suave)]">Como responsable de área, aquí solo ves la evidencia que subiste tú.</p>
       )}
 
       {cargando && (
-        <p role="status" className="flex items-center gap-2 text-xs text-zinc-300">
-          <Loader2 className="w-4 h-4 animate-spin text-[#3892f3]" aria-hidden="true" />
+        <p role="status" className="flex items-center gap-2 text-xs text-[var(--ui-texto-suave)]">
+          <Loader2 className="w-4 h-4 animate-spin text-[var(--ui-enlace)]" aria-hidden="true" />
           Cargando la evidencia…
         </p>
       )}
@@ -323,7 +323,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
       )}
 
       {!cargando && !errorLista && visibles.length === 0 && (
-        <p role="status" data-testid="sin-evidencia" className="text-xs text-zinc-400">
+        <p role="status" data-testid="sin-evidencia" className="text-xs text-[var(--ui-texto-suave)]">
           Esta tarea todavía no tiene evidencia registrada.
         </p>
       )}
@@ -343,7 +343,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white break-all">{nombreDeArchivo(evidencia.clave_objeto)}</p>
+                  <p className="text-sm font-semibold text-[var(--foreground)] break-all">{nombreDeArchivo(evidencia.clave_objeto)}</p>
                   <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">
                     {evidencia.file_size != null ? `${formatearTamano(evidencia.file_size)} · ` : ""}
                     Subida por {evidencia.uploaded_by ?? "desconocido"}
@@ -360,19 +360,19 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
               </div>
 
               {evidencia.notes && (
-                <p className="text-xs text-zinc-300">
-                  <span className="text-zinc-500">Comentario:</span> {evidencia.notes}
+                <p className="text-xs text-[var(--ui-texto-suave)]">
+                  <span className="text-[var(--ui-texto-suave)]">Comentario:</span> {evidencia.notes}
                 </p>
               )}
 
               {/* === RM-25c === */}
               {evidencia.requiere_revalidacion && (
-                <p role="status" data-testid={`pendiente-final-${evidencia.id}`} className="text-[11px] font-semibold text-[#ffd166]">
+                <p role="status" data-testid={`pendiente-final-${evidencia.id}`} className="text-[11px] font-semibold text-[var(--ui-aviso-texto)]">
                   Pendiente de validación final
                 </p>
               )}
               {(evidencia.primera_validacion_por || (evidencia.validated_by && evidencia.validation_status !== "pending")) && (
-                <ul aria-label="Historial de validación" data-testid={`historial-${evidencia.id}`} className="space-y-0.5 text-[11px] text-zinc-400">
+                <ul aria-label="Historial de validación" data-testid={`historial-${evidencia.id}`} className="space-y-0.5 text-[11px] text-[var(--ui-texto-suave)]">
                   {evidencia.primera_validacion_por && (
                     <li>
                       {lineaDeHistorial(evidencia.primera_validacion_por, evidencia.primera_validacion_rol, "Primera validación", evidencia.primera_validacion_en)}
@@ -394,7 +394,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
                     {primeras[evidencia.id]?.ocupada ? "Registrando…" : "Primera validación"}
                   </button>
                   {primeras[evidencia.id]?.error && (
-                    <p role="alert" data-testid={`error-primera-${evidencia.id}`} className="text-[11px] text-[#ff6b86]">
+                    <p role="alert" data-testid={`error-primera-${evidencia.id}`} className="text-[11px] text-[var(--ui-error-texto)]">
                       {primeras[evidencia.id]?.error}
                     </p>
                   )}
@@ -415,7 +415,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
                     Validación final
                   </button>
                   {!evidencia.primera_validacion_por && (
-                    <p id={id("final-ayuda")} className="text-[11px] text-zinc-400">
+                    <p id={id("final-ayuda")} className="text-[11px] text-[var(--ui-texto-suave)]">
                       Disponible cuando el coordinador haga la primera validación
                     </p>
                   )}
@@ -429,7 +429,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
                     <p
                       role="note"
                       data-testid={`cuatro-ojos-${evidencia.id}`}
-                      className="flex items-start gap-2 text-[11px] text-[#ffd166]"
+                      className="flex items-start gap-2 text-[11px] text-[var(--ui-aviso-texto)]"
                     >
                       <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5" aria-hidden="true" />
                       No puedes validar esta evidencia porque la subiste tú (regla de cuatro ojos). Debe validarla otra
@@ -464,7 +464,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
                       }}
                       className="space-y-2"
                     >
-                      <label htmlFor={id("comentario")} className="block text-[11px] font-semibold text-zinc-300">
+                      <label htmlFor={id("comentario")} className="block text-[11px] font-semibold text-[var(--ui-texto-suave)]">
                         {revision.decision === "rejected" ? "Motivo del rechazo (obligatorio)" : "Comentario (opcional)"}
                       </label>
                       <textarea
@@ -473,10 +473,10 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
                         value={revision.comentario}
                         disabled={revision.ocupada}
                         onChange={(e) => actualizarRevision(evidencia.id, { comentario: e.target.value, aviso: null })}
-                        className="w-full rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] px-2.5 py-1.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#3892f3]"
+                        className="w-full rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] px-2.5 py-1.5 text-xs text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--ui-enlace)]"
                       />
                       {revision.aviso && (
-                        <p role="alert" className="text-[11px] text-[#ff6b86]">
+                        <p role="alert" className="text-[11px] text-[var(--ui-error-texto)]">
                           {revision.aviso}
                         </p>
                       )}

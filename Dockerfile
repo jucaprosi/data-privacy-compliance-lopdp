@@ -24,6 +24,9 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copiar el código fuente de la aplicación
 COPY . .
 
+# Compilar el bytecode en la imagen para que cada instancia nueva no compile al arrancar
+RUN python -m compileall -q -j 0 /app
+
 # Exponer el puerto por defecto de Cloud Run (8080)
 EXPOSE 8080
 

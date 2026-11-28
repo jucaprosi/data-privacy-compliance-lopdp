@@ -63,17 +63,17 @@ export default function RevisionCuestionario({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-5 max-w-lg w-full text-zinc-100 shadow-2xl">
-        <h3 className="text-sm font-bold text-emerald-400 mb-3 flex items-center">
+      <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 max-w-lg w-full text-[var(--foreground)] shadow-2xl">
+        <h3 className="text-sm font-bold text-[var(--ui-exito-texto)] mb-3 flex items-center">
           <FileText className="w-4 h-4 mr-2" />
           Respuestas de {terceroNombre}
         </h3>
 
         <form onSubmit={guardar} className="space-y-4 text-xs">
           <div role="radiogroup" aria-label="Decisión" className="space-y-2">
-            <span className="block font-medium text-zinc-300">Decisión</span>
+            <span className="block font-medium text-[var(--ui-texto-suave)]">Decisión</span>
 
-            <label className="flex items-start space-x-2.5 p-2 bg-zinc-800/60 border border-zinc-700 rounded cursor-pointer hover:bg-zinc-800">
+            <label className="flex items-start space-x-2.5 p-2 bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] rounded cursor-pointer hover:bg-[var(--ui-superficie-2)]">
               <input
                 type="radio"
                 name="decision"
@@ -83,14 +83,14 @@ export default function RevisionCuestionario({
                 className="mt-0.5"
               />
               <div>
-                <span className="font-semibold text-zinc-200">Aceptar las respuestas</span>
-                <p className="text-zinc-400 text-[11px]">
+                <span className="font-semibold text-[var(--foreground)]">Aceptar las respuestas</span>
+                <p className="text-[var(--ui-texto-suave)] text-[11px]">
                   Se genera el informe y se cierra el hallazgo de garantía, si lo hay.
                 </p>
               </div>
             </label>
 
-            <label className="flex items-start space-x-2.5 p-2 bg-zinc-800/60 border border-zinc-700 rounded cursor-pointer hover:bg-zinc-800">
+            <label className="flex items-start space-x-2.5 p-2 bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] rounded cursor-pointer hover:bg-[var(--ui-superficie-2)]">
               <input
                 type="radio"
                 name="decision"
@@ -100,14 +100,14 @@ export default function RevisionCuestionario({
                 className="mt-0.5"
               />
               <div>
-                <span className="font-semibold text-amber-400">Pedir corrección</span>
-                <p className="text-zinc-400 text-[11px]">
+                <span className="font-semibold text-[var(--ui-aviso-texto)]">Pedir corrección</span>
+                <p className="text-[var(--ui-texto-suave)] text-[11px]">
                   Se crea un enlace nuevo para que el proveedor corrija sus respuestas.
                 </p>
               </div>
             </label>
 
-            <label className="flex items-start space-x-2.5 p-2 bg-zinc-800/60 border border-zinc-700 rounded cursor-pointer hover:bg-zinc-800">
+            <label className="flex items-start space-x-2.5 p-2 bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] rounded cursor-pointer hover:bg-[var(--ui-superficie-2)]">
               <input
                 type="radio"
                 name="decision"
@@ -117,8 +117,8 @@ export default function RevisionCuestionario({
                 className="mt-0.5"
               />
               <div>
-                <span className="font-semibold text-rose-400">Rechazar</span>
-                <p className="text-zinc-400 text-[11px]">
+                <span className="font-semibold text-[var(--ui-error-texto)]">Rechazar</span>
+                <p className="text-[var(--ui-texto-suave)] text-[11px]">
                   Se registra un hallazgo de prioridad alta en el plan de acción.
                 </p>
               </div>
@@ -127,7 +127,7 @@ export default function RevisionCuestionario({
 
           {decision === "conforme" && (
             <div>
-              <label htmlFor="proxima-revision" className="block text-zinc-300 mb-1 font-medium">
+              <label htmlFor="proxima-revision" className="block text-[var(--ui-texto-suave)] mb-1 font-medium">
                 Próxima revisión
               </label>
               <input
@@ -135,14 +135,14 @@ export default function RevisionCuestionario({
                 type="date"
                 value={proximaRevision}
                 onChange={(e) => setProximaRevision(e.target.value)}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)]"
                 required
               />
             </div>
           )}
 
           <div>
-            <label htmlFor="comentario-revision" className="block text-zinc-300 mb-1 font-medium">
+            <label htmlFor="comentario-revision" className="block text-[var(--ui-texto-suave)] mb-1 font-medium">
               Comentario {decision !== "conforme" ? "(obligatorio)" : "(opcional)"}
             </label>
             <textarea
@@ -150,35 +150,35 @@ export default function RevisionCuestionario({
               value={comentario}
               onChange={(e) => setComentario(e.target.value)}
               placeholder={decision === "conforme" ? "Observaciones adicionales..." : "Explica el motivo..."}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200 h-20"
+              className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde-control)] rounded p-2 text-[var(--foreground)] h-20"
               required={decision !== "conforme"}
             />
           </div>
 
           {errorValidacion && (
-            <p role="alert" className="text-rose-400 text-xs">
+            <p role="alert" className="text-[var(--ui-error-texto)] text-xs">
               {errorValidacion}
             </p>
           )}
 
           {errorServidor && (
-            <p role="alert" className="text-rose-400 text-xs">
+            <p role="alert" className="text-[var(--ui-error-texto)] text-xs">
               {errorServidor}
             </p>
           )}
 
-          <div className="flex justify-end space-x-2 pt-2 border-t border-zinc-800">
+          <div className="flex justify-end space-x-2 pt-2 border-t border-[var(--ui-borde)]">
             <button
               type="button"
               onClick={onCerrar}
-              className="px-3.5 py-1.5 bg-zinc-800 text-zinc-400 rounded hover:bg-zinc-700 font-medium"
+              className="px-3.5 py-1.5 bg-[var(--ui-boton)] text-[var(--foreground)] rounded hover:bg-[var(--ui-boton-hover)] font-medium"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={guardando}
-              className="px-4 py-1.5 bg-emerald-600 text-white rounded font-semibold hover:bg-emerald-500 disabled:opacity-50"
+              className="px-4 py-1.5 bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] rounded font-semibold hover:bg-[var(--ui-primario-hover)] disabled:opacity-50"
             >
               {guardando ? "Guardando..." : "Guardar la revisión"}
             </button>

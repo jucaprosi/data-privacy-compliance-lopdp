@@ -13,7 +13,7 @@ function Indicador({ etiqueta, valor, testId }: { etiqueta: string; valor: numbe
   return (
     <div className="rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] p-3">
       <dt className="text-[10px] uppercase tracking-wider font-semibold text-[var(--ui-texto-suave)]">{etiqueta}</dt>
-      <dd data-testid={testId} className="text-2xl font-bold text-white mt-1">
+      <dd data-testid={testId} className="text-2xl font-bold text-[var(--foreground)] mt-1">
         {valor}
       </dd>
     </div>
@@ -23,7 +23,7 @@ function Indicador({ etiqueta, valor, testId }: { etiqueta: string; valor: numbe
 export function KpiBar({ kpis }: KpiBarProps) {
   if (!kpis) {
     return (
-      <p role="status" className="text-xs text-zinc-400">
+      <p role="status" className="text-xs text-[var(--ui-texto-suave)]">
         Los indicadores aún no están disponibles.
       </p>
     );
@@ -32,9 +32,9 @@ export function KpiBar({ kpis }: KpiBarProps) {
 
   return (
     <section aria-label="Indicadores de avance" className="space-y-3">
-      <div className="flex items-center justify-between text-xs text-zinc-300">
+      <div className="flex items-center justify-between text-xs text-[var(--ui-texto-suave)]">
         <span id="kpi-avance-etiqueta">Avance de la hoja de ruta</span>
-        <span data-testid="kpi-porcentaje" className="font-semibold text-white">
+        <span data-testid="kpi-porcentaje" className="font-semibold text-[var(--foreground)]">
           {porcentaje} %
         </span>
       </div>

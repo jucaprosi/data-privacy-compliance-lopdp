@@ -9,26 +9,26 @@
   autorizadas para comprobar en pruebas que el resultado es el esperado.
 - Un dato que empieza por = + - @ se escribe como texto con prefijo de cita: nunca se evalúa.
 """
+from __future__ import annotations
+
 import re
 import zipfile
 from collections.abc import Mapping
 from datetime import date, datetime, time
 from io import BytesIO
-from openpyxl import Workbook
-from openpyxl.styles import Font
-from openpyxl.utils import get_column_letter
-from openpyxl.worksheet.datavalidation import DataValidation
-from openpyxl.worksheet.table import Table, TableStyleInfo
+from typing import TYPE_CHECKING
 from app_core.errors import ErrorNegocio
 from features.biblioteca.services.salida import Bloque, es_formula, zip_determinista
 import features.biblioteca.domain.errores  # noqa: F401  registra los códigos de Biblioteca al importarse
+
+if TYPE_CHECKING:
+    from openpyxl import Workbook
 
 FORMULAS_AUTORIZADAS = frozenset({"COUNTA"})
 FORMULA = re.compile(r"^=([A-Z]+)\(([A-Z]+)([0-9]+):([A-Z]+)([0-9]+)\)$")
 FECHA = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
 SI_NO = frozenset({"sí", "si", "no"})
 FORMATO_FECHA = "yyyy-mm-dd"
-ESTILO_TABLA = TableStyleInfo(name="TableStyleMedium2", showRowStripes=True)
 
 
 # ¤adpa
@@ -63,6 +63,8 @@ def _escribir(hoja, fila: int, columna: int, valor: object, negrita: bool = Fals
         if es_formula(texto):
             celda.quotePrefix = True
     if negrita:
+        from openpyxl.styles import Font
+
         celda.font = Font(bold=True)
 
 
@@ -78,7 +80,18 @@ def _cabeceras(fila: list[str]) -> list[str]:
 
 
 # ¤adpa
+def _estilo_tabla():
+    from openpyxl.worksheet.table import TableStyleInfo
+
+    return TableStyleInfo(name="TableStyleMedium2", showRowStripes=True)
+
+
+# ¤adpa
 def _hoja_tabla(libro: Workbook, numero: int, filas: list[list[str]]) -> None:
+    from openpyxl.utils import get_column_letter
+    from openpyxl.worksheet.datavalidation import DataValidation
+    from openpyxl.worksheet.table import Table
+
     hoja = libro.create_sheet(f"Tabla {numero}")
     cabecera = _cabeceras(filas[0])
     ancho = len(cabecera)
@@ -91,7 +104,7 @@ def _hoja_tabla(libro: Workbook, numero: int, filas: list[list[str]]) -> None:
             _escribir(hoja, f, c, valor)
     ultima = len(datos) + 1
     hoja.add_table(Table(displayName=f"Tabla{numero}", ref=f"A1:{get_column_letter(ancho)}{ultima}",
-                         tableStyleInfo=ESTILO_TABLA))
+                         tableStyleInfo=_estilo_tabla()))
     for c in range(1, ancho + 1):
         valores = {str(fila[c - 1]).strip().lower() for fila in datos if str(fila[c - 1]).strip()}
         if valores and valores <= SI_NO:
@@ -124,6 +137,9 @@ def generar_xlsx(titulo: str, valores: Mapping[str, object], contenido: list[Blo
     Con `pie` (la leyenda de la demo, DEMO-12 R4b, y el pie de la plantilla, BIB-410 R4; una lista va una línea
     por pie) cada hoja lo lleva en el pie de impresión; sin él, los bytes son los de siempre.
     """
+    from openpyxl import Workbook
+    from openpyxl.worksheet.table import Table
+
     libro = Workbook()
     hoja = libro.active
     hoja.title = "Documento"
@@ -137,7 +153,7 @@ def generar_xlsx(titulo: str, valores: Mapping[str, object], contenido: list[Blo
         _escribir(hoja, n, 1, clave)
         _escribir(hoja, n, 2, valores[clave])
     if claves:
-        hoja.add_table(Table(displayName="Datos", ref=f"A4:B{4 + len(claves)}", tableStyleInfo=ESTILO_TABLA))
+        hoja.add_table(Table(displayName="Datos", ref=f"A4:B{4 + len(claves)}", tableStyleInfo=_estilo_tabla()))
     hoja.column_dimensions["A"].width, hoja.column_dimensions["B"].width = 36, 80
     for numero, tabla in enumerate((b for b in contenido if b.tipo == "tabla" and b.filas), 1):
         _hoja_tabla(libro, numero, tabla.filas)

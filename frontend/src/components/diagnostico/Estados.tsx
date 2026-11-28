@@ -31,7 +31,7 @@ const AVISO_EMITIR = "No se pudo emitir el estado. Inténtalo de nuevo.";
 const AVISO_POR_CODIGO: Record<string, string> = {
   DIAG_ESTADO_SIN_DIAGNOSTICO_REAL: "Primero hay que sellar el diagnóstico real.",
 };
-const BOTON = "rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton)] px-3 py-1.5 text-sm hover:bg-[var(--ui-boton-hover)]";
+const BOTON = "rounded-md border border-[var(--ui-borde-control)] bg-[var(--ui-boton)] px-3 py-1.5 text-sm hover:bg-[var(--ui-boton-hover)]";
 
 const fecha = (iso: string) => new Date(iso).toLocaleDateString("es-EC", { year: "numeric", month: "long", day: "numeric" });
 const tareas = (n: number) => (n === 0 ? "sin tareas nuevas" : n === 1 ? "1 tarea sumada" : `${n} tareas sumadas`);

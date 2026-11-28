@@ -143,7 +143,7 @@ export default function VistaRecomendados(_props: PropsVistaBiblioteca) {
                 onClick={() => setFiltro(f)}
                 className={`rounded px-2.5 py-1 font-medium transition-colors ${
                   activo
-                    ? "bg-[var(--ui-primario)] text-white"
+                    ? "bg-[var(--ui-primario)] text-[var(--ui-primario-texto)]"
                     : "border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton-hover)]"
                 }`}
               >
@@ -174,7 +174,7 @@ export default function VistaRecomendados(_props: PropsVistaBiblioteca) {
       )}
 
       {error && (
-        <p role="alert" className="rounded border border-red-500/40 bg-red-500/10 p-3 text-red-700 dark:text-red-300 font-medium">
+        <p role="alert" className="rounded border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] p-3 text-[var(--ui-error-texto)] font-medium">
           {error}
         </p>
       )}
@@ -210,7 +210,7 @@ export default function VistaRecomendados(_props: PropsVistaBiblioteca) {
                       {p.resultado === "Aplica" && (
                         <span
                           data-testid={`resultado-${p.codigo}`}
-                          className="inline-flex items-center gap-1 rounded bg-emerald-500/15 px-2 py-0.5 text-emerald-700 dark:text-emerald-300 font-semibold text-[11px]"
+                          className="inline-flex items-center gap-1 rounded bg-[var(--ui-exito-fondo)] px-2 py-0.5 text-[var(--ui-exito-texto)] font-semibold text-[11px]"
                         >
                           <CheckCircle2 className="h-3 w-3" />
                           Aplica
@@ -219,7 +219,7 @@ export default function VistaRecomendados(_props: PropsVistaBiblioteca) {
                       {p.resultado === "Información insuficiente" && (
                         <span
                           data-testid={`resultado-${p.codigo}`}
-                          className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-2 py-0.5 text-amber-800 dark:text-amber-200 font-semibold text-[11px]"
+                          className="inline-flex items-center gap-1 rounded bg-[var(--ui-aviso-fondo)] px-2 py-0.5 text-[var(--ui-aviso-texto)] font-semibold text-[11px]"
                         >
                           <HelpCircle className="h-3 w-3" />
                           Información insuficiente
@@ -228,7 +228,7 @@ export default function VistaRecomendados(_props: PropsVistaBiblioteca) {
                       {p.resultado === "No aplica" && (
                         <span
                           data-testid={`resultado-${p.codigo}`}
-                          className="inline-flex items-center gap-1 rounded bg-zinc-500/15 px-2 py-0.5 text-zinc-600 dark:text-zinc-400 font-medium text-[11px]"
+                          className="inline-flex items-center gap-1 rounded bg-[var(--ui-superficie-2)] px-2 py-0.5 text-[var(--ui-texto-suave)] font-medium text-[11px]"
                         >
                           <XCircle className="h-3 w-3" />
                           No aplica
@@ -236,13 +236,13 @@ export default function VistaRecomendados(_props: PropsVistaBiblioteca) {
                       )}
 
                       {p.es_obligacion && (
-                        <span className="rounded bg-blue-500/10 px-1.5 py-0.5 text-blue-700 dark:text-blue-300 text-[10px] font-medium border border-blue-500/20">
+                        <span className="rounded bg-[var(--ui-info-fondo)] px-1.5 py-0.5 text-[var(--ui-info-texto)] text-[10px] font-medium border border-[var(--ui-info-borde)]">
                           Obligación confirmada
                         </span>
                       )}
 
                       {p.modificacion_humana && (
-                        <span className="rounded bg-purple-500/15 px-1.5 py-0.5 text-purple-700 dark:text-purple-300 text-[10px] font-medium border border-purple-500/30">
+                        <span className="rounded bg-[var(--ui-superficie-2)] px-1.5 py-0.5 text-[var(--foreground)] text-[10px] font-medium border border-[var(--ui-borde-control)]">
                           Corregido manualmente
                         </span>
                       )}
@@ -253,7 +253,7 @@ export default function VistaRecomendados(_props: PropsVistaBiblioteca) {
                     </p>
 
                     {p.hechos_faltantes.length > 0 && (
-                      <p className="text-amber-700 dark:text-amber-300 font-medium text-[11px]">
+                      <p className="text-[var(--ui-aviso-texto)] font-medium text-[11px]">
                         Hechos faltantes requeridos: {p.hechos_faltantes.join(", ")}
                       </p>
                     )}
@@ -276,7 +276,7 @@ export default function VistaRecomendados(_props: PropsVistaBiblioteca) {
                       onClick={() => elegirPlantilla(p.codigo)}
                       className={`rounded px-2.5 py-1 font-medium ${
                         elegida
-                          ? "bg-[var(--ui-primario)] text-white"
+                          ? "bg-[var(--ui-primario)] text-[var(--ui-primario-texto)]"
                           : "border border-[var(--ui-borde)] text-[var(--ui-texto)] hover:bg-[var(--ui-boton-hover)]"
                       }`}
                     >
@@ -305,8 +305,8 @@ export default function VistaRecomendados(_props: PropsVistaBiblioteca) {
                     </div>
 
                     {p.modificacion_humana && (
-                      <div className="rounded border border-purple-500/30 bg-purple-500/10 p-2.5 flex flex-col gap-1 text-[11px]">
-                        <p className="font-semibold text-purple-800 dark:text-purple-200">
+                      <div className="rounded border border-[var(--ui-borde-control)] bg-[var(--ui-superficie-2)] p-2.5 flex flex-col gap-1 text-[11px]">
+                        <p className="font-semibold text-[var(--foreground)]">
                           Modificación humana registrada:
                         </p>
                         <p>

@@ -1,0 +1,9 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-42: una ruta o vista por línea, con «# archivo» que la justifica. FE-42 borra este archivo al terminar.
+vista:biblioteca_editorial  # frontend/tests/contraste/estados/FE-39.ts (apertura de «Administración editorial»)
+vista:vigilancia_normativa  # frontend/src/components/normativa/CentroVigilancia.tsx
+vista:rat  # frontend/src/components/modules/rat/ExportarRat.tsx
+vista:diagnostico  # frontend/src/components/DiagnosticCanvas.tsx
+vista:niif_diagnostico  # frontend/tests/contraste/estados/FE-38.ts (apertura)
+vista:niif_doctrina  # frontend/tests/contraste/estados/FE-38.ts (apertura)
+vista:niif_exportacion  # frontend/tests/contraste/estados/FE-38.ts (apertura)

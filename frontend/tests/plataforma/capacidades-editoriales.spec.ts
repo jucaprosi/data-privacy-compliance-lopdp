@@ -21,17 +21,36 @@ const PROPIA = { usuario_id: "operador-plataforma-dev", nombre: "Operadora Propi
 const OTRO = { usuario_id: "u-otro", nombre: "Operador Nuevo", email: "nuevo@plataforma.test", ha_entrado: false, capacidades: ["revisor_tecnico"] };
 const BASE = "**/api/v1/biblioteca/capacidades/equipo";
 
-interface Opciones { error?: { estado: number; code: string; detail: string }; resultado?: string }
+interface Opciones {
+  error?: { estado: number; code: string; detail: string }; resultado?: string;
+  /** Historial por `usuario_id`; el que no figure responde lista vacía. */
+  historiales?: Record<string, unknown[]>;
+  /** Estado con el que responde el historial de ese miembro (por defecto, 200). */
+  fallaHistorial?: { usuario_id: string; estado: number };
+}
 
-async function simular(page: Page, { error, resultado = "alta" }: Opciones = {}): Promise<Request[]> {
+const EVENTOS_OTRO = [
+  { id: 1, usuario_id: "u-otro", capacidad: "revisor_tecnico", accion: "concedida", por: PROPIA.usuario_id,
+    motivo: "Revisa el contenido técnico", en: "2026-11-20T10:00:00Z" },
+  { id: 2, usuario_id: "u-otro", capacidad: "editor", accion: "retirada", por: PROPIA.usuario_id,
+    motivo: "Ya no edita plantillas", en: "2026-11-25T10:00:00Z" }];
+
+/** Peticiones de historial que llegaron al mock (con su `usuario_id`, o `null` si faltaba). */
+type PeticionHistorial = string | null;
+
+async function simular(page: Page, { error, resultado = "alta", historiales = { "u-otro": EVENTOS_OTRO }, fallaHistorial }: Opciones = {},
+  peticionesHistorial: PeticionHistorial[] = []): Promise<Request[]> {
   const envios: Request[] = [];
   await page.route("**/api/v1/**", (r) => r.fulfill({ status: 404, json: { detail: "No simulado" } }));
   await page.route(BASE, (r) => r.fulfill({ json: [PROPIA, OTRO] }));
-  await page.route(`${BASE}/historial`, (r) => r.fulfill({ json: [
-    { id: 1, usuario_id: "u-otro", capacidad: "revisor_tecnico", accion: "concedida", por: PROPIA.usuario_id,
-      motivo: "Revisa el contenido técnico", en: "2026-11-20T10:00:00Z" },
-    { id: 2, usuario_id: "u-otro", capacidad: "editor", accion: "retirada", por: PROPIA.usuario_id,
-      motivo: "Ya no edita plantillas", en: "2026-11-25T10:00:00Z" }] }));
+  // BIB-416 R4: como el backend, `usuario_id` es obligatorio; sin él, 422.
+  await page.route(/\/api\/v1\/biblioteca\/capacidades\/equipo\/historial(\?.*)?$/, (r) => {
+    const usuario = new URL(r.request().url()).searchParams.get("usuario_id");
+    peticionesHistorial.push(usuario);
+    if (!usuario) return r.fulfill({ status: 422, json: { detail: [{ type: "missing", loc: ["query", "usuario_id"], msg: "Field required" }] } });
+    if (fallaHistorial?.usuario_id === usuario) return r.fulfill({ status: fallaHistorial.estado, json: { detail: "Error simulado" } });
+    return r.fulfill({ json: historiales[usuario] ?? [] });
+  });
   await page.route(new RegExp(`/api/v1/biblioteca/capacidades/equipo/[^/]+/(conceder|retirar)$`), (r) => {
     envios.push(r.request());
     return error ? r.fulfill({ status: error.estado, json: { code: error.code, detail: error.detail } })
@@ -40,9 +59,9 @@ async function simular(page: Page, { error, resultado = "alta" }: Opciones = {})
   return envios;
 }
 
-async function abrir(page: Page, opciones?: Opciones): Promise<Request[]> {
+async function abrir(page: Page, opciones?: Opciones, peticionesHistorial?: PeticionHistorial[]): Promise<Request[]> {
   await fijarAjustes(page, { modo: "headers", tenant: TENANT_PRUEBA });
-  const envios = await simular(page, opciones);
+  const envios = await simular(page, opciones, peticionesHistorial);
   await page.goto("/plataforma/capacidades");
   await expect(page.getByRole("heading", { name: "Capacidades editoriales", level: 1 })).toBeVisible();
   return envios;
@@ -141,6 +160,30 @@ test.describe("Capacidades editoriales (BIB-414)", () => {
     await expect(items.nth(0)).toContainText("Ya no edita plantillas");
     await expect(items.nth(1)).toContainText("Operadora Propia concedió revisor técnico a Operador Nuevo");
     await expect(items.nth(1)).toContainText("noviembre de 2026");
+  });
+
+  test("BIB-416 R1: se pide el historial de cada miembro con su usuario_id y se une del más reciente al más antiguo", async ({ page }) => {
+    const peticiones: PeticionHistorial[] = [];
+    await abrir(page, { historiales: {
+      [PROPIA.usuario_id]: [{ id: 3, usuario_id: PROPIA.usuario_id, capacidad: "editor", accion: "concedida", por: "u-otro",
+        motivo: "Alta inicial", en: "2026-11-22T10:00:00Z" }],
+      "u-otro": EVENTOS_OTRO } }, peticiones);
+    const items = page.getByRole("region", { name: "Historial de concesiones" }).getByRole("listitem");
+    await expect(items).toHaveCount(3);
+    await expect(items.nth(0)).toContainText("Ya no edita plantillas");
+    await expect(items.nth(1)).toContainText("Alta inicial");
+    await expect(items.nth(2)).toContainText("Revisa el contenido técnico");
+    expect([...peticiones].sort()).toEqual([PROPIA.usuario_id, "u-otro"].sort());
+  });
+
+  test("BIB-416 R2: si un historial responde 500, la tabla del equipo se ve y solo el historial avisa", async ({ page }) => {
+    await abrir(page, { fallaHistorial: { usuario_id: "u-otro", estado: 500 } });
+    await expect(fila(page, PROPIA.usuario_id)).toBeVisible();
+    await expect(fila(page, "u-otro")).toContainText("Operador Nuevo");
+    const historial = page.getByRole("region", { name: "Historial de concesiones" });
+    await expect(historial.getByRole("alert")).toHaveText("No se pudo cargar el historial. Inténtalo de nuevo.");
+    await expect(page.getByText("No se pudo guardar. Inténtalo de nuevo.")).toHaveCount(0);
+    await expect(page.getByRole("main").getByRole("alert")).toHaveCount(1);
   });
 
   test("la navegación de Plataforma ofrece «Capacidades editoriales» y la marca activa", async ({ page }) => {
