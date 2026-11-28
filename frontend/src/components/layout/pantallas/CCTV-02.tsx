@@ -173,24 +173,24 @@ export default function CCTV02Pantalla(): React.JSX.Element {
   return (
     <div className="p-6 space-y-8 max-w-7xl mx-auto">
       {/* Encabezado y Reglas de Gobernanza */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm space-y-4">
+      <div className="bg-[var(--ui-superficie)]  border border-[color:var(--ui-borde)]  rounded-xl p-6 shadow-sm space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--ui-info-fondo)] text-[var(--ui-info-texto)]  ">
                 CCTV-02
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--ui-aviso-fondo)] text-[var(--ui-aviso-texto)]  ">
                 Custodia Forense Prioritaria
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--ui-info-fondo)] text-[var(--ui-info-texto)]  ">
                 WORM Object Lock
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mt-2">
+            <h1 className="text-2xl font-bold text-[var(--foreground)]  mt-2">
               Congelamiento Forense (Hold Legal) y Actas Quincenales CCTV
             </h1>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+            <p className="text-sm text-[var(--ui-texto-suave)]  mt-1">
               Custodia probatoria de videovigilancia: los clips vinculados a vulneraciones o derechos ARCOP+ prevalecen sobre la purga quincenal.
             </p>
           </div>
@@ -200,7 +200,7 @@ export default function CCTV02Pantalla(): React.JSX.Element {
               type="button"
               onClick={() => void cargarDatos()}
               disabled={cargando}
-              className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-lg transition"
+              className="px-4 py-2 text-sm font-medium text-[var(--ui-texto-suave)]  bg-[var(--ui-superficie-2)]  hover:bg-[var(--ui-boton-hover)]  rounded-lg transition"
             >
               {cargando ? "Sincronizando..." : "Actualizar"}
             </button>
@@ -208,7 +208,7 @@ export default function CCTV02Pantalla(): React.JSX.Element {
               type="button"
               onClick={() => void ejecutarPurga()}
               disabled={ejecutandoPurga}
-              className="px-4 py-2 text-sm font-medium text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-50 rounded-lg shadow-sm transition"
+              className="px-4 py-2 text-sm font-medium text-[var(--ui-primario-texto)] bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] disabled:opacity-50 rounded-lg shadow-sm transition"
             >
               {ejecutandoPurga ? "Ejecutando Purga..." : "Ejecutar Purga Quincenal"}
             </button>
@@ -217,42 +217,42 @@ export default function CCTV02Pantalla(): React.JSX.Element {
 
         {/* Notificaciones */}
         {errorMensaje && (
-          <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 text-sm">
+          <div className="p-4 rounded-lg bg-[var(--ui-error-fondo)]  border border-[color:var(--ui-error-borde)]  text-[var(--ui-error-texto)]  text-sm">
             {errorMensaje}
           </div>
         )}
         {exitoMensaje && (
-          <div className="p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm">
+          <div className="p-4 rounded-lg bg-[var(--ui-exito-fondo)]  border border-[color:var(--ui-exito-borde)]  text-[var(--ui-exito-texto)]  text-sm">
             {exitoMensaje}
           </div>
         )}
       </div>
 
       {/* Línea de tiempo de clips (15 días) */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm space-y-4">
+      <div className="bg-[var(--ui-superficie)]  border border-[color:var(--ui-borde)]  rounded-xl p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            <h2 className="text-lg font-semibold text-[var(--foreground)] ">
               Línea de Tiempo de Grabaciones (Ventana 15 Días)
             </h2>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="text-xs text-[var(--ui-texto-suave)] ">
               Clips en custodia en Bóveda Cloud. Los marcados con Hold Legal residen en bucket WORM inmutable.
             </p>
           </div>
-          <span className="text-xs font-mono text-zinc-500">
+          <span className="text-xs font-mono text-[var(--ui-texto-suave)]">
             Total clips: {clips.length}
           </span>
         </div>
 
         {clips.length === 0 ? (
-          <div className="py-12 text-center text-sm text-zinc-500">
+          <div className="py-12 text-center text-sm text-[var(--ui-texto-suave)]">
             No hay grabaciones registradas en la ventana quincenal activa.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 text-xs uppercase tracking-wider">
+                <tr className="border-b border-[color:var(--ui-borde)]  text-[var(--ui-texto-suave)] text-xs uppercase tracking-wider">
                   <th className="py-3 px-4">Clip ID</th>
                   <th className="py-3 px-4">Captura</th>
                   <th className="py-3 px-4">Expiración</th>
@@ -262,9 +262,9 @@ export default function CCTV02Pantalla(): React.JSX.Element {
                   <th className="py-3 px-4 text-right">Acción Forense</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+              <tbody className="divide-y divide-[color:var(--ui-borde)] ">
                 {clips.map((clip) => (
-                  <tr key={clip.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/40">
+                  <tr key={clip.id} className="hover:bg-[var(--ui-boton-hover)] ">
                     <td className="py-3 px-4 font-mono text-xs">{clip.id.slice(0, 8)}...</td>
                     <td className="py-3 px-4 text-xs">
                       {clip.fecha_captura ? new Date(clip.fecha_captura).toLocaleString() : "—"}
@@ -272,15 +272,15 @@ export default function CCTV02Pantalla(): React.JSX.Element {
                     <td className="py-3 px-4 text-xs">
                       {clip.expira_en ? new Date(clip.expira_en).toLocaleString() : "—"}
                     </td>
-                    <td className="py-3 px-4 font-mono text-xs text-zinc-500">
+                    <td className="py-3 px-4 font-mono text-xs text-[var(--ui-texto-suave)]">
                       {clip.sha256_clip.slice(0, 12)}...
                     </td>
                     <td className="py-3 px-4">
                       <span
                         className={`px-2 py-0.5 rounded text-xs font-medium ${
                           clip.bucket_actual === "long-retention"
-                            ? "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300"
-                            : "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
+                            ? "bg-[var(--ui-info-fondo)] text-[var(--ui-info-texto)]  "
+                            : "bg-[var(--ui-superficie-2)] text-[var(--foreground)]  "
                         }`}
                       >
                         {clip.bucket_actual}
@@ -289,25 +289,25 @@ export default function CCTV02Pantalla(): React.JSX.Element {
                     <td className="py-3 px-4">
                       {clip.hold_legal_activo ? (
                         <div className="flex flex-col">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)]  ">
                             HOLD ACTIVO
                           </span>
-                          <span className="text-[10px] text-zinc-500 mt-0.5">
+                          <span className="text-[10px] text-[var(--ui-texto-suave)] mt-0.5">
                             {clip.expediente_origen_tipo}: {clip.expediente_origen_id}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-xs text-zinc-400">Ordinario (15d)</span>
+                        <span className="text-xs text-[var(--ui-texto-suave)]">Ordinario (15d)</span>
                       )}
                     </td>
                     <td className="py-3 px-4 text-right">
                       {clip.hold_legal_activo ? (
-                        <span className="text-xs text-emerald-600 font-medium">Blindado WORM</span>
+                        <span className="text-xs text-[var(--ui-exito-texto)] font-medium">Blindado WORM</span>
                       ) : (
                         <button
                           type="button"
                           onClick={() => setClipSeleccionado(clip)}
-                          className="px-2.5 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded transition shadow-sm"
+                          className="px-2.5 py-1 text-xs font-medium text-[var(--ui-primario-texto)] bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] rounded transition shadow-sm"
                         >
                           Hold Legal 1-Clic
                         </button>
@@ -322,16 +322,16 @@ export default function CCTV02Pantalla(): React.JSX.Element {
       </div>
 
       {/* Historial de Actas Quincenales */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm space-y-4">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+      <div className="bg-[var(--ui-superficie)]  border border-[color:var(--ui-borde)]  rounded-xl p-6 shadow-sm space-y-4">
+        <h2 className="text-lg font-semibold text-[var(--foreground)] ">
           Certificados Quincenales de Destrucción (Inmutabilidad SHA-256)
         </h2>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="text-xs text-[var(--ui-texto-suave)] ">
           Actas criptográficas emitidas tras cada purga de 15 días. Constituyen evidencia legal auditada por el DPO.
         </p>
 
         {actas.length === 0 ? (
-          <div className="py-8 text-center text-sm text-zinc-500">
+          <div className="py-8 text-center text-sm text-[var(--ui-texto-suave)]">
             Aún no se han ejecutado ciclos de purga quincenales.
           </div>
         ) : (
@@ -339,28 +339,28 @@ export default function CCTV02Pantalla(): React.JSX.Element {
             {actas.map((acta, idx) => (
               <div
                 key={acta.hash_maestro_sha256 || idx}
-                className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="p-4 rounded-lg border border-[color:var(--ui-borde)]  bg-[var(--ui-superficie-2)]  flex flex-col md:flex-row md:items-center justify-between gap-4"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                    <span className="text-xs font-semibold text-[var(--ui-texto-suave)] ">
                       Acta Quincenal: {new Date(acta.fecha_emision).toLocaleDateString()}
                     </span>
-                    <span className="text-xs text-emerald-600 font-medium">
+                    <span className="text-xs text-[var(--ui-exito-texto)] font-medium">
                       ✓ {acta.total_clips_destruidos} destruidos
                     </span>
-                    <span className="text-xs text-purple-600 font-medium">
+                    <span className="text-xs text-[var(--ui-info-texto)] font-medium">
                       🛡️ {acta.total_clips_preservados_hold} preservados
                     </span>
                   </div>
-                  <p className="text-xs font-mono text-zinc-500 mt-1 break-all">
+                  <p className="text-xs font-mono text-[var(--ui-texto-suave)] mt-1 break-all">
                     Hash Maestro: {acta.hash_maestro_sha256}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setActaReciente(acta)}
-                  className="px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md hover:bg-zinc-50 transition"
+                  className="px-3 py-1.5 text-xs font-medium text-[var(--ui-texto-suave)]  bg-[var(--ui-superficie)]  border border-[color:var(--ui-borde)]  rounded-md hover:bg-[var(--ui-boton-hover)] transition"
                 >
                   Ver Certificado
                 </button>
@@ -373,24 +373,24 @@ export default function CCTV02Pantalla(): React.JSX.Element {
       {/* Modal Hold Legal */}
       {clipSeleccionado && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+          <div className="bg-[var(--ui-superficie)]  border border-[color:var(--ui-borde)]  rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <h3 className="text-lg font-bold text-[var(--foreground)] ">
               Congelamiento Forense (Hold Legal)
             </h3>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="text-xs text-[var(--ui-texto-suave)] ">
               Vincula el clip <code className="font-mono">{clipSeleccionado.id.slice(0, 8)}</code> a un expediente legal.
               El clip será promovido inmediatamente al bucket WORM &apos;long-retention&apos; con bloqueo de eliminación.
             </p>
 
             <div className="space-y-3 pt-2">
               <div>
-                <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                <label className="block text-xs font-medium text-[var(--ui-texto-suave)]  mb-1">
                   Tipo de Expediente
                 </label>
                 <select
                   value={tipoExpediente}
                   onChange={(e) => setTipoExpediente(e.target.value as "INCIDENTE" | "ARCOP")}
-                  className="w-full text-sm border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 bg-transparent"
+                  className="w-full text-sm border border-[color:var(--ui-borde)]  rounded-lg p-2 bg-transparent"
                 >
                   <option value="INCIDENTE">Incidente de Seguridad / Vulneración (INC-01/02)</option>
                   <option value="ARCOP">Solicitud de Derechos ARCOP+ (DER-01)</option>
@@ -398,7 +398,7 @@ export default function CCTV02Pantalla(): React.JSX.Element {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                <label className="block text-xs font-medium text-[var(--ui-texto-suave)]  mb-1">
                   Identificador del Expediente
                 </label>
                 <input
@@ -406,7 +406,7 @@ export default function CCTV02Pantalla(): React.JSX.Element {
                   placeholder="Ej. inc-sec-2026-001 o sol-arco-882"
                   value={idExpediente}
                   onChange={(e) => setIdExpediente(e.target.value)}
-                  className="w-full text-sm border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 bg-transparent"
+                  className="w-full text-sm border border-[color:var(--ui-borde)]  rounded-lg p-2 bg-transparent"
                 />
               </div>
             </div>
@@ -415,7 +415,7 @@ export default function CCTV02Pantalla(): React.JSX.Element {
               <button
                 type="button"
                 onClick={() => setClipSeleccionado(null)}
-                className="px-4 py-2 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition"
+                className="px-4 py-2 text-xs font-medium text-[var(--ui-texto-suave)]  hover:bg-[var(--ui-boton-hover)]  rounded-lg transition"
               >
                 Cancelar
               </button>
@@ -423,7 +423,7 @@ export default function CCTV02Pantalla(): React.JSX.Element {
                 type="button"
                 onClick={() => void aplicarHoldLegal()}
                 disabled={procesandoHold || !idExpediente.trim()}
-                className="px-4 py-2 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-lg transition"
+                className="px-4 py-2 text-xs font-medium text-[var(--ui-primario-texto)] bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] disabled:opacity-50 rounded-lg transition"
               >
                 {procesandoHold ? "Congelando..." : "Confirmar Hold Legal"}
               </button>
@@ -435,23 +435,23 @@ export default function CCTV02Pantalla(): React.JSX.Element {
       {/* Modal Certificado / Acta Reciente */}
       {actaReciente && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 max-h-[85vh] overflow-y-auto">
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+          <div className="bg-[var(--ui-superficie)]  border border-[color:var(--ui-borde)]  rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 max-h-[85vh] overflow-y-auto">
+            <h3 className="text-lg font-bold text-[var(--foreground)] ">
               Certificado Quincenal de Destrucción CCTV
             </h3>
-            <p className="text-xs font-mono text-zinc-500 break-all">
+            <p className="text-xs font-mono text-[var(--ui-texto-suave)] break-all">
               SHA-256 Maestro: {actaReciente.hash_maestro_sha256}
             </p>
 
-            <div className="bg-zinc-50 dark:bg-zinc-950 p-4 rounded-lg text-xs font-mono space-y-2 border border-zinc-200 dark:border-zinc-800">
+            <div className="bg-[var(--ui-superficie-2)]  p-4 rounded-lg text-xs font-mono space-y-2 border border-[color:var(--ui-borde)] ">
               <div>Fecha: {actaReciente.fecha_emision}</div>
               <div>Período: {actaReciente.periodo_dias} días</div>
               <div>Clips destruidos: {actaReciente.total_clips_destruidos}</div>
               <div>Clips en Hold Legal preservados: {actaReciente.total_clips_preservados_hold}</div>
-              <div className="pt-2 text-zinc-400">Hashes SHA-256 destruidos:</div>
+              <div className="pt-2 text-[var(--ui-texto-suave)]">Hashes SHA-256 destruidos:</div>
               <ul className="list-disc pl-4 space-y-0.5 text-[11px] max-h-40 overflow-y-auto">
                 {actaReciente.hashes_destruidos.length === 0 ? (
-                  <li className="text-zinc-400">Ningún clip ordinario vencido</li>
+                  <li className="text-[var(--ui-texto-suave)]">Ningún clip ordinario vencido</li>
                 ) : (
                   actaReciente.hashes_destruidos.map((h) => <li key={h}>{h}</li>)
                 )}
@@ -462,7 +462,7 @@ export default function CCTV02Pantalla(): React.JSX.Element {
               <button
                 type="button"
                 onClick={() => setActaReciente(null)}
-                className="px-4 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 rounded-lg transition"
+                className="px-4 py-2 text-xs font-medium text-[var(--ui-texto-suave)]  bg-[var(--ui-superficie-2)]  hover:bg-[var(--ui-boton-hover)] rounded-lg transition"
               >
                 Cerrar
               </button>
