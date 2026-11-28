@@ -5,6 +5,8 @@
 Las versiones y los revisores se leen solo por el pasillo de la biblioteca (BIB-415); la fecha de vigencia, por el
 pasillo normativo (NORM-07). Cada escritura fija la identidad de la persona dueña del aviso (RLS).
 """
+import logging
+import os
 from datetime import date, datetime, timezone
 from uuid import uuid4
 
@@ -13,6 +15,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.zona_negocio import ZONA_NEGOCIO
 from features.notificaciones.domain import avisos as av
+from features.notificaciones.domain.models import Destinatario
+from features.notificaciones.domain.puertos import Notificador
+from features.notificaciones.services import correo_versiones
+
+logger = logging.getLogger(__name__)
 
 TIPO = "version_por_revisar"
 LIMITE = 50
@@ -40,14 +47,46 @@ async def _motivo_de(version: dict, hoy: date) -> tuple[str, date | None]:
     return av.motivo(origen="resolucion", norma=norma, vigencia=vigencia, hoy=hoy), vigencia
 
 
-async def sincronizar(session: AsyncSession, ahora: datetime | None = None) -> dict:
-    """R1, R3 y R4: crea los avisos que faltan, cierra los de versiones ya revisadas y envía los recordatorios."""
-    from app_core.pasillo import biblioteca
+async def _enviar_correos(por_enviar: list[dict], notificador: Notificador | None, app_base_url: str | None) -> None:
+    """NOTIF-03 R1d: el correo sale después del commit; nunca bloquea ni deshace el aviso de la campana."""
+    base = (app_base_url if app_base_url is not None else os.environ.get("APP_BASE_URL", "")).strip().rstrip("/")
+    if not base:
+        logger.warning("NOTIF-03: APP_BASE_URL sin definir; %d correos no se envían", len(por_enviar))
+        return
+    try:
+        activo = notificador or correo_versiones.notificador_de_correo()
+        correos = [correo_versiones.construir_correo(
+            aviso_id=p["aviso_id"], destinatario=p["destinatario"], plantilla=p["plantilla"], motivo=p["motivo"],
+            enlace=base + p["enlace"], recordatorio=p["recordatorio"]) for p in por_enviar]
+        await correo_versiones.enviar_correos(activo, correos)
+    except Exception as exc:  # noqa: BLE001 - solo el tipo: el mensaje puede traer datos personales
+        logger.warning("NOTIF-03: los correos no salieron (%s)", type(exc).__name__)
+
+
+async def sincronizar(session: AsyncSession, ahora: datetime | None = None, *,
+                      notificador: Notificador | None = None, app_base_url: str | None = None) -> dict:
+    """R1, R3 y R4: crea los avisos que faltan, cierra los de versiones ya revisadas y envía los recordatorios.
+
+    NOTIF-03: tras confirmar los avisos (commit propio) envía el correo de cada aviso nuevo y de cada recordatorio.
+    """
+    from app_core.pasillo import biblioteca, plataforma
 
     ahora = ahora or datetime.now(timezone.utc)
     hoy = av.hoy_ecuador(ahora)
     versiones = await biblioteca.versiones_en_revision(session)
     revisores = await biblioteca.revisores_tecnicos(session)
+    contactos = {o["usuario_id"]: o for o in await plataforma.listar_operadores_activos(session)} if revisores else {}
+    por_enviar: list[dict] = []
+
+    def _por_enviar(usuario: str, aviso_id: str, v: dict, enlace: str, recordatorio: str | None) -> None:
+        contacto = contactos.get(usuario)
+        if contacto and (contacto.get("email") or "").strip():
+            por_enviar.append({
+                "aviso_id": aviso_id, "plantilla": v["titulo"], "motivo": v["_motivo"], "enlace": enlace,
+                "recordatorio": recordatorio,
+                "destinatario": Destinatario(user_id=usuario, email=contacto["email"],
+                                             nombre=contacto.get("nombre") or "", tenant_id="")})
+
     abiertas = {v["id"] for v in versiones}
     resultado = {"creados": 0, "recordatorios": 0, "cerrados": 0}
     for v in versiones:
@@ -58,13 +97,16 @@ async def sincronizar(session: AsyncSession, ahora: datetime | None = None) -> d
         for v in versiones:
             creado = av.hoy_ecuador(v["creada_en"]) if v.get("creada_en") else hoy
             proximo = (av.programa(creado, v["_vigencia"]) or [None])[0]
+            aviso_id, enlace = str(uuid4()), ENLACE_VERSION.format(id=v["id"])
             hecho = await session.execute(text(
                 "INSERT INTO avisos_plataforma (id, usuario_id, tipo, referencia, titulo, texto, enlace, "
                 "proximo_recordatorio) VALUES (:id, :u, :t, :r, :titulo, :texto, :enlace, :proximo) "
                 "ON CONFLICT ON CONSTRAINT uq_avisos_usuario_tipo_referencia DO NOTHING"
-            ), {"id": str(uuid4()), "u": usuario, "t": TIPO, "r": v["id"], "titulo": av.titulo(v["titulo"]),
-                "texto": v["_motivo"], "enlace": ENLACE_VERSION.format(id=v["id"]), "proximo": _instante(proximo)})
+            ), {"id": aviso_id, "u": usuario, "t": TIPO, "r": v["id"], "titulo": av.titulo(v["titulo"]),
+                "texto": v["_motivo"], "enlace": enlace, "proximo": _instante(proximo)})
             resultado["creados"] += hecho.rowcount or 0
+            if hecho.rowcount:
+                _por_enviar(usuario, aviso_id, v, enlace, None)
         pendientes = (await session.execute(text(
             "SELECT id, referencia, texto, creado_en, recordatorios_hechos FROM avisos_plataforma "
             "WHERE usuario_id=:u AND tipo=:t AND pendiente"), {"u": usuario, "t": TIPO})).mappings().all()
@@ -84,13 +126,18 @@ async def sincronizar(session: AsyncSession, ahora: datetime | None = None) -> d
             if n >= len(fechas) or fechas[n] > hoy:
                 continue
             siguiente = fechas[n + 1] if n + 1 < len(fechas) else None
+            texto_recordatorio = av.recordatorio(vigencia=vigencia, hoy=hoy, creado=creado)
             await session.execute(text(
                 "UPDATE avisos_plataforma SET texto=texto || :extra, leido_en=NULL, "
                 "recordatorios_hechos=recordatorios_hechos+1, proximo_recordatorio=:proximo, actualizado_en=now() "
                 "WHERE id=:id"),
-                {"id": a["id"], "extra": "\n" + av.recordatorio(vigencia=vigencia, hoy=hoy, creado=creado),
-                 "proximo": _instante(siguiente)})
+                {"id": a["id"], "extra": "\n" + texto_recordatorio, "proximo": _instante(siguiente)})
             resultado["recordatorios"] += 1
+            _por_enviar(usuario, str(a["id"]), por_id[a["referencia"]], ENLACE_VERSION.format(id=a["referencia"]),
+                        texto_recordatorio)
+    if por_enviar:
+        await session.commit()  # R1d: primero se confirman los avisos; el correo es después y no los deshace
+        await _enviar_correos(por_enviar, notificador, app_base_url)
     return resultado
 
 

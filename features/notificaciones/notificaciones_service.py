@@ -199,6 +199,17 @@ __all__.append("avisos_servicio")
 # === fin NOTIF-02 ===
 
 # === NOTIF-03 ===
+# ¤adpa Sustituye a `notificador_configurado` de RM-23: con `NOTIF_SMTP_CONFIG` válido, el adaptador SMTP; si no, falla cerrada.
+from features.notificaciones.services.adaptadores import NotificadorSmtp  # noqa: E402
+from features.notificaciones.services.correo_versiones import notificador_de_correo  # noqa: E402
+
+
+def notificador_configurado() -> Notificador:  # noqa: F811
+    """Notificador de la API: SMTP con TLS si hay configuración válida; si no, `NotificadorNoConfigurado`."""
+    return notificador_de_correo()
+
+
+__all__.append("NotificadorSmtp")
 # === fin NOTIF-03 ===
 
 # === NOTIF-04 ===
