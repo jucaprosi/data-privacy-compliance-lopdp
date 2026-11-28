@@ -3,13 +3,17 @@
 Diagnóstico de la balanza de comprobación frente a la NIIF 18.
 [¤niif18-diagnostico]
 """
-import pandas as pd
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from features.niif18.engines.financials_engine import (
     calculate_niif18_subtotals,
     calculate_pl_contribution,
     es_cuenta_ingreso,
 )
+if TYPE_CHECKING:
+    import pandas as pd
 
 TOLERANCIA_CUADRE = 0.01
 _PENALIZACION = {"ALTA": 20, "MEDIA": 8, "BAJA": 2, "INFO": 0}

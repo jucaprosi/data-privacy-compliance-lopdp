@@ -1,9 +1,14 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-import pandas as pd
-import numpy as np
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 def clean_numeric_series(series: pd.Series) -> pd.Series:
     """Limpia una serie de caracteres monetarios y devuelve una serie numérica."""
+    import pandas as pd
     return pd.to_numeric(
         series.astype(str).str.replace('$', '', regex=False).str.replace('€', '', regex=False)
         .str.replace('£', '', regex=False).str.replace(',', '', regex=False)
@@ -50,6 +55,7 @@ def infer_columns_by_mathematical_weights(df: pd.DataFrame) -> tuple[str, str, s
 
 def read_excel_smart_header(excel_file, sheet_name) -> pd.DataFrame:
     """Lee un excel identificando de forma inteligente la fila de cabecera."""
+    import pandas as pd
     df_preview = pd.read_excel(excel_file, sheet_name=sheet_name, header=None, nrows=15)
     best_row, max_non_na = 0, 0
     for r in range(len(df_preview)):

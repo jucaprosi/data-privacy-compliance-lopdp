@@ -3,10 +3,10 @@
 Compuerta ADPA pública para NIIF 18.
 [¤niif18-backend] Integra parser, clasificador, P&L, diagnóstico, recomendaciones, MPM y reportes.
 """
-import io
-from typing import Any, Dict, List
+from __future__ import annotations
 
-import pandas as pd
+import io
+from typing import TYPE_CHECKING, Any, Dict, List
 
 from features.niif18.doctrine.doctrine_service import NIIF18DoctrineService
 from features.niif18.engines.parser_engine import (
@@ -28,6 +28,9 @@ from features.niif18.engines._service import (
     generar_recomendaciones,
 )
 
+if TYPE_CHECKING:
+    import pandas as pd
+
 # El frontend envía claves en minúscula; los motores trabajan con estas columnas.
 _ALIAS_COLUMNAS = {
     "Cuenta": ("cuenta", "Cuenta"),
@@ -39,6 +42,8 @@ _ALIAS_COLUMNAS = {
 
 def _a_dataframe(cuentas: List[Dict[str, Any]]) -> pd.DataFrame:
     """Normaliza las cuentas recibidas (formato API o formato interno) al formato de los motores."""
+    import pandas as pd
+
     filas = []
     for c in cuentas:
         fila = {}
@@ -87,6 +92,8 @@ def _analisis(df: pd.DataFrame) -> Dict[str, Any]:
 
 def procesar_balance_prueba(file_bytes: bytes, filename: str) -> dict:
     """Ingesta inicial: parseo, inferencia heurística, pre-clasificación y diagnóstico."""
+    import pandas as pd
+
     file_io = io.BytesIO(file_bytes)
     if filename.lower().endswith('.csv'):
         df = pd.read_csv(file_io)
