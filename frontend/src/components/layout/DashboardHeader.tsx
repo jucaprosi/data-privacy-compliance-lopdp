@@ -34,7 +34,7 @@ export default function DashboardHeader({
   onLogout, onToggleTheme, onCommandPalette, onFirmaElectronica,
 }: DashboardHeaderProps) {
   return (
-    <header className="h-10 bg-[var(--ui-superficie)] border border-[#e8dcf5] dark:border-[var(--ui-borde)] rounded-lg px-3.5 flex items-center justify-between shrink-0 text-xs z-20 shadow-sm">
+    <header className="h-10 bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-lg px-3.5 flex items-center justify-between shrink-0 text-xs z-20 shadow-sm">
       <div className="flex items-center space-x-2.5">
         <Image
           src={theme === "light" ? "/brand/evydentia-principal.png" : "/brand/evydentia-negativo.png"}
@@ -51,13 +51,13 @@ export default function DashboardHeader({
         <button
           type="button"
           onClick={onFirmaElectronica}
-          className="px-3 py-1 rounded border border-[var(--ui-borde)] bg-[var(--ui-campo)] text-[11px] font-semibold uppercase tracking-wide text-[var(--ui-texto-suave)] hover:text-white hover:bg-[var(--ui-boton)] transition cursor-pointer"
+          className="px-3 py-1 rounded border border-[var(--ui-borde)] bg-[var(--ui-campo)] text-[11px] font-semibold uppercase tracking-wide text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] hover:bg-[var(--ui-boton)] transition cursor-pointer"
           title="Firmar documentos PDF con firma electrónica"
           data-testid="firma-electronica"
         >
           Firma Electrónica
         </button>
-        <span className="text-white font-medium text-[11px] bg-[var(--ui-boton)] px-2 py-0.5 rounded border border-[var(--ui-borde)]">
+        <span className="text-[var(--foreground)] font-medium text-[11px] bg-[var(--ui-boton)] px-2 py-0.5 rounded border border-[var(--ui-borde)]">
           {workspaceTitle}
         </span>
       </div>
@@ -79,7 +79,7 @@ export default function DashboardHeader({
             <button
               type="button"
               onClick={onLogout}
-              className="h-7 px-2 rounded-md bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] hover:text-white flex items-center space-x-1 transition cursor-pointer"
+              className="h-7 px-2 rounded-md bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] flex items-center space-x-1 transition cursor-pointer"
               title="Cerrar sesión"
             >
               <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
@@ -91,13 +91,13 @@ export default function DashboardHeader({
         <button
           type="button"
           onClick={onToggleTheme}
-          className="h-7 w-7 rounded-md bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] hover:text-white flex items-center justify-center transition cursor-pointer"
+          className="h-7 w-7 rounded-md bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] flex items-center justify-center transition cursor-pointer"
           title={`Cambiar a tema ${theme === "dark" ? "claro" : "oscuro"}`}
         >
           {theme === "dark" ? (
-            <Sun className="w-3.5 h-3.5 text-amber-400" />
+            <Sun className="w-3.5 h-3.5 text-[var(--ui-aviso-texto)]" />
           ) : (
-            <Moon className="w-3.5 h-3.5 text-zinc-300" />
+            <Moon className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
           )}
         </button>
 
@@ -105,12 +105,12 @@ export default function DashboardHeader({
         <button
           type="button"
           onClick={onCommandPalette}
-          className="flex items-center space-x-2 px-2.5 py-1 rounded bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] hover:border-[#9a3bf1]/60 text-[var(--ui-texto-suave)] hover:text-white transition cursor-pointer shadow-xs"
+          className="flex items-center space-x-2 px-2.5 py-1 rounded bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] hover:border-[color:var(--ui-primario)] text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] transition cursor-pointer shadow-xs"
           title="Abrir Command Palette (Ctrl + K)"
         >
-          <Search className="w-3.5 h-3.5 text-[#9a3bf1]" />
+          <Search className="w-3.5 h-3.5 text-[var(--ui-enlace)]" />
           <span className="hidden md:inline">Buscar comando o artículo...</span>
-          <kbd className="bg-[var(--ui-superficie)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-zinc-300">
+          <kbd className="bg-[var(--ui-superficie)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-[var(--ui-texto-suave)]">
             Ctrl + K
           </kbd>
         </button>
@@ -119,18 +119,18 @@ export default function DashboardHeader({
           <span
             className={`w-2 h-2 rounded-full ${
               isConfigured
-                ? "bg-[#00c853] shadow-[0_0_8px_rgba(0,200,83,0.8)]"
-                : "bg-amber-500 animate-pulse"
+                ? "bg-[var(--ui-exito-borde)] shadow-[0_0_8px_rgba(0,200,83,0.8)]"
+                : "bg-[var(--ui-aviso-fondo)] animate-pulse"
             }`}
           />
-          <span className="font-mono text-zinc-300">
+          <span className="font-mono text-[var(--ui-texto-suave)]">
             {isConfigured ? "Calibrado" : "Ficha Pendiente"}
           </span>
         </div>
 
         <div className="hidden sm:flex items-center space-x-1.5 text-[var(--ui-texto-suave)] font-mono">
           <span className="text-[var(--ui-texto-suave)]">Norma:</span>
-          <span className="text-zinc-200 font-semibold">
+          <span className="text-[var(--foreground)] font-semibold">
             {normativaLabel}
           </span>
         </div>

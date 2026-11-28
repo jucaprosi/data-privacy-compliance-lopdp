@@ -64,19 +64,19 @@ export default function RoadmapWorkspaceView({
                 aria-label="Seleccionar rol activo"
                 value={rolActivo}
                 onChange={(e) => cambiarRolActivo(e.target.value as OrganizacionRole)}
-                className="bg-transparent text-white font-medium focus:outline-none cursor-pointer"
+                className="bg-transparent text-[var(--foreground)] font-medium focus:outline-none cursor-pointer"
               >
                 {rolesOrganizacion.map((r, idx) => (
-                  <option key={`${r.role}-${idx}`} value={r.role} className="bg-[var(--ui-superficie)] text-white">
+                  <option key={`${r.role}-${idx}`} value={r.role} className="bg-[var(--ui-superficie)] text-[var(--foreground)]">
                     {r.role} {r.area_nombre ? `(${r.area_nombre})` : ""}
                   </option>
                 ))}
               </select>
             </div>
           ) : (
-            <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-lg px-3 py-1 text-zinc-300 font-mono text-[11px]">
+            <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-lg px-3 py-1 text-[var(--ui-texto-suave)] font-mono text-[11px]">
               {/* Solo se muestra un rol que el servidor confirmó; sin confirmar, el rol inicial es de relleno. */}
-              Rol: <span className="text-white font-semibold">{rolesOrganizacion.length === 1 ? rolActivo : "sin verificar"}</span>
+              Rol: <span className="text-[var(--foreground)] font-semibold">{rolesOrganizacion.length === 1 ? rolActivo : "sin verificar"}</span>
             </div>
           )}
         </div>
@@ -92,9 +92,9 @@ export default function RoadmapWorkspaceView({
           </p>
         </div>
       ) : rolesOrganizacion.length === 0 && !cargandoRoles ? (
-        <div className="p-4 rounded-lg bg-amber-950/40 border border-amber-800 text-amber-200 text-xs space-y-1">
+        <div className="p-4 rounded-lg bg-[var(--ui-aviso-fondo)] border border-[color:var(--ui-aviso-borde)] text-[var(--ui-aviso-texto)] text-xs space-y-1">
           <p className="font-semibold">Sin asignación de roles en la organización.</p>
-          <p className="text-amber-300/80">
+          <p className="text-[var(--ui-aviso-texto)]">
             Tu usuario no posee ningún rol activo en el tenant actual.
           </p>
           <p className="text-[var(--ui-texto-suave)] text-[11px]">
@@ -110,8 +110,8 @@ export default function RoadmapWorkspaceView({
               onClick={() => setSubvistaRoadmap("olas")}
               className={`px-3 py-2 text-xs font-medium border-b-2 transition ${
                 subvista === "olas"
-                  ? "border-[#9a3bf1] text-white"
-                  : "border-transparent text-[var(--ui-texto-suave)] hover:text-zinc-200"
+                  ? "border-[color:var(--ui-primario)] text-[var(--foreground)]"
+                  : "border-transparent text-[var(--ui-texto-suave)] hover:text-[var(--foreground)]"
               }`}
             >
               Olas & Tareas
@@ -124,8 +124,8 @@ export default function RoadmapWorkspaceView({
                 onClick={() => setSubvistaRoadmap("planeacion")}
                 className={`px-3 py-2 text-xs font-medium border-b-2 transition ${
                   subvista === "planeacion"
-                    ? "border-[#9a3bf1] text-white"
-                    : "border-transparent text-[var(--ui-texto-suave)] hover:text-zinc-200"
+                    ? "border-[color:var(--ui-primario)] text-[var(--foreground)]"
+                    : "border-transparent text-[var(--ui-texto-suave)] hover:text-[var(--foreground)]"
                 }`}
               >
                 Generar Hoja de Ruta
@@ -139,8 +139,8 @@ export default function RoadmapWorkspaceView({
                 onClick={() => setSubvistaRoadmap("evidencia")}
                 className={`px-3 py-2 text-xs font-medium border-b-2 transition ${
                   subvista === "evidencia"
-                    ? "border-[#9a3bf1] text-white"
-                    : "border-transparent text-[var(--ui-texto-suave)] hover:text-zinc-200"
+                    ? "border-[color:var(--ui-primario)] text-[var(--foreground)]"
+                    : "border-transparent text-[var(--ui-texto-suave)] hover:text-[var(--foreground)]"
                 }`}
               >
                 Custodia de Evidencias
@@ -154,8 +154,8 @@ export default function RoadmapWorkspaceView({
                 onClick={() => setSubvistaRoadmap("admin")}
                 className={`px-3 py-2 text-xs font-medium border-b-2 transition ${
                   subvista === "admin"
-                    ? "border-[#9a3bf1] text-white"
-                    : "border-transparent text-[var(--ui-texto-suave)] hover:text-zinc-200"
+                    ? "border-[color:var(--ui-primario)] text-[var(--foreground)]"
+                    : "border-transparent text-[var(--ui-texto-suave)] hover:text-[var(--foreground)]"
                 }`}
               >
                 Administración
@@ -166,8 +166,8 @@ export default function RoadmapWorkspaceView({
           {/* Renderizado de la Subvista Activa */}
           <div className="pt-2">
             {subvista === "olas" && !currentRoadmapId ? (
-              <div role="status" data-testid="roadmap-sin-hoja" className="p-4 rounded bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-zinc-300 text-xs space-y-2">
-                <p className="font-semibold text-white">Todavía no hay una hoja de ruta cargada.</p>
+              <div role="status" data-testid="roadmap-sin-hoja" className="p-4 rounded bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] text-xs space-y-2">
+                <p className="font-semibold text-[var(--foreground)]">Todavía no hay una hoja de ruta cargada.</p>
                 <p className="text-[var(--ui-texto-suave)]">
                   {rolActivo === "implementador"
                     ? "Genérala desde la pestaña «Generar Hoja de Ruta»."
