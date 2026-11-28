@@ -2,7 +2,7 @@
 id = "DEMO-13"
 titulo = "La demo no arranca si le falta el clon de una sala"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 129
 sala = "demo"
 depende_de = []
