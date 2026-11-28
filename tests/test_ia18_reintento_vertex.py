@@ -314,3 +314,37 @@ def test_r8_la_generacion_no_reintenta_ante_timeout_ni_indisponibilidad(tipo):
     with pytest.raises((rs.LLMTimeoutError, InferenciaNoDisponible)):
         rs.generate_roadmap_document({}, {}, "rm", "org", llm_caller=llamar, max_retries=2)
     assert len(llamadas) == 1
+
+
+# ---------------------------------------------------------------- R8b un plazo para todos los intentos
+def _engine_con_reloj(monkeypatch, consumos):
+    from features.roadmap import roadmap_service as rs
+
+    motor = rs.generate_roadmap_document.__globals__
+    r = Reloj()
+    plazos = []
+
+    def llamar(**kw):
+        plazos.append(kw["timeout"])
+        r.t += consumos[len(plazos) - 1]
+        return "no es json"
+
+    monkeypatch.setitem(motor, "_reloj", r)
+    monkeypatch.setitem(motor, "call_roadmap_llm", llamar)
+    return rs, plazos
+
+
+def test_r8b_el_segundo_intento_recibe_lo_que_queda(monkeypatch):
+    """Mutación m9: dar a cada intento el plazo entero da rojo aquí y en `tests/test_proxy_timeout.py`."""
+    rs, plazos = _engine_con_reloj(monkeypatch, [100.0, 1.0])
+    with pytest.raises(rs.GeneracionRoadmapError):
+        rs.generate_roadmap_document({}, {}, "rm", "org", max_retries=2)
+    assert plazos[0] == svc.PLAZO_TOTAL_S
+    assert len(plazos) == 2 and plazos[1] <= 40.0
+
+
+def test_r8b_sin_tiempo_no_hay_segundo_intento(monkeypatch):
+    rs, plazos = _engine_con_reloj(monkeypatch, [float(svc.PLAZO_TOTAL_S), 1.0])
+    with pytest.raises(rs.GeneracionRoadmapError):
+        rs.generate_roadmap_document({}, {}, "rm", "org", max_retries=2)
+    assert len(plazos) == 1
