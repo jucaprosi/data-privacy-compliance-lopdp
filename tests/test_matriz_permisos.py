@@ -460,6 +460,8 @@ FUERA_DE_MATRIZ = {**FUERA_DE_MATRIZ, **_FUERA_ARCHIVOS}
 # puede. `cargar_matriz_por_archivos` usa glob("*.py") sin subcarpetas, así que estos archivos no son filas.
 
 CARPETA_ROLES = CARPETA_MATRIZ / "roles"
+# SEC-26 R3: roles de la plataforma, que no son de organización ni están en Role (invariante 9).
+ROLES_PLATAFORMA: frozenset[str] = frozenset({"operador_plataforma"})
 
 
 def cargar_roles_declarados(carpeta: Path = CARPETA_ROLES) -> dict[str, dict[str, bool]]:
@@ -470,7 +472,9 @@ def cargar_roles_declarados(carpeta: Path = CARPETA_ROLES) -> dict[str, dict[str
         modulo = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(modulo)
         rol = getattr(modulo, "ROL", None)
-        assert rol in {r.value for r in Role}, f"{archivo.name}: ROL {rol!r} no está en Role"
+        assert rol in {r.value for r in Role} | ROLES_PLATAFORMA, (
+            f"{archivo.name}: ROL {rol!r} no está en Role ni en ROLES_PLATAFORMA"
+        )
         permitido = getattr(modulo, "PERMITIDO", None)
         assert isinstance(permitido, dict) and all(
             isinstance(k, str) and isinstance(v, bool) for k, v in permitido.items()
@@ -563,14 +567,14 @@ def _buscar_contexto_ruta(path: str, method: str):
     return None
 
 
-def _construir_casos_prueba():
+def _construir_casos_prueba(todos_los_roles: tuple[str, ...] = tuple(r.value for r in Role)):
     """Genera las combinaciones parametrizadas (rol × acción/endpoint).
 
     Criterio 10 del MVP (QA-05): Cero filas pendientes. Si un endpoint de la matriz
     no se encuentra registrado en la aplicación, falla de inmediato nombrando el método y la ruta.
+    Los roles de la plataforma (SEC-26 R3) se recorren aparte, con su identidad: `CASOS_PLATAFORMA`.
     """
     casos = []
-    todos_los_roles = [r.value for r in Role]
 
     for accion, method, path, allowed_roles in MATRIZ_PRD_CONTRATO:
         route_ctx = _buscar_contexto_ruta(path, method)
@@ -750,3 +754,179 @@ async def test_cobertura_exhaustiva_rutas_api():
 
 # === SEC-26 ===
 # Identidad del operador de la plataforma para recorrer la matriz (SEC-26 R2).
+
+
+def test_la_carga_acepta_el_operador_de_plataforma_y_rechaza_un_rol_inventado(tmp_path):
+    """R3: la carga acepta Role ∪ ROLES_PLATAFORMA; un rol fuera de los dos sigue rompiéndola (m3)."""
+    declarados = cargar_roles_declarados(_escribir_rol(tmp_path / "op", "operador_plataforma", {}))
+    assert declarados == {"operador_plataforma": {}}
+    with pytest.raises(AssertionError, match="no está en Role"):
+        cargar_roles_declarados(_escribir_rol(tmp_path / "inv", "rol_inventado", {}))
+
+
+PREFIJO_PLATAFORMA = "/api/v1/plataforma/"
+
+
+def test_el_operador_decide_cada_accion_y_solo_abre_la_plataforma():
+    """R1: cada id_accion decidido; True solo en las rutas de /plataforma, False en las de organización."""
+    permitido = cargar_roles_declarados()["operador_plataforma"]
+    filas = {accion: ruta for accion, _, ruta, _ in MATRIZ_PRD_CONTRATO}
+    assert set(permitido) == set(filas)
+    abiertas = sorted(a for a, puede in permitido.items() if puede)
+    assert abiertas == sorted(a for a, ruta in filas.items() if ruta.startswith(PREFIJO_PLATAFORMA))
+
+
+# R2: un usuario con la marca de operador (fila en operadores_plataforma) y sin rol en el tenant de prueba.
+OPERADOR_SUB = "operador-plataforma-sec26"
+OPERADOR_EMAIL = "operador.sec26@plataforma.test"
+TENANT_MATRIZ = "tenant-test-matriz"
+# Doble del control de acceso: membresías activas del operador. Ninguna: no tiene rol en el tenant.
+MEMBRESIAS_DEL_OPERADOR: set[tuple[str, str, str]] = set()
+
+
+def _rol_reclamado(roles_permitidos: set[str]) -> str:
+    """X-Role que declara el operador: uno que la fila permite, para que solo lo pare la membresía."""
+    de_organizacion = sorted(set(roles_permitidos) & {r.value for r in Role})
+    return de_organizacion[0] if de_organizacion else Role.admin_organizacion.value
+
+
+def _cabeceras_operador(tenant_id: str, rol: str, sub: str = OPERADOR_SUB, email: str = OPERADOR_EMAIL) -> dict:
+    return {
+        "Authorization": "Bearer token-del-operador",  # en oidc lo resuelve el doble del token
+        "X-User-ID": sub,
+        "X-User-Email": email,
+        "X-Tenant-ID": tenant_id,
+        "X-Role": rol,
+    }
+
+
+def _sin_datos_de_cliente(respuesta, *marcas: str) -> bool:
+    """403, o 404 sin cuerpo de cliente: nunca 200 ni un cuerpo con datos del tenant."""
+    if respuesta.status_code == 403:
+        return True
+    return respuesta.status_code == 404 and not any(m in respuesta.text for m in marcas)
+
+
+def _pasa_por_get_context(route_ctx) -> bool:
+    """La ruta resuelve el rol con get_context (require_role o get_context directo)."""
+    from api.rbac import get_context
+
+    pendientes = [route_ctx.dependant]
+    while pendientes:
+        dep = pendientes.pop()
+        if dep.call is get_context:
+            return True
+        pendientes.extend(dep.dependencies)
+    return False
+
+
+ROLES_POR_ACCION = {accion: roles for accion, _, _, roles in MATRIZ_PRD_CONTRATO}
+# Con cabeceras (SEC-15, solo local) las guardas que no pasan por get_context se fían de X-Tenant-ID sin mirar la
+# membresía; esas filas las cubre la prueba contra PostgreSQL en modo oidc, que es el camino de producción.
+CASOS_PLATAFORMA = [
+    caso
+    for caso in _construir_casos_prueba(tuple(sorted(ROLES_PLATAFORMA)))
+    if caso.values[4] or _pasa_por_get_context(_buscar_contexto_ruta(caso.values[2], caso.values[1]))
+]
+
+
+@pytest.mark.parametrize("accion,method,path,rol,debe_permitir", CASOS_PLATAFORMA)
+async def test_matriz_operador_plataforma(
+    accion: str, method: str, path: str, rol: str, debe_permitir: bool, monkeypatch: pytest.MonkeyPatch
+):
+    """R2 con un doble del control de acceso (get_context): cada False da 403; /plataforma responde."""
+    route_ctx = _buscar_contexto_ruta(path, method)
+    doble = AsyncMock(return_value={"ok": True}) if inspect.iscoroutinefunction(route_ctx.dependant.call) else (
+        MagicMock(return_value={"ok": True})
+    )
+    monkeypatch.setattr(route_ctx.dependant, "call", doble)
+
+    async def _membresia(_session, tenant_id, user_id, role):
+        return (tenant_id, user_id, role) in MEMBRESIAS_DEL_OPERADOR
+
+    monkeypatch.setattr(organizacion_service, "has_active_role", _membresia)
+    monkeypatch.setitem(app.dependency_overrides, get_session, lambda: None)
+    cabeceras = _cabeceras_operador(TENANT_MATRIZ, _rol_reclamado(ROLES_POR_ACCION[accion]))
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        respuesta = await client.request(method, _concretar_ruta(path), headers=cabeceras)
+    if debe_permitir:
+        assert respuesta.status_code == 200, f"{rol} no llega a {method} {path}: {respuesta.status_code}"
+    else:
+        assert _sin_datos_de_cliente(respuesta, TENANT_MATRIZ), (
+            f"{rol} recibe {respuesta.status_code} en {method} {path} ({accion}); se esperaba 403 o 404 sin cuerpo"
+        )
+        doble.assert_not_called()
+
+
+import sys  # noqa: E402
+import uuid  # noqa: E402
+
+from sqlalchemy import text  # noqa: E402
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker  # noqa: E402
+
+from app_core import security  # noqa: E402
+
+
+def _doblar_token_del_operador(monkeypatch: pytest.MonkeyPatch, sub: str, email: str) -> None:
+    """Modo oidc con el token de Google sustituido por la identidad del operador (en todo módulo que lo importe)."""
+    original = security.verificar_token_google
+
+    async def _token(_token: str) -> security.IdentidadVerificada:
+        return security.IdentidadVerificada(sub=sub, email=email)
+
+    for modulo in list(sys.modules.values()):
+        if getattr(modulo, "verificar_token_google", None) is original:
+            monkeypatch.setattr(modulo, "verificar_token_google", _token)
+    monkeypatch.setenv("AUTH_MODE", "oidc")
+
+
+async def test_operador_sin_datos_de_cliente_contra_postgres(db_engine, seed_tenants, monkeypatch):
+    """R2 contra PostgreSQL 16, sin dobles del control de acceso: con su token, el operador recorre las rutas de
+    organización de un tenant con un miembro activo y ninguna le responde con sus datos."""
+    tenant, miembro = seed_tenants["tenant_a"], seed_tenants["user_a"]
+    fabrica = async_sessionmaker(db_engine, expire_on_commit=False, class_=AsyncSession)
+    # Identidad única por corrida: una corrida que falló a medias no deja una fila que choque con la siguiente.
+    sufijo = uuid.uuid4().hex[:8]
+    op_id, sub, email = f"op-sec26-{sufijo}", f"{OPERADOR_SUB}-{sufijo}", f"operador.sec26.{sufijo}@plataforma.test"
+    async with fabrica() as s:
+        await s.execute(
+            text("INSERT INTO users (id, email, nombre, google_sub) VALUES (:id, :e, 'Operador SEC-26', :id)"),
+            {"id": sub, "e": email},
+        )
+        await s.execute(
+            text(
+                "INSERT INTO operadores_plataforma (id, email, google_sub, nombre, activo, created_at, updated_at) "
+                "VALUES (:id, :e, :sub, 'Operador SEC-26', TRUE, NOW(), NOW())"
+            ),
+            {"id": op_id, "e": email, "sub": sub},
+        )
+        await s.commit()
+
+    async def _sesion_real():
+        async with fabrica() as s:
+            yield s
+
+    monkeypatch.setitem(app.dependency_overrides, get_session, _sesion_real)
+    _doblar_token_del_operador(monkeypatch, sub, email)
+    con_datos: list[str] = []
+    try:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            for accion, method, path, roles in MATRIZ_PRD_CONTRATO:
+                if path.startswith(PREFIJO_PLATAFORMA):
+                    continue
+                cabeceras = _cabeceras_operador(tenant, _rol_reclamado(roles), sub, email)
+                respuesta = await client.request(method, _concretar_ruta(path), headers=cabeceras)
+                if not _sin_datos_de_cliente(respuesta, tenant, miembro):
+                    con_datos.append(f"{accion} {method} {path} -> {respuesta.status_code}")
+    finally:
+        # Sin escrituras del operador la limpieza no falla; si las hubo (audit_events lo referencia), el usuario
+        # queda en la base de pruebas y manda la aserción de abajo, que nombra las rutas.
+        async with fabrica() as s:
+            await s.execute(text("DELETE FROM operadores_plataforma WHERE id = :id"), {"id": op_id})
+            await s.commit()
+            try:
+                await s.execute(text("DELETE FROM users WHERE id = :id"), {"id": sub})
+                await s.commit()
+            except Exception:  # noqa: BLE001
+                await s.rollback()
+    assert not con_datos, "Rutas de organización que responden al operador sin 403/404: " + "; ".join(con_datos)
