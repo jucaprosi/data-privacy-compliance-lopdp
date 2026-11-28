@@ -12,7 +12,8 @@ No aplica.
 ## 3. Reglas
 
 - **R1 · Librerías fuera del arranque.** Un subproceso `python -X importtime -c "import main"`, con `PYTHONDONTWRITEBYTECODE` vacío y `.pyc` ya generados, termina sin `pandas`, `openpyxl` ni `fpdf` en `sys.modules`.
-- **R2 · Presupuesto.** La mediana de tres importaciones de `main` en subprocesos, con `.pyc`, queda por debajo de 4,0 s en el CI. El ingeniero mide en el CI y anota la mediana en la prueba. Si la mediana medida por 1,5 queda por debajo de 4,0 s, usa ese valor, redondeado a la décima.
+- **R2 · Presupuesto de módulos.** En un subproceso limpio con `python -I`, el mismo de R1, `len(sys.modules)` tras `import main` queda por debajo de un tope: la línea base medida hoy en el CI más un 10 %, redondeada hacia arriba y anotada en la prueba con la fecha y el run. Si da rojo, el mensaje lista los módulos que no estaban en la línea base. Para eso, la prueba guarda la lista de la línea base junto a la cifra. Es una medida determinista y no depende del runner. El tiempo no se mide en el CI: con el mismo código, la mediana de CPU dio 4,199 s en el run 46094645681 y 2,435 s en el 46095228291, y el reloj 4,17 s en el 46093368213. El arranque real lo mide el CTO en Cloud Run tras cada despliegue, desde los logs, de «Starting new instance» a «STARTUP TCP probe succeeded». Revisión 00016: 12,5 s; revisión 00017: 9,4 s.
+- **R1a · Hueco del corte.** `features/niif18/engines/export_engine.py:11` importa `fpdf` al nivel del módulo, y ARR-02 R1 solo nombraba `pandas`, `openpyxl` y `numpy`. ARR-04 mueve esa importación dentro de las funciones que usan `FPDF`, sin cambiar firmas ni archivos generados. Medido por el Tech Lead en `main` b1cfda85: con `fpdf` cargado, la mediana local es de 4,16 s.
 - **R3 · Sin red.** Las variables de entorno de la prueba son las del arnés; nada se conecta a la nube al importar.
 - **R-SP · Sin prohibiciones** (GEN-01 R3).
 - **R-ADPA · Ortogonalidad ZERAG (`ARR-04`).** Solo los archivos de la propiedad.
@@ -25,7 +26,7 @@ Sin pantalla.
 
 | Caso | Árbitro |
 | :--- | :--- |
-| **Dado** `main` tras ARR-02 y ARR-03, **entonces** `pandas`, `openpyxl` y `fpdf` no están cargados y la mediana queda bajo el umbral. Mutación m1: un `import pandas` al nivel del módulo en una sala da rojo. Mutación m2: un `time.sleep` de 5 s al importar `main` da rojo. | `tests/test_arr04_arranque.py` |
+| **Dado** `main` tras ARR-02 y ARR-03, **entonces** `pandas`, `openpyxl` y `fpdf` no están cargados y `sys.modules` queda bajo el tope. Mutación m1: un `import pandas` al nivel del módulo en una sala da rojo. Mutación m2: importar una librería pesada nueva (por ejemplo `pandas`) al nivel del módulo en una sala hace crecer `sys.modules` por encima del tope y da rojo. | `tests/test_arr04_arranque.py` |
 
 ## 6. Trazabilidad
 
