@@ -81,9 +81,15 @@ def nombres_de_jobs(flujo: str = FLUJO) -> list[str]:
 
 
 # ¤arbitro
-def test_dos_jobs_con_los_nombres_del_ruleset():
+def test_jobs_con_los_nombres_del_ruleset_y_los_shards():
+    # CI-39 R5: los checks del ruleset siguen existiendo; el unico job mas son los shards de Playwright,
+    # y el job `Playwright Frontend` espera a todos los shards.
     nombres = nombres_de_jobs()
-    assert len(nombres) == 2 and set(nombres) == CHECKS_DEL_RULESET, nombres
+    assert CHECKS_DEL_RULESET <= set(nombres), nombres
+    otros = [n for n in nombres if n not in CHECKS_DEL_RULESET]
+    assert len(otros) == 1 and otros[0].startswith("Playwright Frontend · shard "), nombres
+    final = _job_por_nombre("Playwright Frontend")
+    assert re.search(r"(?m)^    needs:\s*playwright\s*$", final), final
 
 
 AGREGADOR = ("  zero-regression:\n    name: Agregador\n    needs: [arnes]\n    runs-on: ubuntu-latest\n"
@@ -210,7 +216,7 @@ ARBITROS_DE_PLAYWRIGHT = (
 def fallos_de_arbitros(flujo: str) -> list[str]:
     fallos = []
     for nombre, arbitros in (("Arnés Físico Determinista", ARBITROS_DEL_ARNES),
-                             ("Playwright Frontend", ARBITROS_DE_PLAYWRIGHT)):
+                             ("Playwright Frontend · shard ${{ matrix.shard }}", ARBITROS_DE_PLAYWRIGHT)):
         try:
             lista = pasos(_job_por_nombre(nombre, flujo), flujo)
         except StopIteration:
@@ -320,3 +326,11 @@ def test_medicion_redondea_por_job(capsys):
     assert "fusiones=20 media=6.00 mediana=6.0 total=120" in capsys.readouterr().out
     assert mm.main(["--desde", "2026-11-15", "--hasta", "2026-11-22"], api=_api_de_medicion(19)) == 2
     assert mm.main(["--desde", "2026-11-21", "--hasta", "2026-11-22"], api=_api_de_medicion(20)) == 2
+
+
+# ¤arbitro
+def test_ci39_m3_renombrar_el_job_final_da_rojo():
+    mutado = FLUJO.replace("  playwright-resultado:\n    name: Playwright Frontend\n",
+                           "  playwright-resultado:\n    name: Resultado de Playwright\n", 1)
+    assert mutado != FLUJO
+    assert not (CHECKS_DEL_RULESET <= set(nombres_de_jobs(mutado)))
