@@ -746,3 +746,7 @@ async def test_cobertura_exhaustiva_rutas_api():
             f"Ruta declarada en FUERA_DE_MATRIZ ya no está registrada en la aplicación: {metodo} {ruta}"
         )
 
+
+
+# === SEC-26 ===
+# Identidad del operador de la plataforma para recorrer la matriz (SEC-26 R2).
