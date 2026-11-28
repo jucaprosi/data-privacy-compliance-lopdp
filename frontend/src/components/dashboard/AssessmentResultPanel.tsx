@@ -82,10 +82,10 @@ function tonoPorSeveridad(severidad: BrechaDetectada["severidad"]): TonoSemantic
 
 /** Color plano de la barra de progreso por rango de score. */
 function colorBarraPorScore(score: number): string {
-  if (score < 40) return "bg-[#ff1744]";
-  if (score < UMBRAL_SCORE_DEFICITARIO) return "bg-[#ffab00]";
-  if (score < 75) return "bg-[#3892f3]";
-  return "bg-[#00c853]";
+  if (score < 40) return "bg-[var(--ui-error-borde)]";
+  if (score < UMBRAL_SCORE_DEFICITARIO) return "bg-[var(--ui-aviso-borde)]";
+  if (score < 75) return "bg-[var(--ui-info-borde)]";
+  return "bg-[var(--ui-exito-borde)]";
 }
 
 
@@ -143,7 +143,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
       <div id="assessment-areas" className="rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-xs overflow-hidden">
         <div className="px-5 py-3 border-b border-[var(--ui-borde)] flex items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
-            <Layers className="w-4 h-4 text-[#9a3bf1]" />
+            <Layers className="w-4 h-4 text-[var(--ui-enlace)]" />
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">
               Tu avance por área
             </h3>
@@ -190,9 +190,9 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                     key={dim.id}
                     className={`border-b border-[var(--ui-borde)]/70 last:border-b-0 transition hover:bg-[var(--ui-boton)]/60 ${
                       dim.brechasCriticas > 0
-                        ? "bg-[#ff1744]/[0.05]"
+                        ? "bg-[var(--ui-error-fondo)]"
                         : deficitaria
-                        ? "bg-[#ffab00]/[0.04]"
+                        ? "bg-[var(--ui-aviso-fondo)]"
                         : ""
                     }`}
                   >
@@ -270,7 +270,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                         <span
                           className={`px-1.5 py-0.5 rounded border ${
                             dim.brechasCriticas > 0
-                              ? "bg-[#ff1744]/15 text-[#ff1744] border-[#ff1744]/30 font-bold"
+                              ? "bg-[var(--ui-error-fondo)] text-[var(--ui-error-texto)] border-[var(--ui-error-borde)] font-bold"
                               : "bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)]"
                           }`}
                           title="Brechas críticas"
@@ -280,7 +280,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                         <span
                           className={`px-1.5 py-0.5 rounded border ${
                             dim.brechasAltas > 0
-                              ? "bg-[#ffab00]/15 text-[#ffab00] border-[#ffab00]/30 font-bold"
+                              ? "bg-[var(--ui-aviso-fondo)] text-[var(--ui-aviso-texto)] border-[var(--ui-aviso-borde)] font-bold"
                               : "bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)]"
                           }`}
                           title="Brechas altas"
@@ -307,7 +307,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
       <div id="assessment-bases" className="rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-xs overflow-hidden">
         <div className="px-5 py-3 border-b border-[var(--ui-borde)] flex items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
-            <Target className="w-4 h-4 text-[#9a3bf1]" />
+            <Target className="w-4 h-4 text-[var(--ui-enlace)]" />
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">
               Bases para cuidar los datos
             </h3>
@@ -315,8 +315,8 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
           <span
             className={`text-[10px] font-mono px-2 py-0.5 rounded border font-semibold shrink-0 ${
               resultado.controlesEstructuralesDegradados > 0
-                ? "bg-[#ff1744]/15 text-[#ff1744] border-[#ff1744]/30"
-                : "bg-[#00c853]/15 text-[#00c853] border-[#00c853]/30"
+                ? "bg-[var(--ui-error-fondo)] text-[var(--ui-error-texto)] border-[var(--ui-error-borde)]"
+                : "bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)] border-[var(--ui-exito-borde)]"
             }`}
           >
             {resultado.controlesEstructuralesDegradados} de {CONTROLES_ESTRUCTURALES.length} bases por fortalecer
@@ -331,7 +331,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                 key={control.preguntaId}
                 className={`p-4 rounded-lg border space-y-2.5 transition ${
                   enBrecha
-                    ? "bg-[var(--ui-boton)] border-[#ff1744]/45 shadow-[0_0_15px_rgba(255,23,68,0.10)]"
+                    ? "bg-[var(--ui-boton)] border-[var(--ui-error-borde)] shadow-[0_0_15px_rgba(255,23,68,0.10)]"
                     : "bg-[var(--ui-boton)] border-[var(--ui-borde)] hover:border-[var(--ui-borde)]"
                 }`}
               >
@@ -351,7 +351,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                   </div>
 
                   {enBrecha ? (
-                    <span className="flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-[#ff1744]/15 text-[#ff1744] border border-[#ff1744]/30 font-semibold shrink-0">
+                    <span className="flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--ui-error-fondo)] text-[var(--ui-error-texto)] border border-[var(--ui-error-borde)] font-semibold shrink-0">
                       <XCircle className="w-3 h-3" />
                       <span>Necesita atención</span>
                     </span>
@@ -360,7 +360,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                       <span>Sin evaluar</span>
                     </span>
                   ) : (
-                    <span className="flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-[#00c853]/15 text-[#00c853] border border-[#00c853]/30 font-semibold shrink-0">
+                    <span className="flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)] border border-[var(--ui-exito-borde)] font-semibold shrink-0">
                       <CheckCircle2 className="w-3 h-3" />
                       <span>En buen estado</span>
                     </span>
@@ -388,7 +388,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
       <div className="rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-xs overflow-hidden">
         <div className="px-5 py-3 border-b border-[var(--ui-borde)] flex items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
-            <FileWarning className="w-4 h-4 text-[#9a3bf1]" />
+            <FileWarning className="w-4 h-4 text-[var(--ui-enlace)]" />
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">
               Aspectos que necesitan atención
             </h3>
@@ -400,13 +400,13 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
 
         {resultado.brechas.length === 0 ? (
           <div className="px-5 py-8 text-center space-y-1.5">
-            <CheckCircle2 className="w-5 h-5 text-[#00c853] mx-auto" />
+            <CheckCircle2 className="w-5 h-5 text-[var(--ui-exito-texto)] mx-auto" />
             <p className="text-[11px] text-[var(--ui-texto-suave)]">
               No se registran brechas sobre los controles evaluados.
             </p>
           </div>
         ) : (
-          <div className="max-h-[420px] overflow-y-auto divide-y divide-[#26262b]/70">
+          <div className="max-h-[420px] overflow-y-auto divide-y divide-[var(--ui-borde)]">
             {brechasOrdenadas.map((brecha: BrechaDetectada, indice: number) => {
               const tono = tonoPorSeveridad(brecha.severidad);
               const esCritica = brecha.severidad === "Crítico";
@@ -417,16 +417,16 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                 <div
                   key={`${brecha.preguntaId}-${brecha.dimensionId}`}
                   className={`px-4 py-3 flex items-start gap-3 transition hover:bg-[var(--ui-boton)]/50 ${
-                    esCritica ? "bg-[#ff1744]/[0.05]" : ""
-                  } ${primeraNoCritica ? "border-t-2 border-t-[#26262b]" : ""}`}
+                    esCritica ? "bg-[var(--ui-error-fondo)]" : ""
+                  } ${primeraNoCritica ? "border-t-2 border-t-[var(--ui-borde)]" : ""}`}
                 >
                   {/* Franja de severidad */}
                   <span
                     className={`w-0.5 self-stretch rounded-full shrink-0 ${
                       esCritica
-                        ? "bg-[#ff1744]"
+                        ? "bg-[var(--ui-error-borde)]"
                         : brecha.severidad === "Alto"
-                        ? "bg-[#ffab00]"
+                        ? "bg-[var(--ui-aviso-borde)]"
                         : "bg-[var(--ui-boton)]"
                     }`}
                   />
@@ -447,7 +447,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                   <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                     {controlesConEvidencia.has(brecha.preguntaId) ? (
                       <span
-                        className="flex items-center text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#00c853]/10 text-[#00c853] border border-[#00c853]/25"
+                        className="flex items-center text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)] border border-[var(--ui-exito-borde)]"
                         title="El control tiene evidencia documental vinculada"
                       >
                         <BadgeCheck className="w-3 h-3 mr-1" />
@@ -462,7 +462,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                       </span>
                     )}
                     {brecha.esEstructural && (
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#9a3bf1]/15 text-[#9a3bf1] border border-[#9a3bf1]/30 font-semibold">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--ui-superficie-2)] text-[var(--ui-enlace)] border border-[var(--ui-borde)] font-semibold">
                         Estructural
                       </span>
                     )}

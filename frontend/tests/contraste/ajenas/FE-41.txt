@@ -1,0 +1,3 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Rojos ajenos de FE-41 (FE-44): «<ruta o vista>  # <archivo ajeno>». Quedan pendientes mientras la ficha dueña del archivo no esté hecha.
+/aceptar/[token]  # frontend/src/app/aceptar/[token]/page.tsx

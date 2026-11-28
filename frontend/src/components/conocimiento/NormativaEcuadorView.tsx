@@ -47,7 +47,7 @@ export default function NormativaEcuadorView() {
           aria-label="Fuente"
           value={fuente}
           onChange={(e) => setFuente(e.target.value)}
-          className="rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-campo)] px-3 py-2 text-sm"
+          className="rounded-lg border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] px-3 py-2 text-sm"
         >
           {FUENTES.map((f) => (
             <option key={f.valor} value={f.valor}>
@@ -61,7 +61,7 @@ export default function NormativaEcuadorView() {
           placeholder="Buscar: derechos, consentimiento…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          className="flex-1 min-w-56 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-campo)] px-3 py-2 text-sm"
+          className="flex-1 min-w-56 rounded-lg border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] px-3 py-2 text-sm"
         />
       </div>
       {error && (

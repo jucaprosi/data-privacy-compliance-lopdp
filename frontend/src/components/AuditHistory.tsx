@@ -119,7 +119,7 @@ export default function AuditHistory() {
           type="button"
           onClick={() => void cargar()}
           disabled={cargando}
-          className="px-3 py-1.5 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-boton-hover)] border border-[var(--ui-borde)] text-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          className="px-3 py-1.5 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-boton-hover)] border border-[var(--ui-borde-control)] text-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${cargando ? "animate-spin" : ""}`} />
           <span>Actualizar</span>
@@ -172,7 +172,7 @@ export default function AuditHistory() {
                 type="button"
                 onClick={() => setSeleccionado(r)}
                 aria-label={`Resultado sellado n.º ${r.secuencia}`}
-                className="w-full text-left p-4 rounded-xl bg-[var(--ui-superficie)] hover:bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] space-y-2.5 cursor-pointer transition"
+                className="w-full text-left p-4 rounded-xl bg-[var(--ui-superficie)] hover:bg-[var(--ui-superficie-2)] border border-[var(--ui-borde-control)] space-y-2.5 cursor-pointer transition"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                   <strong>Resultado n.º {r.secuencia}</strong>

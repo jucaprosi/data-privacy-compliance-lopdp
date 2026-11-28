@@ -28,7 +28,7 @@ export default function AyudaView() {
             <input
               value={control}
               onChange={(e) => setControl(e.target.value)}
-              className="w-36 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-campo)] px-3 py-2 text-sm"
+              className="w-36 rounded-lg border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] px-3 py-2 text-sm"
             />
           </label>
           <span className="inline-flex items-center gap-2 text-sm">
@@ -41,7 +41,7 @@ export default function AyudaView() {
             <input
               value={articulo}
               onChange={(e) => setArticulo(e.target.value)}
-              className="w-36 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-campo)] px-3 py-2 text-sm"
+              className="w-36 rounded-lg border border-[var(--ui-borde-control)] bg-[var(--ui-campo)] px-3 py-2 text-sm"
             />
           </label>
           <span className="inline-flex items-center gap-2 text-sm">
