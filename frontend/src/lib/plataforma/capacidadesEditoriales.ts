@@ -45,7 +45,8 @@ export function textoDeError(error: unknown): string {
 }
 
 export const listarEquipo = () => httpBiblioteca<MiembroEquipo[]>(BASE);
-export const listarHistorial = () => httpBiblioteca<EventoCapacidad[]>(`${BASE}/historial`);
+export const listarHistorial = (usuarioId: string) =>
+  httpBiblioteca<EventoCapacidad[]>(`${BASE}/historial?usuario_id=${encodeURIComponent(usuarioId)}`);
 
 async function cambiar(accion: "conceder" | "retirar", usuarioId: string, capacidad: string, motivo: string): Promise<ResultadoCambio> {
   const { resultado } = await httpBiblioteca<{ resultado: ResultadoCambio }>(
