@@ -31,6 +31,11 @@ from features.demo.services import entrada_engine
 
 AHORA = datetime(2026, 11, 28, 10, 0, tzinfo=timezone.utc)
 CORREO = "vendedor.demo13@ventas.invalid"
+MENSAJE = "La demo está incompleta: faltan salas por preparar"
+
+
+def _cuerpo(*salas):
+    return {"codigo": "DEMO_INCOMPLETA", "mensaje": MENSAJE, "salas": list(salas)}
 
 
 class _SesionFalsa:
@@ -114,7 +119,7 @@ async def test_m1_sin_videovigilancia_lanza_demo_incompleta_y_no_clona_nada(monk
     with pytest.raises(ErrorDemo) as e:
         await entrada_engine.copiar_plantilla(_SesionFalsa(), "demo-destino")
     assert e.value.codigo.codigo == "DEMO_INCOMPLETA" and e.value.status_code == 503
-    assert e.value.cuerpo()["salas"] == ["videovigilancia"]
+    assert e.value.cuerpo() == _cuerpo("videovigilancia")
     assert llamadas == []
 
 
@@ -123,7 +128,7 @@ async def test_faltan_varias_se_nombran_todas_en_el_orden_de_salas(monkeypatch):
     llamadas = _registro(monkeypatch, ("organizacion", "roadmap", "evidencias"))
     with pytest.raises(ErrorDemo) as e:
         await entrada_engine.copiar_plantilla(_SesionFalsa(), "demo-destino")
-    assert e.value.cuerpo()["salas"] == ["diagnostico", "biblioteca", "videovigilancia"]
+    assert e.value.cuerpo() == _cuerpo("diagnostico", "biblioteca", "videovigilancia")
     assert llamadas == []
 
 
@@ -150,7 +155,7 @@ async def test_entrar_sin_una_sala_da_demo_incompleta_sin_sesion_ni_evento(monke
     with pytest.raises(ErrorDemo) as e:
         await entrada_engine.entrar(sesion, "sub-demo13", CORREO, AHORA)
     assert e.value.codigo.codigo == "DEMO_INCOMPLETA"  # no se convierte en DEMO_NO_DISPONIBLE
-    assert e.value.cuerpo()["salas"] == ["organizacion"]
+    assert e.value.cuerpo() == _cuerpo("organizacion")
     assert sesion.savepoints == 1 and llamadas == [] and visto == {"eventos": [], "insertadas": 0}
 
 
@@ -172,5 +177,4 @@ async def test_post_entrar_responde_503_con_las_salas_que_faltan(monkeypatch):
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://demo") as c:
         r = await c.post("/api/v1/demo/entrar")
     assert r.status_code == 503
-    cuerpo = r.json()
-    assert cuerpo["codigo"] == "DEMO_INCOMPLETA" and cuerpo["salas"] == ["videovigilancia"] and cuerpo["mensaje"]
+    assert r.json() == _cuerpo("videovigilancia")
