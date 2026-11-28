@@ -1,0 +1,4 @@
+# © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
+# Pendientes de FE-41 (archivos sin dueño de la ola): una ruta o vista por línea, con «# archivo» que la justifica.
+# La ficha dueña borra sus líneas al terminar.
+/aceptar/[token]  # frontend/src/app/aceptar/[token]/page.tsx (ajena de FE-33)
