@@ -50,3 +50,6 @@ export const PREPARACIONES: Record<string, (page: Page) => Promise<void>> = {
     });
   },
 };
+
+/** Vistas que se miden sin `configurarProyecto` (FE-44 R5): `medirVista` las abre con el proyecto sin configurar. */
+export const SIN_CONFIGURAR = new Set(["vista:configuracion"]);
