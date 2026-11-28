@@ -81,8 +81,8 @@ export default defineConfig({
   testDir: "./tests",
   // Las pruebas de integración (TEST-03) levantan backend y base de datos reales con su propia
   // configuración: playwright.integracion.config.ts. Este arnés simula la API y no puede ejecutarlas.
-  // Lo mismo las de humo: playwright.humo.config.ts.
-  testIgnore: ["**/integracion/**", "**/humo/**"],
+  // Lo mismo las de humo (playwright.humo.config.ts) y las de la demo desplegada (playwright.desplegado.config.ts, QA-17).
+  testIgnore: ["**/integracion/**", "**/humo/**", "**/desplegado/**"],
   // Cada spec parte de un estado limpio y no depende del orden de ejecución.
   fullyParallel: true,
   // Los proyectos corren uno tras otro, así que un límite en `desarrollo` deja trabajadores ociosos.
@@ -108,7 +108,7 @@ export default defineConfig({
     ? [
         {
           name: "produccion",
-          testIgnore: ["**/integracion/**", "**/humo/**", ...SOLO_DESARROLLO],
+          testIgnore: ["**/integracion/**", "**/humo/**", "**/desplegado/**", ...SOLO_DESARROLLO],
           use: { ...devices["Desktop Chrome"] },
         },
         {
