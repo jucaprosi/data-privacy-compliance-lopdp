@@ -16,8 +16,6 @@ from datetime import datetime
 from io import BytesIO
 from xml.sax.saxutils import escape
 
-from openpyxl import Workbook, load_workbook
-from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import mm
@@ -74,6 +72,8 @@ class Exportacion:
 
 def celda_segura(valor: str) -> str:
     """Un texto no se ejecuta como fórmula al abrirlo y no lleva caracteres que el XLSX no admite."""
+    from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
+
     limpio = ILLEGAL_CHARACTERS_RE.sub("", valor)
     return f"'{limpio}" if limpio.lstrip()[:1] in ("=", "+", "-", "@") else limpio
 
@@ -131,6 +131,8 @@ async def fichas_vigentes(session: AsyncSession, tenant_id: str) -> list[dict]:
 
 
 def generar_xlsx(fichas: list[dict]) -> bytes:
+    from openpyxl import Workbook
+
     libro = Workbook()
     hoja = libro.active
     hoja.title = "RAT"
@@ -145,6 +147,8 @@ def generar_xlsx(fichas: list[dict]) -> bytes:
 
 def generar_pdf(xlsx: bytes, huella: str) -> bytes:
     """Una tabla por ficha, porque las columnas no caben a lo ancho. Lee el XLSX, no la base."""
+    from openpyxl import load_workbook
+
     filas = list(load_workbook(BytesIO(xlsx), read_only=True).active.iter_rows(values_only=True))
     encabezados, fichas = filas[0], filas[1:]
     estilos = getSampleStyleSheet()
