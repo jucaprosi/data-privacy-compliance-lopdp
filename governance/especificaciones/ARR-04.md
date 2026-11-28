@@ -13,6 +13,7 @@ No aplica.
 
 - **R1 · Librerías fuera del arranque.** Un subproceso `python -X importtime -c "import main"`, con `PYTHONDONTWRITEBYTECODE` vacío y `.pyc` ya generados, termina sin `pandas`, `openpyxl` ni `fpdf` en `sys.modules`.
 - **R2 · Presupuesto.** La mediana de tres importaciones de `main` en subprocesos, con `.pyc`, queda por debajo de 4,0 s en el CI. El ingeniero mide en el CI y anota la mediana en la prueba. Si la mediana medida por 1,5 queda por debajo de 4,0 s, usa ese valor, redondeado a la décima.
+- **R1a · Hueco del corte.** `features/niif18/engines/export_engine.py:11` importa `fpdf` al nivel del módulo, y ARR-02 R1 solo nombraba `pandas`, `openpyxl` y `numpy`. ARR-04 mueve esa importación dentro de las funciones que usan `FPDF`, sin cambiar firmas ni archivos generados. Medido por el Tech Lead en `main` b1cfda85: con `fpdf` cargado, la mediana local es de 4,16 s.
 - **R3 · Sin red.** Las variables de entorno de la prueba son las del arnés; nada se conecta a la nube al importar.
 - **R-SP · Sin prohibiciones** (GEN-01 R3).
 - **R-ADPA · Ortogonalidad ZERAG (`ARR-04`).** Solo los archivos de la propiedad.
