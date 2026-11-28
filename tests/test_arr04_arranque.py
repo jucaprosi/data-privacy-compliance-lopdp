@@ -74,7 +74,7 @@ def test_base_temporal_arr04():  # TEMPORAL: línea base de módulos con -I
     r = subprocess.run([sys.executable, "-I", "-c", codigo], cwd=RAIZ, env=_entorno(), capture_output=True, text=True, timeout=120)
     assert r.returncode == 0, r.stderr[-2000:]
     modulos = json.loads(r.stdout.strip().splitlines()[-1])
-    warnings.warn("ARR04-BASE %d" % len(modulos))
+    warnings.warn("ARR04-LISTA " + json.dumps(modulos))
 
 
 def _con_mutacion(tmp_path, nombre: str, codigo: str) -> subprocess.CompletedProcess:
