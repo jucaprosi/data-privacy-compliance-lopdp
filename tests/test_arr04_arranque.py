@@ -14,7 +14,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 PROHIBIDAS = ("pandas", "openpyxl", "fpdf")
 
 # R2: umbral en segundos. 4,0 s de partida; si la mediana medida en el CI por 1,5 queda por debajo, se usa ese valor.
-# Mediana medida en el CI: pendiente (run: pendiente).
+# Mediana medida en el CI: 3,000 s (run 46090975869, PR 1140); por 1,5 son 4,5 s, no queda por debajo de 4,0 s: el umbral sigue en 4,0 s.
 UMBRAL_S = 4.0
 IMPORTACIONES = 3
 
@@ -51,7 +51,6 @@ def test_r1_main_arranca_sin_pandas_openpyxl_ni_fpdf():
 def test_r2_mediana_de_tres_importaciones_bajo_el_umbral():
     _importar_main()  # .pyc ya generados
     mediana = statistics.median(_importar_main()[0] for _ in range(IMPORTACIONES))
-    import warnings; warnings.warn(f"ARR04-MEDIANA {mediana:.3f}")  # medición temporal
     assert mediana < UMBRAL_S, f"mediana {mediana:.2f} s >= umbral {UMBRAL_S} s"
 
 
