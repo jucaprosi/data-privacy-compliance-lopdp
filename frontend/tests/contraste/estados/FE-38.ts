@@ -14,6 +14,9 @@ export const APERTURAS: Record<string, (page: Page) => Promise<void>> = {
   "vista:niif_reclasificacion": async (page) => { await conDatos(page, "Matriz Reclasificación"); },
   "vista:niif_subtotales": async (page) => { await conDatos(page, "Árbol de EEFF"); },
   "vista:niif_mpm": async (page) => { await conDatos(page, "Conciliación MPM"); },
+  "vista:niif_diagnostico": async (page) => { await conDatos(page, "Diagnóstico y Plan"); },
+  "vista:niif_exportacion": async (page) => { await conDatos(page, "Centro de Exportación"); },
+  "vista:niif_doctrina": async (page) => { await conDatos(page, "Visor Doctrinal"); },
 };
 
 export const ESTADOS: Record<string, (page: Page) => Promise<void>> = {

@@ -82,7 +82,7 @@ export default function ExportarRat() {
       type="button"
       onClick={() => exportar(formato)}
       disabled={enCurso !== null}
-      className="inline-flex items-center gap-1.5 rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton)] px-3 py-1.5 font-semibold hover:bg-[var(--ui-boton-hover)] disabled:opacity-50"
+      className="inline-flex items-center gap-1.5 rounded-md border border-[var(--ui-borde-control)] bg-[var(--ui-boton)] px-3 py-1.5 font-semibold hover:bg-[var(--ui-boton-hover)] disabled:opacity-50"
     >
       {enCurso === formato ? (
         <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
