@@ -13,6 +13,7 @@ Sin tablas. `copiar_plantilla` (`features/demo/services/entrada_engine.py:50-63`
 
 - **R1 · Todas o ninguna.** Antes de copiar, `copiar_plantilla` comprueba que cada sala de `ORDEN_DE_SALAS` tiene clon. Si falta alguna, lanza `DEMO_INCOMPLETA` (503) con sus nombres y no copia nada, porque la transacción no llega a abrirse.
 - **R2 · Evento sin omitidas.** `DEMO_INICIADA` deja de llevar `salas_omitidas`.
+- **R3 · Prueba anterior al día.** `tests/test_demo_ciclo.py:326` (`test_una_sala_sin_clon_se_omite_y_el_evento_la_nombra`, de DEMO-02, que está hecha) afirma lo contrario de R1 y R2. DEMO-13 la reescribe: una sala sin clon da 503 `DEMO_INCOMPLETA` y no deja filas. Su mutación, en la l. 16, se ajusta a la regla nueva.
 - **R-SP · Sin prohibiciones** (GEN-01 R3).
 - **R-ADPA · Ortogonalidad ZERAG (`DEMO-13`).** Solo los archivos de la propiedad.
 
