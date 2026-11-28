@@ -175,7 +175,7 @@ export default function DashboardPage() {
 
   if (!mounted || !sesionLeida || sinSesion) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-white text-[#9a3bf1] font-mono text-sm select-none">
+      <div className="flex h-screen w-screen items-center justify-center bg-[var(--ui-superficie)] text-[var(--ui-enlace)] font-mono text-sm select-none">
         <div className="flex flex-col items-center space-y-4 animate-pulse">
           <Layers className="w-8 h-8" />
           <span>Iniciando Entorno Cero Regresiones...</span>
@@ -236,8 +236,8 @@ export default function DashboardPage() {
     <div
       className={`app-frame-canvas flex flex-col h-screen w-screen overflow-hidden gap-0.5 p-1 font-sans transition-colors duration-200 ${
         theme === "light"
-          ? "theme-light bg-[#f2ecfa] text-zinc-900"
-          : "theme-dark bg-[#202024] text-zinc-100"
+          ? "theme-light bg-[var(--ui-superficie-2)] text-[var(--foreground)]"
+          : "theme-dark bg-[var(--ui-superficie-2)] text-[var(--foreground)]"
       }`}
     >
       {/* Barra de Encabezado Superior (Alta Densidad Estilo Render) */}
@@ -260,7 +260,7 @@ export default function DashboardPage() {
       {/* --- FIN FE-25 --- */}
 
       <ArmazonResponsive
-        claseFondo={theme === "light" ? "bg-[#f2ecfa]" : "bg-[#202024]"}
+        claseFondo={theme === "light" ? "bg-[var(--ui-superficie-2)]" : "bg-[var(--ui-superficie-2)]"}
         panelLayout={panelLayout}
         // Barra de los nueve menús (FE-22); con NIIF 18 no se muestra (R5).
         barraMenus={
@@ -303,16 +303,16 @@ export default function DashboardPage() {
                       onClick={() => elegir(item.id)}
                       className={`w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition group cursor-pointer ${
                         isSelected
-                          ? "bg-[var(--ui-boton)] text-white border border-[var(--ui-borde)] font-medium"
-                          : "text-[var(--ui-texto-suave)] hover:text-zinc-200 hover:bg-[#18181d] border border-transparent"
+                          ? "bg-[var(--ui-boton)] text-[var(--foreground)] border border-[var(--ui-borde-control)] font-medium"
+                          : "text-[var(--ui-texto-suave)] hover:text-[var(--foreground)] hover:bg-[var(--ui-boton-hover)] border border-transparent"
                       }`}
                     >
                       <div className="flex items-center space-x-2.5 min-w-0">
                         <Icon
                           className={`w-4 h-4 shrink-0 transition ${
                             isSelected
-                              ? "text-[#9a3bf1]"
-                              : "text-[var(--ui-texto-suave)] group-hover:text-zinc-300"
+                              ? "text-[var(--ui-enlace)]"
+                              : "text-[var(--ui-texto-suave)] group-hover:text-[var(--ui-texto-suave)]"
                           }`}
                         />
                         <span className="truncate text-[11px] font-medium">
@@ -333,11 +333,11 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => elegir("configuracion")}
-                  className="w-full p-3 border-t border-[#7c16df] bg-[#9a3bf1]/15 shrink-0 text-left text-[#b66cff] hover:bg-[#9a3bf1]/25 transition cursor-pointer"
+                  className="w-full p-3 border-t border-[color:var(--ui-primario)] bg-[var(--ui-superficie-2)] shrink-0 text-left text-[var(--foreground)] hover:bg-[var(--ui-boton-hover)] transition cursor-pointer"
                   title="Completar el perfil organizacional"
                 >
                   <div className="flex items-center gap-2 font-bold text-xs tracking-wide">
-                    <SlidersHorizontal className="h-4 w-4 text-[#b66cff]" />
+                    <SlidersHorizontal className="h-4 w-4 text-[var(--ui-enlace)]" />
                     <span>PERFIL ORGANIZACIONAL</span>
                   </div>
                   <p className="mt-1 text-[10px] text-[var(--ui-texto-suave)]">Ficha Organizacional</p>
@@ -347,7 +347,7 @@ export default function DashboardPage() {
                   <div className="flex min-w-0 items-center gap-2 text-[10px] text-[var(--ui-texto-suave)]">
                     <span className="w-24 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Organización:</span>
                     <span
-                      className="min-w-0 flex-1 truncate font-semibold text-zinc-200"
+                      className="min-w-0 flex-1 truncate font-semibold text-[var(--foreground)]"
                       title={companyData.razonSocial.trim()}
                     >
                       {companyData.razonSocial.trim()}
@@ -356,7 +356,7 @@ export default function DashboardPage() {
                   <div className="flex min-w-0 items-center gap-2 text-[10px] text-[var(--ui-texto-suave)]">
                     <span className="w-24 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Sector:</span>
                     <span
-                      className="min-w-0 flex-1 truncate text-zinc-300"
+                      className="min-w-0 flex-1 truncate text-[var(--ui-texto-suave)]"
                       title={companyData.sector}
                     >
                       {companyData.sector}
@@ -368,10 +368,10 @@ export default function DashboardPage() {
           );
         }}
         centro={
-          <main className="h-full flex flex-col overflow-hidden rounded-lg border border-[#e8dcf5] dark:border-[var(--ui-borde)] bg-white dark:bg-[var(--ui-campo)] shadow-sm">
+          <main className="h-full flex flex-col overflow-hidden rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-superficie)] shadow-sm">
             {/* Pestaña del lienzo: nombre de la vista activa */}
             <div className="h-9 bg-[var(--ui-superficie)] border-b border-[var(--ui-borde)] px-3 flex items-center shrink-0 text-xs">
-              <div data-testid="pestana-vista" className="flex min-w-0 items-center px-3 py-1 bg-[var(--ui-campo)] border-t-2 border-[#9a3bf1] border-x border-[var(--ui-borde)] text-white font-medium rounded-t shadow-xs">
+              <div data-testid="pestana-vista" className="flex min-w-0 items-center px-3 py-1 bg-[var(--ui-campo)] border-t-2 border-t-[color:var(--ui-primario)] border-x border-[var(--ui-borde)] text-[var(--foreground)] font-medium rounded-t shadow-xs">
                 <span className="truncate">{nombrePestana}</span>
               </div>
             </div>

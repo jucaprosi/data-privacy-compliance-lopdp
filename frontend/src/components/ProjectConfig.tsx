@@ -199,8 +199,8 @@ export default function ProjectConfig() {
   if (!hasHydrated) {
     return (
       <div className="space-y-6 max-w-5xl mx-auto pb-10 animate-pulse">
-        <div className="h-14 bg-zinc-100 dark:bg-[var(--ui-superficie)] rounded-xl border border-zinc-200 dark:border-[var(--ui-borde)]" />
-        <div className="max-w-3xl h-64 bg-zinc-100 dark:bg-[var(--ui-superficie)] rounded-xl border border-zinc-200 dark:border-[var(--ui-borde)]" />
+        <div className="h-14 bg-[var(--ui-superficie-2)] rounded-xl border border-[color:var(--ui-borde)]" />
+        <div className="max-w-3xl h-64 bg-[var(--ui-superficie-2)] rounded-xl border border-[color:var(--ui-borde)]" />
       </div>
     );
   }
@@ -208,10 +208,10 @@ export default function ProjectConfig() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-10">
       {/* Cabecera */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-zinc-200 dark:border-[var(--ui-borde)] gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[color:var(--ui-borde)] gap-3">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center tracking-tight">
-            <SlidersHorizontal className="w-5 h-5 mr-2 text-[#9a3bf1]" />
+          <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center tracking-tight">
+            <SlidersHorizontal className="w-5 h-5 mr-2 text-[var(--ui-enlace)]" />
             Ficha Organizacional
           </h2>
           <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
@@ -222,21 +222,21 @@ export default function ProjectConfig() {
         <span
           className={`text-[11px] font-mono px-2.5 py-1 rounded-md border flex items-center space-x-1.5 shrink-0 ${
             isConfigured
-              ? "bg-[#00c853]/15 text-[#00c853] border-[#00c853]/30"
-              : "bg-zinc-100 dark:bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border-zinc-200 dark:border-[var(--ui-borde)]"
+              ? "bg-[var(--ui-exito-fondo)] text-[var(--ui-exito-texto)] border-[color:var(--ui-exito-borde)]"
+              : "bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border-[color:var(--ui-borde)]"
           }`}
         >
-          <span className={`w-1.5 h-1.5 rounded-full ${isConfigured ? "bg-[#00c853]" : "bg-zinc-400"}`} />
+          <span className={`w-1.5 h-1.5 rounded-full ${isConfigured ? "bg-[var(--ui-exito-borde)]" : "bg-[var(--ui-superficie-2)]"}`} />
           <span>{isConfigured ? "Perfil Organizacional Guardado" : "Pendiente de Completar"}</span>
         </span>
       </div>
 
       <div className="max-w-3xl">
         {/* Ficha organizacional */}
-        <div className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl p-5 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[var(--ui-borde)] pb-2.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center">
-              <Building2 className="w-4 h-4 mr-1.5 text-[#3892f3]" />
+        <div className="bg-[var(--ui-superficie)] border border-[color:var(--ui-borde)] rounded-xl p-5 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-[color:var(--ui-borde)] pb-2.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)] flex items-center">
+              <Building2 className="w-4 h-4 mr-1.5 text-[var(--ui-info-texto)]" />
               Ficha Organizacional (Datos de la Organización)
             </h3>
           </div>
@@ -247,7 +247,7 @@ export default function ProjectConfig() {
                 htmlFor={idRazonSocial}
                 className="block text-[var(--ui-texto-suave)] mb-1 font-medium"
               >
-                Razón Social de la Organización <span className="text-red-700 dark:text-red-400">*</span>
+                Razón Social de la Organización <span className="text-[var(--ui-error-texto)] ">*</span>
               </label>
               <input
                 id={idRazonSocial}
@@ -256,7 +256,7 @@ export default function ProjectConfig() {
                 value={companyData.razonSocial}
                 onChange={(e) => setCompanyData({ razonSocial: e.target.value })}
                 placeholder="Ej. EVYDENTIA Cloud Solutions S.A.S."
-                className="w-full bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-300 dark:border-[var(--ui-borde)] rounded-lg px-3 py-2 text-white placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
+                className="w-full bg-[var(--ui-campo)] border border-[color:var(--ui-borde-control)] rounded-lg px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--ui-texto-suave)] text-xs focus:outline-none focus:border-[color:var(--ui-primario)] transition"
               />
             </div>
 
@@ -290,9 +290,9 @@ export default function ProjectConfig() {
                 value={companyData.empleadosIess ?? ""}
                 onChange={(e) => actualizarConteo({ empleadosIess: aNumero(e.target.value) })}
                 placeholder="Según la planilla de aportes del IESS"
-                className="w-full bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-300 dark:border-[var(--ui-borde)] rounded-lg px-3 py-2 text-white placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
+                className="w-full bg-[var(--ui-campo)] border border-[color:var(--ui-borde-control)] rounded-lg px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--ui-texto-suave)] text-xs focus:outline-none focus:border-[color:var(--ui-primario)] transition"
               />
-              <p className="mt-1 text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400">
+              <p className="mt-1 text-[10px] text-[var(--ui-texto-suave)] ">
                 El IESS es la fuente que corrobora el número de empleados directos.
               </p>
             </div>
@@ -312,9 +312,9 @@ export default function ProjectConfig() {
                 value={companyData.contratadosServicios ?? ""}
                 onChange={(e) => actualizarConteo({ contratadosServicios: aNumero(e.target.value) })}
                 placeholder="Según las cuentas contables de servicios"
-                className="w-full bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-300 dark:border-[var(--ui-borde)] rounded-lg px-3 py-2 text-white placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
+                className="w-full bg-[var(--ui-campo)] border border-[color:var(--ui-borde-control)] rounded-lg px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--ui-texto-suave)] text-xs focus:outline-none focus:border-[color:var(--ui-primario)] transition"
               />
-              <p className="mt-1 text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400">
+              <p className="mt-1 text-[10px] text-[var(--ui-texto-suave)] ">
                 Se cuentan con las cuentas contables de servicios (honorarios y servicios contratados).
               </p>
             </div>
@@ -326,7 +326,7 @@ export default function ProjectConfig() {
               >
                 Tamaño / Número de Empleados
                 {hayConteo && !tamanoDelServidor && (
-                  <span className="ml-1 font-normal text-[var(--ui-texto-suave)] dark:text-zinc-400">
+                  <span className="ml-1 font-normal text-[var(--ui-texto-suave)] ">
                     (calculado: {totalPersonas} personas)
                   </span>
                 )}
@@ -350,7 +350,7 @@ export default function ProjectConfig() {
                     setCompanyData({ tamano: e.target.value });
                   }
                 }}
-                className="w-full bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-300 dark:border-[var(--ui-borde)] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#9a3bf1] transition"
+                className="w-full bg-[var(--ui-campo)] border border-[color:var(--ui-borde-control)] rounded-lg px-3 py-2 text-[var(--foreground)] text-xs focus:outline-none focus:border-[color:var(--ui-primario)] transition"
               >
                 {tamanoDelServidor && enServidor.clave === null && <option value="">Sin configurar</option>}
                 {TAMANOS_ORGANIZACION.map((t) => (
@@ -359,7 +359,7 @@ export default function ProjectConfig() {
                   </option>
                 ))}
               </select>
-              <div data-testid="tamano-estado" className="mt-1 space-y-0.5 text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400">
+              <div data-testid="tamano-estado" className="mt-1 space-y-0.5 text-[10px] text-[var(--ui-texto-suave)] ">
                 {enServidor.fase === "cargando" && <p role="status">Consultando el tamaño registrado de la organización…</p>}
                 {tamanoDelServidor && !enServidor.puedeEditar && (
                   <p>
@@ -376,12 +376,12 @@ export default function ProjectConfig() {
                 )}
                 {guardandoTamano && <p role="status">Guardando…</p>}
                 {errorTamano && (
-                  <p role="alert" className="text-red-600">
+                  <p role="alert" className="text-[var(--ui-error-texto)]">
                     {errorTamano}
                   </p>
                 )}
                 {enServidor.fase === "error" && (
-                  <p role="alert" className="text-amber-700">
+                  <p role="alert" className="text-[var(--ui-aviso-texto)]">
                     No se pudo consultar el tamaño registrado de la organización ({enServidor.mensaje}). Se usa el valor de la ficha.
                   </p>
                 )}
@@ -408,9 +408,9 @@ export default function ProjectConfig() {
       </div>
 
       {/* Acción principal */}
-      <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-zinc-200 dark:border-[var(--ui-borde)] gap-3">
-        <div className="flex items-center space-x-2 text-xs text-[var(--ui-texto-suave)] dark:text-zinc-400">
-          <ShieldCheck className="w-4 h-4 text-[#9a3bf1]" />
+      <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-[color:var(--ui-borde)] gap-3">
+        <div className="flex items-center space-x-2 text-xs text-[var(--ui-texto-suave)] ">
+          <ShieldCheck className="w-4 h-4 text-[var(--ui-enlace)]" />
           <span>{mensaje ?? "La ficha organizacional alimenta automáticamente la evaluación y el tablero."}</span>
         </div>
 
@@ -419,8 +419,8 @@ export default function ProjectConfig() {
           onClick={handleGuardar}
           disabled={guardando}
           aria-disabled={pendientes > 0}
-          style={{ background: "linear-gradient(135deg, #9a3bf1, #3892f3)" }}
-          className="w-full sm:w-auto text-white px-5 py-2.5 text-xs font-semibold rounded-lg flex items-center justify-center cursor-pointer shadow-md hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          style={{ background: "linear-gradient(135deg, var(--ui-primario), var(--ui-enlace))" }}
+          className="w-full sm:w-auto text-[var(--foreground)] px-5 py-2.5 text-xs font-semibold rounded-lg flex items-center justify-center cursor-pointer shadow-md hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed"
         >
           <span>{guardando ? "Guardando…" : "Guardar Ficha y Continuar"}</span>
           <ArrowRight className="w-3.5 h-3.5 ml-2" />
