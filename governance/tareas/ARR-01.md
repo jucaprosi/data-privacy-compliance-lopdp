@@ -2,7 +2,7 @@
 id = "ARR-01"
 titulo = "La imagen del backend lleva el bytecode compilado"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 tanda = 121
 sala = "operaciones"
 depende_de = []
