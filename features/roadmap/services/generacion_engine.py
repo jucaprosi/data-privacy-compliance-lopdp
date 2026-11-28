@@ -23,6 +23,7 @@ from app_core.pasillo import inferencia as pasillo_inferencia
 from features.roadmap.ai.client import (
     DEFAULT_MAX_TOKENS,
     DEFAULT_TIMEOUT_SECONDS,
+    LLMTimeoutError,
     TruncatedOutputError,
     call_roadmap_llm,
 )
@@ -139,6 +140,10 @@ def generate_roadmap_document(
 
         except InferenciaNoDisponible:
             # Falla cerrado: si la compuerta no está disponible, no se reintenta ni se devuelve plan simulado
+            raise
+
+        except LLMTimeoutError:
+            # IA-18 R8: el único reintento ante un fallo de Vertex es el de la compuerta (R2 y R3)
             raise
 
         except TruncatedOutputError as exc:

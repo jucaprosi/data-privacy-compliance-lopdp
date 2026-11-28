@@ -247,3 +247,38 @@ def test_r7_el_despliegue_del_backend_tiene_plazo_suficiente():
     plazos = [int(m) for m in re.findall(r"--timeout\s+(\d+)s", texto)]
     assert plazos, "el workflow debe fijar --timeout"
     assert min(plazos) >= svc.PLAZO_TOTAL_S + 10
+
+
+# ---------------------------------------------------------------- R8 un solo presupuesto en la hoja de ruta
+# Solo por la compuerta de la sala (`roadmap_service`): `test_adpa_bulkhead` alcanza también a las pruebas de `roadmap`.
+def test_r8_el_plazo_de_la_hoja_de_ruta_no_corta_antes_que_el_presupuesto(monkeypatch):
+    """Mutación m7: volver a `DEFAULT_TIMEOUT_SECONDS = 60.0`, o reintentar ante `LLMTimeoutError`, da rojo."""
+    from features.roadmap import roadmap_service as rs
+
+    assert rs.DEFAULT_TIMEOUT_SECONDS >= svc.PLAZO_TOTAL_S
+    cliente = rs.call_roadmap_llm.__globals__  # el módulo del cliente, sin importarlo fuera de la compuerta
+    recibido = []
+
+    async def generar(sistema, usuario, *, model_name, org_id, timeout):
+        recibido.append(timeout)
+        return SimpleNamespace(model_dump_json=lambda: "{}")
+
+    monkeypatch.setitem(cliente, "_generar_con_timeout", generar)
+    monkeypatch.setattr(cliente["pasillo_inferencia"], "estado", lambda: SimpleNamespace(disponible=True))
+    assert rs.call_roadmap_llm("s", "u", org_id="org") == "{}"
+    assert recibido and recibido[0] >= svc.PLAZO_TOTAL_S
+
+
+@pytest.mark.parametrize("tipo", ["timeout", "no_disponible"])
+def test_r8_la_generacion_no_reintenta_ante_timeout_ni_indisponibilidad(tipo):
+    from features.roadmap import roadmap_service as rs
+
+    llamadas = []
+
+    def llamar(sistema, usuario):
+        llamadas.append(1)
+        raise rs.LLMTimeoutError("plazo") if tipo == "timeout" else InferenciaNoDisponible()
+
+    with pytest.raises((rs.LLMTimeoutError, InferenciaNoDisponible)):
+        rs.generate_roadmap_document({}, {}, "rm", "org", llm_caller=llamar, max_retries=2)
+    assert len(llamadas) == 1
