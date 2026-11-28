@@ -38,7 +38,7 @@ export default function SelectorOrganizacion() {
       {cuantas >= 2 && (
         <Link
           href={RUTA_ORGANIZACIONES}
-          className="h-7 px-2 rounded-md bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] flex items-center transition"
+          className="h-7 px-2 rounded-md bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde-control)] text-[var(--ui-texto-suave)] flex items-center transition"
         >
           Cambiar organización
         </Link>

@@ -1,6 +1,13 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-import pandas as pd
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from features.niif18.domain.models import CategoriaNIIF18
+
+if TYPE_CHECKING:
+    import pandas as pd
+
 
 def auto_classify_niif18_series(df: pd.DataFrame) -> list[str]:
     """Clasifica automáticamente las cuentas según las NIIF 18."""

@@ -23,8 +23,8 @@ import { join, relative, sep } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 import { medirContraste } from "../contraste";
 import { fijarAjustes, TENANT_PRUEBA } from "../auth/utilesAuth";
-import { abrirSubmenu, configurarProyecto } from "../utiles";
-import { SUBMENUS } from "@/components/layout/menus";
+import { barraDeMenus, configurarProyecto } from "../utiles";
+import { MENUS, SUBMENUS, type Submenu } from "@/components/layout/menus";
 import { modulosNavegacionNIIF } from "@/components/layout/dashboardNavigation";
 import * as M33 from "./estados/FE-33";
 import * as M34 from "./estados/FE-34";
@@ -39,10 +39,12 @@ const TEMAS = ["theme-light", "theme-dark"] as const; // claro primero (R1)
 const ANCHOS = [375, 1280] as const;
 const ESTADOS = ["carga", "vacio", "error", "datos", "foco"] as const;
 type Estado = (typeof ESTADOS)[number];
-const FICHAS: { ESTADOS: Record<string, (page: Page) => Promise<void>>; APERTURAS?: Record<string, (page: Page) => Promise<void>> }[] = [M33, M34, M35, M36, M37, M38, M39];
+const FICHAS: { ESTADOS: Record<string, (page: Page) => Promise<void>>; APERTURAS?: Record<string, (page: Page) => Promise<void>>; PREPARACIONES?: Record<string, (page: Page) => Promise<void>> }[] = [M33, M34, M35, M36, M37, M38, M39];
 const MODULOS = FICHAS.map((m) => m.ESTADOS);
 /** Aperturas de vistas que no son submenús (p. ej. las NIIF), declaradas por los módulos de estados (clave `vista:<id>`). */
 const APERTURAS = Object.assign({}, ...FICHAS.map((m) => m.APERTURAS ?? {})) as Record<string, (page: Page) => Promise<void>>;
+/** Preparaciones de las rutas (clave: la ruta), que se ejecutan antes de `page.goto` (R5): p. ej. simular la respuesta de un token. */
+const PREPARACIONES = Object.assign({}, ...FICHAS.map((m) => m.PREPARACIONES ?? {})) as Record<string, (page: Page) => Promise<void>>;
 /** Estados que declaran los módulos de cada ficha para una ruta o vista (clave «<unidad> · <estado>»). */
 export function estadosDeclarados(unidad: string): [string, (page: Page) => Promise<void>][] {
   return MODULOS.flatMap((m) => Object.entries(m)).filter(([k]) => k.startsWith(`${unidad} · `)).map(([k, f]) => [k.slice(unidad.length + 3), f]);
@@ -122,8 +124,34 @@ async function simular(page: Page, estado: Estado) {
   await page.route("**/api/v1/biblioteca/capacidades/equipo/historial", (r) => resolver(r, []));
 }
 
+/**
+ * Fija el tema por el estado guardado de la app (`jubys-audit-storage`), como QA-15 y QA-16, y espera a que `<html>` y el
+ * div raíz del tablero lo lleven. Se llama antes de `page.goto` (para que la app lo lea al cargar) y otra vez después.
+ */
 async function ponerTema(page: Page, tema: string) {
-  await page.evaluate((t) => { document.documentElement.classList.remove("theme-light", "theme-dark"); document.documentElement.classList.add(t); }, tema);
+  await page.addInitScript((t) => {
+    try {
+      window.localStorage.setItem("jubys-audit-storage", JSON.stringify({ state: { theme: t === "theme-dark" ? "dark" : "light" }, version: 6 }));
+    } catch {
+      // Almacenamiento bloqueado: se mide el tema por defecto.
+    }
+  }, tema);
+  if (page.url() === "about:blank") return;
+  await expect(page.locator("html")).toHaveClass(new RegExp(tema));
+  const raiz = page.locator(".app-frame-canvas");
+  if ((await raiz.count()) > 0) await expect(raiz).toHaveClass(new RegExp(tema));
+}
+
+/** Abre un menú y uno de sus submenús; a 375 px el submenú está en el cajón lateral, que se abre por su botón «Menú». */
+async function abrirSubmenu(page: Page, submenu: Submenu) {
+  const menu = MENUS.find((m) => m.id === submenu.menu);
+  if (!menu) throw new Error(`Menú desconocido: ${submenu.menu}`);
+  await barraDeMenus(page).getByRole("button", { name: menu.nombre, exact: true }).click();
+  const grupo = page.getByRole("group", { name: `Submenús de ${menu.nombre}` });
+  if (!(await grupo.isVisible())) await page.getByRole("button", { name: "Menú", exact: true }).click();
+  await expect(grupo).toBeVisible();
+  const escapado = submenu.nombre.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  await grupo.getByRole("button", { name: new RegExp(`^${escapado}`) }).click();
 }
 
 /** Razón de contraste del borde de cada control frente a su fondo efectivo (WCAG 1.4.11): debe ser >= 3. */
@@ -151,6 +179,8 @@ async function medirEstado(page: Page, ruta: string, estado: Estado, tema: strin
   await page.setViewportSize({ width: ancho, height: 900 });
   await fijarAjustes(page, { modo: "headers", tenant: TENANT_PRUEBA });
   await simular(page, estado);
+  await ponerTema(page, tema);
+  await PREPARACIONES[ruta]?.(page);
   await page.goto(concreta(ruta));
   await ponerTema(page, tema);
   const contexto = `${ruta} · ${nombreEstado ?? estado} · ${tema} · ${ancho} px`;
@@ -187,6 +217,7 @@ async function medirVista(page: Page, vista: string, tema: string, ancho: number
   await page.setViewportSize({ width: ancho, height: 900 });
   await fijarAjustes(page, { modo: "headers", tenant: TENANT_PRUEBA });
   await simular(page, "datos");
+  await ponerTema(page, tema);
   await page.goto("/");
   await configurarProyecto(page, "Entidad FE-32");
   const submenu = SUBMENUS.find((s) => s.vista === vista);

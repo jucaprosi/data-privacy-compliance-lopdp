@@ -1,6 +1,12 @@
 # © 2026 Juan Carlos Proaño. Todos los derechos reservados. Uso, copia o distribución prohibidos sin autorización escrita.
-import pandas as pd
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .financials_engine import calculate_pl_contribution
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 def calculate_mpm(df_clasificado: pd.DataFrame, mpm_name: str, subtotal_base: str, ajuste: float, rationale: str) -> dict:
     """

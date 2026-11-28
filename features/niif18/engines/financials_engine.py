@@ -4,7 +4,12 @@ Motor de resultados NIIF 18: naturaleza de cuentas, aporte al P&L, subtotales
 mandatorios y estructura del Estado de Resultados.
 [¤niif18-resultados]
 """
-import pandas as pd
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 # Términos que delatan una partida de gasto/costo; prevalecen sobre los de ingreso
 # ("Gasto por impuesto a las ganancias", "Costo de ventas", "Pérdida en venta").
