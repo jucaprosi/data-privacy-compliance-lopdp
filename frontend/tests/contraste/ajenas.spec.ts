@@ -18,6 +18,7 @@
  *  - m1: medir siempre una ajena, aunque su dueña no esté hecha -> «m1 · una ajena de una ficha sin hacer queda pendiente».
  *  - m2: aceptar en `pendientes/` una línea de archivo ajeno -> «m2 · una línea de pendientes con archivo ajeno falla y nombra a la dueña».
  *  - m3: tratar una ajena sin dueño como medida -> «m3 · una ajena sin dueño queda pendiente y avisa al Arquitecto».
+ *  - m5: tratar como propia una línea de pendientes con archivo ajeno que tiene su pareja en ajenas -> «m5 · …».
  */
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -76,6 +77,23 @@ test.describe("FE-44 · cada ficha mide lo suyo", () => {
     );
     try {
       expect(ajenasDe(fx.ajenas, fx.fichas()).get("vista:huerfana")).toEqual({ ficha: "FE-33", pendiente: true, etiqueta: SIN_DUENO });
+    } finally {
+      rmSync(fx.raiz, { recursive: true, force: true });
+    }
+  });
+
+  test("m5 · una línea de pendientes con archivo ajeno y pareja en ajenas carga como ajena, y sin la pareja falla", () => {
+    const fx = fixture(
+      { "FE-34": { estado: "en_curso", propiedad: ["frontend/src/a.tsx"] }, "FE-90": { estado: "en_curso", propiedad: ["frontend/src/Ajeno.tsx"] } },
+      { "FE-34": ["vista:auditoria  # frontend/src/Ajeno.tsx", "vista:propia  # frontend/src/a.tsx", ""].join("\n") },
+      { "FE-34": ["vista:auditoria  # frontend/src/Ajeno.tsx", ""].join("\n") },
+    );
+    try {
+      const propias = pendientesPropias(fx.pendientes, fx.fichas(), fx.ajenas);
+      expect([...propias.keys()], "la pareja no es propia").toEqual(["vista:propia"]);
+      expect(ajenasDe(fx.ajenas, fx.fichas()).get("vista:auditoria")?.etiqueta).toBe("ajena de FE-90");
+      rmSync(join(fx.ajenas, "FE-34.txt"));
+      expect(() => pendientesPropias(fx.pendientes, fx.fichas(), fx.ajenas), "sin pareja sigue el error de R2").toThrow(/FE-90/);
     } finally {
       rmSync(fx.raiz, { recursive: true, force: true });
     }

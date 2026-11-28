@@ -2,10 +2,10 @@
 // ¤adpa ¤arbitro
 // ¤¤frontend-ide
 /**
- * FE-44 · Lector de fichas, de `pendientes/` y de `ajenas/` (R2 a R4). No es prueba: lo importan `rutas.spec.ts` y `ajenas.spec.ts`
+ * FE-44 · Lector de fichas, de `pendientes/` y de `ajenas/` (R2, R2b, R3 y R4). No es prueba: lo importan `rutas.spec.ts` y `ajenas.spec.ts`
  * (Playwright no deja que un spec importe a otro). Sin navegador.
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 export type Ficha = { id: string; estado: string; propiedad: string[] };
@@ -74,17 +74,20 @@ function duenosDe(archivo: string, fichas: Map<string, Ficha>, propia?: string):
 }
 
 /** R2: líneas de `pendientes/FE-NN.txt`. Una línea cuyo archivo no esté en la propiedad de esa ficha da error con la dueña. */
-export function pendientesPropias(dir: string, fichas: Map<string, Ficha>): Map<string, string> {
+export function pendientesPropias(dir: string, fichas: Map<string, Ficha>, dirAjenas = join(dir, "..", "ajenas")): Map<string, string> {
   const mapa = new Map<string, string>();
   const errores: string[] = [];
   for (const f of listasDe(dir)) {
     const id = f.replace(".txt", "");
     const propia = fichas.get(id);
+    // R2b: la misma ruta o vista en `ajenas/<FICHA>.txt` de esa ficha la hace ajena (R3), no propia ni error.
+    const anotadas = new Set(existsSync(join(dirAjenas, f)) ? lineasDe(join(dirAjenas, f)).map((l) => l.unidad) : []);
     for (const { unidad, archivo, numero } of lineasDe(join(dir, f))) {
       const donde = `pendientes/${f}:${numero} «${unidad}»`;
       if (!propia) errores.push(`${donde}: no existe governance/tareas/${id}.md`);
       else if (!archivo) errores.push(`${donde}: no cita el archivo que la justifica («# <archivo>» de la propiedad de ${id})`);
       else if (!propia.propiedad.some((p) => sinSeccion(p) === archivo)) {
+        if (anotadas.has(unidad)) continue;
         const duenos = duenosDe(archivo, fichas, id).map((d) => d.id);
         errores.push(`${donde}: «${archivo}» es ${duenos.length ? `de ${duenos.join(", ")}` : "sin dueño (avisar al Arquitecto)"}, no de ${id}; va en ajenas/${id}.txt`);
       }
