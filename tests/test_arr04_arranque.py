@@ -51,6 +51,7 @@ def test_r1_main_arranca_sin_pandas_openpyxl_ni_fpdf():
 def test_r2_mediana_de_tres_importaciones_bajo_el_umbral():
     _importar_main()  # .pyc ya generados
     mediana = statistics.median(_importar_main()[0] for _ in range(IMPORTACIONES))
+    import warnings; warnings.warn(f"ARR04-MEDIANA {mediana:.3f}")  # medición temporal
     assert mediana < UMBRAL_S, f"mediana {mediana:.2f} s >= umbral {UMBRAL_S} s"
 
 
