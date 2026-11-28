@@ -24,7 +24,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { medirContraste } from "../contraste";
 import { fijarAjustes, TENANT_PRUEBA } from "../auth/utilesAuth";
 import { barraDeMenus, configurarProyecto } from "../utiles";
-import { ajenasDe, leerFichas, pendientesPropias, type Ajena } from "./ajenas.spec";
+import { ajenasDe, leerFichas, pendientesPropias, type Ajena } from "./ajenas";
 import { MENUS, SUBMENUS, type Submenu } from "@/components/layout/menus";
 import { modulosNavegacionNIIF } from "@/components/layout/dashboardNavigation";
 import * as M33 from "./estados/FE-33";
