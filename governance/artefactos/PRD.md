@@ -661,7 +661,7 @@ El cumplimiento de esta Constitución se verifica mediante árbitros automatizad
 4. **Escala Única de Madurez (1 a 5) sin Porcentaje Global:** `python scripts/verificar_escala_madurez.py` y `pytest tests/test_diagnostico_escala_1_5.py` comprueban que todo el sistema utiliza exclusivamente la escala de madurez de 1 a 5 con nivel de evidencia 0–4 por dimensión y dominio.
 5. **Poda Condicional ($\le 80$ preguntas) y Justificación de «No Aplica»:** Las pruebas del motor de diagnóstico verifican que ningún perfil organizacional supera las 80 preguntas activas y que toda respuesta «No aplica» exige justificación persistida.
 6. **Grilla Declarado vs. Verificado y Sello Inmutable SHA-256 del DPO:** Las pruebas de `DIAG-03` y `DIAG-07` verifican que las respuestas declaradas por el Administrador y los encargados de dominio son revisables y objetables por el DPO, y que una vez sellado el diagnóstico cualquier intento de edición o borrado es rechazado.
-7. **Cálculo Determinista MTGE (Res. SPDP-SPD-2026-0005-R):** `pytest tests/test_mtge_spdp_2026_0005.py` comprueba los pesos exactos de las 6 variables, el umbral de $\ge 6$ puntos, los casos directos de gran escala y el disparo automático de obligaciones.
+7. **Cálculo Determinista MTGE (Res. SPDP-SPD-2026-0005-R):** `pytest tests/test_mtge_resolucion_0005.py tests/test_mtge_obligaciones.py` comprueba los pesos exactos de las 6 variables, el umbral de $\ge 6$ puntos, los casos directos de gran escala y el disparo automático de obligaciones.
 8. **Versionado del RAT, Colectivos y Exportación Oficial:** Las suites de `RAT-01..07` verifican la persistencia completa por organización, el versionado inmutable por ficha de tratamiento, el registro de colectivos/consentimientos sin base nominal y la exportación a `XLSX` y `PDF`.
 9. **Asistente de Vulneraciones en 8 Secciones y Reloj Normativo:** Las pruebas de `INC-01` e `INC-02` verifican el flujo completo de la Norma Técnica de la SPDP, el cálculo de plazos y la generación de informes oficiales.
 10. **Derechos ARCOP+ y Portal Público Seguro:** Las suites de `DER-01` y `DER-02` verifican la verificación de identidad, el archivo de la contestación como evidencia y la seguridad del portal público de titulares.
@@ -690,7 +690,7 @@ El cumplimiento de esta Constitución se verifica mediante árbitros automatizad
     - el contador de una organización no consume el de otra;
     - el inicio de sesión responde `429` a partir del undécimo intento por IP en un minuto;
     - una petición de IA que excede `ia_usuario` o `ia_organizacion` se rechaza sin llamar al modelo, y con el almacén de contadores caído la IA responde `503` mientras el resto se atiende.
-29. **Observabilidad sin Datos Personales:** `pytest tests/test_ops07_observabilidad.py` verifica que todo registro sale en JSON con `request_id` compartido por la petición, que `app_core/dlp_sanitizer.py` redacta cédulas, RUC, correos y teléfonos antes de escribirlo, que no se registran consultas, cuerpos ni cabeceras de autorización, y que `governance/operaciones/monitoreo/alertas.yaml` declara las políticas de disponibilidad, errores y presupuesto.
+29. **Observabilidad sin Datos Personales:** `pytest tests/test_ops07_observabilidad.py` verifica que todo registro sale en JSON con `request_id` compartido por la petición, que `app_core/dlp_sanitizer.py` redacta cédulas, RUC, correos y teléfonos antes de escribirlo, que no se registran consultas, cuerpos ni cabeceras de autorización, y que `governance/operaciones/monitoreo/alertas.json` declara las políticas de disponibilidad, errores y presupuesto.
 30. **Escalado Acotado, Caché sin Fuga entre Tenants y Prueba de Carga:** `pytest tests/test_gcp05_escalado.py` verifica que cada servicio de Cloud Run declara su mínimo y máximo de instancias y su concurrencia, y que el máximo del backend cabe en PgBouncer. `pytest tests/test_gcp06_cache.py` verifica dos cosas:
     - Cloud CDN solo cubre activos estáticos;
     - las respuestas con datos de organización llevan `Cache-Control: no-store`, y la clave de la caché de lectura incluye siempre el `tenant_id`.
@@ -699,7 +699,7 @@ El cumplimiento de esta Constitución se verifica mediante árbitros automatizad
 31. **Despliegue Progresivo Reversible y Migraciones Compatibles:** `pytest tests/test_gcp07_despliegue_progresivo.py` verifica dos cosas:
     - el manifiesto de despliegue define los escalones de tráfico y la condición de reversión;
     - `scripts/verificar_migracion_compatible.py` rechaza, en una misma migración, operaciones destructivas (borrar o renombrar columnas en uso) que romperían la revisión anterior.
-32. **API de Integración Versionada y Claves con Alcance:** `pytest tests/test_api02_integraciones.py` verifica los siguientes puntos:
+32. **API de Integración Versionada y Claves con Alcance:** `pytest tests/test_api02_integraciones.py tests/test_api02b_webhooks.py` verifica los siguientes puntos:
     - una clave solo accede a los recursos de su organización y de su alcance;
     - una clave revocada o rotada responde `401`;
     - el contrato OpenAPI solo se sirve a clientes autenticados;
