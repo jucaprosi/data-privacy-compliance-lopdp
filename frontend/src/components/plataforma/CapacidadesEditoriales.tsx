@@ -25,14 +25,21 @@ export default function CapacidadesEditoriales() {
   const [equipo, setEquipo] = useState<MiembroEquipo[] | null>(null);
   const [historial, setHistorial] = useState<EventoCapacidad[]>([]);
   const [error, setError] = useState("");
+  const [errorHistorial, setErrorHistorial] = useState(false);
   const [dialogo, setDialogo] = useState<{ miembro: MiembroEquipo; modo: Modo } | null>(null);
   const abridor = useRef<HTMLElement | null>(null);
 
   const cargar = useCallback(async () => {
+    let lista: MiembroEquipo[];
     try {
-      const [lista, eventos] = await Promise.all([listarEquipo(), listarHistorial()]);
-      setEquipo(lista); setHistorial(eventos); setError("");
-    } catch (e) { setError(textoDeError(e)); }
+      lista = await listarEquipo();
+      setEquipo(lista); setError("");
+    } catch (e) { setError(textoDeError(e)); return; }
+    // BIB-416 R1 y R2: el historial se pide por miembro y no tira al equipo si falla.
+    try {
+      const porMiembro = await Promise.all(lista.map((m) => listarHistorial(m.usuario_id)));
+      setHistorial(porMiembro.flat().sort((a, b) => b.en.localeCompare(a.en))); setErrorHistorial(false);
+    } catch { setHistorial([]); setErrorHistorial(true); }
   }, []);
   useEffect(() => { void cargar(); }, [cargar]);
 
@@ -90,8 +97,9 @@ export default function CapacidadesEditoriales() {
     </table>}
     <section aria-labelledby="titulo-historial-capacidades">
       <h2 id="titulo-historial-capacidades" className="text-xl font-semibold">Historial de concesiones</h2>
+      {errorHistorial && <p role="alert" className="mt-2 rounded border border-[var(--ui-error-borde)] bg-[var(--ui-error-fondo)] p-3 text-[var(--ui-error-texto)]">No se pudo cargar el historial. Inténtalo de nuevo.</p>}
       {historial.length > 0 && <ol className="mt-2 grid gap-3">
-        {[...historial].sort((a, b) => b.en.localeCompare(a.en)).map((h) => <li key={h.id} className="rounded border border-[var(--ui-borde)] p-3">
+        {historial.map((h) => <li key={h.id} className="rounded border border-[var(--ui-borde)] p-3">
           <p>{fecha(h.en)}</p>
           <p>{nombreDe(h.por)} {h.accion === "concedida" ? "concedió" : "retiró"} {minuscula(h.capacidad)} a {nombreDe(h.usuario_id)}</p>
           {h.motivo && <p className="text-[var(--ui-texto-suave)]">{h.motivo}</p>}
