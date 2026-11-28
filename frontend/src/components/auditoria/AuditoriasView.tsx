@@ -264,7 +264,7 @@ export const AuditoriasView: React.FC<Props> = ({ rolActual = "auditor", usuario
               <button
                 type="button"
                 onClick={cargarLista}
-                className="rounded border border-rose-300 bg-rose-100 px-3 py-1.5 text-xs font-semibold text-rose-950 hover:bg-rose-200"
+                className="rounded border border-[var(--ui-borde-control)] bg-rose-100 px-3 py-1.5 text-xs font-semibold text-rose-950 hover:bg-rose-200"
               >
                 Volver a cargar
               </button>
