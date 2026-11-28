@@ -301,7 +301,7 @@ jobs:
     # seleccionar_pruebas.py, si hay especificaciones: sin ellas, o en un push cubierto por R1, termina en verde
     # antes de instalar Node.
     # CI-39: cuatro shards en paralelo con las mismas pruebas; el estado final lo resume playwright-resultado.
-    name: Playwright Frontend
+    name: Playwright Frontend · shard ${{ matrix.shard }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -386,7 +386,7 @@ jobs:
   # CI-39: un solo estado para la proteccion de rama. Verde si todos los shards pasaron o saltaron (sin
   # especificaciones, o cubierto por el PR); rojo si alguno fallo o se cancelo.
   playwright-resultado:
-    name: playwright-resultado
+    name: Playwright Frontend
     needs: playwright
     if: always()
     runs-on: ubuntu-latest
