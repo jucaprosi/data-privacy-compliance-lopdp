@@ -126,12 +126,20 @@ export function barraDeMenus(page: Page) {
   return page.getByRole("navigation", { name: "Menús principales" });
 }
 
-/** Abre un menú y, en el dock lateral, uno de sus submenús. */
+/**
+ * Abre un menú y uno de sus submenús: en escritorio, en el dock lateral; en móvil, en el diálogo
+ * «Menú de navegación» (QA-17, §4 del UX/UI). El botón «Menú» solo existe con el menú en cajón,
+ * y el diálogo se cierra solo al elegir.
+ */
 export async function abrirSubmenu(page: Page, submenu: Submenu): Promise<void> {
   const menu = MENUS.find((m) => m.id === submenu.menu);
   if (!menu) throw new Error(`Menú desconocido: ${submenu.menu}`);
   await barraDeMenus(page).getByRole("button", { name: menu.nombre, exact: true }).click();
-  await page
+  const botonCajon = page.getByRole("button", { name: "Menú", exact: true });
+  const enCajon = await botonCajon.isVisible();
+  if (enCajon) await botonCajon.click();
+  const ambito = enCajon ? page.getByRole("dialog", { name: "Menú de navegación" }) : page;
+  await ambito
     .getByRole("group", { name: `Submenús de ${menu.nombre}` })
     .getByRole("button", { name: new RegExp(`^${escaparRegExp(submenu.nombre)}`) })
     .click();
